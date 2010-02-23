@@ -3,4 +3,13 @@ syntax: glob
 *.user
 *.ncb
 *.suo
+*.ilk
 _ReSharper.*
+UserM_Debug
+Gen_hlslang.cpp
+Gen_hlslang_tab.cpp
+hlslang.output
+hlslang_tab.h
+hlsl2glsl.dll
+hlsl2glsl.lib
+hlsl2glsl.exp
