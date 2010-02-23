@@ -627,7 +627,7 @@ bool HlslLinker::addCalledFunctions( GlslFunction *func, std::set<GlslFunction*>
 /// \return
 ///   True if linking is succesful, false otherwise
 //=========================================================================================================
-bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char* fragEntryFunc)
+bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char* fragEntryFunc, bool comments)
 {
 	std::vector<GlslFunction*> globalList;
 	std::vector<GlslFunction*> functionList;
@@ -778,7 +778,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	//
 	if (libFunctions[0].size() > 0)
 	{
-		vertShader << "//\n// Translator library functions\n//\n\n";
+		if (comments)
+			vertShader << "//\n// Translator library functions\n//\n\n";
 		for (std::set<TOperator>::iterator it = libFunctions[0].begin(); it != libFunctions[0].end(); it++)
 		{
 			const std::string &func = getHLSLSupportCode( *it);
@@ -789,7 +790,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 	if (libFunctions[1].size() > 0)
 	{
-		fragShader << "//\n// Translator library functions\n//\n\n";
+		if (comments)
+			fragShader << "//\n// Translator library functions\n//\n\n";
 		for (std::set<TOperator>::iterator it = libFunctions[1].begin(); it != libFunctions[1].end(); it++)
 		{
 			const std::string &func = getHLSLSupportCode( *it);
@@ -811,8 +813,11 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 		if (sList.size() > 0)
 		{
-			fragShader << "//\n// Structure definitions\n//\n\n";
-			vertShader << "//\n// Structure definitions\n//\n\n";
+			if (comments)
+			{
+				fragShader << "//\n// Structure definitions\n//\n\n";
+				vertShader << "//\n// Structure definitions\n//\n\n";
+			}
 
 			for (std::vector<GlslStruct*>::iterator it = sList.begin(); it < sList.end(); it++)
 			{
@@ -827,7 +832,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	//
 	if (globalSymMap[0].size() > 0 )
 	{
-		vertShader << "\n//\n// Global variable definitions\n//\n\n";
+		if (comments)
+			vertShader << "\n//\n// Global variable definitions\n//\n\n";
 
 		for (std::map<std::string,GlslSymbol*>::iterator sit = globalSymMap[0].begin(); sit != globalSymMap[0].end(); sit++)
 		{
@@ -844,7 +850,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 	if (globalSymMap[1].size() > 0 )
 	{
-		fragShader << "\n//\n// Global variable definitions\n//\n\n";
+		if (comments)
+			fragShader << "\n//\n// Global variable definitions\n//\n\n";
 
 		for (std::map<std::string,GlslSymbol*>::iterator sit = globalSymMap[1].begin(); sit != globalSymMap[1].end(); sit++)
 		{
@@ -864,14 +871,16 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	//
 	if ( calledFunctions[0].size() > 0 )
 	{
-		vertShader << "\n//\n// Function declarations\n//\n\n";
+		if (comments)
+			vertShader << "\n//\n// Function declarations\n//\n\n";
 
 		for (std::set<GlslFunction*>::iterator fit = calledFunctions[0].begin(); fit != calledFunctions[0].end(); fit++)
 		{
 			vertShader << (*fit)->getPrototype() << ";\n";
 		}
 
-		vertShader << "\n//\n// Function definitions\n//\n\n";
+		if (comments)
+			vertShader << "\n//\n// Function definitions\n//\n\n";
 
 		for (std::set<GlslFunction*>::iterator fit = calledFunctions[0].begin(); fit != calledFunctions[0].end(); fit++)
 		{
@@ -884,14 +893,16 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 	if ( calledFunctions[1].size() > 0 )
 	{
-		fragShader << "\n//\n// Function declarations\n//\n\n";
+		if (comments)
+			fragShader << "\n//\n// Function declarations\n//\n\n";
 
 		for (std::set<GlslFunction*>::iterator fit = calledFunctions[1].begin(); fit != calledFunctions[1].end(); fit++)
 		{
 			fragShader << (*fit)->getPrototype() << ";\n";
 		}
 
-		fragShader << "\n//\n// Function definitions\n//\n\n";
+		if (comments)
+			fragShader << "\n//\n// Function definitions\n//\n\n";
 
 		for (std::set<GlslFunction*>::iterator fit = calledFunctions[1].begin(); fit != calledFunctions[1].end(); fit++)
 		{
@@ -989,7 +1000,9 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		std::stringstream call;
 		const int pCount = vertMain->getParameterCount();
 
-		preamble << "//\n// Translator's entry point\n//\nvoid main() {\n";
+		if (comments)
+			preamble << "//\n// Translator's entry point\n//\n";
+		preamble << "void main() {\n";
 		const EGlslSymbolType retType = vertMain->getReturnType();
 		GlslStruct *retStruct = vertMain->getStruct();
 		if (  retType == EgstStruct)
@@ -1374,19 +1387,22 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 		if (uniform.str().size() )
 		{
-			vertShader << "//\n// Uniform Arguments\n//\n";
+			if (comments)
+				vertShader << "//\n// Uniform Arguments\n//\n";
 			vertShader << uniform.str() << "\n";
 		}
 
 		if (attrib.str().size() )
 		{
-			vertShader << "//\n// Attributes\n//\n";
+			if (comments)
+				vertShader << "//\n// Attributes\n//\n";
 			vertShader << attrib.str() << "\n";
 		}
 
 		if (varying.str().size() )
 		{
-			vertShader << "//\n// User varying\n//\n";
+			if (comments)
+				vertShader << "//\n// User varying\n//\n";
 			vertShader << varying.str() << "\n";
 		}
 
@@ -1405,7 +1421,9 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		std::stringstream call;
 		const int pCount = fragMain->getParameterCount();
 
-		preamble << "//\n// Translator's entry point\n//\nvoid main() {\n";
+		if (comments)
+			preamble << "//\n// Translator's entry point\n//\n";
+		preamble << "void main() {\n";
 		const EGlslSymbolType retType = fragMain->getReturnType();
 		GlslStruct *retStruct = fragMain->getStruct();
 		if (  retType == EgstStruct)
@@ -1725,13 +1743,15 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 		if (uniform.str().size())
 		{
-			fragShader << "//\n// Uniform Arguments\n//\n";
+			if (comments)
+				fragShader << "//\n// Uniform Arguments\n//\n";
 			fragShader << uniform.str() << "\n";
 		}
 
 		if (varying.str().size())
 		{
-			fragShader << "//\n// User varying\n//\n";
+			if (comments)
+				fragShader << "//\n// User varying\n//\n";
 			fragShader << varying.str() << "\n";
 		}
 		fragShader << preamble.str() << "\n";

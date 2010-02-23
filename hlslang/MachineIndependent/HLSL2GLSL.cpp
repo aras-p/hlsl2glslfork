@@ -489,7 +489,8 @@ int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle,
                                 const ShHandle parserHandles[],
                                 const int numHandles,
                                 const char* vertexEntry,
-                                const char* fragmentEntry )
+                                const char* fragmentEntry,
+								const int flags)
 {
    if (translatorHandle == 0 || numHandles == 0)
       return 0;
@@ -537,7 +538,7 @@ int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle,
       }
    }
 
-   bool ret = linker->link(cObjects, vertexEntry, fragmentEntry);
+   bool ret = linker->link(cObjects, vertexEntry, fragmentEntry, flags & EFlagIncludeComments);
 
    return ret ? 1 : 0;
 }
