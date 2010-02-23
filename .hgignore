@@ -1,0 +1,6 @@
+syntax: glob
+
+*.user
+*.ncb
+*.suo
+_ReSharper.*
