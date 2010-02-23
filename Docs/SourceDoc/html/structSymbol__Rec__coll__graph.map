@@ -1,0 +1,5 @@
+base referer
+rect $structMacroSymbol.html 20,215 124,242
+rect $structTokenStream__Rec.html 7,124 138,151
+rect $structTokenBlock__Rec.html 12,18 132,44
+rect $structSourceLoc__Rec.html 148,215 266,242

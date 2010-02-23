@@ -1,0 +1,4 @@
+base referer
+rect $classTSymbol.html 8,32 83,59
+rect $classTFunction.html 132,7 215,34
+rect $classTVariable.html 135,58 212,84

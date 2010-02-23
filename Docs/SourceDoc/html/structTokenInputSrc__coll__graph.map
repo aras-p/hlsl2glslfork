@@ -1,0 +1,4 @@
+base referer
+rect $structInputSrc.html 7,124 79,151
+rect $structTokenStream__Rec.html 155,124 286,151
+rect $structTokenBlock__Rec.html 160,17 280,44

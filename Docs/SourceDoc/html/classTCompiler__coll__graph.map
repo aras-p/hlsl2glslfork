@@ -1,0 +1,4 @@
+base referer
+rect $classTShHandleBase.html 7,113 124,140
+rect $classTInfoSink.html 148,113 228,140
+rect $classTInfoSinkBase.html 133,7 243,33

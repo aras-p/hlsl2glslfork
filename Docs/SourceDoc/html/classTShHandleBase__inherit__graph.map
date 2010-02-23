@@ -1,0 +1,5 @@
+base referer
+rect $classTCompiler.html 40,81 123,108
+rect $classTLinker.html 163,81 230,108
+rect $classHlslCrossCompiler.html 7,156 140,183
+rect $classHlslLinker.html 164,156 244,183

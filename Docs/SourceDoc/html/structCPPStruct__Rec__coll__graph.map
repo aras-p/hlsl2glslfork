@@ -1,0 +1,4 @@
+base referer
+rect $structInputSrc.html 7,25 79,52
+rect $structOptions__Rec.html 155,25 253,52
+rect $structSourceLoc__Rec.html 277,25 395,52

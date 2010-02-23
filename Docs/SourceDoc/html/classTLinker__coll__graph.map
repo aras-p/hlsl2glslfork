@@ -1,0 +1,6 @@
+base referer
+rect $classTShHandleBase.html 7,113 124,140
+rect $structShBindingTable.html 148,113 263,140
+rect $structShBinding.html 164,7 247,33
+rect $classTInfoSink.html 290,113 370,140
+rect $classTInfoSinkBase.html 275,7 384,33
