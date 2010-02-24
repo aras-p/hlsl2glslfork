@@ -6,7 +6,9 @@ syntax: glob
 *.ilk
 _ReSharper.*
 UserM_Debug
+UserM_Release
 Gen_hlslang.cpp
+gen_hlslang.cpp
 Gen_hlslang_tab.cpp
 hlslang.output
 hlslang_tab.h
