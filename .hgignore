@@ -7,6 +7,7 @@ syntax: glob
 *.pbxuser
 *.perspectivev3
 .svn/
+.DS_Store
 _ReSharper.*
 build/
 lib/
