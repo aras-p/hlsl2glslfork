@@ -464,8 +464,10 @@
 			buildSettings = {
 				ARCHS = i386;
 				GCC_VERSION = 4.0;
+				OBJROOT = build;
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SYMROOT = lib/mac;
 			};
 			name = Debug;
 		};
@@ -474,8 +476,10 @@
 			buildSettings = {
 				ARCHS = i386;
 				GCC_VERSION = 4.0;
+				OBJROOT = build;
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SYMROOT = lib/mac;
 			};
 			name = Release;
 		};
