@@ -77,11 +77,7 @@
 
 #ifdef _WIN32
    #define C_DECL __cdecl
-   #ifdef SH_EXPORTING
-      #define SH_IMPORT_EXPORT __declspec(dllexport)
-   #else
-      #define SH_IMPORT_EXPORT __declspec(dllimport)
-   #endif
+   #define SH_IMPORT_EXPORT
 #else
    #define SH_IMPORT_EXPORT
    #define __fastcall
