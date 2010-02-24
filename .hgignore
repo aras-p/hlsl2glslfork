@@ -14,5 +14,6 @@ lib/
 Gen_hlslang.cpp
 gen_hlslang.cpp
 Gen_hlslang_tab.cpp
+hlslang_tab.cpp
 hlslang.output
 hlslang_tab.h
