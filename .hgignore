@@ -4,6 +4,8 @@ syntax: glob
 *.ncb
 *.suo
 *.ilk
+*.pbxuser
+*.perspectivev3
 .svn/
 _ReSharper.*
 build/
