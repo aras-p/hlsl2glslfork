@@ -16,9 +16,9 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="UserM_Debug|Win32"
-			OutputDirectory="UserM_Debug"
-			IntermediateDirectory="UserM_Debug"
+			Name="Debug|Win32"
+			OutputDirectory="build/$(ConfigurationName)"
+			IntermediateDirectory="build/$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -39,7 +39,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName="UserM_Debug/generic/hlsl2glsl.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -91,9 +90,9 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="UserM_Release|Win32"
-			OutputDirectory="UserM_Release"
-			IntermediateDirectory="UserM_Release"
+			Name="Release|Win32"
+			OutputDirectory="build/$(ConfigurationName)"
+			IntermediateDirectory="build/$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -114,7 +113,6 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName="UserM_Release/generic/hls2glsl.tlb"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
@@ -187,7 +185,7 @@
 				RelativePath="hlslang\MachineIndependent\hlslang.l"
 				>
 				<FileConfiguration
-					Name="UserM_Debug|Win32"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -198,7 +196,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="UserM_Release|Win32"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -213,7 +211,7 @@
 				RelativePath="hlslang\MachineIndependent\hlslang.y"
 				>
 				<FileConfiguration
-					Name="UserM_Debug|Win32"
+					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -223,7 +221,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="UserM_Release|Win32"
+					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -580,7 +578,7 @@
 					RelativePath="hlslang\OSDependent\Linux\ossource.cpp"
 					>
 					<FileConfiguration
-						Name="UserM_Debug|Win32"
+						Name="Debug|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
@@ -589,7 +587,7 @@
 						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="UserM_Release|Win32"
+						Name="Release|Win32"
 						ExcludedFromBuild="true"
 						>
 						<Tool
