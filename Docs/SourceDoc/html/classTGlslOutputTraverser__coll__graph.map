@@ -1,6 +1,0 @@
-base referer
-rect $classTIntermTraverser.html 7,113 132,140
-rect $classGlslFunction.html 156,113 252,140
-rect $classGlslStruct.html 161,7 241,33
-rect $classTInfoSink.html 279,113 359,140
-rect $classTInfoSinkBase.html 265,7 375,33

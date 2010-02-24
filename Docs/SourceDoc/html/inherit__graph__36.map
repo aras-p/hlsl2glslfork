@@ -1,8 +1,0 @@
-base referer
-rect $classTIntermTraverser.html 7,133 132,160
-rect $classTAliveTraverser.html 199,7 314,33
-rect $classTConstTraverser.html 195,57 318,84
-rect $classTGlslOutputTraverser.html 182,108 331,135
-rect $classTOutputTraverser.html 192,159 320,185
-rect $classTPropagateMutable.html 187,209 326,236
-rect $classTSamplerTraverser.html 188,260 324,287

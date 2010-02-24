@@ -1,5 +1,0 @@
-base referer
-rect $cpp_8h-source.html 131,57 184,84
-rect $slglobals_8h-source.html 364,57 450,84
-rect $symbols_8h-source.html 234,57 316,84
-rect $preprocess_8h-source.html 498,57 596,84

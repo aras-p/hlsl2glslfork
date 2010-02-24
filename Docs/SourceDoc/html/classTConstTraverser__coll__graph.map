@@ -1,8 +1,0 @@
-base referer
-rect $classTIntermTraverser.html 7,113 132,140
-rect $classTType.html 156,113 215,140
-rect $classTVector.html 136,7 235,33
-rect $classconstUnion.html 391,113 479,140
-rect $classTSymbolTable.html 503,113 610,140
-rect $classTInfoSink.html 634,113 714,140
-rect $classTInfoSinkBase.html 619,7 728,33

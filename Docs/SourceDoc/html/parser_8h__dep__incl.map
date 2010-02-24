@@ -1,7 +1,0 @@
-base referer
-rect $scanner_8h-source.html 250,7 330,34
-rect $slglobals_8h-source.html 508,108 594,135
-rect $cpp_8h-source.html 263,134 316,160
-rect $tokens_8h-source.html 128,159 200,186
-rect $preprocess_8h-source.html 642,108 740,135
-rect $symbols_8h-source.html 378,159 460,186

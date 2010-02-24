@@ -1,5 +1,0 @@
-base referer
-rect $classTIntermNode.html 32,97 131,124
-rect $classTIntermTyped.html 135,188 239,215
-rect $classTType.html 158,97 216,124
-rect $classTVector.html 138,7 236,33

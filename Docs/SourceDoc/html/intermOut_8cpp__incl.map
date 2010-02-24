@@ -1,5 +1,0 @@
-base referer
-rect $localintermediate_8h-source.html 161,57 297,84
-rect $intermediate_8h-source.html 555,57 720,84
-rect $HLSL2GLSL_8h-source.html 345,57 505,84
-rect $SymbolTable_8h-source.html 371,108 480,135
