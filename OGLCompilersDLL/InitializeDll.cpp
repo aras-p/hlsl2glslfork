@@ -66,13 +66,11 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-#define SH_EXPORTING
-
 #include "InitializeDll.h"
 #include "Include/InitializeGlobals.h"
 #include "Include/InitializeParseContext.h"
 
-#include "Public/HLSL2GLSL.h"
+#include "../../include/hlsl2glsl.h"
 
 OS_TLSIndex ThreadInitializeIndex = OS_INVALID_TLS_INDEX;
 

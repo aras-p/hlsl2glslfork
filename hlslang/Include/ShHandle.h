@@ -77,9 +77,7 @@
 // This should not be included by driver code.
 //
 
-
-#define SH_EXPORTING   
-#include "../Public/HLSL2GLSL.h"
+#include "../../include/hlsl2glsl.h"
 
 #include "InfoSink.h"
 

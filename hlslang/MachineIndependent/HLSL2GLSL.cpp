@@ -83,8 +83,7 @@
 #include "../Include/ShHandle.h"
 #include "InitializeDll.h"
 
-#define SH_EXPORTING
-#include "../Public/HLSL2GLSL.h"
+#include "../../include/hlsl2glsl.h"
 #include "Initialize.h"
 #include "../GLSLCodeGen/hlslSupportLib.h"
 

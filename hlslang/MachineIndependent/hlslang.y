@@ -89,7 +89,7 @@ Jutta Degener, 1995
 
 #include "SymbolTable.h"
 #include "ParseHelper.h"
-#include "../Public/HLSL2GLSL.h"
+#include "../../include/hlsl2glsl.h"
 
 #ifdef _WIN32
     #define YYPARSE_PARAM parseContext

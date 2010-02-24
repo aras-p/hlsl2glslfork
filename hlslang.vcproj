@@ -85,7 +85,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description=""
 				CommandLine=""
 			/>
 		</Configuration>
@@ -165,7 +164,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description=""
 				CommandLine=""
 			/>
 		</Configuration>
@@ -449,10 +447,10 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Public"
+			Name="include"
 			>
 			<File
-				RelativePath=".\hlslang\Public\HLSL2GLSL.h"
+				RelativePath=".\include\hlsl2glsl.h"
 				>
 			</File>
 		</Filter>

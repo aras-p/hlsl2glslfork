@@ -70,7 +70,7 @@
 #define _LOCAL_INTERMEDIATE_INCLUDED_
 
 #include "../Include/intermediate.h"
-#include "../Public/HLSL2GLSL.h"
+#include "../../include/hlsl2glsl.h"
 #include "SymbolTable.h"
 
 struct TVectorFields
