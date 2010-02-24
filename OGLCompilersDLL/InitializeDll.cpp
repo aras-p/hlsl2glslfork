@@ -67,10 +67,10 @@
 //
 
 #include "InitializeDll.h"
-#include "Include/InitializeGlobals.h"
-#include "Include/InitializeParseContext.h"
+#include "../hlslang/Include/InitializeGlobals.h"
+#include "../hlslang/Include/InitializeParseContext.h"
 
-#include "../../include/hlsl2glsl.h"
+#include "../include/hlsl2glsl.h"
 
 OS_TLSIndex ThreadInitializeIndex = OS_INVALID_TLS_INDEX;
 

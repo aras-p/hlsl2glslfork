@@ -69,7 +69,7 @@
 #include "../Include/PoolAlloc.h"
 #include "../Include/Common.h"
 
-#include "Include/InitializeGlobals.h"
+#include "../Include/InitializeGlobals.h"
 #include "osinclude.h"
 
 OS_TLSIndex PoolIndex;

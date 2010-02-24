@@ -4,7 +4,10 @@ syntax: glob
 *.ncb
 *.suo
 *.ilk
+*.pbxuser
+*.perspectivev3
 .svn/
+.DS_Store
 _ReSharper.*
 build/
 lib/
