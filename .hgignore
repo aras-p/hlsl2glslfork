@@ -5,7 +5,8 @@ syntax: glob
 *.suo
 *.ilk
 _ReSharper.*
-build
+build/
+lib/
 Gen_hlslang.cpp
 gen_hlslang.cpp
 Gen_hlslang_tab.cpp
