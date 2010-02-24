@@ -214,8 +214,8 @@ TSourceLoc yylineno;
 "switch"       {  PaReservedWord(); return 0; }
 "default"      {  PaReservedWord(); return 0; }
 
-"inline"       {  PaReservedWord(); return 0; }
-"noinline"     {  PaReservedWord(); return 0; }
+"inline"       {  /* just ignore it PaReservedWord(); return 0; */ }
+"noinline"     {  /* just ignore it PaReservedWord(); return 0; */ }
 "volatile"     {  PaReservedWord(); return 0; }
 "public"       {  PaReservedWord(); return 0; }
 "static"       {  PaReservedWord(); return 0; }
