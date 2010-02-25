@@ -183,8 +183,21 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
    case EOpSub:
    case EOpDiv:
    case EOpMul:
-      if (left->getType().getBasicType() == EbtStruct || left->getType().getBasicType() == EbtBool)
-         return 0;
+      if (left->getType().getBasicType() == EbtStruct)
+		  return 0;
+	  // If left or right type is a bool, convert to a float.
+	  if (left->getType().getBasicType() == EbtBool && right->getType().getBasicType() != EbtBool)
+	  {
+		  left = addConversion (EOpConstructFloat, TType (EbtFloat, left->getQualifier(), left->getNominalSize(), left->isMatrix(), left->isArray()), left);
+		  if (left == 0)
+			  return 0;
+	  }
+	  if (right->getType().getBasicType() == EbtBool && left->getType().getBasicType() != EbtBool)
+	  {
+		  right = addConversion (EOpConstructFloat, TType (EbtFloat, right->getQualifier(), right->getNominalSize(), right->isMatrix(), right->isArray()), right);
+		  if (right == 0)
+			  return 0;
+	  }
    default: break; 
    }
 
