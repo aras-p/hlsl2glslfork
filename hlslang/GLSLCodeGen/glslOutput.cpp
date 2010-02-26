@@ -1024,48 +1024,49 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
 //=========================================================================================================
 bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *node, TIntermTraverser *it )
 {
-   TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
-   GlslFunction *current = goit->current;
-   std::stringstream& out = current->getActiveOutput();
+	TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
+	GlslFunction *current = goit->current;
+	std::stringstream& out = current->getActiveOutput();
 
-   current->beginStatement();
+	current->beginStatement();
 
-   if (node->getBasicType() == EbtVoid)
-   {
-      // if/else selection
-      out << "if ( ";
-      node->getCondition()->traverse(goit);
-      out << " )";
-      current->beginBlock();
-      node->getTrueBlock()->traverse(goit);
-      current->endBlock();
-      if (node->getFalseBlock())
-      {
-         current->indent();
-         out << "else";
-         current->beginBlock();
-         node->getFalseBlock()->traverse(goit);
-         current->endBlock();
-      }
-   }
-   else
-   {
-      // ?: selection
-      out << "( ";
-      node->getCondition()->traverse(goit);
-      out << " ) ? ( ";
-      node->getTrueBlock()->traverse(goit);
-      out << " ) : ( ";
-      if (node->getFalseBlock())
-      {
-         node->getFalseBlock()->traverse(goit);
-      }
-      else
-         assert(0);
-      out << " )";
-   }
+	if (node->getBasicType() == EbtVoid)
+	{
+		// if/else selection
+		out << "if ( ";
+		node->getCondition()->traverse(goit);
+		out << " )";
+		current->beginBlock();
+		node->getTrueBlock()->traverse(goit);
+		current->endBlock();
+		if (node->getFalseBlock())
+		{
+			current->indent();
+			out << "else";
+			current->beginBlock();
+			node->getFalseBlock()->traverse(goit);
+			current->endBlock();
+		}
+	}
 
-   return false;
+	else
+	{
+		// ?: selection
+		out << "( ";
+		node->getCondition()->traverse(goit);
+		out << " ) ? ( ";
+		node->getTrueBlock()->traverse(goit);
+		out << " ) : ( ";
+		if (node->getFalseBlock())
+		{
+			node->getFalseBlock()->traverse(goit);
+		}
+		else
+			assert(0);
+		out << " )";
+	}
+
+	return false;
 }
 
 //=========================================================================================================
