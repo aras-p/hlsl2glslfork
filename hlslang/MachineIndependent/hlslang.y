@@ -179,7 +179,7 @@ Jutta Degener, 1995
 %token <lex> BVEC2 BVEC3 BVEC4 IVEC2 IVEC3 IVEC4 VEC2 VEC3 VEC4
 %token <lex> MATRIX2 MATRIX3 MATRIX4 IN_QUAL OUT_QUAL INOUT_QUAL UNIFORM VARYING
 %token <lex> STRUCT VOID_TYPE WHILE
-%token <lex> SAMPLER1D SAMPLER2D SAMPLER3D SAMPLERCUBE SAMPLER1DSHADOW SAMPLER2DSHADOW
+%token <lex> SAMPLER1D SAMPLER2D SAMPLER3D SAMPLERCUBE SAMPLER1DSHADOW SAMPLER2DSHADOW SAMPLERRECT
 %token <lex> SAMPLERGENERIC VECTOR MATRIX REGISTER TEXTURE SAMPLERSTATE
 
 %token <lex> IDENTIFIER TYPE_NAME FLOATCONSTANT INTCONSTANT BOOLCONSTANT STRINGCONSTANT
@@ -2035,6 +2035,11 @@ type_specifier_nonarray
         FRAG_VERT_ONLY("samplerCube", $1.line);
         TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
         $$.setBasic(EbtSamplerCube, qual, $1.line);
+    } 
+    | SAMPLERRECT {
+        FRAG_VERT_ONLY("samplerRECT", $1.line);
+        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        $$.setBasic(EbtSamplerRect, qual, $1.line);
     } 
     | SAMPLER1DSHADOW {
         FRAG_VERT_ONLY("sampler1DShadow", $1.line);
