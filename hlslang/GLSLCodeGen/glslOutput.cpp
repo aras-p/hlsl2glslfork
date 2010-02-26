@@ -1405,6 +1405,14 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       writeTex( "xlat_lib_texCUBEgrad", node, goit); 
       return false;
 
+   case EOpTexRect:
+	   writeTex( "texture2DRect", node, goit);
+	   return false;
+	   
+   case EOpTexRectProj:
+	   writeTex( "texture2DRectProj", node, goit);
+	   return false;
+		   
    case EOpModf:
       current->addLibFunction(EOpModf);
       writeFuncCall( "xlat_lib_modf", node, goit);

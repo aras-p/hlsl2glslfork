@@ -225,7 +225,9 @@ enum TOperator
    EOpTexCubeLod,
    EOpTexCubeBias,
    EOpTexCubeGrad,
-
+   EOpTexRect,
+   EOpTexRectProj,
+	
    EOpTranspose,
    EOpDeterminant,
    EOpSaturate,

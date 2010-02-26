@@ -484,7 +484,11 @@ void TBuiltIns::initialize()
       s.append(TString("float4 texCUBEbias(samplerCUBE s, float4 coord);"));
       s.append(TString("float4 texCUBElod(samplerCUBE s, float4 coord);"));
       s.append(TString("float4 texCUBEgrad(samplerCUBE s, float3 coord, float3 ddx, float3 ddy);"));
-
+	   
+		s.append(TString("float4 texRECT(samplerRECT s, float2 coord);"));
+		s.append(TString("float4 texRECTproj(samplerRECT s, float4 coord);"));
+		s.append(TString("float4 texRECTproj(samplerRECT s, float3 coord);"));
+	   
       s.append(TString("float4 tex1D(sampler s, float coord);"));
       s.append(TString("float4 tex1D(sampler s, float coord, float ddx, float ddy);"));
       s.append(TString("float4 tex1Dproj(sampler s, float4 coord);"));
@@ -513,6 +517,10 @@ void TBuiltIns::initialize()
       s.append(TString("float4 texCUBElod(sampler s, float4 coord);"));
       s.append(TString("float4 texCUBEgrad(sampler s, float3 coord, float3 ddx, float3 ddy);"));
 
+	   s.append(TString("float4 texRECT(sampler s, float2 coord);"));
+	   s.append(TString("float4 texRECTproj(sampler s, float4 coord);"));
+	   s.append(TString("float4 texRECTproj(sampler s, float3 coord);"));
+	   
 
       //
       // Noise functions.
@@ -638,6 +646,8 @@ void IdentifyBuiltIns(EShLanguage language, TSymbolTable& symbolTable)
    symbolTable.relateToOperator("tex3Dlod",     EOpTex3DLod);
    symbolTable.relateToOperator("tex3Dbias",    EOpTex3DBias);
    symbolTable.relateToOperator("tex3Dgrad",    EOpTex3DGrad);
+   symbolTable.relateToOperator("texRECT",      EOpTexRect);
+   symbolTable.relateToOperator("texRECTproj",  EOpTexRectProj);
    symbolTable.relateToOperator("texCUBE",      EOpTexCube);
    symbolTable.relateToOperator("texCUBEproj",  EOpTexCubeProj);
    symbolTable.relateToOperator("texCUBElod",   EOpTexCubeLod);

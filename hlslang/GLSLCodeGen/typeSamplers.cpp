@@ -288,6 +288,35 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
          // We need to continue the traverse here, because the calls could be nested 
          break;
 
+	  case EOpTexRect:
+	  case EOpTexRectProj:
+		  {
+			  TIntermSequence &sequence = node->getSequence();
+			  assert( sequence.size());
+			  TIntermTyped *sampArg = sequence[0]->getAsTyped();
+			  if ( sampArg)
+			  {
+				  if (sampArg->getBasicType() == EbtSamplerGeneric)
+				  {
+					  //type the sampler
+					  sit->typeSampler( sampArg, EbtSamplerRect);
+				  }
+				  else if (sampArg->getBasicType() != EbtSamplerRect)
+				  {
+					  //We have a sampler mismatch error
+					  infoSink.info << "Error: " << node->getLine() << ": Sampler type mismatch, likely using a generic sampler as two types\n";
+				  }
+			  }
+			  else
+			  {
+				  assert(0);
+			  }
+			  
+		  }
+		  // We need to continue the traverse here, because the calls could be nested 
+		  break;
+			  
+			  
       case EOpTex3D:
       case EOpTex3DProj:
       case EOpTex3DLod:
