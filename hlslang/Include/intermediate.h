@@ -314,6 +314,11 @@ enum TOperator
    // Special HLSL functions
    //
    EOpD3DCOLORtoUBYTE4,
+	
+	//
+	// Ternary selection on vector
+	//
+	EOpVecTernarySel,
 };
 
 class TIntermTraverser;

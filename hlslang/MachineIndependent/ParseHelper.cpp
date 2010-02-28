@@ -686,6 +686,22 @@ bool TParseContext::boolErrorCheck(int line, const TIntermTyped* type)
    return false;
 }
 
+
+bool TParseContext::boolOrVectorErrorCheck(int line, const TIntermTyped* type)
+{
+	// In HLSL, any float or int will be automatically casted to a bool, so the basic type can be bool,
+	// float, or int.
+	if ((type->getBasicType() != EbtBool && type->getBasicType() != EbtInt && type->getBasicType() != EbtFloat) || 
+        type->isArray() || type->isMatrix())
+	{
+		error(line, "boolean or vector expression expected", "", "");
+		return true;
+	}
+	
+	return false;
+}
+
+
 // This function checks to see if the node (for the expression) contains a scalar boolean expression or not
 //
 // returns true in case of an error

@@ -1147,10 +1147,10 @@ logical_or_expression
 conditional_expression
     : logical_or_expression { $$ = $1; }
     | logical_or_expression QUESTION expression COLON assignment_expression {
-       if (parseContext.boolErrorCheck($2.line, $1))
+       if (parseContext.boolOrVectorErrorCheck($2.line, $1))
             parseContext.recover();
        
-        $$ = parseContext.intermediate.addSelection($1, $3, $5, $2.line);
+		$$ = parseContext.intermediate.addSelection($1, $3, $5, $2.line);
            
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, ":", $3->getCompleteString(), $5->getCompleteString());

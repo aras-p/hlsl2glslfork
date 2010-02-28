@@ -1048,10 +1048,27 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 			current->endBlock();
 		}
 	}
-
+	else if (node->isVector())
+	{
+		// ?: selection on vectors, e.g. bvec4 ? vec4 : vec4
+		// emulate HLSL's component-wise selection here
+		current->addLibFunction(EOpVecTernarySel);
+		out << "xlat_lib_vecTSel (";
+		node->getCondition()->traverse(goit);
+		out << ", ";
+		node->getTrueBlock()->traverse(goit);
+		out << ", ";
+		if (node->getFalseBlock())
+		{
+			node->getFalseBlock()->traverse(goit);
+		}
+		else
+			assert(0);
+		out << ")";
+	}
 	else
 	{
-		// ?: selection
+		// simple ?: selection
 		out << "( ";
 		node->getCondition()->traverse(goit);
 		out << " ) ? ( ";

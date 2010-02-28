@@ -680,7 +680,19 @@ void initializeHLSLSupportLibrary()
         "  return ivec4 ( x.zyxw * 255.001953 );\n"
         "}\n\n" )
         );
-
+	
+	hlslSupportLib->insert( CodeMap::value_type( EOpVecTernarySel,  
+		"vec2 xlat_lib_vecTSel (bvec2 a, vec2 b, vec2 c) {\n"
+		"  return vec2 (a.x ? b.x : c.x, a.y ? b.y : c.y);\n"
+		"}\n"
+		"vec3 xlat_lib_vecTSel (bvec3 a, vec3 b, vec3 c) {\n"
+		"  return vec3 (a.x ? b.x : c.x, a.y ? b.y : c.y, a.z ? b.z : c.z);\n"
+		"}\n"
+		"vec4 xlat_lib_vecTSel (bvec4 a, vec4 b, vec4 c) {\n"
+		"  return vec4 (a.x ? b.x : c.x, a.y ? b.y : c.y, a.z ? b.z : c.z, a.w ? b.w : c.w);\n"
+		"}\n\n"
+		)
+   );	
 }
 
 //=========================================================================================================
