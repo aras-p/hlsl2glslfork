@@ -303,6 +303,7 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
    return node;
 }
 
+
 //
 // Connect two nodes through an assignment.
 //
@@ -806,6 +807,10 @@ TIntermTyped* TIntermediate::addSelection(TIntermTyped* cond, TIntermTyped* true
    //
    TIntermSelection* node = new TIntermSelection(cond, trueBlock, falseBlock, trueBlock->getType());
    node->setLine(line);
+	
+	if (!node->promoteTernary(infoSink))
+		return 0;
+	
 
    return node;
 }
@@ -1422,6 +1427,45 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
    }
 
    return true;
+}
+
+
+bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
+{
+	if (!condition->isVector())
+		return true;
+	
+	int size = condition->getNominalSize();
+	TIntermTyped* trueb = trueBlock->getAsTyped();
+	TIntermTyped* falseb = falseBlock->getAsTyped();
+	if (!trueb || !falseb)
+		return false;
+	
+	if (trueb->getNominalSize() == size && falseb->getNominalSize() == size)
+		return true;
+	
+	// Base assumption: just make the type a float vector
+	setType(TType(EbtFloat, EvqTemporary, size, condition->isMatrix()));
+	
+	TOperator convert = EOpNull;	
+	{
+		convert = TOperator( EOpConstructVec2 + size - 2);
+		TIntermAggregate *node = new TIntermAggregate(convert);
+		node->setLine(trueb->getLine());
+		node->setType(TType(condition->getBasicType(), trueb->getQualifier() == EvqConst ? EvqConst : EvqTemporary, size, condition->isMatrix()));
+		node->getSequence().push_back(trueb);
+		trueBlock = node;
+	}
+	{
+		convert = TOperator( EOpConstructVec2 + size - 2);
+		TIntermAggregate *node = new TIntermAggregate(convert);
+		node->setLine(falseb->getLine());
+		node->setType(TType(condition->getBasicType(), falseb->getQualifier() == EvqConst ? EvqConst : EvqTemporary, size, condition->isMatrix()));
+		node->getSequence().push_back(falseb);
+		falseBlock = node;
+	}
+	
+	return true;
 }
 
 bool CompareStruct(const TType& leftNodeType, constUnion* rightUnionArray, constUnion* leftUnionArray)

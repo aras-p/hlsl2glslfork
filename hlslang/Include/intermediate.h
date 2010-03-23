@@ -813,6 +813,7 @@ public:
    {
       return this;
    }
+	bool promoteTernary(TInfoSink&);
 protected:
    TIntermTyped* condition;
    TIntermNode* trueBlock;
