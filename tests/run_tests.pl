@@ -54,7 +54,7 @@ $tests{'output'} = sub {
     my ($module, $fname) = @_;
 	my ($basename) = $fname =~ /(.*).txt/;
     my $desired = $basename . '-corr.txt';
-    my $output = $basename . '-out.txt';
+    my $output = 'out-' . basename($fname);
     my $cmd = undef;
     my $endlines = 1;
 
