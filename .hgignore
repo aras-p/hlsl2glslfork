@@ -20,3 +20,4 @@ hlslang_tab.h
 tests/out-*.txt
 *.dSYM
 tests/hlsl2glsltest/hlsl2glsltest
+tests/hlsl2glsltest/out.txt
