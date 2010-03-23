@@ -282,14 +282,6 @@
 				>
 			</File>
 			<File
-				RelativePath="hlslang\MachineIndependent\QualifierAlive.cpp"
-				>
-			</File>
-			<File
-				RelativePath="hlslang\MachineIndependent\QualifierAlive.h"
-				>
-			</File>
-			<File
 				RelativePath="hlslang\MachineIndependent\RemoveTree.cpp"
 				>
 			</File>
