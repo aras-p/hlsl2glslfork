@@ -1,0 +1,16 @@
+vec4 xlat_main( in vec4 uv );
+vec4 xlat_main( in vec4 uv ) {
+
+    return vec4( ( (uv.x  > 0.500000) ) ? ( 0.900000 ) : ( 0.100000 ));
+}
+
+
+void main() {
+    vec4 xlat_retVal;
+
+    xlat_retVal = xlat_main( vec4(gl_TexCoord[0]));
+
+    gl_FragData[0] = vec4( xlat_retVal);
+}
+
+

@@ -1,0 +1,3 @@
+half4 main() : COLOR0 {
+	return 1.0;
+}
