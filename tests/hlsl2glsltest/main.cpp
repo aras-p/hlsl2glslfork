@@ -1,5 +1,7 @@
 #include <cstdio>
 #include <string>
+#include <OpenGL/OpenGL.h>
+#include <AGL/agl.h>
 #include "../../include/hlsl2glsl.h"
 
 bool ReadStringFromFile (const char* pathName, std::string& output)
@@ -31,6 +33,41 @@ bool ReadStringFromFile (const char* pathName, std::string& output)
 	return true;
 }
 
+static void InitializeOpenGL ()
+{	
+	GLint attributes[16];
+	int i = 0;
+	attributes[i++]=AGL_RGBA;
+	attributes[i++]=AGL_PIXEL_SIZE;
+	attributes[i++]=32;
+	attributes[i++]=AGL_NO_RECOVERY;
+	attributes[i++]=AGL_NONE;
+	
+	AGLPixelFormat pixelFormat = aglChoosePixelFormat(NULL,0,attributes);
+	AGLContext agl = aglCreateContext(pixelFormat, NULL);
+	aglSetCurrentContext (agl);
+}
+
+bool CheckGLSL (bool vertex, const char* source, FILE* fout)
+{
+	//GLhandleARB prog = glCreateProgramObjectARB ();
+	GLhandleARB shader = glCreateShaderObjectARB (vertex ? GL_VERTEX_SHADER_ARB : GL_FRAGMENT_SHADER_ARB);
+	glShaderSourceARB (shader, 1, &source, NULL);
+	glCompileShaderARB (shader);
+	GLint status;
+	glGetObjectParameterivARB (shader, GL_OBJECT_COMPILE_STATUS_ARB, &status);
+	if (status == 0)
+	{
+		char log[4096];
+		GLsizei logLength;
+		glGetInfoLogARB (shader, sizeof(log), &logLength, log);
+		fprintf (fout, "\n\n!!!! GLSL compile error: %s", log);
+		return false;
+	}
+	
+	return true;
+}
+
 
 int main (int argc, char * const argv[])
 {
@@ -47,6 +84,7 @@ int main (int argc, char * const argv[])
 	}
 	
 	Hlsl2Glsl_Initialize();
+	InitializeOpenGL ();
 	
 	bool vertex = !strcmp(argv[1],"v");
 	
@@ -74,6 +112,7 @@ int main (int argc, char * const argv[])
 		{
 			const char* text = Hlsl2Glsl_GetShader (translator, vertex ? EShLangVertex : EShLangFragment);
 			fprintf (fout, "%s", text);
+			CheckGLSL (vertex, text, fout);
 		}
 		else
 		{
