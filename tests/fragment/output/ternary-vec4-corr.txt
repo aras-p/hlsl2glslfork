@@ -11,8 +11,14 @@ vec4 xlat_lib_vecTSel (bvec4 a, vec4 b, vec4 c) {
 
 vec4 xlat_main( in vec4 uv );
 vec4 xlat_main( in vec4 uv ) {
+    vec4 a;
 
-    return xlat_lib_vecTSel (greaterThan( uv, vec4( 0.500000 )), vec4( 1.00000, 2.00000, 3.00000, 4.00000), vec4( 5.00000, 6.00000, 7.00000, 8.00000));
+    a = vec4( 0.00000);
+    a += xlat_lib_vecTSel (greaterThan( uv, vec4( 0.500000 )), vec4( 1.00000, 2.00000, 3.00000, 4.00000), vec4( 5.00000, 6.00000, 7.00000, 8.00000));
+    a += xlat_lib_vecTSel (greaterThan( uv, vec4( 0.500000, 0.500000, 0.500000, 0.500000)), vec4( 1.00000, 2.00000, 3.00000, 4.00000), vec4( 5.00000, 6.00000, 7.00000, 8.00000));
+    a += xlat_lib_vecTSel (greaterThan( uv, vec4( 0.500000 )), vec4( 1.00000, 1.00000, 1.00000, 1.00000), vec4( 2.00000, 2.00000, 2.00000, 2.00000));
+    a += xlat_lib_vecTSel (greaterThan( uv, vec4( 0.500000 )), vec4( 1.00000, 1.00000, 1.00000, 1.00000), vec4( 2.00000, 2.00000, 2.00000, 2.00000));
+    return a;
 }
 
 
@@ -23,5 +29,3 @@ void main() {
 
     gl_FragData[0] = vec4( xlat_retVal);
 }
-
-
