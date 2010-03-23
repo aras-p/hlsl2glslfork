@@ -17,3 +17,5 @@ Gen_hlslang_tab.cpp
 hlslang_tab.cpp
 hlslang.output
 hlslang_tab.h
+*-out.txt
+*.dSYM
