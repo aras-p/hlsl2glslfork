@@ -487,6 +487,9 @@ EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic 
 
 	if ( !_stricmp(curSemantic.c_str(), "position0"))
 		return EAttrSemPosition;
+	
+	if ( !_stricmp(curSemantic.c_str(), "vpos"))
+		return EAttrSemPosition;
 
 	if ( !_stricmp(curSemantic.c_str(), "normal"))
 		return EAttrSemNormal;
@@ -568,7 +571,7 @@ EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic 
 
 	if ( !_stricmp(curSemantic.c_str(), "depth"))
 		return EAttrSemDepth;
-
+	
 	return EAttrSemUnknown;
 }
 
