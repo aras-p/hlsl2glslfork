@@ -175,7 +175,7 @@ struct TParseContext
    TIntermTyped* addConstArrayNode(int index, TIntermTyped* node, TSourceLoc line);
    TIntermTyped* addConstStruct(TString& , TIntermTyped*, TSourceLoc);
    TIntermTyped* addAssign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
-   TIntermTyped* addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc, TSymbolTable&);
+   //TIntermTyped* addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc, TSymbolTable&);
    TIntermAggregate* mergeAggregates( TIntermAggregate *left, TIntermAggregate *right);
    bool arraySetMaxSize(TIntermSymbol*, TType*, int, bool, TSourceLoc);
    TOperator getConstructorOp( const TType&);

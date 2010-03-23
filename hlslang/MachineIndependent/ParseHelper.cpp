@@ -1653,6 +1653,7 @@ TIntermTyped* TParseContext::addAssign(TOperator op, TIntermTyped* left, TInterm
    return tNode;
 }
 
+/*
 TIntermTyped* TParseContext::addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc loc, TSymbolTable& tab)
 {
    TIntermTyped *tNode;
@@ -1687,6 +1688,7 @@ TIntermTyped* TParseContext::addBinaryMath(TOperator op, TIntermTyped* left, TIn
 
    return tNode;
 }
+ */
 
 // Function for constructor implementation. Calls addUnaryMath with appropriate EOp value
 // for the parameter to the constructor (passed to this function). Essentially, it converts
