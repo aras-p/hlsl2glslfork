@@ -92,7 +92,6 @@ protected:
 
 void IdentifyBuiltIns(EShLanguage, TSymbolTable&);
 void InitializeSupportCode( TString &support);
-char* GetPreprocessorBuiltinString();
 extern "C" int InitPreprocessor(void);
 extern "C" int FinalizePreprocessor(void);
 

@@ -675,10 +675,3 @@ void IdentifyBuiltIns(EShLanguage language, TSymbolTable& symbolTable)
    default: assert(false && "Language not supported");
    }
 }
-
-char* GetPreprocessorBuiltinString()
-{
-   static char *PreprocessorBuiltinString = "";
-
-   return PreprocessorBuiltinString;
-}
