@@ -419,7 +419,7 @@ bool TParseContext::lValueErrorCheck(int line, char* op, TIntermTyped* node)
       break;
    case EvqVaryingIn:      message = "can't modify a varying";      break;
    case EvqInput:          message = "can't modify an input";       break;
-   case EvqFace:           message = "can't modify gl_FrontFace";   break;
+   case EvqFace:           message = "can't modify gl_FrontFacing";   break;
    case EvqFragCoord:      message = "can't modify gl_FragCoord";   break;
    default:
 
@@ -1105,22 +1105,6 @@ bool TParseContext::paramErrorCheck(int line, TQualifier qualifier, TQualifier p
    return false;
 }
 
-bool TParseContext::extensionErrorCheck(int line, const char* extension)
-{
-   if (extensionBehavior[extension] == EBhWarn)
-   {
-      infoSink.info.message(EPrefixWarning, ("extension " + TString(extension) + " is being used").c_str(), line);
-      return false;
-   }
-   if (extensionBehavior[extension] == EBhDisable)
-   {
-      error(line, "extension", extension, "is disabled");
-      return true;
-   }
-
-   return false;
-}
-
 /////////////////////////////////////////////////////////////////////////////////
 //
 // Non-Errors.
@@ -1653,43 +1637,6 @@ TIntermTyped* TParseContext::addAssign(TOperator op, TIntermTyped* left, TInterm
    return tNode;
 }
 
-/*
-TIntermTyped* TParseContext::addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc loc, TSymbolTable& tab)
-{
-   TIntermTyped *tNode;
-
-
-   if ( (tNode = intermediate.addBinaryMath(op,left,right,loc,tab)) == 0)
-   {
-      //need to convert
-      TIntermTyped *tLeft, *tRight;
-
-      //first, determine which type is smaller, because we always reduce size
-      int size = min( left->getSize(), right->getSize());
-
-      //next, determine the type
-      TBasicType ebt;
-      if ( left->getBasicType() == EbtFloat || right->getBasicType() == EbtFloat)
-         ebt = EbtFloat;
-      else if ( left->getBasicType() == EbtInt || right->getBasicType() == EbtInt)
-         ebt = EbtInt;
-      else
-         ebt = EbtBool;
-
-      //now convert both
-      TType lType( ebt, EvqTemporary, size, left->isMatrix());
-      TType rType( ebt, EvqTemporary, size, right->isMatrix());
-
-      tLeft = constructBuiltIn( &lType, getConstructorOp(lType), left, loc, false);
-      tRight = constructBuiltIn( &rType, getConstructorOp(rType), right, loc, false);
-
-      tNode = intermediate.addBinaryMath(op, tLeft, tRight, loc, tab);
-   }
-
-   return tNode;
-}
- */
-
 // Function for constructor implementation. Calls addUnaryMath with appropriate EOp value
 // for the parameter to the constructor (passed to this function). Essentially, it converts
 // the parameter types correctly. If a constructor expects an int (like ivec2) and is passed a 
@@ -2050,17 +1997,6 @@ TIntermAggregate* TParseContext::mergeAggregates( TIntermAggregate *left, TInter
    }
 
    return node;
-}
-
-//
-// Initialize all supported extensions to disable
-//
-void TParseContext::initializeExtensionBehavior()
-{
-   //
-   // example code: extensionBehavior["test"] = EBhDisable; // where "test" is the name of 
-   // supported extension
-   // 
 }
 
 OS_TLSIndex GlobalParseContextIndex = OS_INVALID_TLS_INDEX;

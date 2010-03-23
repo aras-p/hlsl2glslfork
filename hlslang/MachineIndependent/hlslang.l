@@ -643,57 +643,6 @@ void ResetTString(void)
     ((TParseContext *)cpp->pC)->HashErrMsg = "";
 }
 
-TBehavior GetBehavior(const char* behavior)
-{
-    if (!strcmp("require", behavior))
-        return EBhRequire;
-    else if (!strcmp("enable", behavior))
-        return EBhEnable;
-    else if (!strcmp("disable", behavior))
-        return EBhDisable;
-    else if (!strcmp("warn", behavior))
-        return EBhWarn;
-    else {
-        CPPShInfoLogMsg((TString("behavior '") + behavior + "' is not supported").c_str());
-        return EBhDisable;
-    }        
-}
-
-void  updateExtensionBehavior(const char* extName, const char* behavior)
-{
-    TBehavior behaviorVal = GetBehavior(behavior);
-    TMap<TString, TBehavior>:: iterator iter;
-    TString msg;
-    
-    // special cased for all extension
-    if (!strcmp(extName, "all")) {
-        if (behaviorVal == EBhRequire || behaviorVal == EBhEnable) {
-            CPPShInfoLogMsg("extension 'all' cannot have 'require' or 'enable' behavior");  
-            return;
-        } else {
-            for (iter =  ((TParseContext *)cpp->pC)->extensionBehavior.begin(); iter != ((TParseContext *)cpp->pC)->extensionBehavior.end(); ++iter)
-                iter->second = behaviorVal;
-        }        
-    } else {
-        iter = ((TParseContext *)cpp->pC)->extensionBehavior.find(TString(extName));
-        if (iter == ((TParseContext *)cpp->pC)->extensionBehavior.end()) {
-            switch (behaviorVal) {
-            case EBhRequire:
-                CPPShInfoLogMsg((TString("extension '") + extName + "' is not supported").c_str());  
-                break;
-            case EBhEnable:
-            case EBhWarn:
-            case EBhDisable:
-                msg = TString("extension '") + extName + "' is not supported";
-                ((TParseContext *)cpp->pC)->infoSink.info.message(EPrefixWarning, msg.c_str(), lexlineno); 
-                break;
-            }
-            return;
-        } else
-            iter->second = behaviorVal;
-    }
-}
-        
 }  // extern "C"
 
 void setInitialState()

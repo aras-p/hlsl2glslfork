@@ -148,7 +148,6 @@ void  SetStringNumber(int);                 // Set string number.
 int   GetLineNumber(void);                  // Get the current String Number. 
 int   GetStringNumber(void);                // Get the current String Number. 
 const char* GetStrfromTStr(void);           // Convert TString to String.  
-void  updateExtensionBehavior(const char* extName, const char* behavior);
 int   FreeCPP(void);
 
 #endif // !(defined(__CPP_H)

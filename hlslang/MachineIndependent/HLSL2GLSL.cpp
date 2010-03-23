@@ -398,7 +398,6 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
    GenerateBuiltInSymbolTable(compiler->infoSink, &symbolTable, compiler->getLanguage());
 
    TParseContext parseContext(symbolTable, intermediate, compiler->getLanguage(), compiler->infoSink);
-   parseContext.initializeExtensionBehavior();
 
    GlobalParseContext = &parseContext;
 

@@ -761,7 +761,7 @@ static int CPPextension(yystypepp * yylvalpp)
         return token;
     }
 
-    updateExtensionBehavior(extensionName, GetAtomString(atable, yylvalpp->sc_ident));
+    //updateExtensionBehavior(extensionName, GetAtomString(atable, yylvalpp->sc_ident));
 
     token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
 	if (token == '\n'){
