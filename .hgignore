@@ -17,6 +17,6 @@ Gen_hlslang_tab.cpp
 hlslang_tab.cpp
 hlslang.output
 hlslang_tab.h
-*-out.txt
+tests/out-*.txt
 *.dSYM
 tests/hlsl2glsltest/hlsl2glsltest
