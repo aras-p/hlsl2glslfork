@@ -304,6 +304,10 @@ postfix_expression
         $$ = $1;
     } 
     | postfix_expression LEFT_BRACKET integer_expression RIGHT_BRACKET {
+        if (!$1) {
+            parseContext.error($2.line, " left of '[' is null ", "expression", "");
+            YYERROR;
+        }
         if (!$1->isArray() && !$1->isMatrix() && !$1->isVector()) {
             if ($1->getAsSymbolNode())
                 parseContext.error($2.line, " left of '[' is not of type array, matrix, or vector ", $1->getAsSymbolNode()->getSymbol().c_str(), "");
