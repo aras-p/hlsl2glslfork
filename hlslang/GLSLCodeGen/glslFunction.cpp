@@ -155,7 +155,7 @@ void GlslFunction::addParameter( GlslSymbol *sym )
    sym->setIsParameter(true);
 
    //mangle the name to avoid conflicts
-   while ( symbolNameMap.find(sym->getName()) != symbolNameMap.end())
+   while ( symbolNameMap.size() > 0 && symbolNameMap.find(sym->getName()) != symbolNameMap.end() )
    {
       sym->mangleName();
    }
