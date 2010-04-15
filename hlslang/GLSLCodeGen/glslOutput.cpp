@@ -950,6 +950,12 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    case EOpDPdx:           setupUnaryBuiltInFuncCall ( "dFdx", node, op, funcStyle, prefix, goit ); break;
    case EOpDPdy:           setupUnaryBuiltInFuncCall ( "dFdy", node, op, funcStyle, prefix, goit ); break;
    case EOpFwidth:         setupUnaryBuiltInFuncCall ( "fwidth", node, op, funcStyle, prefix, goit ); break;
+   case EOpFclip:		   
+	  current->addLibFunction(EOpFclip);
+      op = "xlat_lib_clip";
+      funcStyle = true;
+      prefix = true;
+      break;    
 
    case EOpAny:            op = "any";  funcStyle = true; prefix = true; break;
    case EOpAll:            op = "all";  funcStyle = true; prefix = true; break;

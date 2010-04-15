@@ -266,7 +266,8 @@ bool OutputUnary(bool, /* preVisit */ TIntermUnary* node, TIntermTraverser* it)
    case EOpNormalize:      out.debug << "normalize";            break;
    case EOpDPdx:           out.debug << "dPdx";                 break;               
    case EOpDPdy:           out.debug << "dPdy";                 break;   
-   case EOpFwidth:         out.debug << "fwidth";               break;                   
+   case EOpFwidth:         out.debug << "fwidth";               break;   
+   case EOpFclip:           out.debug << "clip";               break; 
 
    case EOpAny:            out.debug << "any";                  break;
    case EOpAll:            out.debug << "all";                  break;

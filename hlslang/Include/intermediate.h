@@ -203,6 +203,7 @@ enum TOperator
    EOpDPdx,            // Fragment only
    EOpDPdy,            // Fragment only
    EOpFwidth,          // Fragment only
+   EOpFclip,		   // Framgent only
 
    //Added for HLSL support
    EOpTex1D,

@@ -333,6 +333,11 @@ void initializeHLSLSupportLibrary()
       "  return mat4( fwidth(m[0]), fwidth(m[1]), fwidth(m[2]), fwidth(m[3]));\n"
       "}\n\n")
       );
+   hlslSupportLib->insert( CodeMap::value_type( EOpFclip,
+	   "void xlat_lib_clip(float x) {\n"
+	   "  if ( x<0.0 ) discard;\n"
+	   "}\n")
+	   );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpPow,
       "mat2 xlat_lib_pow(mat2 m, mat2 y) {\n"

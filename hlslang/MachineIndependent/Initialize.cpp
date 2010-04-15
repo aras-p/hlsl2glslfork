@@ -558,7 +558,7 @@ void TBuiltIns::initialize()
       // Special HLSL functions
       //
       s.append(TString("int4 D3DCOLORtoUBYTE4(float4 x);"));
-
+	  s.append(TString("void clip(float x);"));
 
       s.append(TString("\n"));
    }
@@ -669,6 +669,7 @@ void IdentifyBuiltIns(EShLanguage language, TSymbolTable& symbolTable)
       symbolTable.relateToOperator("ddx",          EOpDPdx); // HLSL version
       symbolTable.relateToOperator("ddy",          EOpDPdy); // HLSL version
       symbolTable.relateToOperator("fwidth",       EOpFwidth);
+	  symbolTable.relateToOperator("clip",         EOpFclip);
 
       break;
 
