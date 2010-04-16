@@ -125,16 +125,6 @@
 		3AC10EAD0AF109530045E29C /* tokens.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = tokens.c; path = hlslang/MachineIndependent/preprocessor/tokens.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFrameworksBuildPhase section */
-		2B951C971135194700DBAF46 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXFrameworksBuildPhase section */
-
 /* Begin PBXGroup section */
 		034768DDFF38A45A11DB9C8B /* Products */ = {
 			isa = PBXGroup;
@@ -344,25 +334,13 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		2B951C951135194700DBAF46 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
 		2B951C981135194700DBAF46 /* hlsl2glsl */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2B951C9C1135196500DBAF46 /* Build configuration list for PBXNativeTarget "hlsl2glsl" */;
 			buildPhases = (
 				2B951CEB1135284C00DBAF46 /* Generate LexerParser */,
-				2B951C951135194700DBAF46 /* Headers */,
 				2B951C961135194700DBAF46 /* Sources */,
-				2B951C971135194700DBAF46 /* Frameworks */,
 			);
 			buildRules = (
 			);
@@ -398,9 +376,14 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/hlslang/MachineIndependent/hlslang.l",
+				"$(SRCROOT)/hlslang/MachineIndependent/hlslang.y",
 			);
 			name = "Generate LexerParser";
 			outputPaths = (
+				"$(SRCROOT)/hlslang/MachineIndependent/gen_hlslang.cpp",
+				"$(SRCROOT)/hlslang/MachineIndependent/hlslang_tab.cpp",
+				"$(SRCROOT)/hlslang/MachineIndependent/hlslang_tab.h",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
