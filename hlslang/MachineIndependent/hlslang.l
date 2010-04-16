@@ -608,7 +608,9 @@ void HandlePragma(const char **tokens, int numTokens)
             if (iter != pragmaTable.end()) {
                 iter->second = tokens[2];
             } else {
-                pragmaTable[tokens[0]] = tokens[2];
+				// NOTE: some flex versions (2.5.33) get confused by two closing square brackets,
+				// so we put a space in between
+                pragmaTable[tokens[0] ] = tokens[2];
             }        
         } else if (numTokens >= 2) {
             TPragmaTable& pragmaTable = ((TParseContext *)cpp->pC)->contextPragma.pragmaTable;
@@ -617,7 +619,9 @@ void HandlePragma(const char **tokens, int numTokens)
             if (iter != pragmaTable.end()) {
                 iter->second = tokens[1];
             } else {
-                pragmaTable[tokens[0]] = tokens[1];
+				// NOTE: some flex versions (2.5.33) get confused by two closing square brackets,
+				// so we put a space in between
+                pragmaTable[tokens[0] ] = tokens[1];
             }
         }
 #endif // PRAGMA_TABLE
