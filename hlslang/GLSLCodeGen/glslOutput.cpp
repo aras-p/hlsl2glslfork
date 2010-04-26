@@ -1054,7 +1054,7 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 			current->endBlock();
 		}
 	}
-	else if (node->isVector())
+	else if (node->isVector() && node->getCondition()->getAsTyped()->isVector())
 	{
 		// ?: selection on vectors, e.g. bvec4 ? vec4 : vec4
 		// emulate HLSL's component-wise selection here
