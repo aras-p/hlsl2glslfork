@@ -14,11 +14,18 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2B476BF11185655400AE5D98 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2BDE31671158FB3600CCC6A3 /* hlslang.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2B951C981135194700DBAF46 /* hlsl2glsl */;
+			remoteInfo = hlsl2glsl;
+		};
 		2BDE316B1158FB3600CCC6A3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2BDE31671158FB3600CCC6A3 /* hlslang.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 2B951C991135194700DBAF46 /* libhlsl2glsl.a */;
+			remoteGlobalIDString = 2B951C991135194700DBAF46;
 			remoteInfo = hlsl2glsl;
 		};
 /* End PBXContainerItemProxy section */
@@ -107,6 +114,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				2B476BF21185655400AE5D98 /* PBXTargetDependency */,
 			);
 			name = hlsl2glsltest;
 			productInstallPath = "$(HOME)/bin";
@@ -157,6 +165,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2B476BF21185655400AE5D98 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = hlsl2glsl;
+			targetProxy = 2B476BF11185655400AE5D98 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1DEB923208733DC60010E9CD /* Debug */ = {
