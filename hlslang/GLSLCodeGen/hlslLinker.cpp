@@ -52,6 +52,7 @@
 
 #include "hlslSupportLib.h"
 #include "osinclude.h"
+#include <algorithm>
 
 // String table that maps attribute semantics to built-in GLSL attributes
 static const char attribString[EAttrSemCount][32] = {
@@ -588,7 +589,7 @@ EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic 
 /// \return
 ///   True if all functions are found in the funcList, false otherwise.
 //=========================================================================================================
-bool HlslLinker::addCalledFunctions( GlslFunction *func, std::set<GlslFunction*> &funcSet, std::vector<GlslFunction*> &funcList )
+bool HlslLinker::addCalledFunctions( GlslFunction *func, FunctionSet& funcSet, std::vector<GlslFunction*> &funcList )
 {
 	const std::set<std::string> &cf = func->getCalledFunctions();
 
@@ -611,12 +612,40 @@ bool HlslLinker::addCalledFunctions( GlslFunction *func, std::set<GlslFunction*>
 			return false;
 		}
 
-		//add the function and recurse
-		funcSet.insert(*it);
+		//add the function (if it's not there already) and recurse
+		if (std::find (funcSet.begin(), funcSet.end(), *it) == funcSet.end())
+			funcSet.push_back (*it);
 		addCalledFunctions( *it, funcSet, funcList); 
 	}
 
 	return true;
+}
+
+typedef std::vector<GlslFunction*> FunctionSet;
+
+static void EmitCalledFunctions (std::stringstream& shader, const FunctionSet& functions, bool comments)
+{
+	if (functions.empty())
+		return;
+
+	if (comments)
+		shader << "\n//\n// Function declarations\n//\n\n";
+
+	for (FunctionSet::const_reverse_iterator fit = functions.rbegin(); fit != functions.rend(); fit++) // emit backwards, will put least used ones in front
+	{
+		shader << (*fit)->getPrototype() << ";\n";
+	}
+
+	if (comments)
+		shader << "\n//\n// Function definitions\n//\n\n";
+
+	for (FunctionSet::const_reverse_iterator fit = functions.rbegin(); fit != functions.rend(); fit++) // emit backwards, will put least used ones in front
+	{
+		shader << (*fit)->getPrototype() << " {\n";
+		shader << (*fit)->getLocalDecls(1) << "\n";
+		shader << (*fit)->getCode() << "\n"; //has embedded }
+		shader << "\n";
+	}
 }
 
 //=========================================================================================================
@@ -636,7 +665,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	std::vector<GlslFunction*> functionList;
 	GlslFunction *vertMain = 0;
 	GlslFunction *fragMain = 0;
-	std::set<GlslFunction*> calledFunctions[2];
+	FunctionSet calledFunctions[2];
 	std::set<TOperator> libFunctions[2];
 	std::map<std::string,GlslSymbol*> globalSymMap[2];
 	std::map<std::string,GlslStruct*> structMap[2];
@@ -714,7 +743,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	//add all the vertex functions to the list
 	if (vertEntryFunc)
 	{
-		calledFunctions[0].insert( vertMain);
+		calledFunctions[0].push_back( vertMain);
 
 		if ( !addCalledFunctions( vertMain, calledFunctions[0], functionList))
 		{
@@ -725,7 +754,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	//add all the fragment functions to the list
 	if (fragEntryFunc)
 	{
-		calledFunctions[1].insert( fragMain);
+		calledFunctions[1].push_back( fragMain);
 
 		if ( !addCalledFunctions( fragMain, calledFunctions[1], functionList))
 		{
@@ -738,7 +767,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	// withing a single compilation unit has been performed)
 	for (int ii=0; ii<2; ii++)
 	{
-		for (std::set<GlslFunction*>::iterator it=calledFunctions[ii].begin(); it != calledFunctions[ii].end(); it++)
+		for (FunctionSet::iterator it=calledFunctions[ii].begin(); it != calledFunctions[ii].end(); it++)
 		{
 			//get each symbol and each structure, and add them to the map
 			// checking that any previous entries are equivalent
@@ -872,49 +901,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	//
 	// Write function declarations and definitions
 	//
-	if ( calledFunctions[0].size() > 0 )
-	{
-		if (comments)
-			vertShader << "\n//\n// Function declarations\n//\n\n";
-
-		for (std::set<GlslFunction*>::iterator fit = calledFunctions[0].begin(); fit != calledFunctions[0].end(); fit++)
-		{
-			vertShader << (*fit)->getPrototype() << ";\n";
-		}
-
-		if (comments)
-			vertShader << "\n//\n// Function definitions\n//\n\n";
-
-		for (std::set<GlslFunction*>::iterator fit = calledFunctions[0].begin(); fit != calledFunctions[0].end(); fit++)
-		{
-			vertShader << (*fit)->getPrototype() << " {\n";
-			vertShader << (*fit)->getLocalDecls(1) << "\n";
-			vertShader << (*fit)->getCode() << "\n"; //has embedded }
-			vertShader << "\n";
-		}
-	}
-
-	if ( calledFunctions[1].size() > 0 )
-	{
-		if (comments)
-			fragShader << "\n//\n// Function declarations\n//\n\n";
-
-		for (std::set<GlslFunction*>::iterator fit = calledFunctions[1].begin(); fit != calledFunctions[1].end(); fit++)
-		{
-			fragShader << (*fit)->getPrototype() << ";\n";
-		}
-
-		if (comments)
-			fragShader << "\n//\n// Function definitions\n//\n\n";
-
-		for (std::set<GlslFunction*>::iterator fit = calledFunctions[1].begin(); fit != calledFunctions[1].end(); fit++)
-		{
-			fragShader << (*fit)->getPrototype() << " {\n";
-			fragShader << (*fit)->getLocalDecls(1) << "\n";
-			fragShader << (*fit)->getCode() << "\n"; //has embedded closing brace
-			fragShader << "\n";
-		}
-	}
+	EmitCalledFunctions (vertShader, calledFunctions[0], comments);
+	EmitCalledFunctions (fragShader, calledFunctions[1], comments);
 
 	// 
 	// Gather the uniforms into the uniform list
@@ -1024,7 +1012,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		// Write all mutable initializations
 		if ( calledFunctions[0].size() > 0 )
 		{
-			for (std::set<GlslFunction*>::iterator fit = calledFunctions[0].begin(); fit != calledFunctions[0].end(); fit++)
+			for (FunctionSet::iterator fit = calledFunctions[0].begin(); fit != calledFunctions[0].end(); fit++)
 			{
 				std::string mutableDecls = (*fit)->getMutableDecls(1, calledFunctions[0].begin(), fit);
 
@@ -1445,7 +1433,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		// Write all mutable initializations
 		if ( calledFunctions[1].size() > 0 )
 		{
-			for (std::set<GlslFunction*>::iterator fit = calledFunctions[1].begin(); fit != calledFunctions[1].end(); fit++)
+			for (FunctionSet::iterator fit = calledFunctions[1].begin(); fit != calledFunctions[1].end(); fit++)
 			{
 				std::string mutableDecls = (*fit)->getMutableDecls(1, calledFunctions[1].begin(), fit);
 

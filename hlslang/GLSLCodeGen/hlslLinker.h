@@ -164,10 +164,12 @@ public:
    int debugOptions;
 
 protected:
+	typedef std::vector<GlslFunction*> FunctionSet;
+
    //=========================================================================================================
    /// Add the functions called by a function to the function set
    //=========================================================================================================   
-   bool addCalledFunctions( GlslFunction *func, std::set<GlslFunction*> &funcSet, std::vector<GlslFunction*> &funcList);
+   bool addCalledFunctions( GlslFunction *func, FunctionSet& funcSet, std::vector<GlslFunction*> &funcList);
 
 
    //=========================================================================================================

@@ -272,8 +272,8 @@ std::string GlslFunction::getLocalDecls( int indentLevel )
 /// \return
 ///     As a string, local declarations of the function
 //=========================================================================================================
-std::string GlslFunction::getMutableDecls( int indentLevel, std::set<GlslFunction*>::iterator funcBegin, 
-                                           std::set<GlslFunction*>::iterator funcEnd  )
+std::string GlslFunction::getMutableDecls( int indentLevel, std::vector<GlslFunction*>::iterator funcBegin, 
+                                           std::vector<GlslFunction*>::iterator funcEnd  )
 {
    std::stringstream out;
    int oldDepth;
@@ -297,7 +297,7 @@ std::string GlslFunction::getMutableDecls( int indentLevel, std::set<GlslFunctio
 
          // Check the set of already processed functions to see if the mutable was already
          // written out
-         std::set<GlslFunction*>::iterator fit = funcBegin;
+         std::vector<GlslFunction*>::iterator fit = funcBegin;
          while ( fit != funcEnd && bMutableAlreadyProcessed == false)
          {
             std::vector<GlslSymbol*> funcSymbols = (*fit)->getSymbols();

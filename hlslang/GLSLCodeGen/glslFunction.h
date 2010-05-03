@@ -103,8 +103,8 @@ public:
    /// Returns, as a string, the mutable declarations in the function.  Takes a set of other functions to
    /// check whether the mutable has already been declared.
    //=========================================================================================================   
-   std::string getMutableDecls( int indentLevel, std::set<GlslFunction*>::iterator funcBegin, 
-                                                 std::set<GlslFunction*>::iterator funcEnd );
+   std::string getMutableDecls( int indentLevel, std::vector<GlslFunction*>::iterator funcBegin, 
+                                                 std::vector<GlslFunction*>::iterator funcEnd );
 
    //=========================================================================================================
    /// Returns the active scope
