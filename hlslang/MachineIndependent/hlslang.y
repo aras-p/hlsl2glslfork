@@ -383,7 +383,11 @@ postfix_expression
     | function_call {
         $$ = $1;
     }
-    | postfix_expression DOT FIELD_SELECTION {        
+    | postfix_expression DOT FIELD_SELECTION {      
+		if (!$1) {
+            parseContext.error($3.line, "field selection on null object", ".", "");
+            YYERROR;
+		}  
         if ($1->isArray()) {
             parseContext.error($3.line, "cannot apply dot operator to an array", ".", "");
             parseContext.recover();
