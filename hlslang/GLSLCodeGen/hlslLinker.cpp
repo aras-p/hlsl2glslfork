@@ -1754,6 +1754,22 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 }
 
 
+static std::string CleanupShaderText (const std::string& str)
+{
+	std::string res;
+	size_t n = str.size();
+	res.reserve (n);
+	for (size_t i = 0; i < n; ++i)
+	{
+		char c = str[i];
+		if (c == '\n' && i!=0 && str[i-1] == '\n')
+			continue;
+		res.push_back (c);
+	}
+	return res;
+}
+
+
 //=========================================================================================================
 /// Interface to retreive the output GLSL shader text
 /// \param lan
@@ -1764,12 +1780,12 @@ const char* HlslLinker::getShaderText( EShLanguage lang ) const
 {
 	if ( lang == EShLangVertex) 
 	{
-		bs = vertShader.str();
+		bs = CleanupShaderText (vertShader.str());
 		return bs.c_str();
 	}
 	else if ( lang == EShLangFragment) 
 	{
-		bs = fragShader.str();
+		bs = CleanupShaderText (fragShader.str());
 		return bs.c_str();
 	}
 	else
