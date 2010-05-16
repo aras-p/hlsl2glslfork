@@ -87,15 +87,3 @@ void DeleteLinker(TShHandleBase* linker)
 {
     delete linker;
 }
-
-
-
-TShHandleBase* ConstructBindings()
-{
-    return 0;
-}
-
-void DeleteBindingList(TShHandleBase* bindingList)
-{
-    delete bindingList;
-}

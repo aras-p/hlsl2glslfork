@@ -83,17 +83,8 @@ enum TPrefixType
    EPrefixWarning,
    EPrefixError,
    EPrefixInternalError,
-   EPrefixUnimplemented,
-   EPrefixNote
 };
 
-enum TOutputStream
-{
-   ENull = 0,
-   EDebugger = 0x01,
-   EStdOut = 0x02,
-   EString = 0x04,
-};
 //
 // Encapsulate info logs for all objects that have them.
 //
@@ -103,7 +94,7 @@ enum TOutputStream
 class TInfoSinkBase
 {
 public:
-   TInfoSinkBase() : outputStream(4)
+   TInfoSinkBase()
    {
    }
    void erase()
@@ -166,8 +157,6 @@ public:
       case EPrefixWarning:       append("WARNING: ");        break;
       case EPrefixError:         append("ERROR: ");          break;
       case EPrefixInternalError: append("INTERNAL ERROR: "); break;
-      case EPrefixUnimplemented: append("UNIMPLEMENTED: ");  break;
-      case EPrefixNote:          append("NOTE: ");           break;
       default:                   append("UNKOWN ERROR: ");   break;
       }
    }
@@ -190,11 +179,6 @@ public:
       append("\n");
    }
 
-   void setOutputStream(int output = 4)
-   {
-      outputStream = output;
-   }
-
 protected:
    void append(const char *s); 
 
@@ -209,7 +193,6 @@ protected:
    }
    void appendToStream(const char* s);
    TPersistString sink;
-   int outputStream;
 };
 
 class TInfoSink

@@ -171,13 +171,6 @@ public:
    }
 };
 
-// This is called TStlSet, because TSet is taken by an existing compiler class.
-template <class T, class CMP> class TStlSet : public std::set<T, CMP, pool_allocator<T> >
-{
-   // No pool allocator versions of constructors in std::set.
-};
-
-
 template <class K, class D, class CMP = std::less<K> > 
 class TMap : public TBaseMap<K, D, CMP, pool_allocator<std::pair<K, D> > >
 {
