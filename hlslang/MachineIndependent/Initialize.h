@@ -91,7 +91,6 @@ protected:
 };
 
 void IdentifyBuiltIns(EShLanguage, TSymbolTable&);
-void InitializeSupportCode( TString &support);
 extern "C" int InitPreprocessor(void);
 extern "C" int FinalizePreprocessor(void);
 

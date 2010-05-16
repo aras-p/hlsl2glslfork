@@ -262,10 +262,6 @@
 				>
 			</File>
 			<File
-				RelativePath="hlslang\MachineIndependent\MMap.h"
-				>
-			</File>
-			<File
 				RelativePath="hlslang\MachineIndependent\parseConst.cpp"
 				>
 			</File>
