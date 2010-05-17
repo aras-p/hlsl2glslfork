@@ -149,7 +149,7 @@ public:
    virtual TLinker* getAsLinker() { return this; }
    virtual const TLinker* getAsLinker() const { return this; }
    virtual ~TLinker() { }
-   virtual bool link(THandleList&, const char*, const char*, bool comments) { return false; }
+   virtual bool link(THandleList&, const char*, const char*) { return false; }
    virtual bool setUserAttribName ( EAttribSemantic eSemantic, const char *pName ) = 0;
    virtual void setUseUserVaryings ( bool bUseUserVaryings ) = 0;
    virtual bool setShaderHeader ( bool bOutputShaderHeader, const char *shaderHeaderString ) = 0;   

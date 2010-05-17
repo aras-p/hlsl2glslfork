@@ -182,12 +182,6 @@ enum EAttribSemantic
 };
 
 
-typedef enum
-{
-	EFlagIncludeComments = (1<<0),
-} EFlags;
-
-
 //=========================================================================================================
 /// Uniform info struct
 //=========================================================================================================
@@ -324,8 +318,7 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle
                                                  const ShHandle parserHandles[],
                                                  const int numHandles,
                                                  const char* vertexEntry,
-                                                 const char* fragmentEntry,
-												 const int flags );
+                                                 const char* fragmentEntry );
 
 
 //=========================================================================================================

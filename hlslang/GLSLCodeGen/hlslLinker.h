@@ -114,7 +114,7 @@ public:
    //=========================================================================================================
    /// This function is the main function that initiates code generation for the shader.  
    //=========================================================================================================
-   bool link(THandleList&, const char* vertEntry, const char* fragEntry, bool comments);
+   bool link(THandleList&, const char* vertEntry, const char* fragEntry);
 
    //=========================================================================================================
    /// Strip the semantic string of any modifiers (e.g. _centroid)
