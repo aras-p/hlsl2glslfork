@@ -439,7 +439,9 @@
 			buildSettings = {
 				ARCHS = i386;
 				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = 4.0;
 				OBJROOT = build;
 				PREBINDING = NO;
@@ -452,6 +454,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = i386;
+				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				GCC_VERSION = 4.0;
 				OBJROOT = build;
 				PREBINDING = NO;
