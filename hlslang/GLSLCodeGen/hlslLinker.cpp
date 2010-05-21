@@ -156,6 +156,8 @@ static const char resultString[EAttrSemCount][32] = {
 	"",
 	"",
 	"",
+	"",
+	"",
 	"gl_FragDepth",
 	""
 };
