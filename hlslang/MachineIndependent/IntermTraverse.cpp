@@ -78,7 +78,7 @@
 // if preVisit is turned on and the type specific function
 // returns false.
 //
-// preVisit, postVisit, and rightToLeft control what order
+// preVisit, postVisit control what order
 // nodes are visited in.
 //
 
@@ -116,20 +116,10 @@ void TIntermBinary::traverse(TIntermTraverser* it)
    if (visit)
    {
       ++it->depth;
-      if (it->rightToLeft)
-      {
-         if (right)
-            right->traverse(it);
-         if (left)
-            left->traverse(it);
-      }
-      else
-      {
-         if (left)
-            left->traverse(it);
-         if (right)
-            right->traverse(it);
-      }
+      if (left)
+         left->traverse(it);
+      if (right)
+         right->traverse(it);
       --it->depth;
    }
 
@@ -177,20 +167,8 @@ void TIntermAggregate::traverse(TIntermTraverser* it)
       ++it->depth;
 
       TIntermSequence::iterator sit;
-      if (it->rightToLeft)
-      {
-         sit = sequence.end();
-         while (sit != sequence.begin())
-         {
-            --sit;
-            (*sit)->traverse(it);
-         }
-      }
-      else
-      {
-         for (sit = sequence.begin(); sit != sequence.end(); ++sit)
-            (*sit)->traverse(it);
-      }
+      for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+         (*sit)->traverse(it);
 
       --it->depth;
    }
@@ -212,22 +190,11 @@ void TIntermSelection::traverse(TIntermTraverser* it)
    if (visit)
    {
       ++it->depth;
-      if (it->rightToLeft)
-      {
-         if (falseBlock)
-            falseBlock->traverse(it);
-         if (trueBlock)
-            trueBlock->traverse(it);
-         condition->traverse(it);
-      }
-      else
-      {
-         condition->traverse(it);
-         if (trueBlock)
-            trueBlock->traverse(it);
-         if (falseBlock)
-            falseBlock->traverse(it);
-      }
+      condition->traverse(it);
+      if (trueBlock)
+         trueBlock->traverse(it);
+      if (falseBlock)
+         falseBlock->traverse(it);
       --it->depth;
    }
 
@@ -248,24 +215,12 @@ void TIntermLoop::traverse(TIntermTraverser* it)
    if (visit)
    {
       ++it->depth;
-      if (it->rightToLeft)
-      {
-         if (terminal)
-            terminal->traverse(it);
-         if (body)
-            body->traverse(it);
-         if (test)
-            test->traverse(it);
-      }
-      else
-      {
-         if (test)
-            test->traverse(it);
-         if (body)
-            body->traverse(it);
-         if (terminal)
-            terminal->traverse(it);
-      }
+      if (test)
+         test->traverse(it);
+      if (body)
+         body->traverse(it);
+      if (terminal)
+         terminal->traverse(it);
       --it->depth;
    }
 

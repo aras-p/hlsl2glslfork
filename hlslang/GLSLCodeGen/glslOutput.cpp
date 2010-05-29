@@ -274,26 +274,13 @@ void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTrav
 
    out << name << "( ";
 
-   if (goit->rightToLeft)
-   {
-      sit = sequence.end();
-      while (sit != sequence.begin())
-      {
-         if (sit !=sequence.end())
-            out << ", ";
-         --sit;
-         (*sit)->traverse(goit);
-      }
-   }
-   else
-   {
-      for (sit = sequence.begin(); sit != sequence.end(); ++sit)
-      {
-         if (sit !=sequence.begin())
-            out << ", ";
-         (*sit)->traverse(goit);
-      }
-   }
+	for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+	{
+		if (sit !=sequence.begin())
+			out << ", ";
+		(*sit)->traverse(goit);
+	}
+	
    out << ")";
 }
 
@@ -1122,49 +1109,22 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       {
          TIntermSequence::iterator sit;
          TIntermSequence &sequence = node->getSequence(); 
-         if (it->rightToLeft)
-         {
-            sit = sequence.end();
-            while (sit != sequence.begin())
-            {
-               --sit;
-               //current->indent();
-               (*sit)->traverse(it);
-               //out << ";\n";
-               current->endStatement();
-            }
-         }
-         else
-         {
-            for (sit = sequence.begin(); sit != sequence.end(); ++sit)
-            {
-               //current->indent();
-               (*sit)->traverse(it);
-               //out << ";\n";
-               current->endStatement();
-            }
-         }
+		 for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+		 {
+		   //current->indent();
+		   (*sit)->traverse(it);
+		   //out << ";\n";
+		   current->endStatement();
+		 }
       }
       else
       {
          TIntermSequence::iterator sit;
          TIntermSequence &sequence = node->getSequence(); 
-         if (it->rightToLeft)
-         {
-            sit = sequence.end();
-            while (sit != sequence.begin())
-            {
-               --sit;
-               (*sit)->traverse(it);
-            }
-         }
-         else
-         {
-            for (sit = sequence.begin(); sit != sequence.end(); ++sit)
-            {
-               (*sit)->traverse(it);
-            }
-         }
+		  for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+		  {
+		    (*sit)->traverse(it);
+		  }
       }
 
       return false;
@@ -1183,22 +1143,10 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
          goit->current->beginBlock( false);
          TIntermSequence::iterator sit;
          TIntermSequence &sequence = node->getSequence(); 
-         if (it->rightToLeft)
-         {
-            sit = sequence.end();
-            while (sit != sequence.begin())
-            {
-               --sit;
-               (*sit)->traverse(it);
-            }
-         }
-         else
-         {
-            for (sit = sequence.begin(); sit != sequence.end(); ++sit)
-            {
-               (*sit)->traverse(it);
-            }
-         }
+		 for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+		 {
+		   (*sit)->traverse(it);
+		 }
          goit->current->endBlock();
          goit->current = goit->global;
          return false;
@@ -1209,20 +1157,8 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       {
          TIntermSequence::iterator sit;
          TIntermSequence &sequence = node->getSequence(); 
-         if (it->rightToLeft)
-         {
-            sit = sequence.end();
-            while (sit != sequence.begin())
-            {
-               --sit;
-               (*sit)->traverse(it);
-            }
-         }
-         else
-         {
-            for (sit = sequence.begin(); sit != sequence.end(); ++sit)
-               (*sit)->traverse(it);
-         }
+		 for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+           (*sit)->traverse(it);
       }
       it->visitSymbol = traverseSymbol;
       return false;

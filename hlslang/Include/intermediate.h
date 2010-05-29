@@ -845,8 +845,7 @@ public:
       visitBranch(0),
       depth(0),
       preVisit(true),
-      postVisit(false),
-      rightToLeft(false)
+      postVisit(false)
    {
    }
 
@@ -862,7 +861,6 @@ public:
    int  depth;
    bool preVisit;
    bool postVisit;
-   bool rightToLeft;
 };
 
 #endif // __INTERMEDIATE_H
