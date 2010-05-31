@@ -504,6 +504,9 @@ TIntermAggregate* TIntermediate::setAggregateOperator(TIntermNode* node, TOperat
 //
 TIntermTyped* TIntermediate::addConversion(TOperator op, const TType& type, TIntermTyped* node)
 {
+	if (!node)
+		return 0;
+
    //
    // Does the base type allow operation?
    //
