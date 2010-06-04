@@ -491,13 +491,13 @@ void initializeHLSLSupportLibrary()
         "  return x * exp2 ( expon );\n"
         "}\n\n"
         "float2x2 xlat_lib_ldexp( mat2 x, mat2 expon) {\n"
-        "  return x * mat2 ( exp2 ( expon[0] ), exp2 ( expon[1] ) );\n"
+        "  return x * mat2( exp2 ( expon[0] ), exp2 ( expon[1] ) );\n"
         "}\n\n"
         "float3x3 xlat_lib_ldexp( mat3 x, mat3 expon) {\n"
-        "  return x * mat3 ( exp2 ( expon[0] ), exp2 ( expon[1] ), exp2 ( expon[2] ) );\n"
+        "  return x * mat3( exp2 ( expon[0] ), exp2 ( expon[1] ), exp2 ( expon[2] ) );\n"
         "}\n\n"
         "float4x4 xlat_lib_ldexp( mat4 x, mat4 expon) {\n"
-        "  return x * mat4 ( exp2 ( expon[0] ), exp2 ( expon[1] ), exp2 ( expon[2] ), exp2 ( expon[3] ) );\n"
+        "  return x * mat4( exp2 ( expon[0] ), exp2 ( expon[1] ), exp2 ( expon[2] ), exp2 ( expon[3] ) );\n"
         "}\n\n" )
         );
 
@@ -519,16 +519,16 @@ void initializeHLSLSupportLibrary()
         "  c = cos(x); \n"
         "}\n\n"        
         "void xlat_lib_sincos( mat2 x, out mat2 s, out mat2 c) {\n"
-        "  s = mat2 ( sin ( x[0] ), sin ( x[1] ) ); \n"
-        "  c = mat2 ( cos ( x[0] ), cos ( x[1] ) ); \n"
+        "  s = mat2( sin ( x[0] ), sin ( x[1] ) ); \n"
+        "  c = mat2( cos ( x[0] ), cos ( x[1] ) ); \n"
         "}\n\n"        
         "void xlat_lib_sincos( mat3 x, out mat3 s, out mat3 c) {\n"
-        "  s = mat3 ( sin ( x[0] ), sin ( x[1] ), sin ( x[2] ) ); \n"
-        "  c = mat3 ( cos ( x[0] ), cos ( x[1] ), cos ( x[2] ) ); \n"
+        "  s = mat3( sin ( x[0] ), sin ( x[1] ), sin ( x[2] ) ); \n"
+        "  c = mat3( cos ( x[0] ), cos ( x[1] ), cos ( x[2] ) ); \n"
         "}\n\n"        
         "void xlat_lib_sincos( mat4 x, out mat4 s, out mat4 c) {\n"
-        "  s = mat4 ( sin ( x[0] ), sin ( x[1] ), sin ( x[2] ), sin ( x[3] ) ); \n"
-        "  c = mat4 ( cos ( x[0] ), cos ( x[1] ), cos ( x[2] ), cos ( x[3] ) ); \n"
+        "  s = mat4( sin ( x[0] ), sin ( x[1] ), sin ( x[2] ), sin ( x[3] ) ); \n"
+        "  c = mat4( cos ( x[0] ), cos ( x[1] ), cos ( x[2] ), cos ( x[3] ) ); \n"
         "}\n\n" )
         );
    
@@ -558,37 +558,37 @@ void initializeHLSLSupportLibrary()
    
    hlslSupportLib->insert( CodeMap::value_type( EOpMix,
         "mat2 xlat_lib_mix( mat2 x, mat2 y, mat2 s ) {\n"
-        "  return mat2 ( mix(x[0],y[0],s[0]), mix(x[1],y[1],s[1]) ); \n"
+        "  return mat2( mix(x[0],y[0],s[0]), mix(x[1],y[1],s[1]) ); \n"
         "}\n\n"
         "mat3 xlat_lib_mix( mat3 x, mat3 y, mat3 s ) {\n"
-        "  return mat3 ( mix(x[0],y[0],s[0]), mix(x[1],y[1],s[1]), mix(x[2],y[2],s[2]) ); \n"
+        "  return mat3( mix(x[0],y[0],s[0]), mix(x[1],y[1],s[1]), mix(x[2],y[2],s[2]) ); \n"
         "}\n\n"
         "mat4 xlat_lib_mix( mat4 x, mat4 y, mat4 s ) {\n"
-        "  return mat4 ( mix(x[0],y[0],s[0]), mix(x[1],y[1],s[1]), mix(x[2],y[2],s[2]), mix(x[3],y[3],s[3]) ); \n"
+        "  return mat4( mix(x[0],y[0],s[0]), mix(x[1],y[1],s[1]), mix(x[2],y[2],s[2]), mix(x[3],y[3],s[3]) ); \n"
         "}\n\n")      
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpSmoothStep,
         "mat2 xlat_lib_smoothstep( mat2 x, mat2 y, mat2 s ) {\n"
-        "  return mat2 ( smoothstep(x[0],y[0],s[0]), smoothstep(x[1],y[1],s[1]) ); \n"
+        "  return mat2( smoothstep(x[0],y[0],s[0]), smoothstep(x[1],y[1],s[1]) ); \n"
         "}\n\n"
         "mat3 xlat_lib_smoothstep( mat3 x, mat3 y, mat3 s ) {\n"
-        "  return mat3 ( smoothstep(x[0],y[0],s[0]), smoothstep(x[1],y[1],s[1]), smoothstep(x[2],y[2],s[2]) ); \n"
+        "  return mat3( smoothstep(x[0],y[0],s[0]), smoothstep(x[1],y[1],s[1]), smoothstep(x[2],y[2],s[2]) ); \n"
         "}\n\n"
         "mat4 xlat_lib_smoothstep( mat4 x, mat4 y, mat4 s ) {\n"
-        "  return mat4 ( smoothstep(x[0],y[0],s[0]), smoothstep(x[1],y[1],s[1]), smoothstep(x[2],y[2],s[2]), smoothstep(x[3],y[3],s[3]) ); \n"
+        "  return mat4( smoothstep(x[0],y[0],s[0]), smoothstep(x[1],y[1],s[1]), smoothstep(x[2],y[2],s[2]), smoothstep(x[3],y[3],s[3]) ); \n"
         "}\n\n")
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpClamp,
         "mat2 xlat_lib_clamp( mat2 x, mat2 y, mat2 s ) {\n"
-        "  return mat2 ( clamp(x[0],y[0],s[0]), clamp(x[1],y[1],s[1]) ); \n"
+        "  return mat2( clamp(x[0],y[0],s[0]), clamp(x[1],y[1],s[1]) ); \n"
         "}\n\n"
         "mat3 xlat_lib_clamp( mat3 x, mat3 y, mat3 s ) {\n"
-        "  return mat3 ( clamp(x[0],y[0],s[0]), clamp(x[1],y[1],s[1]), clamp(x[2],y[2],s[2]) ); \n"
+        "  return mat3( clamp(x[0],y[0],s[0]), clamp(x[1],y[1],s[1]), clamp(x[2],y[2],s[2]) ); \n"
         "}\n\n"
         "mat4 xlat_lib_clamp( mat4 x, mat4 y, mat4 s ) {\n"
-        "  return mat4 ( clamp(x[0],y[0],s[0]), clamp(x[1],y[1],s[1]), clamp(x[2],y[2],s[2]), clamp(x[3],y[3],s[3]) ); \n"
+        "  return mat4( clamp(x[0],y[0],s[0]), clamp(x[1],y[1],s[1]), clamp(x[2],y[2],s[2]), clamp(x[3],y[3],s[3]) ); \n"
         "}\n\n")
         );
 
