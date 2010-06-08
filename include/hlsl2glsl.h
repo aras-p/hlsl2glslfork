@@ -400,24 +400,6 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_SetUserAttributeNames ( ShHandle handle,
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_UseUserVaryings ( ShHandle handle, 
                                                         bool bUseUserVaryings );
 
-//=========================================================================================================
-/// Sets a string to output at the header of the GLSL output that the translator produces.  This can be
-/// useful for example for generating OpenGL ES shaders where you want to prepend a string such as the 
-/// following to the shader:
-///   #ifdef GLES
-///      precision highp float;
-///   #endif
-/// \param handle
-///      Handle to the translator.  This should be called BEFORE calling Hlsl2Glsl_Translate
-/// \param bOutputShaderHeader 
-///      If true, the string specified by "precisionString" will be output at the top of the GLSL output
-/// \param shaderHeaderString
-///      The string to output at the top of the GLSL output
-/// \return
-///      1 on success, 0 on failure
-//=========================================================================================================
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_SetShaderHeader ( ShHandle handle, bool bOutputShaderHeader, 
-                                                        const char *shaderHeaderString );
 
 #ifdef __cplusplus
 }

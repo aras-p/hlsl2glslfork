@@ -152,7 +152,6 @@ public:
    virtual bool link(THandleList&, const char*, const char*) { return false; }
    virtual bool setUserAttribName ( EAttribSemantic eSemantic, const char *pName ) = 0;
    virtual void setUseUserVaryings ( bool bUseUserVaryings ) = 0;
-   virtual bool setShaderHeader ( bool bOutputShaderHeader, const char *shaderHeaderString ) = 0;   
    virtual ShBindingTable* getUniformBindings() const { return uniformBindings; }
    virtual const void* getObjectCode() const { return 0; } // a real compiler would be returning object code here
    virtual TInfoSink& getInfoSink()

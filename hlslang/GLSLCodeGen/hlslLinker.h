@@ -92,12 +92,6 @@ private:
    // For varyings, determines whether the linker attempts to use user or built-in varyings
    bool bUserVaryings;
 
-   // Determines whether the linker outputs a shader header to the GLSL stream
-   bool bOutputShaderHeader;
-
-   // Shade header string to output
-   std::string outputShaderHeaderString;
-
 
 public:
 
@@ -136,11 +130,6 @@ public:
    /// Enable the use of user-varyings rather than built-ins in the output code generation
    //=========================================================================================================   
    virtual void setUseUserVaryings ( bool bUseUserVaryings ) { bUserVaryings = bUseUserVaryings; }
-
-   //=========================================================================================================
-   /// Enable the the output of a shader header to the GLSL output stream.  
-   //=========================================================================================================   
-   virtual bool setShaderHeader ( bool bOutputShaderHeader, const char *shaderHeaderString ); 
 
    //=========================================================================================================
    /// Interface to retreive the output GLSL shader text

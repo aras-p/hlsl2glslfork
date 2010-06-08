@@ -180,9 +180,6 @@ HlslLinker::HlslLinker(int dOptions) : TLinker(infoSink), debugOptions(dOptions)
 
 	// By default, use GL build-in varyings
 	bUserVaryings = false;
-
-	// By default, do not output a shader header
-	bOutputShaderHeader = false;
 }
 
 //=========================================================================================================
@@ -430,21 +427,6 @@ bool HlslLinker::setUserAttribName ( EAttribSemantic eSemantic, const char *pNam
 
 	infoSink.info << "Semantic value " << eSemantic << " unknown \n";
 	return false;
-}
-
-//=========================================================================================================
-/// Enable the the output of a shader header to the GLSL output stream.  
-/// \param bOutputShaderHeader 
-///      If true, the string specified by "precisionString" will be output at the top of the GLSL output
-/// \param shaderHeaderString
-///      The string to output at the top of the GLSL output
-//=========================================================================================================   
-bool HlslLinker::setShaderHeader ( bool outputShaderHeader, const char *shaderHeaderString )
-{
-	bOutputShaderHeader = outputShaderHeader;
-	outputShaderHeaderString = shaderHeaderString;
-
-	return true;
 }
 
 
@@ -791,15 +773,6 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	// write them to the appropriate code stream. Finally, a main function is
 	// generated that calls the specified entrypoint. That main function uses
 	// semantics on the arguments and return values to connect items appropriately.
-
-	//
-	// Write shader header if one was provided
-	//
-	if ( bOutputShaderHeader )
-	{
-		vertShader << outputShaderHeaderString;
-		fragShader << outputShaderHeaderString;
-	}
 
 	//
 	// Write Library Functions
