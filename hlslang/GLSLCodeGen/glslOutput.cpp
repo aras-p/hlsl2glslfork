@@ -251,7 +251,7 @@ void writeComparison( const TString &compareOp, const TString &compareCall, TInt
 /// \param goit 
 ///    GLSL traverser
 /// \param bGenMatrix
-///    If true, this function will generate a call to the xlat_lib matrix version of the function if
+///    If true, this function will generate a call to the xll matrix version of the function if
 ///    the node is a matrix.
 //=========================================================================================================
 void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTraverser* goit, bool bGenMatrix = false )
@@ -267,7 +267,7 @@ void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTrav
    {
       if ( node->isMatrix () )
       {
-         out << "xlat_lib_";
+         out << "xll_";
          current->addLibFunction ( node->getOp() );
       }
    }      
@@ -285,8 +285,8 @@ void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTrav
 }
 
 //=========================================================================================================
-/// Helper function to output a imaru built-in function call.  If it is a matrix, generates the appropriate 
-/// xlat_lib function
+/// Helper function to output a unary built-in function call.  If it is a matrix, generates the appropriate 
+/// xll function
 /// \param name
 ///    Name of function to call
 /// \param node  
@@ -310,7 +310,7 @@ void setupUnaryBuiltInFuncCall( const TString &name, TIntermUnary *node, TString
    if ( node->isMatrix() )
    {
       current->addLibFunction( node->getOp() );
-      opStr = "xlat_lib_" + name;
+      opStr = "xll_" + name;
    }
    else
    {
@@ -939,7 +939,7 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    case EOpFwidth:         setupUnaryBuiltInFuncCall ( "fwidth", node, op, funcStyle, prefix, goit ); break;
    case EOpFclip:		   
 	  current->addLibFunction(EOpFclip);
-      op = "xlat_lib_clip";
+      op = "xll_clip";
       funcStyle = true;
       prefix = true;
       break;    
@@ -950,35 +950,35 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
       //these are HLSL specific and they map to the lib functions
    case EOpSaturate:
       current->addLibFunction(EOpSaturate);
-      op = "xlat_lib_saturate";
+      op = "xll_saturate";
       funcStyle = true;
       prefix = true;
       break;    
 
    case EOpTranspose:
       current->addLibFunction(EOpTranspose);
-      op = "xlat_lib_transpose";
+      op = "xll_transpose";
       funcStyle = true;
       prefix = true;
       break;
 
    case EOpDeterminant:
       current->addLibFunction(EOpDeterminant);
-      op = "xlat_lib_determinant";
+      op = "xll_determinant";
       funcStyle = true;
       prefix = true;
       break;
 
    case EOpLog10:        
       current->addLibFunction(EOpLog10);
-      op = "xlat_lib_log10";
+      op = "xll_log10";
       funcStyle = true;
       prefix = true;
       break;       
 
    case EOpD3DCOLORtoUBYTE4:
       current->addLibFunction(EOpD3DCOLORtoUBYTE4);
-      op = "xlat_lib_D3DCOLORtoUBYTE4";
+      op = "xll_D3DCOLORtoUBYTE4";
       funcStyle = true;
       prefix = true;
       break;
@@ -1046,7 +1046,7 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 		// ?: selection on vectors, e.g. bvec4 ? vec4 : vec4
 		// emulate HLSL's component-wise selection here
 		current->addLibFunction(EOpVecTernarySel);
-		out << "xlat_lib_vecTSel (";
+		out << "xll_vecTSel (";
 		node->getCondition()->traverse(goit);
 		out << ", ";
 		node->getTrueBlock()->traverse(goit);
@@ -1183,12 +1183,12 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpConstructMat2FromMat:
       current->addLibFunction(EOpConstructMat2FromMat);
-      writeFuncCall( "xlat_lib_constructMat2", node, goit);
+      writeFuncCall( "xll_constructMat2", node, goit);
       return false;
 
    case EOpConstructMat3FromMat:
       current->addLibFunction(EOpConstructMat3FromMat);
-      writeFuncCall( "xlat_lib_constructMat3", node, goit);
+      writeFuncCall( "xll_constructMat3", node, goit);
       return false;
 
    case EOpComma:
@@ -1256,7 +1256,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       else
       {
          current->addLibFunction(EOpTex1DGrad);
-         writeTex( "xlat_lib_tex1Dgrad", node, goit);
+         writeTex( "xll_tex1Dgrad", node, goit);
       }
       return false;
 
@@ -1266,17 +1266,17 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpTex1DLod:
       current->addLibFunction(EOpTex1DLod);
-      writeTex( "xlat_lib_tex1Dlod", node, goit); 
+      writeTex( "xll_tex1Dlod", node, goit); 
       return false;
 
    case EOpTex1DBias:
       current->addLibFunction(EOpTex1DBias);
-      writeTex( "xlat_lib_tex1Dbias", node, goit); 
+      writeTex( "xll_tex1Dbias", node, goit); 
       return false;
 
    case EOpTex1DGrad:     
       current->addLibFunction(EOpTex1DGrad);
-      writeTex( "xlat_lib_tex1Dgrad", node, goit); 
+      writeTex( "xll_tex1Dgrad", node, goit); 
       return false;
 
    case EOpTex2D:
@@ -1285,7 +1285,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       else
       {
          current->addLibFunction(EOpTex2DGrad);
-         writeTex( "xlat_lib_tex2Dgrad", node, goit);
+         writeTex( "xll_tex2Dgrad", node, goit);
       }
       return false;
 
@@ -1295,17 +1295,17 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpTex2DLod:      
       current->addLibFunction(EOpTex2DLod);
-      writeTex( "xlat_lib_tex2Dlod", node, goit); 
+      writeTex( "xll_tex2Dlod", node, goit); 
       return false;
 
    case EOpTex2DBias:  
       current->addLibFunction(EOpTex2DBias);
-      writeTex( "xlat_lib_tex2Dbias", node, goit); 
+      writeTex( "xll_tex2Dbias", node, goit); 
       return false;
 
    case EOpTex2DGrad:  
       current->addLibFunction(EOpTex2DGrad);
-      writeTex( "xlat_lib_tex2Dgrad", node, goit); 
+      writeTex( "xll_tex2Dgrad", node, goit); 
       return false;
 
    case EOpTex3D:
@@ -1314,7 +1314,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       else
       {
          current->addLibFunction(EOpTex3DGrad);
-         writeTex( "xlat_lib_tex3Dgrad", node, goit);            
+         writeTex( "xll_tex3Dgrad", node, goit);            
       }
       return false;
 
@@ -1324,17 +1324,17 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpTex3DLod:     
       current->addLibFunction(EOpTex3DLod);
-      writeTex( "xlat_lib_tex3Dlod", node, goit); 
+      writeTex( "xll_tex3Dlod", node, goit); 
       return false;
 
    case EOpTex3DBias:     
       current->addLibFunction(EOpTex3DBias);
-      writeTex( "xlat_lib_tex3Dbias", node, goit); 
+      writeTex( "xll_tex3Dbias", node, goit); 
       return false;
 
    case EOpTex3DGrad:    
       current->addLibFunction(EOpTex3DGrad);
-      writeTex( "xlat_lib_tex3Dgrad", node, goit); 
+      writeTex( "xll_tex3Dgrad", node, goit); 
       return false;
 
    case EOpTexCube:
@@ -1343,7 +1343,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       else
       {
          current->addLibFunction(EOpTexCubeGrad);
-         writeTex( "xlat_lib_texCUBEgrad", node, goit);
+         writeTex( "xll_texCUBEgrad", node, goit);
       }
       return false;
    case EOpTexCubeProj:   
@@ -1352,17 +1352,17 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpTexCubeLod:    
       current->addLibFunction(EOpTexCubeLod); 
-      writeTex( "xlat_lib_texCUBElod", node, goit); 
+      writeTex( "xll_texCUBElod", node, goit); 
       return false;
 
    case EOpTexCubeBias:   
       current->addLibFunction(EOpTexCubeBias); 
-      writeTex( "xlat_lib_texCUBEbias", node, goit); 
+      writeTex( "xll_texCUBEbias", node, goit); 
       return false;
 
    case EOpTexCubeGrad:   
       current->addLibFunction(EOpTexCubeGrad);
-      writeTex( "xlat_lib_texCUBEgrad", node, goit); 
+      writeTex( "xll_texCUBEgrad", node, goit); 
       return false;
 
    case EOpTexRect:
@@ -1375,17 +1375,17 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 		   
    case EOpModf:
       current->addLibFunction(EOpModf);
-      writeFuncCall( "xlat_lib_modf", node, goit);
+      writeFuncCall( "xll_modf", node, goit);
       break;
 
    case EOpLdexp:
       current->addLibFunction(EOpLdexp);
-      writeFuncCall( "xlat_lib_ldexp", node, goit);
+      writeFuncCall( "xll_ldexp", node, goit);
       break;
 
    case EOpSinCos:        
       current->addLibFunction(EOpSinCos);
-      writeFuncCall ( "xlat_lib_sincos", node, goit);
+      writeFuncCall ( "xll_sincos", node, goit);
       break;
 
    case EOpItof:         
