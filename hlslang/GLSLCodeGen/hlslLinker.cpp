@@ -1009,7 +1009,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 						else
 						{
 							preamble << "    ";
-							preamble << getTypeString(sym->getType()) << " xlat_temp_" << sym->getName() << " = ";
+							preamble << getTypeString(sym->getType()) << " xlt_" << sym->getName() << " = ";
 							preamble << ctor << "(" << name;
 							for (int ii = 0; ii<pad; ii++)
 								preamble << ", 0.0";
@@ -1051,7 +1051,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 					assert(Struct);
 
 					//first create the temp
-					std::string tempVar = "xlat_temp_" + sym->getName();
+					std::string tempVar = "xlt_" + sym->getName();
 					preamble << "    " << Struct->getName() << " ";
 					preamble << tempVar <<";\n";
 					call << tempVar;
@@ -1146,7 +1146,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 						if ( sym->getQualifier() != EqtInOut )
 						{
 							preamble << "    ";
-							preamble << getTypeString(sym->getType()) << " xlat_temp_" << sym->getName() << ";\n";                     
+							preamble << getTypeString(sym->getType()) << " xlt_" << sym->getName() << ";\n";                     
 						}
 
 						// If using user varying, add it to the varying list
@@ -1155,10 +1155,10 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 							varying << "varying vec4 " << name <<";\n" ;
 						}                     
 
-						call << "xlat_temp_" << sym->getName();
+						call << "xlt_" << sym->getName();
 
 						postamble << "    ";
-						postamble << name << " = " << ctor << "( xlat_temp_" <<sym->getName();
+						postamble << name << " = " << ctor << "( xlt_" <<sym->getName();
 						for (int ii = 0; ii<pad; ii++)
 							postamble << ", 0.0";
 
@@ -1179,7 +1179,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 					assert(Struct);
 
 					//first create the temp
-					std::string tempVar = "xlat_temp_" + sym->getName();
+					std::string tempVar = "xlt_" + sym->getName();
 
 					// For "inout" parmaeters the preamble and call were already written, no need to do it here
 					if ( sym->getQualifier() != EqtInOut )
@@ -1420,7 +1420,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 						else
 						{
 							preamble << "    ";
-							preamble << getTypeString(sym->getType()) << " xlat_temp_" << sym->getName() << " = ";
+							preamble << getTypeString(sym->getType()) << " xlt_" << sym->getName() << " = ";
 							preamble << ctor << "(" << name;
 							for (int ii = 0; ii<pad; ii++)
 								preamble << ", 0.0";
@@ -1450,7 +1450,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 					assert(Struct);
 
 					//first create the temp
-					std::string tempVar = "xlat_temp_" + sym->getName();
+					std::string tempVar = "xlt_" + sym->getName();
 					preamble << "    " << Struct->getName() << " ";
 					preamble << tempVar <<";\n";
 					call << tempVar;
@@ -1530,13 +1530,13 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 						if ( sym->getQualifier() != EqtInOut )
 						{
 							preamble << "    ";
-							preamble << getTypeString(sym->getType()) << " xlat_temp_" << sym->getName() << ";\n";
+							preamble << getTypeString(sym->getType()) << " xlt_" << sym->getName() << ";\n";
 						}
 
-						call << "xlat_temp_" << sym->getName();
+						call << "xlt_" << sym->getName();
 
 						postamble << "    ";
-						postamble << name << " = " << ctor << "( xlat_temp_" <<sym->getName();
+						postamble << name << " = " << ctor << "( xlt_" <<sym->getName();
 						for (int ii = 0; ii<pad; ii++)
 							postamble << ", 0.0";
 
@@ -1557,7 +1557,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 					assert(Struct);
 
 					//first create the temp
-					std::string tempVar = "xlat_temp_" + sym->getName();
+					std::string tempVar = "xlt_" + sym->getName();
 
 					// For "inout" parmaeters the preamble and call were already written, no need to do it here
 					if ( sym->getQualifier() != EqtInOut )
