@@ -303,7 +303,7 @@ bool HlslLinker::getArgumentData( const std::string &name, const std::string &se
 			// If using user varyings, create a user varying name
 			if ( (bUserVaryings && sem != EAttrSemPosition) || varOutString[sem][0] == 0 )
 			{
-				outName = "xlat_varying_";
+				outName = "xlv_";
 				outName += semantic;
 				// If an array element, add the semantic offset to the name
 				if ( semanticOffset != 0 )
@@ -325,7 +325,7 @@ bool HlslLinker::getArgumentData( const std::string &name, const std::string &se
 			// If using user varyings, create a user varying name
 			if ( bUserVaryings || varInString[sem][0] == 0 )
 			{
-				outName = "xlat_varying_";
+				outName = "xlv_";
 				outName += stripSemanticModifier ( semantic, false );
 				// If an array element, add the semantic offset to the name
 				if ( semanticOffset != 0 )
@@ -1150,7 +1150,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 						}
 
 						// If using user varying, add it to the varying list
-						if ( strstr ( name.c_str(), "xlat_varying" ) )
+						if ( strstr ( name.c_str(), "xlv" ) )
 						{
 							varying << "varying vec4 " << name <<";\n" ;
 						}                     
@@ -1208,7 +1208,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 							postamble << ");\n";
 
 							// If using user varying, add it to the varying list
-							if ( strstr ( name.c_str(), "xlat_varying" ) )
+							if ( strstr ( name.c_str(), "xlv" ) )
 							{
 								varying << "varying vec4 " << name <<";\n" ;
 							}                                          
@@ -1257,7 +1257,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 					postamble << ");\n";
 
 					// If using user varying, add it to the varying list
-					if ( strstr ( name.c_str(), "xlat_varying" ) )
+					if ( strstr ( name.c_str(), "xlv" ) )
 					{
 						varying << "varying vec4 " << name <<";\n" ;
 					}
@@ -1307,7 +1307,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 							postamble << ");\n";
 
 							// If using user varying, add it to the varying list
-							if ( strstr ( name.c_str(), "xlat_varying" ) )
+							if ( strstr ( name.c_str(), "xlv" ) )
 							{
 								varying << "varying vec4 " << name <<";\n" ;
 							}
@@ -1428,7 +1428,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 						}
 
 						// If using user varying, add it to the varying list
-						if ( strstr ( name.c_str(), "xlat_varying" ) )
+						if ( strstr ( name.c_str(), "xlv" ) )
 						{
 							varying << "varying vec4 " << name <<";\n" ;
 						}
@@ -1492,7 +1492,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 								preamble << ");\n";
 
 								// If using user varying, add it to the varying list
-								if ( strstr ( name.c_str(), "xlat_varying" ) )
+								if ( strstr ( name.c_str(), "xlv" ) )
 								{
 									varying << "varying vec4 " << name <<";\n" ;
 								}
