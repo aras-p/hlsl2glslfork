@@ -362,7 +362,7 @@ bool HlslLinker::getArgumentData( const std::string &name, const std::string &se
 	else
 	{
 		//these should always match exactly
-		outName = "xlat_uniform_";
+		outName = "xlu_";
 		outName += name;
 	}
 
@@ -950,13 +950,13 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		if (  retType == EgstStruct)
 		{
 			assert(retStruct);
-			preamble << "    " << retStruct->getName() << " xlat_retVal;\n";
+			preamble << "    " << retStruct->getName() << " xl_retval;\n";
 		}
 		else
 		{
 			if ( retType != EgstVoid)
 			{
-				preamble << "    " << getTypeString(retType) << " xlat_retVal;\n";
+				preamble << "    " << getTypeString(retType) << " xl_retval;\n";
 			}
 		}
 
@@ -976,7 +976,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 		call << "    ";
 		if (retType != EgstVoid)
-			call << "xlat_retVal = " << vertMain->getName() << "( ";
+			call << "xl_retval = " << vertMain->getName() << "( ";
 		else
 			call << vertMain->getName() << "( ";
 
@@ -1226,8 +1226,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 			case EqtUniform:
 				uniform << "uniform " << getTypeString(sym->getType()) << " ";
-				uniform << "xlat_uniform_" << sym->getName() << ";\n";
-				call << "xlat_uniform_" << sym->getName();
+				uniform << "xlu_" << sym->getName() << ";\n";
+				call << "xlu_" << sym->getName();
 				break;
 
 			default:
@@ -1250,7 +1250,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 				{
 
 					postamble << "    ";
-					postamble << name << " = " << ctor << "( xlat_retVal";
+					postamble << name << " = " << ctor << "( xl_retval";
 					for (int ii = 0; ii<pad; ii++)
 						postamble << ", 0.0";
 
@@ -1296,7 +1296,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 							postamble << "    ";
 							postamble << name;                                                            
 							postamble << " = " << ctor;
-							postamble << "( xlat_retVal." << current.name;
+							postamble << "( xl_retval." << current.name;
 							if ( bIsArray )
 							{
 								postamble << "[" << arrayIndex << "]";
@@ -1363,13 +1363,13 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		if (  retType == EgstStruct)
 		{
 			assert(retStruct);
-			preamble << "    " << retStruct->getName() << " xlat_retVal;\n";
+			preamble << "    " << retStruct->getName() << " xl_retval;\n";
 		}
 		else
 		{
 			if ( retType != EgstVoid)
 			{
-				preamble << "    " << getTypeString(retType) << " xlat_retVal;\n";
+				preamble << "    " << getTypeString(retType) << " xl_retval;\n";
 			}
 		}
 
@@ -1389,7 +1389,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 		call << "    ";
 		if (retType != EgstVoid)
-			call << "xlat_retVal = " << fragMain->getName() << "( ";
+			call << "xl_retval = " << fragMain->getName() << "( ";
 		else
 			call << fragMain->getName() << "( ";
 
@@ -1596,8 +1596,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 				break;
 			case EqtUniform:
 				uniform << "uniform " << getTypeString(sym->getType()) << " ";
-				uniform << "xlat_uniform_" << sym->getName() << ";\n";
-				call << "xlat_uniform_" << sym->getName();
+				uniform << "xlu_" << sym->getName() << ";\n";
+				call << "xlu_" << sym->getName();
 				break;
 			default:
 				assert(0);
@@ -1621,7 +1621,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 				{
 
 					postamble << "    ";
-					postamble << name << " = " << ctor << "( xlat_retVal";
+					postamble << name << " = " << ctor << "( xl_retval";
 					for (int ii = 0; ii<pad; ii++)
 						postamble << ", 0.0";
 
@@ -1652,7 +1652,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 					{
 						postamble << "    ";
 						postamble << name << " = " << ctor;
-						postamble << "( xlat_retVal."  << current.name;
+						postamble << "( xl_retval."  << current.name;
 						for (int ii = 0; ii<pad; ii++)
 							postamble << ", 0.0";
 
