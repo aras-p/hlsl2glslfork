@@ -101,6 +101,7 @@
 #include <list>
 #include <string>
 #include <stdio.h>
+#include <sstream>
 
 //??#pragma warning(pop)
 
@@ -191,6 +192,7 @@ public:
 // across compiles/links.
 //
 typedef std::basic_string<char> TPersistString;
+typedef std::ostringstream TPersistStringStream;
 
 //
 // templatized min and max functions.

@@ -73,6 +73,12 @@
 #include "../Include/Common.h"
 #include <math.h>
 
+// Returns the fractional part of the given floating-point number.
+inline float fractionalPart(float f) {
+	float intPart = 0.0f;
+	return modff(f, &intPart);
+}
+
 //
 // TPrefixType is used to centralize how info log messages start.
 // See below.
@@ -121,14 +127,27 @@ public:
    {
       append(String(n)); return *this;
    }
-   TInfoSinkBase& operator<<(float n)
-   {
-      char buf[40]; 
-      sprintf(buf, (fabs(n) > 1e-8 && fabs(n) < 1e8) || n == 0.0f ?
-              "%f" : "%g", n);
-      append(buf); 
-      return *this;
-   }
+	
+	// Make sure floats are written with correct precision.
+	TInfoSinkBase& operator<<(float f) {
+		// Make sure that at least one decimal point is written. If a number
+		// does not have a fractional part, the default precision format does
+		// not write the decimal portion which gets interpreted as integer by
+		// the compiler.
+		TPersistStringStream stream;
+		if (fractionalPart(f) == 0.0f) {
+			stream.precision(1);
+			stream << std::showpoint << std::fixed << f;
+		} else {
+			stream.unsetf(std::ios::fixed);
+			stream.unsetf(std::ios::scientific);
+			stream.precision(6);
+			stream << f;
+		}
+		sink.append(stream.str());
+		return *this;
+	}
+	
    TInfoSinkBase& operator+(const TPersistString& t)
    {
       append(t); return *this;

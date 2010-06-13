@@ -66,7 +66,8 @@ GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSym
       depth(0),
       inStatement(false)
 { 
-   active <<std::showpoint;
+	active <<std::showpoint;
+	active.precision (6);
 }
 
 //=========================================================================================================
@@ -215,7 +216,8 @@ std::string GlslFunction::getLocalDecls( int indentLevel )
    // will come out:
    //  float fTemp = 1;
    // causing a GLSL parse error
-   out.setf ( std::stringstream::showpoint );
+    out.setf ( std::stringstream::showpoint );
+	out.precision (6);
 
    //save off the old depth, to restore later, this is probably unnecessary
    oldDepth = depth;
@@ -283,7 +285,8 @@ std::string GlslFunction::getMutableDecls( int indentLevel, std::vector<GlslFunc
    // will come out:
    //  float fTemp = 1;
    // causing a GLSL parse error
-   out.setf ( std::stringstream::showpoint );
+    out.setf ( std::stringstream::showpoint );
+	out.precision (6);
 
    //save off the old depth, to restore later, this is probably unnecessary
    oldDepth = depth;
