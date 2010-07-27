@@ -827,11 +827,20 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	// 
 	// Gather the uniforms into the uniform list
 	//
-	for (std::map<std::string, GlslSymbol*>::iterator it = globalSymMap[0].begin(); it != globalSymMap[0].end(); it++)
+	for (int i = 0; i < 2; ++i)
 	{
-		ShUniformInfo infoStruct;
-		if (it->second->getQualifier()  == EqtUniform)
+		for (std::map<std::string, GlslSymbol*>::iterator it = globalSymMap[i].begin(); it != globalSymMap[i].end(); it++)
 		{
+			if (it->second->getQualifier() != EqtUniform)
+				continue;
+
+			if (i != 0)
+			{
+				if (globalSymMap[0].find(it->first) != globalSymMap[0].end())
+					continue; //already added
+			}
+
+			ShUniformInfo infoStruct;
 			infoStruct.name = new char[it->first.size()+1];
 			strcpy( infoStruct.name, it->first.c_str());
 			if (it->second->getSemantic() != "")
@@ -861,59 +870,26 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		}
 	}
 
-	for (std::map<std::string, GlslSymbol*>::iterator it = globalSymMap[1].begin(); it != globalSymMap[1].end(); it++)
-	{
-		ShUniformInfo infoStruct;
-		if (it->second->getQualifier()  == EqtUniform)
-		{
-			if ( globalSymMap[0].find(it->first) != globalSymMap[0].end())
-				continue; //already added
-			infoStruct.name = new char[it->first.size()+1];
-			strcpy( infoStruct.name, it->first.c_str());
-			if (it->second->getSemantic() != "")
-			{
-				infoStruct.semantic = new char[it->second->getSemantic().size()+1];
-				strcpy( infoStruct.semantic, it->second->getSemantic().c_str());
-			}
-			else
-				infoStruct.semantic = 0;
-
-			//gigantic hack, the enumerations are kept in alignment
-			infoStruct.type = (EShType)it->second->getType();
-			infoStruct.arraySize = it->second->getArraySize();
-
-			if ( it->second->hasInitializer())
-			{
-				int initSize = it->second->initializerSize();
-				infoStruct.init = new float[initSize];
-				memcpy( infoStruct.init, it->second->getInitializer(), sizeof(float) * initSize);
-			}
-			else
-				infoStruct.init = 0;
-
-			//TODO: need to add annotation
-
-			uniforms.push_back( infoStruct);
-		}
-	}
-
 	//
 	// Generate the main functions
 	//
 
-	if (funcMain[0])
+	for (int i = 0; i < 2; ++i)
 	{
+		if (!funcMain[i])
+			continue;
+
 		std::stringstream attrib;
 		std::stringstream uniform;
 		std::stringstream preamble;
 		std::stringstream postamble;
 		std::stringstream varying;
 		std::stringstream call;
-		const int pCount = funcMain[0]->getParameterCount();
+		const int pCount = funcMain[i]->getParameterCount();
 
 		preamble << "void main() {\n";
-		const EGlslSymbolType retType = funcMain[0]->getReturnType();
-		GlslStruct *retStruct = funcMain[0]->getStruct();
+		const EGlslSymbolType retType = funcMain[i]->getReturnType();
+		GlslStruct *retStruct = funcMain[i]->getStruct();
 		if (  retType == EgstStruct)
 		{
 			assert(retStruct);
@@ -928,11 +904,11 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		}
 
 		// Write all mutable initializations
-		if ( calledFunctions[0].size() > 0 )
+		if ( calledFunctions[i].size() > 0 )
 		{
-			for (FunctionSet::iterator fit = calledFunctions[0].begin(); fit != calledFunctions[0].end(); fit++)
+			for (FunctionSet::iterator fit = calledFunctions[i].begin(); fit != calledFunctions[i].end(); fit++)
 			{
-				std::string mutableDecls = (*fit)->getMutableDecls(1, calledFunctions[0].begin(), fit);
+				std::string mutableDecls = (*fit)->getMutableDecls(1, calledFunctions[i].begin(), fit);
 
 				if ( mutableDecls.size() > 0 )
 				{
@@ -943,13 +919,13 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 		call << "    ";
 		if (retType != EgstVoid)
-			call << "xl_retval = " << funcMain[0]->getName() << "( ";
+			call << "xl_retval = " << funcMain[i]->getName() << "( ";
 		else
-			call << funcMain[0]->getName() << "( ";
+			call << funcMain[i]->getName() << "( ";
 
 		for (int ii=0; ii<pCount; ii++)
 		{
-			GlslSymbol *sym = funcMain[0]->getParameter(ii);
+			GlslSymbol *sym = funcMain[i]->getParameter(ii);
 			EAttribSemantic attrSem = parseAttributeSemantic( sym->getSemantic());
 
 			switch (sym->getQualifier())
@@ -962,7 +938,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 					std::string name, ctor;
 					int pad;
 
-					if ( getArgumentData( sym, EClassAttrib, name, ctor, pad) )
+					if ( getArgumentData( sym, i==0 ? EClassAttrib : EClassVarIn, name, ctor, pad) )
 					{
 						// For "in" parameters, just call directly to the main
 						if ( sym->getQualifier() != EqtInOut )
@@ -983,24 +959,36 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 							preamble << ");\n";
 						}
 
-						if ( strncmp( name.c_str(), "gl_", 3))
+						if (i == 0) // vertex shader: deal with gl_ attributes
 						{
-							int typeOffset = 0;
-
-							// If the type is integer or bool based, we must convert to a float based
-							// type.  This is because GLSL does not allow int or bool based vertex attributes.
-							if ( sym->getType() >= EgstInt && sym->getType() <= EgstInt4)
+							if ( strncmp( name.c_str(), "gl_", 3))
 							{
-								typeOffset += 4;
-							}
+								int typeOffset = 0;
 
-							if ( sym->getType() >= EgstBool && sym->getType() <= EgstBool4)
+								// If the type is integer or bool based, we must convert to a float based
+								// type.  This is because GLSL does not allow int or bool based vertex attributes.
+								if ( sym->getType() >= EgstInt && sym->getType() <= EgstInt4)
+								{
+									typeOffset += 4;
+								}
+
+								if ( sym->getType() >= EgstBool && sym->getType() <= EgstBool4)
+								{
+									typeOffset += 8;
+								}
+
+								// This is an undefined attribute
+								attrib << "attribute " << getTypeString((EGlslSymbolType)(sym->getType() + typeOffset)) << " " << name << ";\n";
+							}
+						}
+
+						if (i == 1) // fragment shader: deal with user varyings
+						{
+							// If using user varying, add it to the varying list
+							if ( strstr ( name.c_str(), "xlv" ) )
 							{
-								typeOffset += 8;
+								varying << "varying vec4 " << name <<";\n" ;
 							}
-
-							// This is an undefined attribute
-							attrib << "attribute " << getTypeString((EGlslSymbolType)(sym->getType() + typeOffset)) << " " << name << ";\n";
 						}
 					}
 					else
@@ -1042,7 +1030,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 						for ( int arrayIndex = 0; arrayIndex <  numArrayElements; arrayIndex++ )
 						{
 							if ( getArgumentData( current.name, current.semantic, current.type,
-								EClassAttrib, name, ctor, pad, arrayIndex ) )
+								i==0 ? EClassAttrib : EClassVarIn, name, ctor, pad, arrayIndex ) )
 							{
 
 								preamble << "    ";
@@ -1057,26 +1045,38 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 								preamble << ");\n";
 
-								if ( strncmp( name.c_str(), "gl_", 3))
+								if (i == 0) // vertex shader: gl_ attributes
 								{
-
-									int typeOffset = 0;
-
-									// If the type is integer or bool based, we must convert to a float based
-									// type.  This is because GLSL does not allow int or bool based vertex attributes.
-									if ( current.type >= EgstInt && current.type <= EgstInt4)
+									if ( strncmp( name.c_str(), "gl_", 3))
 									{
-										typeOffset += 4;
-									}
 
-									if ( current.type >= EgstBool && current.type <= EgstBool4)
+										int typeOffset = 0;
+
+										// If the type is integer or bool based, we must convert to a float based
+										// type.  This is because GLSL does not allow int or bool based vertex attributes.
+										if ( current.type >= EgstInt && current.type <= EgstInt4)
+										{
+											typeOffset += 4;
+										}
+
+										if ( current.type >= EgstBool && current.type <= EgstBool4)
+										{
+											typeOffset += 8;
+										}
+
+										// This is an undefined attribute
+										attrib << "attribute " << getTypeString((EGlslSymbolType)(current.type + typeOffset)) << " " << name << ";\n";
+
+									}
+								}
+								
+								if (i == 1) // fragment shader: user varyings
+								{
+									// If using user varying, add it to the varying list
+									if ( strstr ( name.c_str(), "xlv" ) )
 									{
-										typeOffset += 8;
+										varying << "varying vec4 " << name <<";\n" ;
 									}
-
-									// This is an undefined attribute
-									attrib << "attribute " << getTypeString((EGlslSymbolType)(current.type + typeOffset)) << " " << name << ";\n";
-
 								}
 							}
 							else
@@ -1107,7 +1107,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 					std::string name, ctor;
 					int pad;
 
-					if ( getArgumentData( sym, EClassVarOut, name, ctor, pad) )
+					if ( getArgumentData( sym, i==0 ? EClassVarOut : EClassRes, name, ctor, pad) )
 					{
 						// For "inout" parameters, the preamble was already written so no need to do it here.
 						if ( sym->getQualifier() != EqtInOut )
@@ -1115,12 +1115,15 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 							preamble << "    ";
 							preamble << getTypeString(sym->getType()) << " xlt_" << sym->getName() << ";\n";                     
 						}
-
-						// If using user varying, add it to the varying list
-						if ( strstr ( name.c_str(), "xlv" ) )
+						
+						if (i == 0) // vertex shader
 						{
-							varying << "varying vec4 " << name <<";\n" ;
-						}                     
+							// If using user varying, add it to the varying list
+							if ( strstr ( name.c_str(), "xlv" ) )
+							{
+								varying << "varying vec4 " << name <<";\n" ;
+							}
+						}
 
 						call << "xlt_" << sym->getName();
 
@@ -1156,7 +1159,6 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 						call << tempVar;
 					}
 
-
 					const int elem = Struct->memberCount();
 					for (int ii=0; ii<elem; ii++)
 					{
@@ -1164,7 +1166,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 						std::string name, ctor;
 						int pad;
 
-						if ( getArgumentData( current.name, current.semantic, current.type, EClassVarOut, name, ctor, pad) )
+						if ( getArgumentData( current.name, current.semantic, current.type, i==0 ? EClassVarOut : EClassRes, name, ctor, pad) )
 						{
 							postamble << "    ";
 							postamble << name << " = " << ctor;
@@ -1174,11 +1176,14 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 							postamble << ");\n";
 
-							// If using user varying, add it to the varying list
-							if ( strstr ( name.c_str(), "xlv" ) )
+							if (i == 0) // vertex shader
 							{
-								varying << "varying vec4 " << name <<";\n" ;
-							}                                          
+								// If using user varying, add it to the varying list
+								if ( strstr ( name.c_str(), "xlv" ) )
+								{
+									varying << "varying vec4 " << name <<";\n" ;
+								}
+							}
 						}
 						else
 						{
@@ -1204,6 +1209,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 				call << ", ";
 		}
 
+		call << ");\n";
+
 		if (retType != EgstVoid)
 		{
 
@@ -1212,7 +1219,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 				std::string name, ctor;
 				int pad;
 
-				if ( getArgumentData( "", funcMain[0]->getSemantic(), retType, EClassVarOut,
+				if ( getArgumentData( "", funcMain[i]->getSemantic(), retType, i==0 ? EClassVarOut : EClassRes,
 					name, ctor, pad) )
 				{
 
@@ -1223,17 +1230,20 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 					postamble << ");\n";
 
-					// If using user varying, add it to the varying list
-					if ( strstr ( name.c_str(), "xlv" ) )
+					if (i == 0) // vertex shader
 					{
-						varying << "varying vec4 " << name <<";\n" ;
+						// If using user varying, add it to the varying list
+						if ( strstr ( name.c_str(), "xlv" ) )
+						{
+							varying << "varying vec4 " << name <<";\n" ;
+						}
 					}
 				}
 				else
 				{
 					//should deal with fall through cases here
 					assert(0);
-					infoSink.info << "Unsupported type for shader return value (";
+					infoSink.info << (i==0 ? "Unsupported type for shader return value (" : "Unsupported return type for shader entry function (");
 					infoSink.info << getTypeString(retType) << ")\n";
 				}
 			}
@@ -1248,17 +1258,20 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 					int numArrayElements = 1;
 					bool bIsArray = false;
 
-					// If it is an array, loop over each member
-					if ( current.arraySize > 0 )
+					if (i == 0) // vertex shader
 					{
-						numArrayElements = current.arraySize;
-						bIsArray = true;
+						// If it is an array, loop over each member
+						if ( current.arraySize > 0 )
+						{
+							numArrayElements = current.arraySize;
+							bIsArray = true;
+						}
 					}
 
 					for ( int arrayIndex = 0; arrayIndex < numArrayElements; arrayIndex++ )
 					{
 
-						if ( getArgumentData( current.name, current.semantic, current.type, EClassVarOut, name, ctor, pad, arrayIndex) )
+						if ( getArgumentData( current.name, current.semantic, current.type, i==0 ? EClassVarOut : EClassRes, name, ctor, pad, arrayIndex) )
 						{
 							postamble << "    ";
 							postamble << name;                                                            
@@ -1273,370 +1286,45 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 							postamble << ");\n";
 
-							// If using user varying, add it to the varying list
-							if ( strstr ( name.c_str(), "xlv" ) )
+							if (i == 0) // vertex shader
 							{
-								varying << "varying vec4 " << name <<";\n" ;
-							}
-						}
-						else
-						{
-							//should deal with fall through cases here
-							assert(0);
-							infoSink.info << "Unsupported element type in struct for shader return value (";
-							infoSink.info << getTypeString(current.type) << ")\n";
-						}
-					}
-				}
-			}
-		}
-
-		call << ");\n";
-		postamble << "}\n\n";
-
-		EmitIfNotEmpty (shader[0], uniform);
-		EmitIfNotEmpty (shader[0], attrib);
-		EmitIfNotEmpty (shader[0], varying);
-
-		shader[0] << preamble.str() << "\n";
-		shader[0] << call.str() << "\n";
-		shader[0] << postamble.str() << "\n";
-
-	}
-
-	if (funcMain[1])
-	{
-		std::stringstream uniform;
-		std::stringstream preamble;
-		std::stringstream postamble;
-		std::stringstream varying;
-		std::stringstream call;
-		const int pCount = funcMain[1]->getParameterCount();
-
-		preamble << "void main() {\n";
-		const EGlslSymbolType retType = funcMain[1]->getReturnType();
-		GlslStruct *retStruct = funcMain[1]->getStruct();
-		if (  retType == EgstStruct)
-		{
-			assert(retStruct);
-			preamble << "    " << retStruct->getName() << " xl_retval;\n";
-		}
-		else
-		{
-			if ( retType != EgstVoid)
-			{
-				preamble << "    " << getTypeString(retType) << " xl_retval;\n";
-			}
-		}
-
-		// Write all mutable initializations
-		if ( calledFunctions[1].size() > 0 )
-		{
-			for (FunctionSet::iterator fit = calledFunctions[1].begin(); fit != calledFunctions[1].end(); fit++)
-			{
-				std::string mutableDecls = (*fit)->getMutableDecls(1, calledFunctions[1].begin(), fit);
-
-				if ( mutableDecls.size() > 0 )
-				{
-					preamble << mutableDecls;
-				}
-			}
-		}
-
-		call << "    ";
-		if (retType != EgstVoid)
-			call << "xl_retval = " << funcMain[1]->getName() << "( ";
-		else
-			call << funcMain[1]->getName() << "( ";
-
-		for (int ii=0; ii<pCount; ii++)
-		{
-			GlslSymbol *sym = funcMain[1]->getParameter(ii);
-			EAttribSemantic attrSem = parseAttributeSemantic( sym->getSemantic());
-			switch (sym->getQualifier())
-			{
-			case EqtIn:
-			case EqtInOut:
-				if ( sym->getType() != EgstStruct)
-				{
-					std::string name, ctor;
-					int pad;
-
-					if ( getArgumentData( sym, EClassVarIn, name, ctor, pad) )
-					{
-						// For "in" parameters, just call directly to the main                  
-						if ( sym->getQualifier() != EqtInOut )
-						{
-							call << ctor << "(" << name;
-							for (int ii = 0; ii<pad; ii++)
-								call << ", 0.0";
-							call << ")";
-						}
-						// For "inout" parameters, declare a temp and initialize the temp
-						else
-						{
-							preamble << "    ";
-							preamble << getTypeString(sym->getType()) << " xlt_" << sym->getName() << " = ";
-							preamble << ctor << "(" << name;
-							for (int ii = 0; ii<pad; ii++)
-								preamble << ", 0.0";
-							preamble << ");\n";
-						}
-
-						// If using user varying, add it to the varying list
-						if ( strstr ( name.c_str(), "xlv" ) )
-						{
-							varying << "varying vec4 " << name <<";\n" ;
-						}
-
-					}
-					else
-					{
-						//should deal with fall through cases here
-						assert(0);
-						infoSink.info << "Unsupported type for shader entry parameter (";
-						infoSink.info << getTypeString(sym->getType()) << ")\n";
-					}
-
-				}
-				else
-				{
-					//structs must pass the struct, then process per element
-					GlslStruct *Struct = sym->getStruct();
-					assert(Struct);
-
-					//first create the temp
-					std::string tempVar = "xlt_" + sym->getName();
-					preamble << "    " << Struct->getName() << " ";
-					preamble << tempVar <<";\n";
-					call << tempVar;
-
-					const int elem = Struct->memberCount();
-					for (int jj=0; jj<elem; jj++)
-					{
-						const GlslStruct::member &current = Struct->getMember(jj);
-						std::string name, ctor;
-						int pad;
-						int numArrayElements = 1;
-						bool bIsArray = false;
-
-						// If it is an array, loop over each member
-						if ( current.arraySize > 0 )
-						{
-							numArrayElements = current.arraySize;
-							bIsArray = true;
-						}
-
-						for ( int arrayIndex = 0; arrayIndex < numArrayElements; arrayIndex++ )
-						{
-
-							if ( getArgumentData( current.name, current.semantic, current.type,
-								EClassVarIn, name, ctor, pad, arrayIndex ) )
-							{
-
-								preamble << "    ";
-								preamble << tempVar << "." << current.name;
-
-								if ( bIsArray )
-									preamble << "[" << arrayIndex << "]";
-
-								preamble << " = " << ctor << "( " << name;
-
-								for (int ii = 0; ii<pad; ii++)
-									preamble << ", 0.0";
-
-								preamble << ");\n";
-
 								// If using user varying, add it to the varying list
 								if ( strstr ( name.c_str(), "xlv" ) )
 								{
 									varying << "varying vec4 " << name <<";\n" ;
 								}
 							}
-							else
-							{
-								//should deal with fall through cases here
-								assert(0);
-								infoSink.info << "Unsupported struct element type for shader entry parameter (";
-								infoSink.info << getTypeString(current.type) << ")\n";
-							}
-						}
-
-					}
-				}
-
-				//
-				// NOTE: This check only breaks out of the case if we have an "in" parameter, for
-				//       "inout" it will fallthrough to the next case
-				//
-				if ( sym->getQualifier() != EqtInOut )
-				{
-					break;
-				}
-
-				// Also a fallthrough for "inout" (see if check above)
-			case EqtOut:
-				if (sym->getType() != EgstStruct)
-				{
-					std::string name, ctor;
-					int pad;
-
-					if ( getArgumentData( sym, EClassRes, name, ctor, pad) )
-					{
-						if ( sym->getQualifier() != EqtInOut )
-						{
-							preamble << "    ";
-							preamble << getTypeString(sym->getType()) << " xlt_" << sym->getName() << ";\n";
-						}
-
-						call << "xlt_" << sym->getName();
-
-						postamble << "    ";
-						postamble << name << " = " << ctor << "( xlt_" <<sym->getName();
-						for (int ii = 0; ii<pad; ii++)
-							postamble << ", 0.0";
-
-						postamble << ");\n";
-					}
-					else
-					{
-						//should deal with fall through cases here
-						assert(0);
-						infoSink.info << "Unsupported type for shader entry parameter (";
-						infoSink.info << getTypeString(sym->getType()) << ")\n";
-					}
-				}
-				else
-				{
-					//structs must pass the struct, then process per element
-					GlslStruct *Struct = sym->getStruct();
-					assert(Struct);
-
-					//first create the temp
-					std::string tempVar = "xlt_" + sym->getName();
-
-					// For "inout" parmaeters the preamble and call were already written, no need to do it here
-					if ( sym->getQualifier() != EqtInOut )
-					{
-						preamble << "    " << Struct->getName() << " ";
-						preamble << tempVar <<";\n";
-						call << tempVar;
-					}
-
-					const int elem = Struct->memberCount();
-					for (int ii=0; ii<elem; ii++)
-					{
-						const GlslStruct::member &current = Struct->getMember(ii);
-						std::string name, ctor;
-						int pad;
-
-						if ( getArgumentData( current.name, current.semantic, current.type, EClassRes, name, ctor, pad) )
-						{
-							postamble << "    ";
-							postamble << name << " = " << ctor;
-							postamble << "( " << tempVar << "." << current.name;
-							for (int ii = 0; ii<pad; ii++)
-								postamble << ", 0.0";
-
-							postamble << ");\n";
 						}
 						else
 						{
 							//should deal with fall through cases here
 							assert(0);
-							infoSink.info << "Unsupported struct element type for shader entry parameter (";
+							infoSink.info << (i==0 ? "Unsupported element type in struct for shader return value (" : "Unsupported struct element type in return type for shader entry function (");
 							infoSink.info << getTypeString(current.type) << ")\n";
 						}
-					}
-				}
-				break;
-			case EqtUniform:
-				uniform << "uniform " << getTypeString(sym->getType()) << " ";
-				uniform << "xlu_" << sym->getName() << ";\n";
-				call << "xlu_" << sym->getName();
-				break;
-			default:
-				assert(0);
-			};
-			if (ii != pCount -1)
-				call << ", ";
-		}
-
-		call << ");\n";
-
-		if (retType != EgstVoid)
-		{
-
-			if (retType != EgstStruct)
-			{
-				std::string name, ctor;
-				int pad;
-
-				if ( getArgumentData( "", funcMain[1]->getSemantic(), retType, EClassRes,
-					name, ctor, pad) )
-				{
-
-					postamble << "    ";
-					postamble << name << " = " << ctor << "( xl_retval";
-					for (int ii = 0; ii<pad; ii++)
-						postamble << ", 0.0";
-
-					postamble << ");\n";
-				}
-				else
-				{
-					//should deal with fall through cases here
-					assert(0);
-					infoSink.info << "Unsupported return type for shader entry function (";
-					infoSink.info << getTypeString(retType) << ")\n";
-				}
-			}
-			else
-			{
-				//structs must pass the struct, then process per element
-				GlslStruct *Struct = retStruct;
-				assert(Struct);
-
-				const int elem = Struct->memberCount();
-				for (int ii=0; ii<elem; ii++)
-				{
-					const GlslStruct::member &current = Struct->getMember(ii);
-					std::string name, ctor;
-					int pad;
-
-					if ( getArgumentData( current.name, current.semantic, current.type, EClassRes, name, ctor, pad) )
-					{
-						postamble << "    ";
-						postamble << name << " = " << ctor;
-						postamble << "( xl_retval."  << current.name;
-						for (int ii = 0; ii<pad; ii++)
-							postamble << ", 0.0";
-
-						postamble << ");\n";
-					}
-					else
-					{
-						//should deal with fall through cases here
-						assert(0);
-						infoSink.info << "Unsupported struct element type in return type for shader entry function (";
-						infoSink.info << getTypeString(current.type) << ")\n";
 					}
 				}
 			}
 		}
 		else
 		{
-			// If no return type, close off the output
-			postamble << ";\n";
+			if (i == 1) // fragment shader
+			{
+				// If no return type, close off the output
+				postamble << ";\n";
+			}
 		}
+
 		postamble << "}\n\n";
 
-		EmitIfNotEmpty (shader[1], uniform);
-		EmitIfNotEmpty (shader[1], varying);
+		EmitIfNotEmpty (shader[i], uniform);
+		EmitIfNotEmpty (shader[i], attrib);
+		EmitIfNotEmpty (shader[i], varying);
 
-		shader[1] << preamble.str() << "\n";
-		shader[1] << call.str() << "\n";
-		shader[1] << postamble.str() << "\n";
+		shader[i] << preamble.str() << "\n";
+		shader[i] << call.str() << "\n";
+		shader[i] << postamble.str() << "\n";
+
 	}
 
 	return true;
