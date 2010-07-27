@@ -626,6 +626,22 @@ static void EmitCalledFunctions (std::stringstream& shader, const FunctionSet& f
 	}
 }
 
+static void EmitIfNotEmpty (std::stringstream& out, const std::stringstream& str)
+{
+	if (str.str().size())
+		out << str.str() << "\n";
+}
+
+static const char* GetEntryName (const char* entryFunc)
+{
+	if (!entryFunc)
+		return "";
+	if (!strcmp(entryFunc, "main"))
+		return "xlat_main";
+	return entryFunc;
+}
+
+
 //=========================================================================================================
 /// This function is the main function that initiates code generation for the shader.  
 /// \param hList
@@ -655,19 +671,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		return false;
 	}
 
-	if (vertEntryFunc)
-	{
-		vertEntry = vertEntryFunc;
-		if (vertEntry == "main")
-			vertEntry = "xlat_main";
-	}
-
-	if (fragEntryFunc)
-	{
-		fragEntry = fragEntryFunc;
-		if (fragEntry == "main")
-			fragEntry = "xlat_main";
-	}
+	vertEntry = GetEntryName (vertEntryFunc);
+	fragEntry = GetEntryName (fragEntryFunc);
 
 	//build the list of functions
 	for (THandleList::iterator it = hList.begin(); it < hList.end(); it++ )
@@ -1327,20 +1332,9 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		call << ");\n";
 		postamble << "}\n\n";
 
-		if (uniform.str().size() )
-		{
-			vertShader << uniform.str() << "\n";
-		}
-
-		if (attrib.str().size() )
-		{
-			vertShader << attrib.str() << "\n";
-		}
-
-		if (varying.str().size() )
-		{
-			vertShader << varying.str() << "\n";
-		}
+		EmitIfNotEmpty (vertShader, uniform);
+		EmitIfNotEmpty (vertShader, attrib);
+		EmitIfNotEmpty (vertShader, varying);
 
 		vertShader << preamble.str() << "\n";
 		vertShader << call.str() << "\n";
@@ -1675,15 +1669,9 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		}
 		postamble << "}\n\n";
 
-		if (uniform.str().size())
-		{
-			fragShader << uniform.str() << "\n";
-		}
+		EmitIfNotEmpty (fragShader, uniform);
+		EmitIfNotEmpty (fragShader, varying);
 
-		if (varying.str().size())
-		{
-			fragShader << varying.str() << "\n";
-		}
 		fragShader << preamble.str() << "\n";
 		fragShader << call.str() << "\n";
 		fragShader << postamble.str() << "\n";
