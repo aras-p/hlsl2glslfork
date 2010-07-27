@@ -32,17 +32,6 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-// ATI Research, Inc.
-//
-// Implementation of GLSL common utility functions
-//=================================================================================================================================
-
-//=================================================================================================================================
-//
-//          Includes / defines / typedefs / static member variable initialization block
-//
-//=================================================================================================================================
 #include "glslStruct.h"
 
 /// Table to convert GLSL variable types to strings
@@ -73,15 +62,7 @@ const char typeString[EgstTypeCount][32] =
    "struct"
 };
 
-//=================================================================================================================================
-//
-//          Public Functions
-//
-//=================================================================================================================================
 
-
-
-//=========================================================================================================
 /// Outputs the type of the symbol to the output buffer
 ///    \param out
 ///       The output buffer to write the type to
@@ -89,7 +70,6 @@ const char typeString[EgstTypeCount][32] =
 ///       The type of the GLSL symbol to output
 ///    \param s
 ///       If it is a structure, a pointer to the structure to write out
-//=========================================================================================================
 void writeType( std::stringstream &out, EGlslSymbolType type, GlslStruct *s )
 {
    switch (type)
@@ -127,26 +107,14 @@ void writeType( std::stringstream &out, EGlslSymbolType type, GlslStruct *s )
    }
 }
 
-//=========================================================================================================
-/// Gets the type as a string
-///    \param t
-///       The type to convert to a string
-///    \return
-///       The type converted to a string
-//=========================================================================================================
+
 const char* getTypeString( const EGlslSymbolType t )
 {
    assert (t >= EgstVoid && t < EgstTypeCount);
    return typeString[t];
 }
 
-//=========================================================================================================
-/// Translates the type to a GLSL symbol type
-///    \param type
-///       Type to convert to a GLSL symbol
-///    \return
-///       The GLSL symbol type associated with the TType
-//=========================================================================================================
+
 EGlslSymbolType translateType( const TType *type )
 {
    if ( type->isMatrix() )
@@ -190,13 +158,7 @@ EGlslSymbolType translateType( const TType *type )
    return EgstVoid;
 }
 
-//=========================================================================================================
-/// Returns whether the qualifier is associated with a local or global
-///    \param qual
-///       GLSL qualifier type
-///    \return
-///       Whether the qualifier is associated with a local or global
-//=========================================================================================================
+
 bool isLocal( EGlslQualifier qual )
 {
    switch (qual)
@@ -214,13 +176,6 @@ bool isLocal( EGlslQualifier qual )
 }
 
 
-//=========================================================================================================
-/// Translates the qualifier to a GLSL qualifier enumerant
-///    \param qual
-///       GLSL qualifier type
-///    \return
-///       The qualifier translated to a GLSL qualifier.
-//=========================================================================================================
 EGlslQualifier translateQualifier( TQualifier qual )
 {
    switch (qual)

@@ -32,31 +32,9 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Implementation of GlslFunction
-//=================================================================================================================================
-
-//=================================================================================================================================
-//
-//          Includes / defines / typedefs / static member variable initialization block
-//
-//=================================================================================================================================
-
 #include "glslFunction.h"
 
 
-//=================================================================================================================================
-//
-//          Constructor(s) / Destructor(s) Block 
-//
-//=================================================================================================================================
-
-//=========================================================================================================
-/// Constructor
-//=========================================================================================================
 GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSymbolType type, const std::string &s ) :
       name(n),
       mangledName(m),
@@ -70,9 +48,7 @@ GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSym
 	active.precision (6);
 }
 
-//=========================================================================================================
-/// Destructor
-//=========================================================================================================
+
 GlslFunction::~GlslFunction()
 {
    for (std::vector<GlslSymbol*>::iterator it = symbols.begin(); it < symbols.end(); it++)
@@ -85,19 +61,7 @@ GlslFunction::~GlslFunction()
    }
 }
 
-//=================================================================================================================================
-//
-//          Public methods block
-//
-//=================================================================================================================================
 
-//=========================================================================================================
-/// Returns whether the symbol id is found in the function's symbol ID map
-/// \param id
-///     Id of symbol to search for in ID map
-/// \return
-///     True if symbol is found in the ID map, false otherwise
-//=========================================================================================================
 bool GlslFunction::hasSymbol( int id )
 {
 
@@ -110,23 +74,11 @@ bool GlslFunction::hasSymbol( int id )
 }
 
 
-//=========================================================================================================
-/// Returns a reference to the symbol referred to by id
-/// \param id
-///     Id of symbol to search for in ID map
-/// \return
-///     Reference to the symbol in the ID map
-//=========================================================================================================
 GlslSymbol& GlslFunction::getSymbol( int id )
 {
    return *symbolIdMap[id];
 }
 
-//=========================================================================================================
-/// Add a symbol to the function
-/// \param sym
-///     Symbol to add to the function
-//=========================================================================================================
 void GlslFunction::addSymbol( GlslSymbol *sym )
 {
    // Add a reference count to the symbol
@@ -143,11 +95,7 @@ void GlslFunction::addSymbol( GlslSymbol *sym )
    symbolIdMap[sym->getId()] = sym;
 }
 
-//=========================================================================================================
-/// Add a symbol to the function, mark it as a parameter
-/// \param sym
-///     Symbol to add to the function, to be marked as a function parameter
-//=========================================================================================================
+
 void GlslFunction::addParameter( GlslSymbol *sym )
 {
    // Add a reference count to the symbol
@@ -167,11 +115,7 @@ void GlslFunction::addParameter( GlslSymbol *sym )
    parameters.push_back( sym);
 }
 
-//=========================================================================================================
-/// Returns, as a string, the prototype for the function
-/// \return
-///     As a string, the prototype of the function
-//=========================================================================================================
+
 std::string GlslFunction::getPrototype()
 {
    std::stringstream out;
@@ -199,13 +143,7 @@ std::string GlslFunction::getPrototype()
    return out.str();
 }
 
-//=========================================================================================================
-/// Returns, as a string, the local declarations in the function
-/// \param indentLevel
-///     How many levels to indent the output
-/// \return
-///     As a string, local declarations of the function
-//=========================================================================================================
+
 std::string GlslFunction::getLocalDecls( int indentLevel )
 {
    std::stringstream out;
@@ -262,18 +200,7 @@ std::string GlslFunction::getLocalDecls( int indentLevel )
    return out.str();
 }
 
-//=========================================================================================================
-/// Returns, as a string, the mutable declarations in the function.  Takes a set of other functions to
-/// check whether the mutable has already been declared.
-/// \param indentLevel
-///     How many levels to indent the output
-/// \param funcBegin
-///     First function which for which mutables have already been processed
-/// \param funcEnd
-///     Current function being processed for mutables
-/// \return
-///     As a string, local declarations of the function
-//=========================================================================================================
+
 std::string GlslFunction::getMutableDecls( int indentLevel, std::vector<GlslFunction*>::iterator funcBegin, 
                                            std::vector<GlslFunction*>::iterator funcEnd  )
 {

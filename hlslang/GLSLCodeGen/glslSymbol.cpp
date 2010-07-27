@@ -32,48 +32,15 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Implementation of GlslSymbol
-//=================================================================================================================================
-
-//=================================================================================================================================
-//
-//          Includes / defines / typedefs / static member variable initialization block
-//
-//=================================================================================================================================
-
 #include "glslSymbol.h"
 
-//=================================================================================================================================
-//
-//          Helper Functions Block
-//
-//=================================================================================================================================
 
-//=========================================================================================================
-/// Write boolean value to output buffer 
-/// \param out
-///   Output string buffer
-/// \param b
-///   Boolean value to write as string
-//=========================================================================================================
 static void writeBool( std::stringstream &out, bool b )
 {
    out << ((b) ? "true" : "false");
 }
 
-//=================================================================================================================================
-//
-//          Constructor(s) / Destructor(s) Block 
-//
-//=================================================================================================================================
 
-//=========================================================================================================
-//  Constructor
-//=========================================================================================================
 GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, EGlslQualifier q, int as ) :
    semantic(s),
    identifier(id),
@@ -101,25 +68,11 @@ GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGls
       mutableMangledName = mangledName;   
 }
 
-//=========================================================================================================
-/// Destructor
-//=========================================================================================================   
 GlslSymbol::~GlslSymbol() 
 {
 }
    
 
-//=================================================================================================================================
-//
-//          Private methods block
-//
-//=================================================================================================================================
-   
-//=========================================================================================================
-/// Is the variable name a reserved GLSL keyword that could have passed through the lexer?
-/// \param name
-///   Name to check against keywords 
-//=========================================================================================================
 bool GlslSymbol::isReservedGlslKeyword ( const std::string &name ) const
 {
    // Check against names that are keywords in GLSL, but not HLSL
@@ -133,19 +86,6 @@ bool GlslSymbol::isReservedGlslKeyword ( const std::string &name ) const
 }
 
 
-//=================================================================================================================================
-//
-//          Public methods block
-//
-//=================================================================================================================================
-
-//=========================================================================================================
-/// Write symbol declaration to the output stream
-/// \param out
-///   Output string buffer
-/// \param local
-///   Is the parameter local
-//=========================================================================================================
 void GlslSymbol::writeDecl( std::stringstream &out, bool local )
 {
    switch (qual)
@@ -178,14 +118,6 @@ void GlslSymbol::writeDecl( std::stringstream &out, bool local )
 }
 
 
-
-//=========================================================================================================
-/// Write symbol initializer to the output stream
-/// \param out
-///   Output string buffer
-/// \param local
-///   Element in symbol to initialize
-//=========================================================================================================
 void GlslSymbol::writeInitializer( std::stringstream &out, int element )
 {
    int elementCount = 0;
@@ -279,11 +211,7 @@ void GlslSymbol::writeInitializer( std::stringstream &out, int element )
    }
 }
 
-//=========================================================================================================
-/// Set symbol to be initialized to a constant value
-/// \param ptr
-///   Constant union representing value to initialize symbol to
-//=========================================================================================================
+
 void GlslSymbol::setInitializer( const constUnion *ptr )
 {
    int elementCount = 0;
@@ -365,9 +293,7 @@ void GlslSymbol::setInitializer( const constUnion *ptr )
    }
 }
 
-//=========================================================================================================
-/// Set the mangled name for the symbol
-//=========================================================================================================
+
 void GlslSymbol::mangleName() 
 {
    std::stringstream s;
@@ -379,4 +305,3 @@ void GlslSymbol::mangleName()
    else
       mutableMangledName = mangledName;
 }
-   
