@@ -32,29 +32,9 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Implementation of TSamplerTraverser
-//=================================================================================================================================
-
-//=================================================================================================================================
-//
-//          Includes / defines / typedefs / static member variable initialization block
-//
-//=================================================================================================================================
 #include "typeSamplers.h"
 
 
-
-//=========================================================================================================
-/// Traverse symbol node
-/// \param node
-///   Symbol node to to traverse
-/// \param it
-///   Pointer to traverser
-//=========================================================================================================
 void TSamplerTraverser::traverseSymbol( TIntermSymbol *node, TIntermTraverser *it )
 {
    TSamplerTraverser* sit = static_cast<TSamplerTraverser*>(it);
@@ -74,15 +54,7 @@ void TSamplerTraverser::traverseSymbol( TIntermSymbol *node, TIntermTraverser *i
    }
 }
 
-//=========================================================================================================
-/// Traverse binary node
-/// \param preVisit
-///   Used only by base class, unused here.
-/// \param node
-///   Binary node to to traverse
-/// \param it
-///   Pointer to traverser
-//=========================================================================================================
+
 bool TSamplerTraverser::traverseBinary( bool preVisit, TIntermBinary *node, TIntermTraverser *it )
 {
    TSamplerTraverser* sit = static_cast<TSamplerTraverser*>(it);
@@ -95,7 +67,6 @@ bool TSamplerTraverser::traverseBinary( bool preVisit, TIntermBinary *node, TInt
    case EOpAssign:
       //believed to be disallowed on samplers...
       break;
-
 
    case EOpIndexDirect:
    case EOpIndexIndirect:
@@ -110,36 +81,18 @@ bool TSamplerTraverser::traverseBinary( bool preVisit, TIntermBinary *node, TInt
       break;
    }
 
-
    return !(sit->abort);
 }
 
-//=========================================================================================================
-/// Traverse unary node
-/// \param preVisit
-///   Used only by base class, unused here.
-/// \param node
-///   Unary node to to traverse
-/// \param it
-///   Pointer to traverser
-//=========================================================================================================
+
 bool TSamplerTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIntermTraverser *it)
 {
    TSamplerTraverser* sit = static_cast<TSamplerTraverser*>(it);
 
-
    return !(sit->abort);
 }
 
-//=========================================================================================================
-/// Traverse selection node
-/// \param preVisit
-///   Used only by base class, unused here.
-/// \param node
-///   Selection node to to traverse
-/// \param it
-///   Pointer to traverser
-//=========================================================================================================
+
 bool TSamplerTraverser::traverseSelection( bool preVisit, TIntermSelection *node, TIntermTraverser *it)
 {
    //TODO: might need to run down this rat hole for ?: operator
@@ -148,15 +101,7 @@ bool TSamplerTraverser::traverseSelection( bool preVisit, TIntermSelection *node
    return !(sit->abort);
 }
 
-//=========================================================================================================
-/// Traverse aggregate node
-/// \param preVisit
-///   Used only by base class, unused here.
-/// \param node
-///   Aggregate node to to traverse
-/// \param it
-///   Pointer to traverser
-//=========================================================================================================
+
 bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node, TIntermTraverser *it)
 {
    TSamplerTraverser* sit = static_cast<TSamplerTraverser*>(it);
@@ -388,15 +333,7 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
    return !(sit->abort);
 }
 
-//=========================================================================================================
-/// Traverse loop node
-/// \param preVisit
-///   Used only by base class, unused here.
-/// \param node
-///   Loop node to to traverse
-/// \param it
-///   Pointer to traverser
-//=========================================================================================================
+
 bool TSamplerTraverser::traverseLoop( bool preVisit, TIntermLoop *node, TIntermTraverser *it)
 {
    TSamplerTraverser* sit = static_cast<TSamplerTraverser*>(it);
@@ -404,15 +341,7 @@ bool TSamplerTraverser::traverseLoop( bool preVisit, TIntermLoop *node, TIntermT
    return !(sit->abort);
 }
 
-//=========================================================================================================
-/// Traverse branch node
-/// \param preVisit
-///   Used only by base class, unused here.
-/// \param node
-///   Branch node to to traverse
-/// \param it
-///   Pointer to traverser
-//=========================================================================================================
+
 bool TSamplerTraverser::traverseBranch( bool preVisit, TIntermBranch *node,  TIntermTraverser *it)
 {
    TSamplerTraverser* sit = static_cast<TSamplerTraverser*>(it);
@@ -420,13 +349,7 @@ bool TSamplerTraverser::traverseBranch( bool preVisit, TIntermBranch *node,  TIn
    return !(sit->abort);
 }
 
-//=========================================================================================================
-/// Set the type for the sampler
-/// \param node
-///   Sampler node to set
-/// \param samp
-///   Sampler type to set node to
-//=========================================================================================================
+
 void TSamplerTraverser::typeSampler( TIntermTyped *node, TBasicType samp )
 {
    TIntermSymbol *symNode = node->getAsSymbolNode();
@@ -467,13 +390,7 @@ void TSamplerTraverser::typeSampler( TIntermTyped *node, TBasicType samp )
    }
 }
 
-//=========================================================================================================
-/// Traverse the entire tree, typing all samplers that need to be typed
-/// \param node
-///   Root node of the tree
-/// \param info
-///   Infosink to hold log
-//=========================================================================================================
+
 void TSamplerTraverser::TypeSamplers( TIntermNode *node, TInfoSink &info )
 {
    TSamplerTraverser st(info);
@@ -493,5 +410,4 @@ void TSamplerTraverser::TypeSamplers( TIntermNode *node, TInfoSink &info )
          st.abort = true;
       }
    } while (st.abort);
-
 }

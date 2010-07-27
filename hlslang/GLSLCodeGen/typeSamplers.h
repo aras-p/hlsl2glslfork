@@ -32,79 +32,32 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Implementation of TSamplerTraverser
-//=================================================================================================================================
-
 #ifndef TYPE_SAMPLERS_H
 #define TYPE_SAMPLERS_H
 
 #include "localintermediate.h"
-
 #include "glslOutput.h"
 
-//=================================================================================================================================
-/// TSamplerTraverser
-/// 
-/// \brief This class iterates over the intermediate tree and sets untyped sampler symbols to have types based on the 
-///        type of texture operation the samplers are used for
-//=================================================================================================================================
+/// Iterates over the intermediate tree and sets untyped sampler symbols to have types based on the
+/// type of texture operation the samplers are used for
 class TSamplerTraverser : public TIntermTraverser 
 {
 private:
 
-   //=========================================================================================================
-   /// Traverse a symbol node
-   //=========================================================================================================   
    static void traverseSymbol(TIntermSymbol*, TIntermTraverser*);
-
-   //=========================================================================================================
-   /// Traverse a parameter symbol node
-   //=========================================================================================================      
    static void traverseParameterSymbol(TIntermSymbol *node, TIntermTraverser *it);
-
-   //=========================================================================================================
-   /// Traverse a binary node
-   //=========================================================================================================      
    static bool traverseBinary(bool preVisit, TIntermBinary*, TIntermTraverser*);
-
-   //=========================================================================================================
-   /// Traverse a unary node
-   //=========================================================================================================      
    static bool traverseUnary(bool preVisit, TIntermUnary*, TIntermTraverser*);
-
-   //=========================================================================================================
-   /// Traverse a selection node
-   //=========================================================================================================      
    static bool traverseSelection(bool preVisit, TIntermSelection*, TIntermTraverser*);
-   
-   //=========================================================================================================
-   /// Traverse an aggregate node
-   //=========================================================================================================      
    static bool traverseAggregate(bool preVisit, TIntermAggregate*, TIntermTraverser*);
-
-   //=========================================================================================================
-   /// Traverse a loop node
-   //=========================================================================================================      
    static bool traverseLoop(bool preVisit, TIntermLoop*, TIntermTraverser*);
-
-   //=========================================================================================================
-   /// Traverse a branch node
-   //=========================================================================================================      
    static bool traverseBranch(bool preVisit, TIntermBranch*,  TIntermTraverser*);
    
-   //=========================================================================================================
    /// Set the type for the sampler
-   //=========================================================================================================
    void typeSampler( TIntermTyped *node, TBasicType samp);
 
-   // Info sink log
    TInfoSink& infoSink;
 
-   // Whether to abort the sampler typing
    bool abort;
 
    // These are used to go into "typing mode"
@@ -112,16 +65,11 @@ private:
    int id;
    TBasicType sampType;
 
-   // Map of functions
    std::map<std::string,TIntermSequence* > functionMap;
 
-   // Current function name
    std::string currentFunction;
+	
 public:
-
-   //=========================================================================================================
-   /// Constructor
-   //=========================================================================================================   
    TSamplerTraverser( TInfoSink &is) : infoSink(is), abort(false), typing(false), id(0), sampType(EbtSamplerGeneric) 
    {
       visitSymbol = traverseSymbol;
@@ -134,11 +82,7 @@ public:
       visitBranch = traverseBranch;
    }
    
-   //=========================================================================================================
-   /// Traverse the entire tree, typing all samplers that need to be typed
-   //=========================================================================================================   
-   static void TypeSamplers( TIntermNode *node, TInfoSink &info);
-    
+   static void TypeSamplers( TIntermNode *node, TInfoSink &info);    
 };
 
 #endif //TYPE_SAMPLERS_H

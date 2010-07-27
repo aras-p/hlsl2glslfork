@@ -32,34 +32,10 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Implementation of TPropagateMutable
-//=================================================================================================================================
-
-//=================================================================================================================================
-//
-//          Includes / defines / typedefs / static member variable initialization block
-//
-//=================================================================================================================================
 #include "propagateMutable.h"
 
 
-//=================================================================================================================================
-//
-//          Private Members Block
-//
-//=================================================================================================================================
 
-//=========================================================================================================
-/// Propage the mutable uniform qualifier throughout the symbols as needed
-/// \param Node
-///   Symbol node to propogate mutables
-/// \param it
-///   Pointer to traverser
-//=========================================================================================================
 void TPropagateMutable::traverseSymbol( TIntermSymbol *node, TIntermTraverser *it )
 {
    TPropagateMutable* sit = static_cast<TPropagateMutable*>(it);
@@ -70,7 +46,6 @@ void TPropagateMutable::traverseSymbol( TIntermSymbol *node, TIntermTraverser *i
    if (sit->propagating && sit->id == node->getId())
    {
       node->getTypePointer()->changeQualifier( EvqMutableUniform );
-
    }
    else if (!sit->propagating && sit->fixedIds.find(node->getId()) == sit->fixedIds.end() )
    {
@@ -83,22 +58,7 @@ void TPropagateMutable::traverseSymbol( TIntermSymbol *node, TIntermTraverser *i
    }
 }
 
-//=================================================================================================================================
-//
-//          Public Members Block
-//
-//=================================================================================================================================
 
-
-//=========================================================================================================
-/// The TProgpogateMutable class implements only the symbol travere function (this member).  It goes
-/// through the symbol and propogates the mutubale qualifier through the symbol nodes.  This function
-/// initiates the propogation.
-/// \param node
-///   The root node of the tree
-/// \param info
-///   Infosink to log to
-//=========================================================================================================
 void TPropagateMutable::PropagateMutable( TIntermNode *node, TInfoSink &info )
 {
    TPropagateMutable st(info);
@@ -118,5 +78,4 @@ void TPropagateMutable::PropagateMutable( TIntermNode *node, TInfoSink &info )
          st.abort = true;
       }
    } while (st.abort);
-
 }
