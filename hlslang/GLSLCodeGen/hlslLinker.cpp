@@ -32,19 +32,6 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Implementation of HlslLinker
-//=================================================================================================================================
-
-
-//=================================================================================================================================
-//
-//          Includes / defines / typedefs / static member variable initialization block
-//
-//=================================================================================================================================
 #include "hlslLinker.h"
 
 #include "glslFunction.h"
@@ -162,15 +149,8 @@ static const char resultString[EAttrSemCount][32] = {
 	""
 };
 
-//=================================================================================================================================
-//
-//          Constructor(s) / Destructor(s) Block 
-//
-//=================================================================================================================================
 
-//=========================================================================================================
-/// Constructor
-//=========================================================================================================
+
 HlslLinker::HlslLinker(int dOptions) : TLinker(infoSink), debugOptions(dOptions) 
 {
 	for ( int i = 0; i < EAttrSemCount; i++)
@@ -182,9 +162,7 @@ HlslLinker::HlslLinker(int dOptions) : TLinker(infoSink), debugOptions(dOptions)
 	bUserVaryings = false;
 }
 
-//=========================================================================================================
-/// Destructor
-//=========================================================================================================
+
 HlslLinker::~HlslLinker()
 {
 	for ( std::vector<ShUniformInfo>::iterator it = uniforms.begin(); it != uniforms.end(); it++)
@@ -197,13 +175,6 @@ HlslLinker::~HlslLinker()
 
 
 
-//=================================================================================================================================
-//
-//          Protected Methods Block
-//
-//=================================================================================================================================
-
-//=========================================================================================================
 /// Get the GLSL name, constructor type and padding for a given argument 
 /// \param name
 ///   The name of the symbol
@@ -223,7 +194,6 @@ HlslLinker::~HlslLinker()
 ///   When using an array variable bound to a semantic, this is the array offset
 /// \return 
 ///   True if argument data was retrieved succesfully, false otherwise.
-//=========================================================================================================
 bool HlslLinker::getArgumentData( const std::string &name, const std::string &semantic, EGlslSymbolType type,
 								 EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset)
 {
@@ -369,7 +339,7 @@ bool HlslLinker::getArgumentData( const std::string &name, const std::string &se
 	return true;
 }
 
-//=========================================================================================================
+
 /// Get the GLSL name, constructor type and padding for a given symbol
 /// \param symbol
 ///   The symbol to get data for
@@ -383,7 +353,6 @@ bool HlslLinker::getArgumentData( const std::string &name, const std::string &se
 ///   Any padding required in constructing the symbol
 /// \return 
 ///   True if argument data was retrieved succesfully, false otherwise.
-//=========================================================================================================
 bool HlslLinker::getArgumentData( GlslSymbol* sym, EClassifier c, std::string &outName,
 								 std::string &ctor, int &pad)
 {
@@ -394,14 +363,8 @@ bool HlslLinker::getArgumentData( GlslSymbol* sym, EClassifier c, std::string &o
 	return getArgumentData( name, semantic, type, c, outName, ctor, pad);
 }
 
-//=================================================================================================================================
-//
-//          Public Methods Methods Block
-//
-//=================================================================================================================================
 
 
-//=========================================================================================================
 /// If the user elects to use user attributes rather than built-ins, this function will set the user
 /// attribute name the user wishes to use for the semantic passed in.
 /// \param eSemantic
@@ -410,7 +373,6 @@ bool HlslLinker::getArgumentData( GlslSymbol* sym, EClassifier c, std::string &o
 ///   The name to use for the user attribute 
 /// \return
 ///   True if the semantic value is valid, false otherwise.
-//=========================================================================================================
 bool HlslLinker::setUserAttribName ( EAttribSemantic eSemantic, const char *pName )
 {
 	if ( eSemantic >= EAttrSemPosition && eSemantic <= EAttrSemDepth )
@@ -430,7 +392,6 @@ bool HlslLinker::setUserAttribName ( EAttribSemantic eSemantic, const char *pNam
 }
 
 
-//=========================================================================================================
 /// Strip the semantic string of any modifiers (e.g. _centroid)
 /// \param semantic
 ///   String of HLSL semantic for variable
@@ -438,7 +399,6 @@ bool HlslLinker::setUserAttribName ( EAttribSemantic eSemantic, const char *pNam
 ///   Boolean value of whether to add a warning to the output log about the existence of the semantic
 ///   modifier.
 /// \return The semantic name with the modifier stripped
-//=========================================================================================================
 std::string HlslLinker::stripSemanticModifier( const std::string &semantic, bool bWarn ) 
 {
 	std::string newSemantic = semantic;
@@ -456,12 +416,11 @@ std::string HlslLinker::stripSemanticModifier( const std::string &semantic, bool
 	return newSemantic;
 }
 
-//=========================================================================================================
+
 /// Determine the GLSL attribute semantic for a given HLSL semantic
 /// \param semantic
 ///   String of HLSL semantic for variable
 /// \return The GLSL attribute semantic associated with the HLSL smenatic, or none if not matched
-//=========================================================================================================
 EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic )
 {
 
@@ -562,7 +521,6 @@ EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic 
 
 
 
-//=========================================================================================================
 /// Add the functions called by a function to the function set
 /// \param func
 ///   The function for which all called functions will be added
@@ -572,7 +530,6 @@ EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic 
 ///   The list of all functions
 /// \return
 ///   True if all functions are found in the funcList, false otherwise.
-//=========================================================================================================
 bool HlslLinker::addCalledFunctions( GlslFunction *func, FunctionSet& funcSet, std::vector<GlslFunction*> &funcList )
 {
 	const std::set<std::string> &cf = func->getCalledFunctions();
@@ -643,7 +600,7 @@ static const char* GetEntryName (const char* entryFunc)
 
 static const char* kShaderTypeNames[2] = { "Vertex", "Fragment" };
 
-//=========================================================================================================
+
 /// This function is the main function that initiates code generation for the shader.  
 /// \param hList
 ///   The list of functions to link
@@ -653,7 +610,6 @@ static const char* kShaderTypeNames[2] = { "Vertex", "Fragment" };
 ///   The name of the fragment shader entrypoint
 /// \return
 ///   True if linking is succesful, false otherwise
-//=========================================================================================================
 bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char* fragEntryFunc)
 {
 	std::vector<GlslFunction*> globalList;
@@ -1347,12 +1303,7 @@ static std::string CleanupShaderText (const std::string& str)
 }
 
 
-//=========================================================================================================
-/// Interface to retreive the output GLSL shader text
-/// \param lan
-///   The language to get the shader text for
-/// \return As a C string, the shader text for the language specified
-//=========================================================================================================   
+
 const char* HlslLinker::getShaderText( EShLanguage lang ) const 
 {
 	if ( lang == EShLangVertex) 

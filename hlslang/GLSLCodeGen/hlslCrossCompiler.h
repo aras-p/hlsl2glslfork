@@ -32,13 +32,6 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Definition of HlslCrossCompiler
-//=================================================================================================================================
-
 #ifndef HLSL_CROSS_COMPILER_H
 #define HLSL_CROSS_COMPILER_H
 
@@ -49,42 +42,24 @@
 #include "glslFunction.h"
 #include "glslStruct.h"
 
-//=================================================================================================================================
-/// HlslCrossCompiler
-/// 
-/// \brief This class provides the interface to initiate a compile
-//=================================================================================================================================
+/// Provides the interface to initiate a compile
 class HlslCrossCompiler : public TCompiler 
 {
 public:   
    
-   //=========================================================================================================
-   /// Constructor
-   //=========================================================================================================
    HlslCrossCompiler(EShLanguage l, int dOptions);
-
-   //=========================================================================================================
-   /// Destructor
-   //=========================================================================================================
    virtual ~HlslCrossCompiler();
 
-   //=========================================================================================================
-   /// Generate code from the given parse tree
-   //=========================================================================================================   
    virtual bool compile(TIntermNode* root);
-
-   // Info sink
+	
+public:
    TInfoSink infoSink;
 
-   // Debug options
    int debugOptions;
 
-   // Function list
    std::vector<GlslFunction*> functionList;
 
-   // Structure list
    std::vector<GlslStruct*> structList;
 };
 
 #endif //HLSL_CROSS_COMPILER_H
-

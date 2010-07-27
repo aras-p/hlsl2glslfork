@@ -32,13 +32,6 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Definition of HlslLinker
-//=================================================================================================================================
-
 #ifndef HLSL_LINKER_H
 #define HLSL_LINKER_H
 
@@ -47,10 +40,11 @@
 #include "../Include/Common.h"
 #include "../Include/ShHandle.h"
 
-
 #include "glslFunction.h"
 
+
 #define MAX_ATTRIB_NAME 64
+
 
 // Variable classifiers
 enum EClassifier 
@@ -64,17 +58,12 @@ enum EClassifier
 };
 
 
-//=================================================================================================================================
-/// HlslCrossCompiler
-/// 
-/// \brief This class provides the implementation of the linker that will actually initiate the generation of the final GLSL
-///        code.
-//=================================================================================================================================
+/// Implementation of the linker that will actually initiate the generation of the final GLSL code.
 class HlslLinker : public TLinker 
 {
 private:
 
-	// GLSL string for vertex & fragment shaders
+	// GLSL strings for vertex & fragment shaders
 	std::stringstream shader[2];
    
    // Uniform list
@@ -92,55 +81,32 @@ private:
 
 public:
 
-   //=========================================================================================================
-   /// Constructor
-   //=========================================================================================================
    HlslLinker(int dOptions);
-
-   //=========================================================================================================
-   /// Destructor
-   //=========================================================================================================
    ~HlslLinker();
-   
-   //=========================================================================================================
-   /// This function is the main function that initiates code generation for the shader.  
-   //=========================================================================================================
+	
+   /// Main function that initiates code generation for the shader.  
    bool link(THandleList&, const char* vertEntry, const char* fragEntry);
 
-   //=========================================================================================================
    /// Strip the semantic string of any modifiers (e.g. _centroid)
-   //=========================================================================================================   
    std::string stripSemanticModifier(const std::string &semantic, bool bWarn);
 
-   //=========================================================================================================
    /// Determine the GLSL attribute semantic for a given HLSL semantic
-   //=========================================================================================================   
    EAttribSemantic parseAttributeSemantic(const std::string &semantic);
 
-   //=========================================================================================================
    /// If the user elects to use user attributes rather than built-ins, this function will set the user
    /// attribute name the user wishes to use for the semantic passed in.
-   //=========================================================================================================   
    virtual bool setUserAttribName ( EAttribSemantic eSemantic, const char *pName );
 
-   //=========================================================================================================
    /// Enable the use of user-varyings rather than built-ins in the output code generation
-   //=========================================================================================================   
    virtual void setUseUserVaryings ( bool bUseUserVaryings ) { bUserVaryings = bUseUserVaryings; }
 
-   //=========================================================================================================
    /// Interface to retreive the output GLSL shader text
-   //=========================================================================================================   
    const char* getShaderText( EShLanguage lang ) const;
       
-   //=========================================================================================================
    /// Get the number of uniforms
-   //=========================================================================================================
    int getUniformCount() const { return (int)uniforms.size(); }
 
-   //=========================================================================================================
    /// Return the uniform info table
-   //=========================================================================================================
    const ShUniformInfo* getUniformInfo() const  { return ( ( uniforms.size() ) ? &uniforms[0] : 0 ); }
    
    // Info sink for storing output
@@ -152,21 +118,14 @@ public:
 protected:
 	typedef std::vector<GlslFunction*> FunctionSet;
 
-   //=========================================================================================================
    /// Add the functions called by a function to the function set
-   //=========================================================================================================   
    bool addCalledFunctions( GlslFunction *func, FunctionSet& funcSet, std::vector<GlslFunction*> &funcList);
 
-
-   //=========================================================================================================
    /// Get the GLSL name, constructor type and padding for a given argument 
-   //=========================================================================================================   
    bool getArgumentData( const std::string &name, const std::string &semantic, EGlslSymbolType type,
                                EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset = 0);
 
-   //=========================================================================================================
    /// Get the GLSL name, constructor type and padding for a given symbol
-   //=========================================================================================================   
    bool getArgumentData( GlslSymbol* sym, EClassifier c, std::string &outName,
                   std::string &ctor, int &pad);
 
