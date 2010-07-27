@@ -74,11 +74,8 @@ class HlslLinker : public TLinker
 {
 private:
 
-   // Fragment shader GLSL string
-   std::stringstream fragShader;
-   
-   // Vertex shader GLSL string
-   std::stringstream vertShader;
+	// GLSL string for vertex & fragment shaders
+	std::stringstream shader[2];
    
    // Uniform list
    std::vector<ShUniformInfo> uniforms;

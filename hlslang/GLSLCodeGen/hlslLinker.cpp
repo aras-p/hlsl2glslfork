@@ -641,6 +641,7 @@ static const char* GetEntryName (const char* entryFunc)
 	return entryFunc;
 }
 
+static const char* kShaderTypeNames[2] = { "Vertex", "Fragment" };
 
 //=========================================================================================================
 /// This function is the main function that initiates code generation for the shader.  
@@ -657,13 +658,12 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 {
 	std::vector<GlslFunction*> globalList;
 	std::vector<GlslFunction*> functionList;
-	GlslFunction *vertMain = 0;
-	GlslFunction *fragMain = 0;
+	std::string entryPoints[2];
+	GlslFunction* funcMain[2] = {NULL, NULL};
 	FunctionSet calledFunctions[2];
 	std::set<TOperator> libFunctions[2];
 	std::map<std::string,GlslSymbol*> globalSymMap[2];
 	std::map<std::string,GlslStruct*> structMap[2];
-	std::string vertEntry, fragEntry;
 
 	if (!vertEntryFunc && !fragEntryFunc)
 	{
@@ -671,8 +671,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		return false;
 	}
 
-	vertEntry = GetEntryName (vertEntryFunc);
-	fragEntry = GetEntryName (fragEntryFunc);
+	entryPoints[0] = GetEntryName (vertEntryFunc);
+	entryPoints[1] = GetEntryName (fragEntryFunc);
 
 	//build the list of functions
 	for (THandleList::iterator it = hList.begin(); it < hList.end(); it++ )
@@ -688,60 +688,43 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 			else
 				functionList.push_back( *fit);
 
-			if ( (*fit)->getName() == vertEntry)
+			for (int i = 0; i < 2; ++i)
 			{
-				if (vertMain)
+				if ((*fit)->getName() == entryPoints[i])
 				{
-					infoSink.info << "Vertex entry function cannot be overloaded\n";
-					return false;
+					if (funcMain[i])
+					{
+						infoSink.info << kShaderTypeNames[i] << " entry function cannot be overloaded\n";
+						return false;
+					}
+					funcMain[i] = *fit;
 				}
-				vertMain = *fit;
-			}
-
-			if ( (*fit)->getName() == fragEntry)
-			{
-				if (fragMain)
-				{
-					infoSink.info << "Fragment entry function cannot be overloaded\n";
-					return false;
-				}
-				fragMain = *fit;
 			}
 		}
 	}
 
 	//check to ensure that we found the entry functions
-	if ( fragEntryFunc && !fragMain)
+	if ( fragEntryFunc && !funcMain[1])
 	{
-		infoSink.info << "Failed to find fragment entry function: '" << fragEntry <<"'\n";
+		infoSink.info << "Failed to find fragment entry function: '" << entryPoints[1] <<"'\n";
 		return false;
 	}
 
-	if ( vertEntryFunc && !vertMain)
+	if ( vertEntryFunc && !funcMain[0])
 	{
-		infoSink.info << "Failed to find vertex entry function: '" << vertEntry <<"'\n";
+		infoSink.info << "Failed to find vertex entry function: '" << entryPoints[0] <<"'\n";
 		return false;
 	}
 
-	//add all the vertex functions to the list
-	if (vertEntryFunc)
+	//add all the called functions to the list
+	for (int i = 0; i < 2; ++i)
 	{
-		calledFunctions[0].push_back( vertMain);
-
-		if ( !addCalledFunctions( vertMain, calledFunctions[0], functionList))
+		if (!funcMain[i])
+			continue;
+		calledFunctions[i].push_back (funcMain[i]);
+		if (!addCalledFunctions (funcMain[i], calledFunctions[i], functionList))
 		{
-			infoSink.info << "Failed to resolve all called functions in the vertex shader\n";
-		}
-	}
-
-	//add all the fragment functions to the list
-	if (fragEntryFunc)
-	{
-		calledFunctions[1].push_back( fragMain);
-
-		if ( !addCalledFunctions( fragMain, calledFunctions[1], functionList))
-		{
-			infoSink.info << "Failed to resolve all called functions in the fragment shader\n";
+			infoSink.info << "Failed to resolve all called functions in the " << kShaderTypeNames[i] << " shader\n";
 		}
 	}
 
@@ -781,25 +764,15 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 	//
 	// Write Library Functions
-	//
-	if (libFunctions[0].size() > 0)
+	for (int i = 0; i < 2; ++i)
 	{
-		for (std::set<TOperator>::iterator it = libFunctions[0].begin(); it != libFunctions[0].end(); it++)
+		if (libFunctions[i].empty())
+			continue;
+		for (std::set<TOperator>::iterator it = libFunctions[i].begin(); it != libFunctions[i].end(); it++)
 		{
 			const std::string &func = getHLSLSupportCode( *it);
 			if (func.size())
-				vertShader << func << "\n";
-		}
-	}
-
-	if (libFunctions[1].size() > 0)
-	{
-		for (std::set<TOperator>::iterator it = libFunctions[1].begin(); it != libFunctions[1].end(); it++)
-		{
-			const std::string &func = getHLSLSupportCode( *it);
-			if (func.size())
-				fragShader << func << "\n";
-
+				shader[i] << func << "\n";
 		}
 	}
 
@@ -817,8 +790,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		{
 			for (std::vector<GlslStruct*>::iterator it = sList.begin(); it < sList.end(); it++)
 			{
-				fragShader << (*it)->getDecl() << "\n";
-				vertShader << (*it)->getDecl() << "\n";
+				shader[1] << (*it)->getDecl() << "\n";
+				shader[0] << (*it)->getDecl() << "\n";
 			}
 		}
 	}
@@ -826,32 +799,21 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	//
 	// Write global variables
 	//
-	if (globalSymMap[0].size() > 0 )
+
+	for (int i = 0; i < 2; ++i)
 	{
-		for (std::map<std::string,GlslSymbol*>::iterator sit = globalSymMap[0].begin(); sit != globalSymMap[0].end(); sit++)
+		if (globalSymMap[i].empty())
+			continue;
+
+		for (std::map<std::string,GlslSymbol*>::iterator sit = globalSymMap[i].begin(); sit != globalSymMap[i].end(); sit++)
 		{
-			sit->second->writeDecl(vertShader);
-			vertShader << ";\n";
+			sit->second->writeDecl(shader[i]);
+			shader[i] << ";\n";
 
 			if ( sit->second->getIsMutable() )
 			{
-				sit->second->writeDecl(vertShader, true);
-				vertShader << ";\n";
-			}         
-		}
-	}
-
-	if (globalSymMap[1].size() > 0 )
-	{
-		for (std::map<std::string,GlslSymbol*>::iterator sit = globalSymMap[1].begin(); sit != globalSymMap[1].end(); sit++)
-		{
-			sit->second->writeDecl(fragShader);
-			fragShader << ";\n";
-
-			if ( sit->second->getIsMutable() )
-			{
-				sit->second->writeDecl(fragShader, true);
-				fragShader << ";\n";
+				sit->second->writeDecl(shader[i], true);
+				shader[i] << ";\n";
 			}         
 		}
 	}
@@ -859,8 +821,8 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	//
 	// Write function declarations and definitions
 	//
-	EmitCalledFunctions (vertShader, calledFunctions[0]);
-	EmitCalledFunctions (fragShader, calledFunctions[1]);
+	EmitCalledFunctions (shader[0], calledFunctions[0]);
+	EmitCalledFunctions (shader[1], calledFunctions[1]);
 
 	// 
 	// Gather the uniforms into the uniform list
@@ -939,7 +901,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 	// Generate the main functions
 	//
 
-	if (vertMain)
+	if (funcMain[0])
 	{
 		std::stringstream attrib;
 		std::stringstream uniform;
@@ -947,11 +909,11 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		std::stringstream postamble;
 		std::stringstream varying;
 		std::stringstream call;
-		const int pCount = vertMain->getParameterCount();
+		const int pCount = funcMain[0]->getParameterCount();
 
 		preamble << "void main() {\n";
-		const EGlslSymbolType retType = vertMain->getReturnType();
-		GlslStruct *retStruct = vertMain->getStruct();
+		const EGlslSymbolType retType = funcMain[0]->getReturnType();
+		GlslStruct *retStruct = funcMain[0]->getStruct();
 		if (  retType == EgstStruct)
 		{
 			assert(retStruct);
@@ -981,13 +943,13 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 		call << "    ";
 		if (retType != EgstVoid)
-			call << "xl_retval = " << vertMain->getName() << "( ";
+			call << "xl_retval = " << funcMain[0]->getName() << "( ";
 		else
-			call << vertMain->getName() << "( ";
+			call << funcMain[0]->getName() << "( ";
 
 		for (int ii=0; ii<pCount; ii++)
 		{
-			GlslSymbol *sym = vertMain->getParameter(ii);
+			GlslSymbol *sym = funcMain[0]->getParameter(ii);
 			EAttribSemantic attrSem = parseAttributeSemantic( sym->getSemantic());
 
 			switch (sym->getQualifier())
@@ -1250,7 +1212,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 				std::string name, ctor;
 				int pad;
 
-				if ( getArgumentData( "", vertMain->getSemantic(), retType, EClassVarOut,
+				if ( getArgumentData( "", funcMain[0]->getSemantic(), retType, EClassVarOut,
 					name, ctor, pad) )
 				{
 
@@ -1332,28 +1294,28 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		call << ");\n";
 		postamble << "}\n\n";
 
-		EmitIfNotEmpty (vertShader, uniform);
-		EmitIfNotEmpty (vertShader, attrib);
-		EmitIfNotEmpty (vertShader, varying);
+		EmitIfNotEmpty (shader[0], uniform);
+		EmitIfNotEmpty (shader[0], attrib);
+		EmitIfNotEmpty (shader[0], varying);
 
-		vertShader << preamble.str() << "\n";
-		vertShader << call.str() << "\n";
-		vertShader << postamble.str() << "\n";
+		shader[0] << preamble.str() << "\n";
+		shader[0] << call.str() << "\n";
+		shader[0] << postamble.str() << "\n";
 
 	}
 
-	if (fragMain)
+	if (funcMain[1])
 	{
 		std::stringstream uniform;
 		std::stringstream preamble;
 		std::stringstream postamble;
 		std::stringstream varying;
 		std::stringstream call;
-		const int pCount = fragMain->getParameterCount();
+		const int pCount = funcMain[1]->getParameterCount();
 
 		preamble << "void main() {\n";
-		const EGlslSymbolType retType = fragMain->getReturnType();
-		GlslStruct *retStruct = fragMain->getStruct();
+		const EGlslSymbolType retType = funcMain[1]->getReturnType();
+		GlslStruct *retStruct = funcMain[1]->getStruct();
 		if (  retType == EgstStruct)
 		{
 			assert(retStruct);
@@ -1383,13 +1345,13 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 
 		call << "    ";
 		if (retType != EgstVoid)
-			call << "xl_retval = " << fragMain->getName() << "( ";
+			call << "xl_retval = " << funcMain[1]->getName() << "( ";
 		else
-			call << fragMain->getName() << "( ";
+			call << funcMain[1]->getName() << "( ";
 
 		for (int ii=0; ii<pCount; ii++)
 		{
-			GlslSymbol *sym = fragMain->getParameter(ii);
+			GlslSymbol *sym = funcMain[1]->getParameter(ii);
 			EAttribSemantic attrSem = parseAttributeSemantic( sym->getSemantic());
 			switch (sym->getQualifier())
 			{
@@ -1610,7 +1572,7 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 				std::string name, ctor;
 				int pad;
 
-				if ( getArgumentData( "", fragMain->getSemantic(), retType, EClassRes,
+				if ( getArgumentData( "", funcMain[1]->getSemantic(), retType, EClassRes,
 					name, ctor, pad) )
 				{
 
@@ -1669,12 +1631,12 @@ bool HlslLinker::link(THandleList& hList, const char* vertEntryFunc, const char*
 		}
 		postamble << "}\n\n";
 
-		EmitIfNotEmpty (fragShader, uniform);
-		EmitIfNotEmpty (fragShader, varying);
+		EmitIfNotEmpty (shader[1], uniform);
+		EmitIfNotEmpty (shader[1], varying);
 
-		fragShader << preamble.str() << "\n";
-		fragShader << call.str() << "\n";
-		fragShader << postamble.str() << "\n";
+		shader[1] << preamble.str() << "\n";
+		shader[1] << call.str() << "\n";
+		shader[1] << postamble.str() << "\n";
 	}
 
 	return true;
@@ -1707,12 +1669,12 @@ const char* HlslLinker::getShaderText( EShLanguage lang ) const
 {
 	if ( lang == EShLangVertex) 
 	{
-		bs = CleanupShaderText (vertShader.str());
+		bs = CleanupShaderText (shader[0].str());
 		return bs.c_str();
 	}
 	else if ( lang == EShLangFragment) 
 	{
-		bs = CleanupShaderText (fragShader.str());
+		bs = CleanupShaderText (shader[1].str());
 		return bs.c_str();
 	}
 	else
