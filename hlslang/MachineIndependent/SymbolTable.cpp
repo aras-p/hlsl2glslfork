@@ -66,21 +66,12 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//
-// Symbol table for parsing.  Most functionaliy and main ideas 
-// are documented in the header file.
-//
-
 #include "SymbolTable.h"
 
 TString* TParameter::NullSemantic = 0;
-//
-// TType helper function needs a place to live.
-//
 
-//
+
 // Recursively generate mangled names.
-//
 void TType::buildMangledName(TString& mangledName)
 {
    if (isMatrix())
@@ -143,9 +134,8 @@ int TType::getStructSize() const
    return structureSize;
 }
 
-//======================================================================================================
+
 // Determine the parameter compatibility between this type and the parameter type
-//======================================================================================================
 TType::ECompatibility TType::determineCompatibility ( const TType *pType ) const
 {
    // make sure the array info matches
@@ -219,10 +209,7 @@ TType::ECompatibility TType::determineCompatibility ( const TType *pType ) const
    return MATCH_EXACTLY;
 }
 
-//
 // Dump functions.
-//
-
 void TVariable::dump(TInfoSink& infoSink) const 
 {
    infoSink.debug << getName().c_str() << ": " << type.getQualifierString() << " " << type.getBasicString();
@@ -254,30 +241,24 @@ void TSymbolTable::dump(TInfoSink &infoSink) const
    }
 }
 
-//
-// Functions have buried pointers to delete.
-//
+
 TFunction::~TFunction()
 {
    for (TParamList::iterator i = parameters.begin(); i != parameters.end(); ++i)
       delete (*i).type;
 }
 
-//
-// Symbol table levels are a map of pointers to symbols that have to be deleted.
-//
 TSymbolTableLevel::~TSymbolTableLevel()
 {
    for (tLevel::iterator it = level.begin(); it != level.end(); ++it)
       delete (*it).second;
 }
 
-//
+
 // Change all function entries in the table with the non-mangled name
 // to be related to the provided built-in operation.  This is a low
 // performance operation, and only intended for symbol tables that
 // live across a large number of compiles.
-//
 void TSymbolTableLevel::relateToOperator(const char* name, TOperator op) 
 {
    tLevel::iterator it;
@@ -359,10 +340,10 @@ TSymbolTableLevel* TSymbolTableLevel::clone(TStructureMap& remapper)
 
    return symTableLevel;
 }
-//======================================================================================================
+
+
 // This function uses the matching rules as described in the Cg language doc (the closest
 // thing we have to HLSL function matching description) to find a matching compatible function.  
-//======================================================================================================
 TSymbol* TSymbolTableLevel::findCompatible( const TFunction *call, bool &ambiguous) const
 {
    ambiguous = false;
@@ -499,5 +480,3 @@ void TSymbolTable::copyTable(const TSymbolTable& copyOf)
       table.push_back(copyOf.table[i]->clone(remapper));
    }
 }
-
-

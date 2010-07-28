@@ -231,7 +231,7 @@ public:
    void relateToOperator(TOperator o) { op = o; }
    TOperator getBuiltInOp() const { return op; }
    void setDefined() { defined = true; }
-   bool isDefined() { return defined; }
+   bool isDefined() const { return defined; }
 
    int getParamCount() const { return static_cast<int>(parameters.size()); }    
    TParameter& operator [](int i)       { return parameters[i]; }
@@ -322,10 +322,10 @@ public:
    // 'push' calls, so that built-ins are at level 0 and the shader
    // globals are at level 1.
    //
-   bool isEmpty() { return table.size() == 0; }
-   bool atBuiltInLevel() { return atSharedBuiltInLevel() || atDynamicBuiltInLevel(); }
-   bool atSharedBuiltInLevel() { return table.size() == 1; }	
-   bool atGlobalLevel() { return table.size() <= 3; }
+   bool isEmpty() const { return table.size() == 0; }
+   bool atBuiltInLevel() const { return atSharedBuiltInLevel() || atDynamicBuiltInLevel(); }
+   bool atSharedBuiltInLevel() const { return table.size() == 1; }	
+   bool atGlobalLevel() const { return table.size() <= 3; }
    void push() 
    { 
       table.push_back(new TSymbolTableLevel);
@@ -381,13 +381,12 @@ public:
 
    TSymbolTableLevel* getGlobalLevel() { assert(table.size() >= 3); return table[2]; }
    void relateToOperator(const char* name, TOperator op) { table[0]->relateToOperator(name, op); }
-   int getMaxSymbolId() { return uniqueId; }
    void dump(TInfoSink &infoSink) const;
    void copyTable(const TSymbolTable& copyOf);
 
 protected:    
    int currentLevel() const { return static_cast<int>(table.size()) - 1; }
-   bool atDynamicBuiltInLevel() { return table.size() == 2; }
+   bool atDynamicBuiltInLevel() const { return table.size() == 2; }
 
    std::vector<TSymbolTableLevel*> table;
    int uniqueId;     // for unique identification in code generation
