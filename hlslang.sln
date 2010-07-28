@@ -3,6 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hlslang", "hlslang.vcproj", "{3B146CC5-B2B8-4573-9D46-6139E2EDFEA3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hlsl2glsltest", "tests\hlsl2glsltest\hlsl2glsltest.vcproj", "{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3B146CC5-B2B8-4573-9D46-6139E2EDFEA3} = {3B146CC5-B2B8-4573-9D46-6139E2EDFEA3}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +18,10 @@ Global
 		{3B146CC5-B2B8-4573-9D46-6139E2EDFEA3}.Debug|Win32.Build.0 = Debug|Win32
 		{3B146CC5-B2B8-4573-9D46-6139E2EDFEA3}.Release|Win32.ActiveCfg = Release|Win32
 		{3B146CC5-B2B8-4573-9D46-6139E2EDFEA3}.Release|Win32.Build.0 = Release|Win32
+		{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}.Debug|Win32.Build.0 = Debug|Win32
+		{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}.Release|Win32.ActiveCfg = Release|Win32
+		{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
