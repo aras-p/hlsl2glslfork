@@ -39,9 +39,10 @@
 #include "propagateMutable.h"
 
 
-HlslCrossCompiler::HlslCrossCompiler(EShLanguage l, int dOptions) : 
-   TCompiler(l, infoSink), 
-   debugOptions(dOptions)
+HlslCrossCompiler::HlslCrossCompiler(EShLanguage l, int dOptions)
+:	language(l)
+,	debugOptions(dOptions)
+,	haveValidObjectCode(false)
 {
 }
 

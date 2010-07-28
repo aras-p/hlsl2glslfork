@@ -42,6 +42,8 @@
 
 #include "glslFunction.h"
 
+class HlslCrossCompiler;
+
 
 #define MAX_ATTRIB_NAME 64
 
@@ -59,7 +61,7 @@ enum EClassifier
 
 
 /// Implementation of the linker that will actually initiate the generation of the final GLSL code.
-class HlslLinker : public TLinker 
+class HlslLinker : public TShHandleBase 
 {
 private:
 
@@ -84,8 +86,10 @@ public:
    HlslLinker(int dOptions);
    ~HlslLinker();
 	
+   TInfoSink& getInfoSink() { return infoSink; }
+
    /// Main function that initiates code generation for the shader.  
-   bool link(TCompiler*, const char* entry);
+   bool link(HlslCrossCompiler*, const char* entry);
 
    /// Strip the semantic string of any modifiers (e.g. _centroid)
    std::string stripSemanticModifier(const std::string &semantic, bool bWarn);

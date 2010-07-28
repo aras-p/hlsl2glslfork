@@ -72,67 +72,11 @@
 
 #include "../../include/hlsl2glsl.h"
 
-#include "InfoSink.h"
-
-class TCompiler;
-class TLinker;
-
-
 class TShHandleBase
 {
 public:
    TShHandleBase() {}
    virtual ~TShHandleBase() {}
 };
-
-class TIntermNode;
-
-class TCompiler : public TShHandleBase
-{
-public:
-   TCompiler(EShLanguage l, TInfoSink& sink) : infoSink(sink) , language(l), haveValidObjectCode(false)
-   { }
-   virtual ~TCompiler() { }
-   EShLanguage getLanguage() { return language; }
-   virtual TInfoSink& getInfoSink() { return infoSink; }
-
-   virtual bool compile(TIntermNode* root) = 0;
-
-   virtual bool linkable() { return haveValidObjectCode; }
-
-   TInfoSink& infoSink;
-protected:
-   EShLanguage language;
-   bool haveValidObjectCode;
-};
-
-
-class TLinker : public TShHandleBase
-{
-public:
-   TLinker(TInfoSink& iSink) : 
-      infoSink(iSink),
-      uniformBindings(0)
-   {
-   }
-   virtual ~TLinker() { }
-   virtual bool link(TCompiler*, const char*) { return false; }
-   virtual bool setUserAttribName ( EAttribSemantic eSemantic, const char *pName ) = 0;
-   virtual void setUseUserVaryings ( bool bUseUserVaryings ) = 0;
-   virtual TInfoSink& getInfoSink()
-   {
-      return infoSink;
-   }
-   TInfoSink& infoSink;
-
-   virtual const char* getShaderText() const = 0;
-   virtual int getUniformCount() const = 0;
-   virtual const ShUniformInfo* getUniformInfo() const = 0;
-
-protected:
-   ShBindingTable* uniformBindings;                // created by the linker
-};
-
-
 
 #endif // _SHHANDLE_INCLUDED_

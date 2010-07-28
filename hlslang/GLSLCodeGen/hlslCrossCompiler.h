@@ -42,23 +42,26 @@
 #include "glslFunction.h"
 #include "glslStruct.h"
 
-/// Provides the interface to initiate a compile
-class HlslCrossCompiler : public TCompiler 
+class HlslCrossCompiler : public TShHandleBase
 {
 public:   
-   
    HlslCrossCompiler(EShLanguage l, int dOptions);
    virtual ~HlslCrossCompiler();
 
+   EShLanguage getLanguage() const { return language; }
+   TInfoSink& getInfoSink() { return infoSink; }
+
    virtual bool compile(TIntermNode* root);
-	
+   virtual bool linkable() { return haveValidObjectCode; }
+
+private:
+	EShLanguage language;
+	bool haveValidObjectCode;
+
 public:
    TInfoSink infoSink;
-
    int debugOptions;
-
    std::vector<GlslFunction*> functionList;
-
    std::vector<GlslStruct*> structList;
 };
 

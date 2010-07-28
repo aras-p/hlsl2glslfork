@@ -151,7 +151,7 @@ static const char resultString[EAttrSemCount][32] = {
 
 
 
-HlslLinker::HlslLinker(int dOptions) : TLinker(infoSink), debugOptions(dOptions) 
+HlslLinker::HlslLinker(int dOptions) : debugOptions(dOptions) 
 {
 	for ( int i = 0; i < EAttrSemCount; i++)
 	{
@@ -602,7 +602,7 @@ static const char* kShaderTypeNames[2] = { "Vertex", "Fragment" };
 
 
 
-bool HlslLinker::link(TCompiler* compiler, const char* entryFunc)
+bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 {
 	std::vector<GlslFunction*> globalList;
 	std::vector<GlslFunction*> functionList;
