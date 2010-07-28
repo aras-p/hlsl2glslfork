@@ -51,8 +51,8 @@ public:
    EShLanguage getLanguage() const { return language; }
    TInfoSink& getInfoSink() { return infoSink; }
 
-   virtual bool compile(TIntermNode* root);
-   virtual bool linkable() { return haveValidObjectCode; }
+   bool compile(TIntermNode* root);
+   bool linkable() const { return haveValidObjectCode; }
 
 private:
 	EShLanguage language;

@@ -99,10 +99,10 @@ public:
 
    /// If the user elects to use user attributes rather than built-ins, this function will set the user
    /// attribute name the user wishes to use for the semantic passed in.
-   virtual bool setUserAttribName ( EAttribSemantic eSemantic, const char *pName );
+   bool setUserAttribName ( EAttribSemantic eSemantic, const char *pName );
 
    /// Enable the use of user-varyings rather than built-ins in the output code generation
-   virtual void setUseUserVaryings ( bool bUseUserVaryings ) { bUserVaryings = bUseUserVaryings; }
+   void setUseUserVaryings ( bool bUseUserVaryings ) { bUserVaryings = bUseUserVaryings; }
 
    /// Interface to retreive the output GLSL shader text
    const char* getShaderText() const;
