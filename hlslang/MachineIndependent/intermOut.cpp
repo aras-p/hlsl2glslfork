@@ -171,10 +171,10 @@ bool OutputBinary(bool, /* preVisit */ TIntermBinary* node, TIntermTraverser* it
    case EOpLeftShiftAssign:          out.debug << "<<="; break;
    case EOpRightShiftAssign:         out.debug << ">>="; break;
 
-   case EOpIndexDirect:   out.debug << "direct index";   break;
+   case EOpIndexDirect:   out.debug << "index";   break;
    case EOpIndexIndirect: out.debug << "indirect index"; break;
    case EOpIndexDirectStruct:   out.debug << "struct index";   break;
-   case EOpVectorSwizzle: out.debug << "vector swizzle"; break;
+   case EOpVectorSwizzle: out.debug << "swizzle"; break;
 
    case EOpAdd:    out.debug << "+"; break;
    case EOpSub:    out.debug << "-"; break;
@@ -202,6 +202,7 @@ bool OutputBinary(bool, /* preVisit */ TIntermBinary* node, TIntermTraverser* it
    case EOpLogicalOr:  out.debug << "||";   break;
    case EOpLogicalXor: out.debug << "^^"; break;
    case EOpLogicalAnd: out.debug << "&&"; break;
+   case EOpInitialize: out.debug << "init"; break;
    default: out.debug << "<unknown op>";
    }
 
@@ -301,9 +302,9 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    {
    case EOpSequence:      out.debug << "Sequence\n"; return true;
    case EOpComma:         out.debug << "Comma\n"; return true;
-   case EOpFunction:      out.debug << "Function Definition: " << node->getName(); break;
-   case EOpFunctionCall:  out.debug << "Function Call: " << node->getName(); break;
-   case EOpParameters:    out.debug << "Function Parameters: ";              break;
+   case EOpFunction:      out.debug << "Func Def: " << node->getName(); break;
+   case EOpFunctionCall:  out.debug << "Func Call: " << node->getName(); break;
+   case EOpParameters:    out.debug << "Func Params: ";              break;
 
    case EOpConstructFloat: out.debug << "Construct float"; break;
    case EOpConstructVec2:  out.debug << "Construct vec2";  break;
@@ -320,7 +321,7 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    case EOpConstructMat2:  out.debug << "Construct mat2";  break;
    case EOpConstructMat3:  out.debug << "Construct mat3";  break;
    case EOpConstructMat4:  out.debug << "Construct mat4";  break;
-   case EOpConstructStruct:  out.debug << "Construct structure";  break;
+   case EOpConstructStruct:  out.debug << "Construct struc";  break;
 
    case EOpLessThan:         out.debug << "Compare Less Than";             break;
    case EOpGreaterThan:      out.debug << "Compare Greater Than";          break;
@@ -332,8 +333,8 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    case EOpMod:           out.debug << "mod";         break;
    case EOpPow:           out.debug << "pow";         break;
 
-   case EOpAtan:          out.debug << "arc tangent"; break;
-   case EOpAtan2:         out.debug << "arc tangent 2"; break;
+   case EOpAtan:          out.debug << "atan"; break;
+   case EOpAtan2:         out.debug << "atan2"; break;
 
    case EOpSinCos:        out.debug << "sincos";      break;
 
@@ -345,9 +346,9 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    case EOpSmoothStep:    out.debug << "smoothstep";  break;
 
    case EOpDistance:      out.debug << "distance";                break;
-   case EOpDot:           out.debug << "dot-product";             break;
-   case EOpCross:         out.debug << "cross-product";           break;
-   case EOpFaceForward:   out.debug << "face-forward";            break;
+   case EOpDot:           out.debug << "dot";             break;
+   case EOpCross:         out.debug << "cross";           break;
+   case EOpFaceForward:   out.debug << "faceforward";            break;
    case EOpReflect:       out.debug << "reflect";                 break;
    case EOpRefract:       out.debug << "refract";                 break;
    case EOpMul:           out.debug << "mul";                     break;
@@ -362,6 +363,29 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    case EOpWriteOutput:   out.debug << "writeOutput"; break;
    case EOpReadPixel:     out.debug << "readPixel";   break;
 
+   case EOpTex1D:		out.debug << "tex1D"; break;
+   case EOpTex1DProj:	out.debug << "tex1Dproj"; break;
+   case EOpTex1DLod:	out.debug << "tex1Dlod"; break;
+   case EOpTex1DBias:	out.debug << "tex1Dbias"; break;
+   case EOpTex1DGrad:	out.debug << "tex1Dgrad"; break;
+   case EOpTex2D:		out.debug << "tex2D"; break;
+   case EOpTex2DProj:	out.debug << "tex2Dproj"; break;
+   case EOpTex2DLod:	out.debug << "tex2Dlod"; break;
+   case EOpTex2DBias:	out.debug << "tex2Dbias"; break;
+   case EOpTex2DGrad:	out.debug << "tex2Dgrad"; break;
+   case EOpTex3D:		out.debug << "tex3D"; break;
+   case EOpTex3DProj:	out.debug << "tex3Dproj"; break;
+   case EOpTex3DLod:	out.debug << "tex3Dlod"; break;
+   case EOpTex3DBias:	out.debug << "tex3Dbias"; break;
+   case EOpTex3DGrad:	out.debug << "tex3Dgrad"; break;
+   case EOpTexCube:		out.debug << "texCUBE"; break;
+   case EOpTexCubeProj:	out.debug << "texCUBEproj"; break;
+   case EOpTexCubeLod:	out.debug << "texCUBElod"; break;
+   case EOpTexCubeBias:	out.debug << "texCUBEbias"; break;
+   case EOpTexCubeGrad:	out.debug << "texCUBEgrad"; break;
+   case EOpTexRect:		out.debug << "texRECT"; break;
+   case EOpTexRectProj:	out.debug << "texRECTproj"; break;
+ 
    default: out.debug.message(EPrefixError, "Bad aggregation op");
    }
 
@@ -380,7 +404,7 @@ bool OutputSelection(bool, /* preVisit */ TIntermSelection* node, TIntermTravers
 
    OutputTreeText(out, node, oit->depth);
 
-   out.debug << "Test condition and select";
+   out.debug << "ternary ?:";
    out.debug << " (" << node->getCompleteString() << ")\n";
 
    ++oit->depth;
