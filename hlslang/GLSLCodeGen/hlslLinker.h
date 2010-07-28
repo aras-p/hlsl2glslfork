@@ -63,8 +63,8 @@ class HlslLinker : public TLinker
 {
 private:
 
-	// GLSL strings for vertex & fragment shaders
-	std::stringstream shader[2];
+	// GLSL string for generated shader
+	std::stringstream shader;
    
    // Uniform list
    std::vector<ShUniformInfo> uniforms;
@@ -85,7 +85,7 @@ public:
    ~HlslLinker();
 	
    /// Main function that initiates code generation for the shader.  
-   bool link(THandleList&, const char* vertEntry, const char* fragEntry);
+   bool link(TShHandleBase*, const char* entry);
 
    /// Strip the semantic string of any modifiers (e.g. _centroid)
    std::string stripSemanticModifier(const std::string &semantic, bool bWarn);
@@ -101,7 +101,7 @@ public:
    virtual void setUseUserVaryings ( bool bUseUserVaryings ) { bUserVaryings = bUseUserVaryings; }
 
    /// Interface to retreive the output GLSL shader text
-   const char* getShaderText( EShLanguage lang ) const;
+   const char* getShaderText() const;
       
    /// Get the number of uniforms
    int getUniformCount() const { return (int)uniforms.size(); }

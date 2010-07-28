@@ -251,40 +251,29 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 
 
 
-/// After parsing one or more HLSL shaders, do the final translation to GLSL.  This function also has
-/// the ability to link together multiple HLSL parsed shaders.  So, for example, you can use this function
-/// to generate both a translated vertex and fragment shader.  
+/// After parsing a HLSL shader, do the final translation to GLSL.
 ///
 /// \param translatorHandle
 ///      Handle to a valid translator (created with HLSL2GLSL_ConstructTranslator)
-/// \param parserHandles
-///      Array of parsed HLSL shaders (see Hlsl2Glsl_Parse)
-/// \param numHandles
-///      Number of HLSL parsed shaders in the parserHandles[] array
-/// \param vertexEntry
-///      The string name of the vertex shader main entry point (e.g. "main", "VS").  NULL if none.
-/// \param fragmentEntry
-///      The string name of the fragment shader main entry point (e.g. "main", "PS"). NULL if none.
+/// \param parserHandle
+///      Parsed HLSL shader (see Hlsl2Glsl_Parse)
+/// \param entry
+///      The string name of the shader main entry point (e.g. "main", "VS", "PS").
 /// \return 
 ///      The return value of Hlsl2Glsl_Translate is 1 on success, 0 on failure
 ///  The info-log should be written by Hlsl2Glsl_Translate into ShHandle, so it can answer future queries.
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle,
-                                                 const ShHandle parserHandles[],
-                                                 const int numHandles,
-                                                 const char* vertexEntry,
-                                                 const char* fragmentEntry );
+                                                 const ShHandle parserHandle,
+                                                 const char* entry );
 
 
 /// After translating HLSL shader(s), retrieve the translated GLSL source.
 ///
 /// \param handle
 ///      Handle to a translator, should be used only after calling Hlsl2Glsl_Translate
-/// \param lang
-///      Language to get the shader source for (vertex of fragment)
 /// \return 
 ///      As a string, the translated GLSL source.  NULL if the GLSL source is not available.
-SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetShader( const ShHandle handle, 
-                                                         EShLanguage lang );
+SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetShader( const ShHandle handle );
 
 
 /// After parsing or translating, retrieve the info log to get information.

@@ -223,9 +223,9 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 			"TANGENT",
 		};
 		Hlsl2Glsl_SetUserAttributeNames (translator, kAttribSemantic, kAttribString, 1);
-		if (Hlsl2Glsl_Translate (translator, &parser, 1, vertex ? "main" : NULL, vertex ? NULL : "main"))
+		if (Hlsl2Glsl_Translate (translator, parser, "main"))
 		{
-			std::string text = Hlsl2Glsl_GetShader (translator, vertex ? EShLangVertex : EShLangFragment);
+			std::string text = Hlsl2Glsl_GetShader (translator);
 
 			std::string output;
 			ReadStringFromFile (outputPath.c_str(), output);

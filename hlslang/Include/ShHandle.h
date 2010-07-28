@@ -149,7 +149,7 @@ public:
    virtual TLinker* getAsLinker() { return this; }
    virtual const TLinker* getAsLinker() const { return this; }
    virtual ~TLinker() { }
-   virtual bool link(THandleList&, const char*, const char*) { return false; }
+   virtual bool link(TShHandleBase*, const char*) { return false; }
    virtual bool setUserAttribName ( EAttribSemantic eSemantic, const char *pName ) = 0;
    virtual void setUseUserVaryings ( bool bUseUserVaryings ) = 0;
    virtual ShBindingTable* getUniformBindings() const { return uniformBindings; }
@@ -160,7 +160,7 @@ public:
    }
    TInfoSink& infoSink;
 
-   virtual const char* getShaderText( EShLanguage lang) const = 0;
+   virtual const char* getShaderText() const = 0;
    virtual int getUniformCount() const = 0;
    virtual const ShUniformInfo* getUniformInfo() const = 0;
 

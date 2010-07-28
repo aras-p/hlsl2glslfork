@@ -386,33 +386,18 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 
 
 int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle,
-                                const ShHandle parserHandles[],
-                                const int numHandles,
-                                const char* vertexEntry,
-                                const char* fragmentEntry)
+                                const ShHandle parserHandle,
+                                const char* entry)
 {
-   if (translatorHandle == 0 || numHandles == 0)
+   if (translatorHandle == 0 || parserHandle == 0)
       return 0;
 
-   THandleList cObjects;
-
-   {// support MSVC++6.0
-      for (int i = 0; i < numHandles; ++i)
-      {
-         if (parserHandles[i] == 0)
-            return 0;
-         TShHandleBase* base = reinterpret_cast<TShHandleBase*>(parserHandles[i]);
-         if (base->getAsLinker())
-         {
-            cObjects.push_back(base->getAsLinker());
-         }
-         if (base->getAsCompiler())
-            cObjects.push_back(base->getAsCompiler());
-
-
-         if (cObjects[i] == 0)
-            return 0;
-      }
+   TShHandleBase* cObject = NULL;
+   {
+     TShHandleBase* base = reinterpret_cast<TShHandleBase*>(parserHandle);
+     cObject = base->getAsCompiler();
+	 if (cObject == NULL)
+        return 0;
    }
 
    TShHandleBase* base = reinterpret_cast<TShHandleBase*>(translatorHandle);
@@ -423,27 +408,19 @@ int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle,
 
    linker->infoSink.info.erase();
 
-   {// support MSVC++6.0
-      for (int i = 0; i < numHandles; ++i)
-      {
-         if (cObjects[i]->getAsCompiler())
-         {
-            if (! cObjects[i]->getAsCompiler()->linkable())
-            {
-               linker->infoSink.info.message(EPrefixError, "Not all shaders have valid object code.");                
-               return 0;
-            }
-         }
-      }
-   }
+	if (!cObject->getAsCompiler()->linkable())
+	{
+		linker->infoSink.info.message(EPrefixError, "Shader does not have valid object code.");
+		return 0;
+	}
 
-   bool ret = linker->link(cObjects, vertexEntry, fragmentEntry);
+   bool ret = linker->link(cObject, entry);
 
    return ret ? 1 : 0;
 }
 
 
-const char* C_DECL Hlsl2Glsl_GetShader( const ShHandle handle, EShLanguage lang )
+const char* C_DECL Hlsl2Glsl_GetShader( const ShHandle handle )
 {
    const TShHandleBase *base = reinterpret_cast<const TShHandleBase*>(handle);
    const TLinker *linker = base->getAsLinker();
@@ -451,7 +428,7 @@ const char* C_DECL Hlsl2Glsl_GetShader( const ShHandle handle, EShLanguage lang 
    if (!linker)
       return 0;
 
-   return linker->getShaderText(lang);
+   return linker->getShaderText();
 }
 
 
