@@ -514,10 +514,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\hlslang\GLSLCodeGen\Link.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\hlslang\GLSLCodeGen\propagateMutable.cpp"
 				>
 			</File>

@@ -142,7 +142,6 @@ class TLinker : public TShHandleBase
 public:
    TLinker(TInfoSink& iSink) : 
       infoSink(iSink),
-      haveReturnableObjectCode(false),      
       uniformBindings(0)
    {
    }
@@ -152,8 +151,6 @@ public:
    virtual bool link(TShHandleBase*, const char*) { return false; }
    virtual bool setUserAttribName ( EAttribSemantic eSemantic, const char *pName ) = 0;
    virtual void setUseUserVaryings ( bool bUseUserVaryings ) = 0;
-   virtual ShBindingTable* getUniformBindings() const { return uniformBindings; }
-   virtual const void* getObjectCode() const { return 0; } // a real compiler would be returning object code here
    virtual TInfoSink& getInfoSink()
    {
       return infoSink;
@@ -165,9 +162,7 @@ public:
    virtual const ShUniformInfo* getUniformInfo() const = 0;
 
 protected:
-   bool haveReturnableObjectCode;  // true when objectCode is acceptable to send to driver
-
-   ShBindingTable* uniformBindings;                // created by the linker    
+   ShBindingTable* uniformBindings;                // created by the linker
 };
 
 //
@@ -181,7 +176,6 @@ protected:
 //
 TCompiler* ConstructCompiler(EShLanguage, int);
 
-TShHandleBase* ConstructLinker(int);
 void DeleteLinker(TShHandleBase*);
 void DeleteCompiler(TCompiler*);
 

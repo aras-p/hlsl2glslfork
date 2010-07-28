@@ -76,6 +76,7 @@
 #include "Initialize.h"
 #include "../GLSLCodeGen/hlslSupportLib.h"
 
+#include "../GLSLCodeGen/HlslLinker.h"
 
 
 // A symbol table for each language.  Each has a different set of built-ins, and we want to preserve that 
@@ -270,7 +271,7 @@ ShHandle C_DECL Hlsl2Glsl_ConstructTranslator( int debugOptions )
    if (!InitThread())
       return 0;
 
-   TShHandleBase* base = static_cast<TShHandleBase*>(ConstructLinker(debugOptions));
+   TShHandleBase* base = static_cast<TShHandleBase*>(new HlslLinker(debugOptions));
 
    return reinterpret_cast<void*>(base);
 }
@@ -286,7 +287,7 @@ void C_DECL Hlsl2Glsl_Destruct( ShHandle handle )
    if (base->getAsCompiler())
       DeleteCompiler(base->getAsCompiler());
    else if (base->getAsLinker())
-      DeleteLinker(base->getAsLinker());
+      delete(base->getAsLinker());
 }
 
 
