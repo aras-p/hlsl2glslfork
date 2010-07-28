@@ -32,13 +32,6 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Definition of TGlslOutputTraverser.  Interface for a traverser designed to iterate the tree and generate valid
-// GLSL code. 
-//=================================================================================================================================
 #ifndef GLSL_OUTPUT_H
 #define GLSL_OUTPUT_H
 
@@ -51,80 +44,23 @@
 #include "glslFunction.h"
 
 
-//=================================================================================================================================
-/// TGlslOutputTraverser
-/// 
-/// \brief This class implements the tree traverser that outputs GLSL code for the tree
-//=================================================================================================================================
 class TGlslOutputTraverser : public TIntermTraverser 
 {
 private:
-   //=========================================================================================================
-   /// Traverse a symbol node, add the name to the output buffer
-   //=========================================================================================================
    static void traverseSymbol(TIntermSymbol*, TIntermTraverser*);
-
-   //=========================================================================================================   
-   /// Traverse a symbol node which is a function parameter, add the name to the output buffer
-   //=========================================================================================================   
    static void traverseParameterSymbol(TIntermSymbol *node, TIntermTraverser *it);
-
-   //=========================================================================================================   
-   /// Traverse a node in the tree representing a constant
-   //=========================================================================================================   
    static void traverseConstantUnion(TIntermConstantUnion*, TIntermTraverser*);
-
-   //=========================================================================================================      
-   /// Traverse a node in the tree representing a constant intended for immediate use, such as a direct reference
-   //=========================================================================================================      
    static void traverseImmediateConstant( TIntermConstantUnion *node, TIntermTraverser *it);
-
-   //=========================================================================================================
-   /// Traverse a binary node generating the output GLSL code
-   //=========================================================================================================
    static bool traverseBinary(bool preVisit, TIntermBinary*, TIntermTraverser*);
-   
-   //=========================================================================================================
-   /// Traverse a unary node generating the output GLSL code
-   //=========================================================================================================
    static bool traverseUnary(bool preVisit, TIntermUnary*, TIntermTraverser*);
-
-   //=========================================================================================================
-   /// Traverse a selection generating the output GLSL code
-   //=========================================================================================================
    static bool traverseSelection(bool preVisit, TIntermSelection*, TIntermTraverser*);
-
-   //=========================================================================================================
-   /// Traverse an aggregate node generating the output GLSL code
-   //=========================================================================================================
    static bool traverseAggregate(bool preVisit, TIntermAggregate*, TIntermTraverser*);
-
-   //=========================================================================================================
-   /// Traverse a loop node generating the output GLSL code
-   //=========================================================================================================
    static bool traverseLoop(bool preVisit, TIntermLoop*, TIntermTraverser*);
-
-   //=========================================================================================================
-   /// Traverse a branch node generating the output GLSL code
-   //=========================================================================================================   
    static bool traverseBranch(bool preVisit, TIntermBranch*,  TIntermTraverser*);
 
 public:
-
-   //=========================================================================================================
-   /// Constructor
-   //=========================================================================================================   
    TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList);
-
-
-   //=========================================================================================================
-   /// Create a GLSL structure from a structure TType
-   //=========================================================================================================
    GlslStruct *createStructFromType( TType *type );
-
-   //=========================================================================================================
-   /// Parse a binary node that represents an variable initalizer
-   //=========================================================================================================  
    bool parseInitializer( TIntermBinary *node );
 
    // Info Sink

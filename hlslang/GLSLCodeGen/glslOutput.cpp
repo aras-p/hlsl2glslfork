@@ -32,33 +32,9 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Implementation of TGlslOutputTraverser
-//=================================================================================================================================
-
-//=================================================================================================================================
-//
-//          Includes / defines / typedefs / static member variable initialization block
-//
-//=================================================================================================================================
 #include "glslOutput.h"
 
-//=================================================================================================================================
-//
-//          Helper Functions Block
-//
-//=================================================================================================================================
 
-//=========================================================================================================
-/// Get the number of elements in a GLSL symbol type
-/// \param t
-///    GLSL symbol type
-/// \return
-///    The number of elements in the GLSL symbol type, 0 if unknown type
-//=========================================================================================================
 int getElements( EGlslSymbolType t )
 {
    switch (t)
@@ -90,19 +66,7 @@ int getElements( EGlslSymbolType t )
    return 0;
 }
 
-//=========================================================================================================
-/// Helper function to output a constructor of all constants
-/// \param out
-///    Output string buffer
-/// \param t
-///    GLSL symbol type to output
-/// \param c
-///    Constant union holding values to pass to constructor
-/// \param str
-///    If a structure, contains the GLSL structure pointer (default is NULL)
-/// \return
-///    The number of elements in the GLSL symbol type, 0 if unknown type
-//=========================================================================================================
+
 void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, constUnion *c, GlslStruct *str = 0 )
 {
    int elementCount = getElements(t);
@@ -160,17 +124,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, constU
    }
 }
 
-//=========================================================================================================
-/// Helper function to output a comparison operator
-/// \param compareOp
-///    Scalar comparison op (e.g. "==", "!=",..)
-/// \param compareCall  
-///    Vector comparison call (e.g. "equal", "notEqual",..)
-/// \param node 
-///    Node to output
-/// \param goit 
-///    GLSL traverser
-//=========================================================================================================
+
 void writeComparison( const TString &compareOp, const TString &compareCall, TIntermBinary *node, TGlslOutputTraverser* goit ) 
 {
    GlslFunction *current = goit->current;    
@@ -242,18 +196,7 @@ void writeComparison( const TString &compareOp, const TString &compareCall, TInt
    }
 }
 
-//=========================================================================================================
-/// Helper function to output a function call
-/// \param name
-///    Name of function to call
-/// \param node  
-///    Aggregate node of function parameters
-/// \param goit 
-///    GLSL traverser
-/// \param bGenMatrix
-///    If true, this function will generate a call to the xll matrix version of the function if
-///    the node is a matrix.
-//=========================================================================================================
+
 void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTraverser* goit, bool bGenMatrix = false )
 {
    TIntermSequence::iterator sit;
@@ -284,22 +227,7 @@ void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTrav
    out << ")";
 }
 
-//=========================================================================================================
-/// Helper function to output a unary built-in function call.  If it is a matrix, generates the appropriate 
-/// xll function
-/// \param name
-///    Name of function to call
-/// \param node  
-///    Unary node to traverse
-/// \param opStr
-///    Operator string name (e.g. "radians")
-/// \param funcStyle
-///    Reference to function style, will be set to true
-/// \param pre
-///    Reference to prefix, will be set to true
-/// \param goit 
-///    GLSL traverser
-//=========================================================================================================
+
 void setupUnaryBuiltInFuncCall( const TString &name, TIntermUnary *node, TString &opStr, bool &funcStyle, bool &prefix,
                                 TGlslOutputTraverser* goit )
 {
@@ -318,15 +246,7 @@ void setupUnaryBuiltInFuncCall( const TString &name, TIntermUnary *node, TString
    }   
 }
 
-//=========================================================================================================
-/// Helper function to output a texture call
-/// \param name
-///    Name of function to call
-/// \param node  
-///    Aggregate node of function parameters
-/// \param goit 
-///    GLSL traverser
-//=========================================================================================================
+
 void writeTex( const TString &name, TIntermAggregate *node, TGlslOutputTraverser* goit )
 {
    writeFuncCall( name, node, goit);
@@ -334,15 +254,7 @@ void writeTex( const TString &name, TIntermAggregate *node, TGlslOutputTraverser
 
 
 
-//=================================================================================================================================
-//
-//          Constructor(s) / Destructor(s) Block 
-//
-//=================================================================================================================================
 
-//=========================================================================================================
-/// Constructor
-//=========================================================================================================
 TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList ) :
       infoSink(i),
       generatingCode(true),
@@ -362,19 +274,7 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
    current = global;
 }
 
-//=================================================================================================================================
-//
-//          Private methods block
-//
-//=================================================================================================================================
 
-//=========================================================================================================
-/// Traverse a symbol node, add the name to the output buffer
-/// \param node
-///   Symbol node to traverse
-/// \param it
-///   Pointer to tree traverser
-//=========================================================================================================
 void TGlslOutputTraverser::traverseSymbol(TIntermSymbol *node, TIntermTraverser *it)
 {
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
@@ -412,13 +312,7 @@ void TGlslOutputTraverser::traverseSymbol(TIntermSymbol *node, TIntermTraverser 
    out << current->getSymbol( node->getId()).getName();
 }
 
-//=========================================================================================================
-/// Traverse a symbol node which is a function parameter, add the name to the output buffer
-/// \param node
-///   Parameter symbol node to traverse
-/// \param it
-///   Pointer to tree traverser
-//=========================================================================================================
+
 void TGlslOutputTraverser::traverseParameterSymbol(TIntermSymbol *node, TIntermTraverser *it)
 {
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
@@ -440,13 +334,6 @@ void TGlslOutputTraverser::traverseParameterSymbol(TIntermSymbol *node, TIntermT
 }
 
 
-//=========================================================================================================
-/// Traverse a node in the tree representing a constant
-/// \param node
-///   Parameter constant node to traverse
-/// \param it
-///   Pointer to tree traverser
-//=========================================================================================================
 void TGlslOutputTraverser::traverseConstantUnion( TIntermConstantUnion *node, TIntermTraverser *it )
 {
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
@@ -467,14 +354,7 @@ void TGlslOutputTraverser::traverseConstantUnion( TIntermConstantUnion *node, TI
    writeConstantConstructor( out, type, c, str);
 }
 
-//=========================================================================================================
-/// Traverse a node in the tree representing a constant intended for immediate use, such as a direct 
-/// reference.
-/// \param node
-///   Parameter constant node to traverse
-/// \param it
-///   Pointer to tree traverser
-//=========================================================================================================
+
 void TGlslOutputTraverser::traverseImmediateConstant( TIntermConstantUnion *node, TIntermTraverser *it )
 {
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
@@ -502,15 +382,7 @@ void TGlslOutputTraverser::traverseImmediateConstant( TIntermConstantUnion *node
    }
 }
 
-//=========================================================================================================
-/// Traverse a binary node generating the output GLSL code
-/// \param preVisit
-///   Unused parameter, used by base class version
-/// \param node
-///   Binary node to traverse
-/// \param it
-///   Pointer to tree traverser
-//=========================================================================================================
+
 bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, TIntermTraverser *it )
 {
    TString op = "??";
@@ -841,15 +713,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    return false;
 }
 
-//=========================================================================================================
-/// Traverse a unary node generating the output GLSL code
-/// \param preVisit
-///   Unused parameter, used by base class version
-/// \param node
-///   Unary node to traverse
-/// \param it
-///   Pointer to tree traverser
-//=========================================================================================================
+
 bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIntermTraverser *it )
 {
    TString op("??");
@@ -1006,15 +870,7 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    return false;
 }
 
-//=========================================================================================================
-/// Traverse a selection generating the output GLSL code
-/// \param preVisit
-///   Unused parameter, used by base class version
-/// \param node
-///   Selection node to traverse
-/// \param it
-///   Pointer to tree traverser
-//=========================================================================================================
+
 bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *node, TIntermTraverser *it )
 {
 	TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
@@ -1079,15 +935,7 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 	return false;
 }
 
-//=========================================================================================================
-/// Traverse an aggregate node generating the output GLSL code
-/// \param preVisit
-///   Unused parameter, used by base class version
-/// \param node
-///   Aggregate node to traverse
-/// \param it
-///   Pointer to tree traverser
-//=========================================================================================================
+
 bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node, TIntermTraverser *it )
 {
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
@@ -1406,15 +1254,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    return false;
 }
 
-//=========================================================================================================
-/// Traverse a loop node generating the output GLSL code
-/// \param preVisit
-///   Unused parameter, used by base class version
-/// \param node
-///   Loop node to traverse
-/// \param it
-///   Pointer to tree traverser
-//=========================================================================================================
+
 bool TGlslOutputTraverser::traverseLoop( bool preVisit, TIntermLoop *node, TIntermTraverser *it )
 {
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
@@ -1463,15 +1303,7 @@ bool TGlslOutputTraverser::traverseLoop( bool preVisit, TIntermLoop *node, TInte
    return false;
 }
 
-//=========================================================================================================
-/// Traverse a branch node generating the output GLSL code
-/// \param preVisit
-///   Unused parameter, used by base class version
-/// \param node
-///   Branch node to traverse
-/// \param it
-///   Pointer to tree traverser
-//=========================================================================================================
+
 bool TGlslOutputTraverser::traverseBranch( bool preVisit, TIntermBranch *node,  TIntermTraverser *it )
 {
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
@@ -1497,19 +1329,7 @@ bool TGlslOutputTraverser::traverseBranch( bool preVisit, TIntermBranch *node,  
    return false;
 }
 
-//=================================================================================================================================
-//
-//          Public methods block
-//
-//=================================================================================================================================
 
-//=========================================================================================================
-/// Create a GLSL structure from a structure TType
-/// \param type
-///   Type to convert to a GLSL structure
-/// \return
-///   Pointer to a new GLSL structure created from the type
-//=========================================================================================================
 GlslStruct *TGlslOutputTraverser::createStructFromType( TType *type )
 {
    GlslStruct *s = 0;
@@ -1567,14 +1387,7 @@ GlslStruct *TGlslOutputTraverser::createStructFromType( TType *type )
    return s;
 }
 
-//=========================================================================================================
-/// Parse a binary node that represents an variable initalizer
-/// \param node
-///   Binary intermediate node to parse
-/// \return
-///   true if initializer was parsed succesfully (with new symbol added if needed), false otherwise.
-///   The symbol node will have its initializer set
-//=========================================================================================================
+
 bool TGlslOutputTraverser::parseInitializer( TIntermBinary *node )
 {
    TIntermTyped *left, *right;
