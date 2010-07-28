@@ -97,14 +97,14 @@ TString TType::getCompleteString() const
 
    if (qualifier != EvqTemporary && qualifier != EvqGlobal)
       p += sprintf(p, "%s ", getQualifierString());
-   if (array)
-      p += sprintf(p, "array of ");
-   if (matrix)
-      p += sprintf(p, "%dX%d matrix of ", size, size);
-   else if (size > 1)
-      p += sprintf(p, "%d-component vector of ", size);
 
    sprintf(p, "%s", getBasicString());
+   if (array)
+      p += sprintf(p, " array");
+   if (matrix)
+      p += sprintf(p, "matrix%dX%d", size, size);
+   else if (size > 1)
+      p += sprintf(p, "vec%d", size);
 
    return TString(buf);
 }   
@@ -155,53 +155,53 @@ bool OutputBinary(bool, /* preVisit */ TIntermBinary* node, TIntermTraverser* it
 
    switch (node->getOp())
    {
-   case EOpAssign:                   out.debug << "move second child to first child";           break;
-   case EOpAddAssign:                out.debug << "add second child into first child";          break;
-   case EOpSubAssign:                out.debug << "subtract second child into first child";     break;
-   case EOpMulAssign:                out.debug << "multiply second child into first child";     break;
-   case EOpVectorTimesMatrixAssign:  out.debug << "matrix mult second child into first child";  break;
-   case EOpVectorTimesScalarAssign:  out.debug << "vector scale second child into first child"; break;
-   case EOpMatrixTimesScalarAssign:  out.debug << "matrix scale second child into first child"; break;
-   case EOpMatrixTimesMatrixAssign:  out.debug << "matrix mult second child into first child"; break;
-   case EOpDivAssign:                out.debug << "divide second child into first child";       break;
-   case EOpModAssign:                out.debug << "mod second child into first child";          break;
-   case EOpAndAssign:                out.debug << "and second child into first child";          break;
-   case EOpInclusiveOrAssign:        out.debug << "or second child into first child";           break;
-   case EOpExclusiveOrAssign:        out.debug << "exclusive or second child into first child"; break;
-   case EOpLeftShiftAssign:          out.debug << "left shift second child into first child";   break;
-   case EOpRightShiftAssign:         out.debug << "right shift second child into first child";  break;
+   case EOpAssign:                   out.debug << "=";      break;
+   case EOpAddAssign:                out.debug << "+=";     break;
+   case EOpSubAssign:                out.debug << "-=";     break;
+   case EOpMulAssign:                out.debug << "*=";     break;
+   case EOpVectorTimesMatrixAssign:  out.debug << "vec *= matrix";  break;
+   case EOpVectorTimesScalarAssign:  out.debug << "vec *= scalar"; break;
+   case EOpMatrixTimesScalarAssign:  out.debug << "matrix *= scalar"; break;
+   case EOpMatrixTimesMatrixAssign:  out.debug << "matrix *= matrix"; break;
+   case EOpDivAssign:                out.debug << "/=";  break;
+   case EOpModAssign:                out.debug << "%=";  break;
+   case EOpAndAssign:                out.debug << "&=";  break;
+   case EOpInclusiveOrAssign:        out.debug << "|=";  break;
+   case EOpExclusiveOrAssign:        out.debug << "^=";  break;
+   case EOpLeftShiftAssign:          out.debug << "<<="; break;
+   case EOpRightShiftAssign:         out.debug << ">>="; break;
 
    case EOpIndexDirect:   out.debug << "direct index";   break;
    case EOpIndexIndirect: out.debug << "indirect index"; break;
-   case EOpIndexDirectStruct:   out.debug << "direct index for structure";   break;
+   case EOpIndexDirectStruct:   out.debug << "struct index";   break;
    case EOpVectorSwizzle: out.debug << "vector swizzle"; break;
 
-   case EOpAdd:    out.debug << "add";                     break;
-   case EOpSub:    out.debug << "subtract";                break;
-   case EOpMul:    out.debug << "component-wise multiply"; break;
-   case EOpDiv:    out.debug << "divide";                  break;
-   case EOpMod:    out.debug << "mod";                     break;
-   case EOpRightShift:  out.debug << "right-shift";  break;
-   case EOpLeftShift:   out.debug << "left-shift";   break;
-   case EOpAnd:         out.debug << "bitwise and";  break;
-   case EOpInclusiveOr: out.debug << "inclusive-or"; break;
-   case EOpExclusiveOr: out.debug << "exclusive-or"; break;
-   case EOpEqual:            out.debug << "Compare Equal";                 break;
-   case EOpNotEqual:         out.debug << "Compare Not Equal";             break;
-   case EOpLessThan:         out.debug << "Compare Less Than";             break;
-   case EOpGreaterThan:      out.debug << "Compare Greater Than";          break;
-   case EOpLessThanEqual:    out.debug << "Compare Less Than or Equal";    break;
-   case EOpGreaterThanEqual: out.debug << "Compare Greater Than or Equal"; break;
+   case EOpAdd:    out.debug << "+"; break;
+   case EOpSub:    out.debug << "-"; break;
+   case EOpMul:    out.debug << "*"; break;
+   case EOpDiv:    out.debug << "/"; break;
+   case EOpMod:    out.debug << "%"; break;
+   case EOpRightShift:  out.debug << ">>";  break;
+   case EOpLeftShift:   out.debug << "<<";  break;
+   case EOpAnd:         out.debug << "&"; break;
+   case EOpInclusiveOr: out.debug << "|"; break;
+   case EOpExclusiveOr: out.debug << "^"; break;
+   case EOpEqual:            out.debug << "=="; break;
+   case EOpNotEqual:         out.debug << "!="; break;
+   case EOpLessThan:         out.debug << "<";  break;
+   case EOpGreaterThan:      out.debug << ">";  break;
+   case EOpLessThanEqual:    out.debug << "<="; break;
+   case EOpGreaterThanEqual: out.debug << ">="; break;
 
-   case EOpVectorTimesScalar: out.debug << "vector-scale";          break;
-   case EOpVectorTimesMatrix: out.debug << "vector-times-matrix";   break;
-   case EOpMatrixTimesVector: out.debug << "matrix-times-vector";   break;
-   case EOpMatrixTimesScalar: out.debug << "matrix-scale";          break;
-   case EOpMatrixTimesMatrix: out.debug << "matrix-multiply";       break;
+   case EOpVectorTimesScalar: out.debug << "vec*scalar";    break;
+   case EOpVectorTimesMatrix: out.debug << "vec*matrix";    break;
+   case EOpMatrixTimesVector: out.debug << "matrix*vec";    break;
+   case EOpMatrixTimesScalar: out.debug << "matrix*scalar"; break;
+   case EOpMatrixTimesMatrix: out.debug << "matrix*matrix"; break;
 
-   case EOpLogicalOr:  out.debug << "logical-or";   break;
-   case EOpLogicalXor: out.debug << "logical-xor"; break;
-   case EOpLogicalAnd: out.debug << "logical-and"; break;
+   case EOpLogicalOr:  out.debug << "||";   break;
+   case EOpLogicalXor: out.debug << "^^"; break;
+   case EOpLogicalAnd: out.debug << "&&"; break;
    default: out.debug << "<unknown op>";
    }
 
@@ -350,7 +350,7 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    case EOpFaceForward:   out.debug << "face-forward";            break;
    case EOpReflect:       out.debug << "reflect";                 break;
    case EOpRefract:       out.debug << "refract";                 break;
-   case EOpMul:           out.debug << "component-wise multiply"; break;
+   case EOpMul:           out.debug << "mul";                     break;
 
    case EOpItof:          out.debug << "itof";        break;
    case EOpFtoi:          out.debug << "ftoi";        break;
