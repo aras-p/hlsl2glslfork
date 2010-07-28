@@ -52,14 +52,17 @@ public:
    EShLanguage getLanguage() const { return language; }
    TInfoSink& getInfoSink() { return infoSink; }
 
-   bool compile(TIntermNode* root);
-   bool linkable() const { return haveValidObjectCode; }
+   void TransformAST (TIntermNode* root);
+   void ProduceGLSL (TIntermNode* root);
+   bool IsASTTransformed() const { return m_ASTTransformed; }
+   bool IsGlslProduced() const { return m_GlslProduced; }
 
    HlslLinker* GetLinker() { return linker; }
 
 private:
 	EShLanguage language;
-	bool haveValidObjectCode;
+	bool m_ASTTransformed;
+	bool m_GlslProduced;
 
 public:
 	HlslLinker* linker;

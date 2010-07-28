@@ -323,20 +323,15 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 
    if (success && parseContext.treeRoot)
    {
-      success = intermediate.postProcess(parseContext.treeRoot, parseContext.language);
+		TIntermAggregate* aggRoot = parseContext.treeRoot->getAsAggregate();
+		if (aggRoot && aggRoot->getOp() == EOpNull)
+			aggRoot->setOperator(EOpSequence);
 
-      if (success)
-      {
+		if (debugOptions & EDebugOpIntermediate)
+			intermediate.outputTree(parseContext.treeRoot);
 
-         if (debugOptions & EDebugOpIntermediate)
-            intermediate.outputTree(parseContext.treeRoot);
-
-         //
-         // Call the machine dependent compiler
-         //
-         if (! compiler->compile(parseContext.treeRoot))
-            success = false;
-      }      
+		compiler->TransformAST (parseContext.treeRoot);
+		compiler->ProduceGLSL (parseContext.treeRoot);
    }
    else if (!success)
    {
@@ -373,7 +368,7 @@ int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry )
 
    HlslCrossCompiler* compiler = handle;
    compiler->infoSink.info.erase();
-	if (!compiler->linkable())
+	if (!compiler->IsASTTransformed() || !compiler->IsGlslProduced())
 	{
 		compiler->infoSink.info.message(EPrefixError, "Shader does not have valid object code.");
 		return 0;

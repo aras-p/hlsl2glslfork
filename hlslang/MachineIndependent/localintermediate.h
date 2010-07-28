@@ -111,7 +111,6 @@ public:
    TIntermBranch* addBranch(TOperator, TSourceLoc);
    TIntermBranch* addBranch(TOperator, TIntermTyped*, TSourceLoc);
    TIntermTyped* addSwizzle(TVectorFields&, TSourceLoc);
-   bool postProcess(TIntermNode*, EShLanguage);
    void remove(TIntermNode*);
    void outputTree(TIntermNode*);
 

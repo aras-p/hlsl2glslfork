@@ -3,6 +3,10 @@
 #include <string>
 #include <vector>
 
+
+const bool kDumpShaderAST = false;
+
+
 #ifdef _MSC_VER
 #include <windows.h>
 #include <gl/GL.h>
@@ -212,8 +216,6 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 	const char* sourceStr = input.c_str();
 
 	bool res = true;
-
-	const bool kDumpShaderAST = false;
 
 	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, kDumpShaderAST ? EDebugOpIntermediate : 0);
 	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );

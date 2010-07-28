@@ -880,25 +880,6 @@ TIntermBranch* TIntermediate::addBranch(TOperator branchOp, TIntermTyped* expres
 }
 
 //
-// This is to be executed once the final root is put on top by the parsing
-// process.
-//
-bool TIntermediate::postProcess(TIntermNode* root, EShLanguage language)
-{
-   if (root == 0)
-      return true;
-
-   //
-   // First, finish off the top level sequence, if any
-   //
-   TIntermAggregate* aggRoot = root->getAsAggregate();
-   if (aggRoot && aggRoot->getOp() == EOpNull)
-      aggRoot->setOperator(EOpSequence);
-
-   return true;
-}
-
-//
 // This deletes the tree.
 //
 void TIntermediate::remove(TIntermNode* root)

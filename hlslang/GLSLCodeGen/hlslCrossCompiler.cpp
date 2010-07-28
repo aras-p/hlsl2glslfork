@@ -41,7 +41,8 @@
 
 HlslCrossCompiler::HlslCrossCompiler(EShLanguage l)
 :	language(l)
-,	haveValidObjectCode(false)
+,	m_ASTTransformed(false)
+,	m_GlslProduced(false)
 {
 	linker = new HlslLinker(infoSink);
 }
@@ -61,16 +62,16 @@ HlslCrossCompiler::~HlslCrossCompiler()
 }
 
 
-bool HlslCrossCompiler::compile( TIntermNode *root )
+void HlslCrossCompiler::TransformAST (TIntermNode *root)
 {
-   haveValidObjectCode = true;
+   m_ASTTransformed = true;
+   TSamplerTraverser::TypeSamplers (root, infoSink);
+   TPropagateMutable::PropagateMutable (root, infoSink);
+}
 
-   TGlslOutputTraverser glslTraverse( infoSink, functionList, structList);
-
-   TSamplerTraverser::TypeSamplers( root, infoSink);
-   TPropagateMutable::PropagateMutable( root, infoSink);
-
-   root->traverse(&glslTraverse);
-
-   return haveValidObjectCode;
+void HlslCrossCompiler::ProduceGLSL (TIntermNode *root)
+{
+	m_GlslProduced = true;
+	TGlslOutputTraverser glslTraverse( infoSink, functionList, structList);
+	root->traverse(&glslTraverse);
 }
