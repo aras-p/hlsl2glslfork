@@ -71,7 +71,7 @@
 
 #include "../Include/Common.h"
 #include "SymbolTable.h"
-#include "../Include/hlsl2glsl.h"
+#include "../../include/hlsl2glsl.h"
 
 typedef TVector<TString> TBuiltInStrings;
 

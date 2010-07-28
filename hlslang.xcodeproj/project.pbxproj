@@ -57,7 +57,6 @@
 		3AC10DD70AF103020045E29C /* InitializeParseContext.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = InitializeParseContext.h; path = hlslang/Include/InitializeParseContext.h; sourceTree = "<group>"; };
 		3AC10DD80AF103020045E29C /* intermediate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = intermediate.h; path = hlslang/Include/intermediate.h; sourceTree = "<group>"; };
 		3AC10DD90AF103020045E29C /* PoolAlloc.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PoolAlloc.h; path = hlslang/Include/PoolAlloc.h; sourceTree = "<group>"; };
-		3AC10DDA0AF103020045E29C /* ShHandle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ShHandle.h; path = hlslang/Include/ShHandle.h; sourceTree = "<group>"; };
 		3AC10DDB0AF103020045E29C /* Types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Types.h; path = hlslang/Include/Types.h; sourceTree = "<group>"; };
 		3AC10DE80AF103410045E29C /* glslCommon.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glslCommon.h; path = hlslang/GLSLCodeGen/glslCommon.h; sourceTree = "<group>"; };
 		3AC10DE90AF103410045E29C /* glslFunction.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glslFunction.h; path = hlslang/GLSLCodeGen/glslFunction.h; sourceTree = "<group>"; };
@@ -215,7 +214,6 @@
 				3AC10DD70AF103020045E29C /* InitializeParseContext.h */,
 				3AC10DD80AF103020045E29C /* intermediate.h */,
 				3AC10DD90AF103020045E29C /* PoolAlloc.h */,
-				3AC10DDA0AF103020045E29C /* ShHandle.h */,
 				3AC10DDB0AF103020045E29C /* Types.h */,
 			);
 			name = Include;
