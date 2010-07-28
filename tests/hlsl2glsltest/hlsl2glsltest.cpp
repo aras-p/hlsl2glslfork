@@ -213,7 +213,18 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 
 	bool res = true;
 
-	if (Hlsl2Glsl_Parse (parser, sourceStr, 0))
+	const bool kDumpShaderAST = false;
+
+	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, kDumpShaderAST ? EDebugOpIntermediate : 0);
+	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
+	if (kDumpShaderAST)
+	{
+		// write output
+		FILE* f = fopen (errPath.c_str(), "wb");
+		fwrite (infoLog, 1, strlen(infoLog), f);
+		fclose (f);
+	}
+	if (parseOk)
 	{
 		static EAttribSemantic kAttribSemantic[] = {
 			EAttrSemTangent,
@@ -222,7 +233,9 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 			"TANGENT",
 		};
 		Hlsl2Glsl_SetUserAttributeNames (parser, kAttribSemantic, kAttribString, 1);
-		if (Hlsl2Glsl_Translate (parser, "main"))
+		int translateOk = Hlsl2Glsl_Translate (parser, "main");
+		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
+		if (translateOk)
 		{
 			std::string text = Hlsl2Glsl_GetShader (parser);
 
@@ -245,14 +258,12 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 		}
 		else
 		{
-			const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 			printf ("  translate error: %s\n", infoLog);
 			res = false;
 		}
 	}
 	else
 	{
-		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 		printf ("  parse error: %s\n", infoLog);
 		res = false;
 	}
