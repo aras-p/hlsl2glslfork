@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-//#include <OpenGL/OpenGL.h>
-//#include <AGL/agl.h>
 #ifdef _MSC_VER
 #include <windows.h>
 #include <gl/GL.h>
@@ -31,6 +29,8 @@ static PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
 
 
 #else
+#include <OpenGL/OpenGL.h>
+#include <AGL/agl.h>
 #include <dirent.h>
 #endif
 #include "../../include/hlsl2glsl.h"
@@ -143,20 +143,6 @@ static bool InitializeOpenGL ()
 	HGLRC rc = wglCreateContext( dc );
 	wglMakeCurrent( dc, rc );
 
-	// get information
-	const char* extensions = (const char*)glGetString(GL_EXTENSIONS);
-	hasGLSL = strstr(extensions, "GL_ARB_shader_objects") && strstr(extensions, "GL_ARB_vertex_shader") && strstr(extensions, "GL_ARB_fragment_shader");
-
-	if (hasGLSL)
-	{
-		glDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC)wglGetProcAddress("glDeleteObjectARB");
-		glCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC)wglGetProcAddress("glCreateShaderObjectARB");
-		glShaderSourceARB = (PFNGLSHADERSOURCEARBPROC)wglGetProcAddress("glShaderSourceARB");
-		glCompileShaderARB = (PFNGLCOMPILESHADERARBPROC)wglGetProcAddress("glCompileShaderARB");
-		glGetInfoLogARB = (PFNGLGETINFOLOGARBPROC)wglGetProcAddress("glGetInfoLogARB");
-		glGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC)wglGetProcAddress("glGetObjectParameterivARB");
-	}
-
 #else
 	GLint attributes[16];
 	int i = 0;
@@ -171,6 +157,23 @@ static bool InitializeOpenGL ()
 	aglSetCurrentContext (agl);
 
 #endif
+	
+	// check if we have GLSL
+	const char* extensions = (const char*)glGetString(GL_EXTENSIONS);
+	hasGLSL = strstr(extensions, "GL_ARB_shader_objects") && strstr(extensions, "GL_ARB_vertex_shader") && strstr(extensions, "GL_ARB_fragment_shader");
+	
+#ifdef _MSC_VER
+	if (hasGLSL)
+	{
+		glDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC)wglGetProcAddress("glDeleteObjectARB");
+		glCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC)wglGetProcAddress("glCreateShaderObjectARB");
+		glShaderSourceARB = (PFNGLSHADERSOURCEARBPROC)wglGetProcAddress("glShaderSourceARB");
+		glCompileShaderARB = (PFNGLCOMPILESHADERARBPROC)wglGetProcAddress("glCompileShaderARB");
+		glGetInfoLogARB = (PFNGLGETINFOLOGARBPROC)wglGetProcAddress("glGetInfoLogARB");
+		glGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC)wglGetProcAddress("glGetObjectParameterivARB");
+	}
+#endif
+	
 
 	return hasGLSL;
 }
