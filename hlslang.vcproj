@@ -446,10 +446,6 @@
 			Name="GLSL Code Gen"
 			>
 			<File
-				RelativePath=".\hlslang\GLSLCodeGen\CodeGen.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\hlslang\GLSLCodeGen\glslCommon.cpp"
 				>
 			</File>

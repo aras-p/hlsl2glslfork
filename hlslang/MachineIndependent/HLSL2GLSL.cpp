@@ -76,6 +76,7 @@
 #include "Initialize.h"
 #include "../GLSLCodeGen/hlslSupportLib.h"
 
+#include "../GLSLCodeGen/hlslCrossCompiler.h"
 #include "../GLSLCodeGen/HlslLinker.h"
 
 
@@ -260,7 +261,7 @@ ShHandle C_DECL Hlsl2Glsl_ConstructParser( const EShLanguage language, int debug
    if (!InitThread())
       return 0;
 
-   TShHandleBase* base = static_cast<TShHandleBase*>(ConstructCompiler(language, debugOptions));
+   TShHandleBase* base = static_cast<TShHandleBase*>(new HlslCrossCompiler(language, debugOptions));
 
    return reinterpret_cast<void*>(base);
 }
@@ -285,7 +286,7 @@ void C_DECL Hlsl2Glsl_Destruct( ShHandle handle )
    TShHandleBase* base = static_cast<TShHandleBase*>(handle);
 
    if (base->getAsCompiler())
-      DeleteCompiler(base->getAsCompiler());
+	   delete(base->getAsCompiler());
    else if (base->getAsLinker())
       delete(base->getAsLinker());
 }
