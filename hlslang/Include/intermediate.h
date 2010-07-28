@@ -689,7 +689,7 @@ typedef TVector<int> TQualifierList;
 class TIntermAggregate : public TIntermOperator
 {
 public:
-   TIntermAggregate() : TIntermOperator(EOpNull), pragmaTable(0)
+   TIntermAggregate() : TIntermOperator(EOpNull), userDefined(false), pragmaTable(0)
    {
    }
    TIntermAggregate(TOperator o) : TIntermOperator(o), pragmaTable(0)
@@ -736,9 +736,33 @@ public:
       return semantic;
    }
    virtual void traverse(TIntermTraverser*);
+   virtual void setUserDefined()
+   {
+      userDefined = true;
+   }
+   virtual bool isUserDefined()
+   {
+      return userDefined;
+   }
    virtual TQualifierList& getQualifier()
    {
       return qualifier;
+   }
+   void setOptimize(bool o)
+   {
+      optimize = o;
+   }
+   void setDebug(bool d)
+   {
+      debug = d;
+   }
+   bool getOptimize()
+   {
+      return optimize;
+   }
+   bool getDebug()
+   {
+      return debug;
    }
    void addToPragmaTable(const TPragmaTable& pTable);
    const TPragmaTable& getPragmaTable() const
@@ -753,6 +777,9 @@ protected:
    TString name;
    TString plainName;
    TString semantic;
+   bool userDefined; // used for user defined function names
+   bool optimize;
+   bool debug;
    TPragmaTable *pragmaTable;
 };
 

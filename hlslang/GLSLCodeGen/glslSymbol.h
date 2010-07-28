@@ -46,42 +46,51 @@ public:
    GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, EGlslQualifier q, int as = 0 );   
    virtual ~GlslSymbol();
    
-   bool getIsParameter() const { return isParameter; }
-	
+   bool getIsParameter() { return isParameter; }
+   
    void setIsParameter( bool param ) { isParameter = param; }
    
-   bool getIsGlobal() const { return qual == EqtUniform || qual == EqtMutableUniform; }
+   bool getIsGlobal() { return !isLocal(qual); }
    
-   bool getIsMutable() const { return qual == EqtMutableUniform; }
+   bool getIsMutable() { return qual == EqtMutableUniform; }
 
    /// Get mangled name
    const std::string &getName( bool local = true ) const { return ( (local ) ? mutableMangledName : mangledName ); }
+   
    /// Get original name
-   const std::string &getOrgName() const { return name; }
+   const std::string &getOrgName() { return name; }
    
    bool hasSemantic() const { return (semantic.size() > 0); }
+   
    const std::string &getSemantic() const { return semantic; }
    
-   int getId() const { return identifier; }
+   int getId() { return identifier; }
    
    bool isArray() const { return (arraySize > 0); }
+   
    int getArraySize() const { return arraySize; }
 
    EGlslSymbolType getType() const { return type; }
+   
    EGlslQualifier getQualifier() const { return qual; }
    
    void updateType( EGlslSymbolType t ) { assert( type == EgstSamplerGeneric); type = t; }
 
+   GlslStruct* getStruct() { return structPtr; }   
    const GlslStruct* getStruct() const { return structPtr; }
-   GlslStruct* getStruct() { return structPtr; }
+
    void setStruct( GlslStruct *s ) { structPtr = s; }
 
    bool hasInitializer() const { return initializer.size() != 0; }
+
    const float* getInitializer() const { return &initializer[0]; }
+
    int initializerSize() const { return (int)initializer.size(); }
 
    void writeDecl( std::stringstream &out, bool local = false );
+
    void writeInitializer( std::stringstream &out, int element = 0);
+
 
    void setInitializer( const constUnion *ptr );
 
@@ -91,7 +100,7 @@ public:
 
    void addRef() { refCount++; }
    void releaseRef() { assert (refCount >= 0 ); if ( refCount > 0 ) refCount--; }
-   int getRef() const { return refCount; }
+   int getRef() { return refCount; }
 
    
 private:
@@ -111,6 +120,8 @@ private:
    bool isParameter;
    std::vector<float> initializer; 
    int refCount;
+
+
 };
 
 #endif //GLSL_SYMBOL_H

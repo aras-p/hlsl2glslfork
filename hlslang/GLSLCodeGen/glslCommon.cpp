@@ -159,6 +159,23 @@ EGlslSymbolType translateType( const TType *type )
 }
 
 
+bool isLocal( EGlslQualifier qual )
+{
+   switch (qual)
+   {
+   case EqtNone:           return true;
+   case EqtUniform:        return false;
+   case EqtMutableUniform: return false;
+   case EqtConst:          return true;
+   case EqtIn:             return true;
+   case EqtOut:            return true;
+   case EqtInOut:          return true;
+   }
+
+   return true;
+}
+
+
 EGlslQualifier translateQualifier( TQualifier qual )
 {
    switch (qual)
