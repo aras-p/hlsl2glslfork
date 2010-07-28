@@ -207,15 +207,7 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Finalize();
 
 
 /// Construct a compiler for the given language (one per shader)
-/// \param language
-///      The HLSL shader type of the input (EShLangVertex or EShLangFragment).  This should
-///      be the type of the HLSL shader to translate.
-/// \param debugOptions
-///      Debug options (see TDebugOptions)
-/// \return
-///      Handle to a new compiler, or 0 on failure.
-SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage language, 
-                                                            int debugOptions );  
+SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage language );  
 
 
 SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle );

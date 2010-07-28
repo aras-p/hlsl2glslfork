@@ -46,7 +46,7 @@ class HlslLinker;
 class HlslCrossCompiler
 {
 public:   
-   HlslCrossCompiler(EShLanguage l, int dOptions);
+   HlslCrossCompiler(EShLanguage l);
    ~HlslCrossCompiler();
 
    EShLanguage getLanguage() const { return language; }
@@ -64,7 +64,6 @@ private:
 public:
 	HlslLinker* linker;
    TInfoSink infoSink;
-   int debugOptions;
    std::vector<GlslFunction*> functionList;
    std::vector<GlslStruct*> structList;
 };

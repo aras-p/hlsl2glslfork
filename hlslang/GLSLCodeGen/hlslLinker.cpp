@@ -151,7 +151,7 @@ static const char resultString[EAttrSemCount][32] = {
 
 
 
-HlslLinker::HlslLinker(TInfoSink& infoSink_, int dOptions) : infoSink(infoSink_), debugOptions(dOptions) 
+HlslLinker::HlslLinker(TInfoSink& infoSink_) : infoSink(infoSink_)
 {
 	for ( int i = 0; i < EAttrSemCount; i++)
 	{

@@ -82,7 +82,7 @@ private:
 
 public:
 
-   HlslLinker(TInfoSink& infoSink, int dOptions);
+   HlslLinker(TInfoSink& infoSink);
    ~HlslLinker();
 	
    TInfoSink& getInfoSink() { return infoSink; }
@@ -114,9 +114,6 @@ public:
    
    // Info sink for storing output
    TInfoSink& infoSink;
-
-   // Debug options
-   int debugOptions;
 
 protected:
 	typedef std::vector<GlslFunction*> FunctionSet;

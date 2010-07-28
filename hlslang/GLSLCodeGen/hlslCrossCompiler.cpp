@@ -39,12 +39,11 @@
 #include "propagateMutable.h"
 #include "hlslLinker.h"
 
-HlslCrossCompiler::HlslCrossCompiler(EShLanguage l, int dOptions)
+HlslCrossCompiler::HlslCrossCompiler(EShLanguage l)
 :	language(l)
-,	debugOptions(dOptions)
 ,	haveValidObjectCode(false)
 {
-	linker = new HlslLinker(infoSink, dOptions);
+	linker = new HlslLinker(infoSink);
 }
 
 HlslCrossCompiler::~HlslCrossCompiler()

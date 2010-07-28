@@ -255,12 +255,12 @@ int C_DECL Hlsl2Glsl_Finalize()
 }
 
 
-ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage language, int debugOptions )
+ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage language )
 {
    if (!InitThread())
       return 0;
 
-   HlslCrossCompiler* compiler = new HlslCrossCompiler(language, debugOptions);
+   HlslCrossCompiler* compiler = new HlslCrossCompiler(language);
    return compiler;
 }
 

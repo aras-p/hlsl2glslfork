@@ -207,7 +207,7 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 		return false;
 	}
 
-	ShHandle parser = Hlsl2Glsl_ConstructCompiler (vertex ? EShLangVertex : EShLangFragment, 0);
+	ShHandle parser = Hlsl2Glsl_ConstructCompiler (vertex ? EShLangVertex : EShLangFragment);
 
 	const char* sourceStr = input.c_str();
 
