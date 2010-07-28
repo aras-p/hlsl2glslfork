@@ -371,36 +371,29 @@ int yy_input(char* buf, int max_size)
 //
 // Returns 0 for success, as per yyparse().
 //
-int PaParseStrings(char* argv[], int strLen[], int argc, TParseContext& parseContextLocal)
+int PaParseString(char* source, TParseContext& parseContextLocal)
 {
     int argv0len;
     
-    ScanFromString(argv[0]); 
+    ScanFromString(source);
     
     //Storing the Current Compiler Parse context into the cpp structure.
 	cpp->pC = (void*)&parseContextLocal;
 	
-	if (!argv || argc == 0)
+    if (!source) {
+        parseContextLocal.error(0, "Null shader source string", "", "");
+        parseContextLocal.recover();
         return 1;
-    
-    for (int i = 0; i < argc; ++i) {
-        if (!argv[i]) {
-            parseContextLocal.error(0, "Null shader source string", "", "");
-            parseContextLocal.recover();
-            return 1;
-        }
     }
     
-    if (!strLen) {
-        argv0len = (int) strlen(argv[0]);
-        strLen   = &argv0len;
-    }
+    argv0len = (int) strlen(source);
+    
     yyrestart(0);
     (&parseContextLocal)->AfterEOF = false;
     cpp->PaWhichStr = 0;
-    cpp->PaArgv     = argv;
-    cpp->PaArgc     = argc;
-    cpp->PaStrLen   = strLen;
+    cpp->PaArgv     = &source;
+    cpp->PaArgc     = 1;
+    cpp->PaStrLen   = &argv0len;
     cpp->notAVersionToken = 0;
     lexlineno   = 1;
    

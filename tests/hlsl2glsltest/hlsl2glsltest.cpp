@@ -214,7 +214,7 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 
 	bool res = true;
 
-	if (Hlsl2Glsl_Parse (parser, &sourceStr, 1, 0))
+	if (Hlsl2Glsl_Parse (parser, sourceStr, 0))
 	{
 		static EAttribSemantic kAttribSemantic[] = {
 			EAttrSemTangent,

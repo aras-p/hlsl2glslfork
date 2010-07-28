@@ -142,13 +142,9 @@ bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage languag
        i != BuiltInStrings[parseContext.language].end();
        ++i)
    {
-      const char* builtInShaders[1];
-      int builtInLengths[1];
+      const char* builtInShaders = (*i).c_str();
 
-      builtInShaders[0] = (*i).c_str();
-      builtInLengths[0] = (int) (*i).size();
-
-      if (PaParseStrings(const_cast<char**>(builtInShaders), builtInLengths, 1, parseContext) != 0)
+      if (PaParseString(const_cast<char*>(builtInShaders), parseContext) != 0)
       {
          infoSink.info.message(EPrefixInternalError, "Unable to parse built-ins");
          return false;
@@ -295,8 +291,7 @@ void C_DECL Hlsl2Glsl_Destruct( ShHandle handle )
 
 
 int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
-                            const char* const shaderStrings[],
-                            const int numStrings,                                     
+                            const char* shaderString,
                             int debugOptions )
 {
    if (!InitThread())
@@ -314,8 +309,8 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
    compiler->infoSink.info.erase();
    compiler->infoSink.debug.erase();
 
-   if (numStrings == 0)
-      return 1;
+   if (!shaderString)
+	   return 1;
 
    TIntermediate intermediate(compiler->infoSink);
    TSymbolTable symbolTable(SymbolTables[compiler->getLanguage()]);
@@ -341,7 +336,7 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
       parseContext.infoSink.info.message(EPrefixInternalError, "Wrong symbol table level");
 
 
-   int ret = PaParseStrings(const_cast<char**>(shaderStrings), 0, numStrings, parseContext);
+   int ret = PaParseString(const_cast<char*>(shaderString), parseContext);
    if (ret)
       success = false;
 

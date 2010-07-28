@@ -234,23 +234,19 @@ SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_Destruct( ShHandle handle );
 
 
 
-/// Parse HLSL shader(s) to prepare it for final translation.  This function can take a string containing 
-/// multiple HLSL shaders which will effectively be concatenated into a single shader to parse.
+/// Parse HLSL shader to prepare it for final translation.
 ///
 /// \param handle
 ///      Handle to a valid parser (created with HLSL2GLSL_ConstructParser)
-/// \param shaderStrings
-///      Array of HLSL shader source to parse
-/// \param numStrings
-///      Number of HLSL shader strings in the shaderStrings array
+/// \param shaderString
+///      HLSL shader source to parse
 /// \param debugOptions
 ///      Debug options (see TDebugOptions)
 /// \return 
 ///      The return value of Hlsl2Glsl_Parse is 1 on success, 0 on failure
 ///  The info-log should be written by Hlsl2Glsl_Parse into ShHandle, so it can answer future queries.
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
-                                             const char* const shaderStrings[],
-                                             const int numStrings,                                     
+                                             const char* shaderString,
                                              int debugOptions );
 
 
