@@ -103,13 +103,6 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 		return false;
 	}
 
-	std::string output;
-	if (!ReadStringFromFile (outputPath.c_str(), output))
-	{
-		printf ("  failed to read output file\n");
-		return false;
-	}
-
 	ShHandle parser = Hlsl2Glsl_ConstructParser (vertex ? EShLangVertex : EShLangFragment, 0);
 	ShHandle translator = Hlsl2Glsl_ConstructTranslator (0);
 
@@ -137,6 +130,10 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 		if (Hlsl2Glsl_Translate (translator, &parser, 1, vertex ? "main" : NULL, vertex ? NULL : "main"))
 		{
 			std::string text = Hlsl2Glsl_GetShader (translator, vertex ? EShLangVertex : EShLangFragment);
+
+			std::string output;
+			ReadStringFromFile (outputPath.c_str(), output);
+
 			if (text != output)
 			{
 				// write output
