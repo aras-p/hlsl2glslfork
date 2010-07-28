@@ -155,6 +155,8 @@ std::string GlslFunction::getLocalDecls( int indentLevel )
    //  float fTemp = 1;
    // causing a GLSL parse error
     out.setf ( std::stringstream::showpoint );
+	out.unsetf(std::ios::fixed);
+	out.unsetf(std::ios::scientific);
 	out.precision (6);
 
    //save off the old depth, to restore later, this is probably unnecessary
