@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2B951C9D1135197300DBAF46 /* atom.c in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10EA70AF109530045E29C /* atom.c */; };
-		2B951C9E1135197300DBAF46 /* CodeGen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10DFC0AF103660045E29C /* CodeGen.cpp */; };
 		2B951C9F1135197300DBAF46 /* cpp.c in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10EA80AF109530045E29C /* cpp.c */; };
 		2B951CA01135197300DBAF46 /* cppstruct.c in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10EA90AF109530045E29C /* cppstruct.c */; };
 		2B951CA11135197300DBAF46 /* Gen_hlslang.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E5B0AF107780045E29C /* Gen_hlslang.cpp */; };
@@ -70,7 +69,6 @@
 		3AC10DEF0AF103410045E29C /* hlslSupportLib.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = hlslSupportLib.h; path = hlslang/GLSLCodeGen/hlslSupportLib.h; sourceTree = "<group>"; };
 		3AC10DF00AF103410045E29C /* propagateMutable.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = propagateMutable.h; path = hlslang/GLSLCodeGen/propagateMutable.h; sourceTree = "<group>"; };
 		3AC10DF10AF103410045E29C /* typeSamplers.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = typeSamplers.h; path = hlslang/GLSLCodeGen/typeSamplers.h; sourceTree = "<group>"; };
-		3AC10DFC0AF103660045E29C /* CodeGen.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = CodeGen.cpp; path = hlslang/GLSLCodeGen/CodeGen.cpp; sourceTree = "<group>"; };
 		3AC10DFD0AF103660045E29C /* glslCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glslCommon.cpp; path = hlslang/GLSLCodeGen/glslCommon.cpp; sourceTree = "<group>"; };
 		3AC10DFE0AF103660045E29C /* glslFunction.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glslFunction.cpp; path = hlslang/GLSLCodeGen/glslFunction.cpp; sourceTree = "<group>"; };
 		3AC10DFF0AF103660045E29C /* glslOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = glslOutput.cpp; path = hlslang/GLSLCodeGen/glslOutput.cpp; sourceTree = "<group>"; };
@@ -175,7 +173,6 @@
 			isa = PBXGroup;
 			children = (
 				3AC10DB30AF102890045E29C /* Headers */,
-				3AC10DFC0AF103660045E29C /* CodeGen.cpp */,
 				3AC10DFD0AF103660045E29C /* glslCommon.cpp */,
 				3AC10DFE0AF103660045E29C /* glslFunction.cpp */,
 				3AC10DFF0AF103660045E29C /* glslOutput.cpp */,
@@ -392,7 +389,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2B951C9D1135197300DBAF46 /* atom.c in Sources */,
-				2B951C9E1135197300DBAF46 /* CodeGen.cpp in Sources */,
 				2B951C9F1135197300DBAF46 /* cpp.c in Sources */,
 				2B951CA01135197300DBAF46 /* cppstruct.c in Sources */,
 				2B951CA11135197300DBAF46 /* Gen_hlslang.cpp in Sources */,
