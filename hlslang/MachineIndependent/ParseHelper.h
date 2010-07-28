@@ -69,7 +69,6 @@
 #ifndef _PARSER_HELPER_INCLUDED_
 #define _PARSER_HELPER_INCLUDED_
 
-#include "../Include/ShHandle.h"
 #include "SymbolTable.h"
 #include "localintermediate.h"
 

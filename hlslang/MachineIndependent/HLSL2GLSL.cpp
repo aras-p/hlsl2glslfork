@@ -69,7 +69,6 @@
 #include "SymbolTable.h"
 #include "ParseHelper.h"
 
-#include "../Include/ShHandle.h"
 #include "InitializeDll.h"
 
 #include "../../include/hlsl2glsl.h"

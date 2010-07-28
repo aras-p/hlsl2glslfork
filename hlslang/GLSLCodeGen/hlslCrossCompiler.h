@@ -37,7 +37,6 @@
 
 
 #include "../Include/Common.h"
-#include "../Include/ShHandle.h"
 
 #include "glslFunction.h"
 #include "glslStruct.h"

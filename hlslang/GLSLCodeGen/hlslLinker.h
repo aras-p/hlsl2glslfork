@@ -38,7 +38,6 @@
 #include <sstream>
 
 #include "../Include/Common.h"
-#include "../Include/ShHandle.h"
 
 #include "glslFunction.h"
 

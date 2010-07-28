@@ -70,7 +70,6 @@
 #define _INITIALIZE_INCLUDED_
 
 #include "../Include/Common.h"
-#include "../Include/ShHandle.h"
 #include "SymbolTable.h"
 #include "../Include/hlsl2glsl.h"
 

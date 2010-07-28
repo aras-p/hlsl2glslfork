@@ -418,10 +418,6 @@
 				>
 			</File>
 			<File
-				RelativePath="hlslang\Include\ShHandle.h"
-				>
-			</File>
-			<File
 				RelativePath="hlslang\MachineIndependent\SymbolTable.h"
 				>
 			</File>
