@@ -4,18 +4,28 @@
 #include <vector>
 //#include <OpenGL/OpenGL.h>
 //#include <AGL/agl.h>
+#ifdef _MSC_VER
 #include <windows.h>
+#else
+#include <dirent.h>
+#endif
 #include "../../include/hlsl2glsl.h"
+
+bool EndsWith (const std::string& str, const std::string& sub)
+{
+	return (str.size() >= sub.size()) && (strncmp (str.c_str()+str.size()-sub.size(), sub.c_str(), sub.size())==0);
+}
 
 
 typedef std::vector<std::string> StringVector;
 
-static StringVector GetFiles (const std::string& path)
+static StringVector GetFiles (const std::string& folder, const std::string& endsWith)
 {
 	StringVector res;
 
+	#ifdef _MSC_VER
 	WIN32_FIND_DATAA FindFileData;
-	HANDLE hFind = FindFirstFileA (path.c_str(), &FindFileData);
+	HANDLE hFind = FindFirstFileA ((folder+"/*"+endsWith).c_str(), &FindFileData);
 	if (hFind == INVALID_HANDLE_VALUE)
 		return res;
 
@@ -24,6 +34,29 @@ static StringVector GetFiles (const std::string& path)
 	} while (FindNextFileA (hFind, &FindFileData));
 
 	FindClose (hFind);
+	
+	#else
+	
+	//string absolutePath = PathToAbsolutePath(pathName);
+	
+	DIR *dirp;
+	struct dirent *dp;
+
+	if ((dirp = opendir(folder.c_str())) == NULL)
+		return res;
+
+	while ( (dp = readdir(dirp)) )
+	{
+		std::string fname = dp->d_name;
+		if (fname == "." || fname == "..")
+			continue;
+		if (!EndsWith (fname, endsWith))
+			continue;
+		res.push_back (fname);
+	}
+	closedir(dirp);
+	
+	#endif
 
 	return res;
 }
@@ -176,8 +209,8 @@ int main (int argc, const char** argv)
 	for (int type = 0; type < 2; ++type)
 	{
 		printf ("testing %s...\n", kTypeName[type]);
-		std::string testFolder = baseFolder + "/" + kTypeName[type] + "/";
-		StringVector inputFiles = GetFiles (testFolder + "*-in.txt");
+		std::string testFolder = baseFolder + "/" + kTypeName[type];
+		StringVector inputFiles = GetFiles (testFolder, "-in.txt");
 
 		size_t n = inputFiles.size();
 		tests += n;
@@ -187,7 +220,7 @@ int main (int argc, const char** argv)
 			printf ("test %s\n", inname.c_str());
 			std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
 			std::string errname = inname.substr (0,inname.size()-7) + "-res.txt";
-			bool ok = TestFile (type==0, testFolder + inname, testFolder + outname, testFolder + errname);
+			bool ok = TestFile (type==0, testFolder + "/" + inname, testFolder + "/" + outname, testFolder + "/" + errname);
 			if (!ok)
 			{
 				++errors;
