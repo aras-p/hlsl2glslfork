@@ -1,0 +1,36 @@
+struct v2f {
+    vec4 pos;
+    float fog;
+    vec2 uv;
+    vec4 color;
+};
+struct a2v {
+    vec4 pos;
+    vec2 uv;
+    vec3 normal;
+    vec4 color;
+};
+uniform mat4 mvp;
+v2f xlat_main( in a2v v );
+v2f xlat_main( in a2v v ) {
+    v2f o;
+    o.pos = ( mvp * v.pos );
+    o.color = v.color;
+    o.color.xyz  += v.normal;
+    o.uv = v.uv;
+    return o;
+}
+varying vec4 xlv_FOG;
+void main() {
+    v2f xl_retval;
+    a2v xlt_v;
+    xlt_v.pos = vec4( gl_Vertex);
+    xlt_v.uv = vec2( gl_MultiTexCoord0);
+    xlt_v.normal = vec3( gl_Normal);
+    xlt_v.color = vec4( gl_Color);
+    xl_retval = xlat_main( xlt_v);
+    gl_Position = vec4( xl_retval.pos);
+    xlv_FOG = vec4( xl_retval.fog, 0.0, 0.0, 0.0);
+    gl_TexCoord[0] = vec4( xl_retval.uv, 0.0, 0.0);
+    gl_FrontColor = vec4( xl_retval.color);
+}
