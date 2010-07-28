@@ -51,15 +51,7 @@
 typedef std::map<TOperator,std::string> CodeMap;
 static CodeMap *hlslSupportLib = 0;
 
-//=================================================================================================================================
-//
-//          Public Functions
-//
-//=================================================================================================================================
 
-//=========================================================================================================
-/// Initialize the library by loading the necessary functions
-//=========================================================================================================
 void initializeHLSLSupportLibrary() 
 {
    assert( hlslSupportLib == 0);
@@ -700,21 +692,13 @@ void initializeHLSLSupportLibrary()
    );	
 }
 
-//=========================================================================================================
-/// Free internal data structures
-//=========================================================================================================
+
 void finalizeHLSLSupportLibrary() 
 {
    delete hlslSupportLib;
    hlslSupportLib = 0;
 }
 
-//=========================================================================================================
-/// \param op
-///   Opcode to get the support code for
-/// \return
-///    Return the code string supporting the operation
-//=========================================================================================================
 const std::string& getHLSLSupportCode( TOperator op ) 
 {
    assert( hlslSupportLib);
