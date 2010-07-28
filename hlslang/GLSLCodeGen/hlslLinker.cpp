@@ -602,7 +602,7 @@ static const char* kShaderTypeNames[2] = { "Vertex", "Fragment" };
 
 
 
-bool HlslLinker::link(TShHandleBase* compiler, const char* entryFunc)
+bool HlslLinker::link(TCompiler* compiler, const char* entryFunc)
 {
 	std::vector<GlslFunction*> globalList;
 	std::vector<GlslFunction*> functionList;
@@ -619,7 +619,7 @@ bool HlslLinker::link(TShHandleBase* compiler, const char* entryFunc)
 		return false;
 	}
 
-	EShLanguage lang = compiler->getAsCompiler()->getLanguage();
+	EShLanguage lang = compiler->getLanguage();
 
 	if (!entryFunc)
 	{

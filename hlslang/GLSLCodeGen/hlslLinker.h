@@ -85,7 +85,7 @@ public:
    ~HlslLinker();
 	
    /// Main function that initiates code generation for the shader.  
-   bool link(TShHandleBase*, const char* entry);
+   bool link(TCompiler*, const char* entry);
 
    /// Strip the semantic string of any modifiers (e.g. _centroid)
    std::string stripSemanticModifier(const std::string &semantic, bool bWarn);

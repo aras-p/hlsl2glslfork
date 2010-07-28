@@ -246,14 +246,14 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 		}
 		else
 		{
-			const char* infoLog = Hlsl2Glsl_GetInfoLog( translator );
+			const char* infoLog = Hlsl2Glsl_GetTranslatorInfoLog( translator );
 			printf ("  translate error: %s\n", infoLog);
 			res = false;
 		}
 	}
 	else
 	{
-		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
+		const char* infoLog = Hlsl2Glsl_GetParserInfoLog( parser );
 		printf ("  parse error: %s\n", infoLog);
 		res = false;
 	}

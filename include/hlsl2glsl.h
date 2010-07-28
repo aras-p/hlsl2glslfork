@@ -276,13 +276,8 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle
 SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetShader( const ShHandle handle );
 
 
-/// After parsing or translating, retrieve the info log to get information.
-///
-/// \param handle
-///      Handle to a parser or translator
-/// \return 
-///      As a string, the information log.  0 if the information is not available or the object is bad.
-SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetInfoLog( const ShHandle handle );
+SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetParserInfoLog( const ShHandle handle );
+SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetTranslatorInfoLog( const ShHandle handle );
 
 
 /// After translating, retrieve the number of uniforms

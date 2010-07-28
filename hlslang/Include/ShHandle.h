@@ -70,13 +70,6 @@
 #ifndef _SHHANDLE_INCLUDED_
 #define _SHHANDLE_INCLUDED_
 
-//
-// Machine independent part of the compiler private objects
-// sent as ShHandle to the driver.
-//
-// This should not be included by driver code.
-//
-
 #include "../../include/hlsl2glsl.h"
 
 #include "InfoSink.h"
@@ -85,26 +78,15 @@ class TCompiler;
 class TLinker;
 
 
-//
-// The base class used to back handles returned to the driver.
-//
 class TShHandleBase
 {
 public:
    TShHandleBase() {}
    virtual ~TShHandleBase() {}
-   virtual TCompiler* getAsCompiler() {   return 0; }
-   virtual TLinker* getAsLinker() { return 0; }
-   virtual const TCompiler* getAsCompiler() const { return 0; }
-   virtual const TLinker* getAsLinker() const { return 0; }
 };
 
 class TIntermNode;
 
-//
-// The base class for the machine dependent compiler to derive from
-// for managing object code from the compile.
-//
 class TCompiler : public TShHandleBase
 {
 public:
@@ -116,8 +98,6 @@ public:
 
    virtual bool compile(TIntermNode* root) = 0;
 
-   virtual TCompiler* getAsCompiler() { return this; }
-   virtual const TCompiler* getAsCompiler() const { return this; }
    virtual bool linkable() { return haveValidObjectCode; }
 
    TInfoSink& infoSink;
@@ -126,16 +106,6 @@ protected:
    bool haveValidObjectCode;
 };
 
-//
-// Link operations are base on a list of compile results...
-//
-typedef TVector<TCompiler*> TCompilerList;
-typedef TVector<TShHandleBase*> THandleList;
-
-//
-// The base class for the machine dependent linker to derive from
-// to manage the resulting executable.
-//
 
 class TLinker : public TShHandleBase
 {
@@ -145,10 +115,8 @@ public:
       uniformBindings(0)
    {
    }
-   virtual TLinker* getAsLinker() { return this; }
-   virtual const TLinker* getAsLinker() const { return this; }
    virtual ~TLinker() { }
-   virtual bool link(TShHandleBase*, const char*) { return false; }
+   virtual bool link(TCompiler*, const char*) { return false; }
    virtual bool setUserAttribName ( EAttribSemantic eSemantic, const char *pName ) = 0;
    virtual void setUseUserVaryings ( bool bUseUserVaryings ) = 0;
    virtual TInfoSink& getInfoSink()
@@ -168,4 +136,3 @@ protected:
 
 
 #endif // _SHHANDLE_INCLUDED_
-
