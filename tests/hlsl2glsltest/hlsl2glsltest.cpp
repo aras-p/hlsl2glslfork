@@ -37,8 +37,6 @@ static StringVector GetFiles (const std::string& folder, const std::string& ends
 	
 	#else
 	
-	//string absolutePath = PathToAbsolutePath(pathName);
-	
 	DIR *dirp;
 	struct dirent *dp;
 
