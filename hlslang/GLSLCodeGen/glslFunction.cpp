@@ -44,7 +44,9 @@ GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSym
       depth(0),
       inStatement(false)
 { 
-	active <<std::showpoint;
+	active.setf ( std::stringstream::showpoint );
+	active.unsetf(std::ios::fixed);
+	active.unsetf(std::ios::scientific);
 	active.precision (6);
 }
 
