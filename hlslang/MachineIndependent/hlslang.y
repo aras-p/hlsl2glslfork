@@ -624,11 +624,6 @@ function_call
                     $$ = parseContext.intermediate.setAggregateOperator($1.intermAggregate, EOpFunctionCall, $1.line);
                     $$->setType(fnCandidate->getReturnType());                   
                     
-                    // this is how we know whether the given function is a builtIn function or a user defined function
-                    // if builtIn == false, it's a userDefined -> could be an overloaded builtIn function also
-                    // if builtIn == true, it's definitely a builtIn function with EOpNull
-                    if (!builtIn) 
-                        $$->getAsAggregate()->setUserDefined(); 
                     $$->getAsAggregate()->setName(fnCandidate->getMangledName());
                     $$->getAsAggregate()->setPlainName(fnCandidate->getName());
 
@@ -2524,10 +2519,8 @@ function_definition
 	if ( $1.function->getInfo())
 	    $$->getAsAggregate()->setSemantic($1.function->getInfo()->getSemantic());
         
-        // store the pragma information for debug and optimize and other vendor specific 
+        // store the pragma information for other vendor specific 
         // information. This information can be queried from the parse tree
-        $$->getAsAggregate()->setOptimize(parseContext.contextPragma.optimize);
-        $$->getAsAggregate()->setDebug(parseContext.contextPragma.debug);
         $$->getAsAggregate()->addToPragmaTable(parseContext.contextPragma.pragmaTable);
     }
     ;
