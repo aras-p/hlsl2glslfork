@@ -682,7 +682,7 @@ protected:
 };
 
 typedef TVector<TIntermNode*> TIntermSequence;
-typedef TVector<int> TQualifierList;
+
 //
 // Nodes that operate on an arbitrary sized set of children.
 //
@@ -736,10 +736,6 @@ public:
       return semantic;
    }
    virtual void traverse(TIntermTraverser*);
-   virtual TQualifierList& getQualifier()
-   {
-      return qualifier;
-   }
    void addToPragmaTable(const TPragmaTable& pTable);
    const TPragmaTable& getPragmaTable() const
    {
@@ -749,7 +745,6 @@ protected:
    TIntermAggregate(const TIntermAggregate&); // disallow copy constructor
    TIntermAggregate& operator=(const TIntermAggregate&); // disallow assignment operator
    TIntermSequence sequence;
-   TQualifierList qualifier;
    TString name;
    TString plainName;
    TString semantic;

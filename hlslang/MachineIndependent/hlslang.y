@@ -628,7 +628,6 @@ function_call
                     $$->getAsAggregate()->setPlainName(fnCandidate->getName());
 
                     TQualifier qual;
-                    TQualifierList& qualifierList = $$->getAsAggregate()->getQualifier();
                     for (int i = 0; i < fnCandidate->getParamCount(); ++i) {
                         qual = (*fnCandidate)[i].type->getQualifier();
                         if (qual == EvqOut || qual == EvqInOut) {
@@ -637,7 +636,6 @@ function_call
                                 parseContext.recover();
                             }
                         }
-                        qualifierList.push_back(qual);
                     }
                 }
                 $$->setType(fnCandidate->getReturnType());
