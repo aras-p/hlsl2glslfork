@@ -28,7 +28,6 @@
 		2B951CAF1135197300DBAF46 /* Intermediate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E290AF106F40045E29C /* Intermediate.cpp */; };
 		2B951CB01135197300DBAF46 /* intermOut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E2A0AF106F40045E29C /* intermOut.cpp */; };
 		2B951CB11135197300DBAF46 /* IntermTraverse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E2B0AF106F40045E29C /* IntermTraverse.cpp */; };
-		2B951CB21135197300DBAF46 /* Link.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E050AF103660045E29C /* Link.cpp */; };
 		2B951CB31135197300DBAF46 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10EAA0AF109530045E29C /* memory.c */; };
 		2B951CB41135197300DBAF46 /* ossource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E480AF107290045E29C /* ossource.cpp */; };
 		2B951CB51135197300DBAF46 /* parseConst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E2C0AF106F40045E29C /* parseConst.cpp */; };
@@ -80,7 +79,6 @@
 		3AC10E020AF103660045E29C /* hlslCrossCompiler.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = hlslCrossCompiler.cpp; path = hlslang/GLSLCodeGen/hlslCrossCompiler.cpp; sourceTree = "<group>"; };
 		3AC10E030AF103660045E29C /* hlslLinker.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = hlslLinker.cpp; path = hlslang/GLSLCodeGen/hlslLinker.cpp; sourceTree = "<group>"; };
 		3AC10E040AF103660045E29C /* hlslSupportLib.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = hlslSupportLib.cpp; path = hlslang/GLSLCodeGen/hlslSupportLib.cpp; sourceTree = "<group>"; };
-		3AC10E050AF103660045E29C /* Link.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Link.cpp; path = hlslang/GLSLCodeGen/Link.cpp; sourceTree = "<group>"; };
 		3AC10E060AF103660045E29C /* propagateMutable.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = propagateMutable.cpp; path = hlslang/GLSLCodeGen/propagateMutable.cpp; sourceTree = "<group>"; };
 		3AC10E070AF103660045E29C /* typeSamplers.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = typeSamplers.cpp; path = hlslang/GLSLCodeGen/typeSamplers.cpp; sourceTree = "<group>"; };
 		3AC10E160AF106C40045E29C /* Initialize.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Initialize.h; path = hlslang/MachineIndependent/Initialize.h; sourceTree = "<group>"; };
@@ -186,7 +184,6 @@
 				3AC10E020AF103660045E29C /* hlslCrossCompiler.cpp */,
 				3AC10E030AF103660045E29C /* hlslLinker.cpp */,
 				3AC10E040AF103660045E29C /* hlslSupportLib.cpp */,
-				3AC10E050AF103660045E29C /* Link.cpp */,
 				3AC10E060AF103660045E29C /* propagateMutable.cpp */,
 				3AC10E070AF103660045E29C /* typeSamplers.cpp */,
 			);
@@ -415,7 +412,6 @@
 				2B951CAF1135197300DBAF46 /* Intermediate.cpp in Sources */,
 				2B951CB01135197300DBAF46 /* intermOut.cpp in Sources */,
 				2B951CB11135197300DBAF46 /* IntermTraverse.cpp in Sources */,
-				2B951CB21135197300DBAF46 /* Link.cpp in Sources */,
 				2B951CB31135197300DBAF46 /* memory.c in Sources */,
 				2B951CB41135197300DBAF46 /* ossource.cpp in Sources */,
 				2B951CB51135197300DBAF46 /* parseConst.cpp in Sources */,
