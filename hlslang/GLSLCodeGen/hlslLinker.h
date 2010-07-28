@@ -61,7 +61,7 @@ enum EClassifier
 
 
 /// Implementation of the linker that will actually initiate the generation of the final GLSL code.
-class HlslLinker : public TShHandleBase 
+class HlslLinker
 {
 private:
 
@@ -83,7 +83,7 @@ private:
 
 public:
 
-   HlslLinker(int dOptions);
+   HlslLinker(TInfoSink& infoSink, int dOptions);
    ~HlslLinker();
 	
    TInfoSink& getInfoSink() { return infoSink; }
@@ -114,7 +114,7 @@ public:
    const ShUniformInfo* getUniformInfo() const  { return ( ( uniforms.size() ) ? &uniforms[0] : 0 ); }
    
    // Info sink for storing output
-   TInfoSink infoSink;
+   TInfoSink& infoSink;
 
    // Debug options
    int debugOptions;

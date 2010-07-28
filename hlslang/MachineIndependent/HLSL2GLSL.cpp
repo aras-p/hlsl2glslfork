@@ -256,35 +256,22 @@ int C_DECL Hlsl2Glsl_Finalize()
 }
 
 
-ShHandle C_DECL Hlsl2Glsl_ConstructParser( const EShLanguage language, int debugOptions )
+ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage language, int debugOptions )
 {
    if (!InitThread())
       return 0;
 
-   TShHandleBase* base = static_cast<TShHandleBase*>(new HlslCrossCompiler(language, debugOptions));
-
-   return reinterpret_cast<void*>(base);
+   HlslCrossCompiler* compiler = new HlslCrossCompiler(language, debugOptions);
+   return compiler;
 }
 
-
-ShHandle C_DECL Hlsl2Glsl_ConstructTranslator( int debugOptions )
-{
-   if (!InitThread())
-      return 0;
-
-   TShHandleBase* base = static_cast<TShHandleBase*>(new HlslLinker(debugOptions));
-
-   return reinterpret_cast<void*>(base);
-}
-
-
-void C_DECL Hlsl2Glsl_Destruct( ShHandle handle )
+void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle )
 {
    if (handle == 0)
       return;
 
-   TShHandleBase* base = static_cast<TShHandleBase*>(handle);
-   delete base;
+   HlslCrossCompiler* compiler = handle;
+   delete handle;
 }
 
 
@@ -298,7 +285,7 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
    if (handle == 0)
       return 0;
 
-   HlslCrossCompiler* compiler = reinterpret_cast<HlslCrossCompiler*>(handle);
+   HlslCrossCompiler* compiler = handle;
 
    GlobalPoolAllocator.push();
    compiler->infoSink.info.erase();
@@ -380,25 +367,20 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 }
 
 
-int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle,
-                                const ShHandle parserHandle,
-                                const char* entry)
+int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry )
 {
-   if (translatorHandle == 0 || parserHandle == 0)
+   if (handle == 0)
       return 0;
 
-   HlslCrossCompiler* compiler = reinterpret_cast<HlslCrossCompiler*>(parserHandle);
-   HlslLinker* linker = reinterpret_cast<HlslLinker*>(translatorHandle);
-
-   linker->infoSink.info.erase();
-
+   HlslCrossCompiler* compiler = handle;
+   compiler->infoSink.info.erase();
 	if (!compiler->linkable())
 	{
-		linker->infoSink.info.message(EPrefixError, "Shader does not have valid object code.");
+		compiler->infoSink.info.message(EPrefixError, "Shader does not have valid object code.");
 		return 0;
 	}
 
-   bool ret = linker->link(compiler, entry);
+   bool ret = compiler->GetLinker()->link(compiler, entry);
 
    return ret ? 1 : 0;
 }
@@ -406,14 +388,13 @@ int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle,
 
 const char* C_DECL Hlsl2Glsl_GetShader( const ShHandle handle )
 {
-   const HlslLinker *linker = reinterpret_cast<const HlslLinker*>(handle);
-   if (!linker)
-      return 0;
-   return linker->getShaderText();
+	if (!handle)
+		return 0;
+	return handle->GetLinker()->getShaderText();
 }
 
 
-const char* C_DECL Hlsl2Glsl_GetParserInfoLog( const ShHandle handle )
+const char* C_DECL Hlsl2Glsl_GetInfoLog( const ShHandle handle )
 {
    if (!InitThread())
       return 0;
@@ -425,21 +406,11 @@ const char* C_DECL Hlsl2Glsl_GetParserInfoLog( const ShHandle handle )
    return infoSink->info.c_str();
 }
 
-const char* C_DECL Hlsl2Glsl_GetTranslatorInfoLog( const ShHandle handle )
-{
-	if (!InitThread())
-		return 0;
-	if (handle == 0)
-		return 0;
-	HlslLinker* base = static_cast<HlslLinker*>(handle);
-	TInfoSink* infoSink = &(base->getInfoSink());
-	infoSink->info << infoSink->debug.c_str();
-	return infoSink->info.c_str();
-}
-
 
 int C_DECL Hlsl2Glsl_GetUniformCount( const ShHandle handle )
 {
+	if (!handle)
+		return 0;
    const HlslLinker *linker = reinterpret_cast<const HlslLinker*>(handle);
    if (!linker)
       return 0;
@@ -449,6 +420,8 @@ int C_DECL Hlsl2Glsl_GetUniformCount( const ShHandle handle )
 
 const ShUniformInfo* C_DECL Hlsl2Glsl_GetUniformInfo( const ShHandle handle )
 {
+	if (!handle)
+		return 0;
    const HlslLinker *linker = reinterpret_cast<const HlslLinker*>(handle);
    if (!linker)
       return 0;
@@ -461,9 +434,9 @@ int C_DECL Hlsl2Glsl_SetUserAttributeNames ( ShHandle handle,
                                              const char *pSemanticNames[], 
                                              int nNumSemantics )
 {
-   HlslLinker *linker = reinterpret_cast<HlslLinker*>(handle);
-   if (!linker)
-      return 0;
+	if (!handle)
+		return 0;
+	HlslLinker* linker = handle->GetLinker();
 
    for (int i = 0; i < nNumSemantics; i++ )
    {
@@ -479,9 +452,9 @@ int C_DECL Hlsl2Glsl_SetUserAttributeNames ( ShHandle handle,
 
 int C_DECL Hlsl2Glsl_UseUserVaryings ( ShHandle handle, bool bUseUserVaryings )
 {
-   HlslLinker *linker = reinterpret_cast<HlslLinker*>(handle);
-   if (!linker)
-      return 0;
+	if (!handle)
+		return 0;
+	HlslLinker* linker = handle->GetLinker();
    linker->setUseUserVaryings ( bUseUserVaryings );
    return 1;
 }

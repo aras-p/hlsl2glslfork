@@ -72,6 +72,7 @@
 #include "../Include/Common.h"
 #include "../Include/ShHandle.h"
 #include "SymbolTable.h"
+#include "../Include/hlsl2glsl.h"
 
 typedef TVector<TString> TBuiltInStrings;
 

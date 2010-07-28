@@ -207,8 +207,7 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 		return false;
 	}
 
-	ShHandle parser = Hlsl2Glsl_ConstructParser (vertex ? EShLangVertex : EShLangFragment, 0);
-	ShHandle translator = Hlsl2Glsl_ConstructTranslator (0);
+	ShHandle parser = Hlsl2Glsl_ConstructCompiler (vertex ? EShLangVertex : EShLangFragment, 0);
 
 	const char* sourceStr = input.c_str();
 
@@ -222,10 +221,10 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 		static const char* kAttribString[] = {
 			"TANGENT",
 		};
-		Hlsl2Glsl_SetUserAttributeNames (translator, kAttribSemantic, kAttribString, 1);
-		if (Hlsl2Glsl_Translate (translator, parser, "main"))
+		Hlsl2Glsl_SetUserAttributeNames (parser, kAttribSemantic, kAttribString, 1);
+		if (Hlsl2Glsl_Translate (parser, "main"))
 		{
-			std::string text = Hlsl2Glsl_GetShader (translator);
+			std::string text = Hlsl2Glsl_GetShader (parser);
 
 			std::string output;
 			ReadStringFromFile (outputPath.c_str(), output);
@@ -246,20 +245,19 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 		}
 		else
 		{
-			const char* infoLog = Hlsl2Glsl_GetTranslatorInfoLog( translator );
+			const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 			printf ("  translate error: %s\n", infoLog);
 			res = false;
 		}
 	}
 	else
 	{
-		const char* infoLog = Hlsl2Glsl_GetParserInfoLog( parser );
+		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 		printf ("  parse error: %s\n", infoLog);
 		res = false;
 	}
 
-	Hlsl2Glsl_Destruct (parser);
-	Hlsl2Glsl_Destruct (translator);
+	Hlsl2Glsl_DestructCompiler (parser);
 
 	return res;
 }

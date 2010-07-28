@@ -37,13 +37,14 @@
 #include "glslOutput.h"
 #include "typeSamplers.h"
 #include "propagateMutable.h"
-
+#include "hlslLinker.h"
 
 HlslCrossCompiler::HlslCrossCompiler(EShLanguage l, int dOptions)
 :	language(l)
 ,	debugOptions(dOptions)
 ,	haveValidObjectCode(false)
 {
+	linker = new HlslLinker(infoSink, dOptions);
 }
 
 HlslCrossCompiler::~HlslCrossCompiler()
@@ -56,7 +57,8 @@ HlslCrossCompiler::~HlslCrossCompiler()
    for ( std::vector<GlslStruct*>::iterator it = structList.begin() ; it != structList.end(); it++)
    {
       delete *it;
-   }   
+   }
+   delete linker;
 }
 
 

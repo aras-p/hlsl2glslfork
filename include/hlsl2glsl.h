@@ -188,7 +188,8 @@ enum TDebugOptions
 
 /// Generic opaque handle.  This type is used for handles to the parser/translator.
 /// If handle creation fails, 0 will be returned.
-typedef void* ShHandle;
+class HlslCrossCompiler;
+typedef HlslCrossCompiler* ShHandle;
 
 
 /// Initialize the HLSL2GLSL translator.  This function must be called once prior to calling any other
@@ -205,46 +206,23 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize();
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Finalize();
 
 
-/// Construct a parser for the given language (one per shader)
-///
+/// Construct a compiler for the given language (one per shader)
 /// \param language
 ///      The HLSL shader type of the input (EShLangVertex or EShLangFragment).  This should
 ///      be the type of the HLSL shader to translate.
 /// \param debugOptions
 ///      Debug options (see TDebugOptions)
 /// \return
-///      Handle to a new parser, or 0 on failure.
-SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructParser( const EShLanguage language, 
+///      Handle to a new compiler, or 0 on failure.
+SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage language, 
                                                             int debugOptions );  
 
 
-/// Construct a translator (one for each set of shaders to translate). Note that you can translate multiple 
-/// vertex and fragment shaders together.  The Hlsl2Glsl_Translate function will take in a list of parsed 
-/// shaders and link them together to produce the final translated output.
-///
-/// \return
-///      Handle to a new translator, or 0 on failure.
-SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructTranslator( int debugOptions ); 
-
-
-/// Destroy a parser or translator
-/// \param handle
-///      Handle to a parser or translator.
-SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_Destruct( ShHandle handle );
+SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle );
 
 
 
 /// Parse HLSL shader to prepare it for final translation.
-///
-/// \param handle
-///      Handle to a valid parser (created with HLSL2GLSL_ConstructParser)
-/// \param shaderString
-///      HLSL shader source to parse
-/// \param debugOptions
-///      Debug options (see TDebugOptions)
-/// \return 
-///      The return value of Hlsl2Glsl_Parse is 1 on success, 0 on failure
-///  The info-log should be written by Hlsl2Glsl_Parse into ShHandle, so it can answer future queries.
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
                                              const char* shaderString,
                                              int debugOptions );
@@ -252,49 +230,21 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 
 
 /// After parsing a HLSL shader, do the final translation to GLSL.
-///
-/// \param translatorHandle
-///      Handle to a valid translator (created with HLSL2GLSL_ConstructTranslator)
-/// \param parserHandle
-///      Parsed HLSL shader (see Hlsl2Glsl_Parse)
-/// \param entry
-///      The string name of the shader main entry point (e.g. "main", "VS", "PS").
-/// \return 
-///      The return value of Hlsl2Glsl_Translate is 1 on success, 0 on failure
-///  The info-log should be written by Hlsl2Glsl_Translate into ShHandle, so it can answer future queries.
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle,
-                                                 const ShHandle parserHandle,
-                                                 const char* entry );
+SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry );
 
 
 /// After translating HLSL shader(s), retrieve the translated GLSL source.
-///
-/// \param handle
-///      Handle to a translator, should be used only after calling Hlsl2Glsl_Translate
-/// \return 
-///      As a string, the translated GLSL source.  NULL if the GLSL source is not available.
 SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetShader( const ShHandle handle );
 
 
-SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetParserInfoLog( const ShHandle handle );
-SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetTranslatorInfoLog( const ShHandle handle );
+SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetInfoLog( const ShHandle handle );
 
 
 /// After translating, retrieve the number of uniforms
-///
-/// \param handle
-///      Handle to a translator, should be used only after calling Hlsl2Glsl_Translate
-/// \return 
-///      The number of uniforms in the translated shader.
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_GetUniformCount( const ShHandle handle );
 
 
 /// After translating, retrieve the uniform info table
-///
-/// \param handle
-///      Handle to a translator, should be used only after calling Hlsl2Glsl_Translate
-/// \return 
-///      The table of uniforms in the translated shader.  NULL if none.
 SH_IMPORT_EXPORT const ShUniformInfo* C_DECL Hlsl2Glsl_GetUniformInfo( const ShHandle handle );
 
 
@@ -303,7 +253,7 @@ SH_IMPORT_EXPORT const ShUniformInfo* C_DECL Hlsl2Glsl_GetUniformInfo( const ShH
 /// the semantics that are specified.
 ///
 /// \param handle
-///      Handle to the translator.  This should be called BEFORE calling Hlsl2Glsl_Translate
+///      Handle to the compiler.  This should be called BEFORE calling Hlsl2Glsl_Translate
 /// \param pSemanticEnums 
 ///      Array of semantic enums to set
 /// \param pSemanticNames 
@@ -322,7 +272,7 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_SetUserAttributeNames ( ShHandle handle,
 /// instead.
 /// 
 /// \param handle
-///      Handle to the translator.  This should be called BEFORE calling Hlsl2Glsl_Translate
+///      Handle to the compiler.  This should be called BEFORE calling Hlsl2Glsl_Translate
 /// \param bUseUserVarying 
 ///      If true, all user varyings will be used.  If false, the translator will attempt to use
 ///      GL fixed-function varyings

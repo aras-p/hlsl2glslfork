@@ -42,11 +42,13 @@
 #include "glslFunction.h"
 #include "glslStruct.h"
 
-class HlslCrossCompiler : public TShHandleBase
+class HlslLinker;
+
+class HlslCrossCompiler
 {
 public:   
    HlslCrossCompiler(EShLanguage l, int dOptions);
-   virtual ~HlslCrossCompiler();
+   ~HlslCrossCompiler();
 
    EShLanguage getLanguage() const { return language; }
    TInfoSink& getInfoSink() { return infoSink; }
@@ -54,11 +56,14 @@ public:
    bool compile(TIntermNode* root);
    bool linkable() const { return haveValidObjectCode; }
 
+   HlslLinker* GetLinker() { return linker; }
+
 private:
 	EShLanguage language;
 	bool haveValidObjectCode;
 
 public:
+	HlslLinker* linker;
    TInfoSink infoSink;
    int debugOptions;
    std::vector<GlslFunction*> functionList;

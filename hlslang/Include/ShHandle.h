@@ -70,13 +70,6 @@
 #ifndef _SHHANDLE_INCLUDED_
 #define _SHHANDLE_INCLUDED_
 
-#include "../../include/hlsl2glsl.h"
-
-class TShHandleBase
-{
-public:
-   TShHandleBase() {}
-   virtual ~TShHandleBase() {}
-};
+//#include "../../include/hlsl2glsl.h"
 
 #endif // _SHHANDLE_INCLUDED_
