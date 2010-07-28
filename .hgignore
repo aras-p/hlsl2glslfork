@@ -21,4 +21,4 @@ tests/out-*.txt
 *.dSYM
 tests/hlsl2glsltest/hlsl2glsltest
 tests/hlsl2glsltest/out.txt
-*-err.txt
+*-res.txt

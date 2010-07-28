@@ -107,14 +107,6 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 	ShHandle translator = Hlsl2Glsl_ConstructTranslator (0);
 
 	const char* sourceStr = input.c_str();
-	/*
-	FILE* fout = fopen (argv[3], "wb");
-	if (!fout)
-	{
-		printf ("ERROR: failed to write to %s\n", argv[3]);
-		return 1;
-	}
-	*/
 
 	bool res = true;
 
@@ -176,29 +168,36 @@ int main (int argc, const char** argv)
 
 	Hlsl2Glsl_Initialize();
 
-	std::string folderPath = argv[1];
+	std::string baseFolder = argv[1];
 
-	std::string fragmentFolder = folderPath + "/fragment/";
-	StringVector inputFiles = GetFiles (fragmentFolder + "*-in.txt");
-
-	size_t n = inputFiles.size();
+	static const char* kTypeName[2] = { "vertex", "fragment" };
+	size_t tests = 0;
 	size_t errors = 0;
-	for (size_t i = 0; i < n; ++i)
+	for (int type = 0; type < 2; ++type)
 	{
-		std::string inname = inputFiles[i];
-		printf ("test %s\n", inname.c_str());
-		std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
-		std::string errname = inname.substr (0,inname.size()-7) + "-err.txt";
-		bool ok = TestFile (false, fragmentFolder + inname, fragmentFolder + outname, fragmentFolder + errname);
-		if (!ok)
+		printf ("testing %s...\n", kTypeName[type]);
+		std::string testFolder = baseFolder + "/" + kTypeName[type] + "/";
+		StringVector inputFiles = GetFiles (testFolder + "*-in.txt");
+
+		size_t n = inputFiles.size();
+		tests += n;
+		for (size_t i = 0; i < n; ++i)
 		{
-			++errors;
+			std::string inname = inputFiles[i];
+			printf ("test %s\n", inname.c_str());
+			std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
+			std::string errname = inname.substr (0,inname.size()-7) + "-res.txt";
+			bool ok = TestFile (type==0, testFolder + inname, testFolder + outname, testFolder + errname);
+			if (!ok)
+			{
+				++errors;
+			}
 		}
 	}
 	if (errors != 0)
-		printf ("%i tests, %i FAILED\n", n, errors);
+		printf ("%i tests, %i FAILED\n", tests, errors);
 	else
-		printf ("%i tests succeeded\n", n);
+		printf ("%i tests succeeded\n", tests);
 
 	return errors ? 1 : 0;
 }

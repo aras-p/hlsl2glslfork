@@ -1,0 +1,39 @@
+struct v2f_vertex_lit {
+    vec2 uv;
+    vec4 diff;
+    vec4 spec;
+};
+struct v2f_img {
+    vec4 pos;
+    vec2 uv;
+};
+struct appdata_img {
+    vec4 vertex;
+    vec2 texcoord;
+};
+struct appdata_t {
+    vec4 vertex;
+    vec4 color;
+    vec2 texcoord;
+};
+uniform vec4 _FlareTexture_ST;
+uniform mat4 glstate_matrix_mvp;
+void xlat_main( in appdata_t v, out vec4 overtex, out vec4 ocolor, out vec2 otexcoord );
+void xlat_main( in appdata_t v, out vec4 overtex, out vec4 ocolor, out vec2 otexcoord ) {
+    overtex = ( glstate_matrix_mvp * v.vertex );
+    ocolor = v.color;
+    otexcoord = ((v.texcoord.xy  * _FlareTexture_ST.xy ) + _FlareTexture_ST.zw );
+}
+void main() {
+    appdata_t xlt_v;
+    xlt_v.vertex = vec4( gl_Vertex);
+    xlt_v.color = vec4( gl_Color);
+    xlt_v.texcoord = vec2( gl_MultiTexCoord0);
+    vec4 xlt_overtex;
+    vec4 xlt_ocolor;
+    vec2 xlt_otexcoord;
+    xlat_main( xlt_v, xlt_overtex, xlt_ocolor, xlt_otexcoord);
+    gl_Position = vec4( xlt_overtex);
+    gl_FrontColor = vec4( xlt_ocolor);
+    gl_TexCoord[0] = vec4( xlt_otexcoord, 0.0, 0.0);
+}
