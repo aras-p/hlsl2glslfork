@@ -2,10 +2,34 @@
 #include <cstdio>
 #include <string>
 #include <vector>
+
 //#include <OpenGL/OpenGL.h>
 //#include <AGL/agl.h>
 #ifdef _MSC_VER
 #include <windows.h>
+#include <gl/GL.h>
+
+extern "C" {
+typedef char GLcharARB;		/* native character */
+typedef unsigned int GLhandleARB;	/* shader object handle */
+#define GL_VERTEX_SHADER_ARB              0x8B31
+#define GL_FRAGMENT_SHADER_ARB            0x8B30
+#define GL_OBJECT_COMPILE_STATUS_ARB      0x8B81
+typedef void (WINAPI * PFNGLDELETEOBJECTARBPROC) (GLhandleARB obj);
+typedef GLhandleARB (WINAPI * PFNGLCREATESHADEROBJECTARBPROC) (GLenum shaderType);
+typedef void (WINAPI * PFNGLSHADERSOURCEARBPROC) (GLhandleARB shaderObj, GLsizei count, const GLcharARB* *string, const GLint *length);
+typedef void (WINAPI * PFNGLCOMPILESHADERARBPROC) (GLhandleARB shaderObj);
+typedef void (WINAPI * PFNGLGETINFOLOGARBPROC) (GLhandleARB obj, GLsizei maxLength, GLsizei *length, GLcharARB *infoLog);
+typedef void (WINAPI * PFNGLGETOBJECTPARAMETERIVARBPROC) (GLhandleARB obj, GLenum pname, GLint *params);
+static PFNGLDELETEOBJECTARBPROC glDeleteObjectARB;
+static PFNGLCREATESHADEROBJECTARBPROC glCreateShaderObjectARB;
+static PFNGLSHADERSOURCEARBPROC glShaderSourceARB;
+static PFNGLCOMPILESHADERARBPROC glCompileShaderARB;
+static PFNGLGETINFOLOGARBPROC glGetInfoLogARB;
+static PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
+}
+
+
 #else
 #include <dirent.h>
 #endif
@@ -88,9 +112,52 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 	return true;
 }
 
-/*
-static void InitializeOpenGL ()
-{	
+static bool InitializeOpenGL ()
+{
+	bool hasGLSL = false;
+
+#ifdef _MSC_VER
+	// setup minimal required GL
+	HWND wnd = CreateWindowA(
+		"STATIC",
+		"GL",
+		WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS |	WS_CLIPCHILDREN,
+		0, 0, 16, 16,
+		NULL, NULL,
+		GetModuleHandle(NULL), NULL );
+	HDC dc = GetDC( wnd );
+
+	PIXELFORMATDESCRIPTOR pfd = {
+		sizeof(PIXELFORMATDESCRIPTOR), 1,
+		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL,
+		PFD_TYPE_RGBA, 32,
+		0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0,
+		16, 0,
+		0, PFD_MAIN_PLANE, 0, 0, 0, 0
+	};
+
+	int fmt = ChoosePixelFormat( dc, &pfd );
+	SetPixelFormat( dc, fmt, &pfd );
+
+	HGLRC rc = wglCreateContext( dc );
+	wglMakeCurrent( dc, rc );
+
+	// get information
+	const char* extensions = (const char*)glGetString(GL_EXTENSIONS);
+	hasGLSL = strstr(extensions, "GL_ARB_shader_objects") && strstr(extensions, "GL_ARB_vertex_shader") && strstr(extensions, "GL_ARB_fragment_shader");
+
+	if (hasGLSL)
+	{
+		glDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC)wglGetProcAddress("glDeleteObjectARB");
+		glCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC)wglGetProcAddress("glCreateShaderObjectARB");
+		glShaderSourceARB = (PFNGLSHADERSOURCEARBPROC)wglGetProcAddress("glShaderSourceARB");
+		glCompileShaderARB = (PFNGLCOMPILESHADERARBPROC)wglGetProcAddress("glCompileShaderARB");
+		glGetInfoLogARB = (PFNGLGETINFOLOGARBPROC)wglGetProcAddress("glGetInfoLogARB");
+		glGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC)wglGetProcAddress("glGetObjectParameterivARB");
+	}
+
+#else
 	GLint attributes[16];
 	int i = 0;
 	attributes[i++]=AGL_RGBA;
@@ -102,30 +169,33 @@ static void InitializeOpenGL ()
 	AGLPixelFormat pixelFormat = aglChoosePixelFormat(NULL,0,attributes);
 	AGLContext agl = aglCreateContext(pixelFormat, NULL);
 	aglSetCurrentContext (agl);
+
+#endif
+
+	return hasGLSL;
 }
 
-bool CheckGLSL (bool vertex, const char* source, FILE* fout)
+static bool CheckGLSL (bool vertex, const char* source)
 {
-	//GLhandleARB prog = glCreateProgramObjectARB ();
 	GLhandleARB shader = glCreateShaderObjectARB (vertex ? GL_VERTEX_SHADER_ARB : GL_FRAGMENT_SHADER_ARB);
 	glShaderSourceARB (shader, 1, &source, NULL);
 	glCompileShaderARB (shader);
 	GLint status;
 	glGetObjectParameterivARB (shader, GL_OBJECT_COMPILE_STATUS_ARB, &status);
+	bool res = true;
 	if (status == 0)
 	{
 		char log[4096];
 		GLsizei logLength;
 		glGetInfoLogARB (shader, sizeof(log), &logLength, log);
-		fprintf (fout, "\n\n!!!! GLSL compile error: %s", log);
-		return false;
+		printf ("  glsl compile error:\n%s\n", log);
+		res = false;
 	}
-	
-	return true;
+	glDeleteObjectARB (shader);
+	return res;
 }
-*/
 
-static bool TestFile (bool vertex, const std::string& inputPath, const std::string& outputPath, const std::string& errPath)
+static bool TestFile (bool vertex, const std::string& inputPath, const std::string& outputPath, const std::string& errPath, bool doCheckGLSL)
 {
 	std::string input;
 	if (!ReadStringFromFile (inputPath.c_str(), input))
@@ -166,7 +236,10 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 				printf ("  does not match expected output\n");
 				res = false;
 			}
-			//CheckGLSL (vertex, text, fout);
+			if (doCheckGLSL && !CheckGLSL (vertex, text.c_str()))
+			{
+				res = false;
+			}
 		}
 		else
 		{
@@ -197,7 +270,8 @@ int main (int argc, const char** argv)
 		return 1;
 	}
 
-	Hlsl2Glsl_Initialize();
+	bool hasOpenGL = InitializeOpenGL ();
+	Hlsl2Glsl_Initialize ();
 
 	std::string baseFolder = argv[1];
 
@@ -218,7 +292,7 @@ int main (int argc, const char** argv)
 			printf ("test %s\n", inname.c_str());
 			std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
 			std::string errname = inname.substr (0,inname.size()-7) + "-res.txt";
-			bool ok = TestFile (type==0, testFolder + "/" + inname, testFolder + "/" + outname, testFolder + "/" + errname);
+			bool ok = TestFile (type==0, testFolder + "/" + inname, testFolder + "/" + outname, testFolder + "/" + errname, hasOpenGL);
 			if (!ok)
 			{
 				++errors;
