@@ -93,6 +93,9 @@ const char *getTypeString( const EGlslSymbolType t );
 /// Translates the type to a GLSL symbol type
 EGlslSymbolType translateType( const TType *type );
 
+/// Returns whether the qualifier is associated with a local or global
+bool isLocal( EGlslQualifier qual );
+
 /// Translates the qualifier to a GLSL qualifier enumerant
 EGlslQualifier translateQualifier( TQualifier qual);
 
