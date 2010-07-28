@@ -66,12 +66,6 @@
 //POSSIBILITY OF SUCH DAMAGE.
 //
 
-//=================================================================================================================================
-//   ATI Research, Inc.
-//
-//   This file contains the interface to the HLSL2GLSL translator.  
-//=================================================================================================================================
-
 #ifndef _HLSL2GLSL_INTERFACE_INCLUDED_
 #define _HLSL2GLSL_INTERFACE_INCLUDED_
 
@@ -88,15 +82,8 @@
 extern "C" {
 #endif
 
-//=================================================================================================================================
-//
-//          Types / Enums
-//
-//=================================================================================================================================
 
-//=========================================================================================================
 /// Types of languages the HLSL2GLSL translator can consume.
-//=========================================================================================================
 typedef enum
 {
    EShLangVertex,
@@ -104,9 +91,7 @@ typedef enum
    EShLangCount,
 } EShLanguage;
 
-//=========================================================================================================
 /// Binding table.  This can be used for locating attributes, uniforms, globals, etc., as needed.
-//=========================================================================================================
 typedef struct
 {
    char* name;
@@ -119,10 +104,9 @@ typedef struct
    ShBinding* bindings;  // array of bindings
 } ShBindingTable;
 
-//=========================================================================================================
+
 /// GLSL shader variable types
 /// NOTE: these are ordered to exactly match the internal enums
-//=========================================================================================================
 typedef enum
 {
    EShTypeVoid,
@@ -149,10 +133,9 @@ typedef enum
    EShTypeStruct
 } EShType;
 
-//=========================================================================================================
+
 /// HLSL attribute semantics
 /// NOTE: these are ordered to exactly match the internal tables
-//=========================================================================================================
 enum EAttribSemantic
 {
    EAttrSemNone,
@@ -182,9 +165,7 @@ enum EAttribSemantic
 };
 
 
-//=========================================================================================================
 /// Uniform info struct
-//=========================================================================================================
 typedef struct
 {
    char *name;
@@ -195,9 +176,8 @@ typedef struct
    void *annt;
 } ShUniformInfo;
 
-//=========================================================================================================
+
 /// Debug options
-//=========================================================================================================
 enum TDebugOptions
 {
    EDebugOpNone               = 0x000,
@@ -206,39 +186,25 @@ enum TDebugOptions
 
 
 
-//=========================================================================================================
 /// Generic opaque handle.  This type is used for handles to the parser/translator.
-///
 /// If handle creation fails, 0 will be returned.
-///
-//=========================================================================================================
 typedef void* ShHandle;
 
-//=================================================================================================================================
-//
-//          Public Functions
-//
-//=================================================================================================================================
 
-//=========================================================================================================
 /// Initialize the HLSL2GLSL translator.  This function must be called once prior to calling any other
 /// HLSL2GLSL translator functions
-/// 
 /// \return
 ///   1 on success, 0 on failure
-//=========================================================================================================
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize();
 
-//=========================================================================================================
+
 /// Finalize the HLSL2GLSL translator.  This function should be called to de-initialize the HLSL2GLSL 
 /// translator and should only be called once on shutdown.
-/// 
 /// \return
 ///   1 on success, 0 on failure
-//=========================================================================================================
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Finalize();
 
-//=========================================================================================================
+
 /// Construct a parser for the given language (one per shader)
 ///
 /// \param language
@@ -248,31 +214,26 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Finalize();
 ///      Debug options (see TDebugOptions)
 /// \return
 ///      Handle to a new parser, or 0 on failure.
-//=========================================================================================================
 SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructParser( const EShLanguage language, 
                                                             int debugOptions );  
 
-//=========================================================================================================
+
 /// Construct a translator (one for each set of shaders to translate). Note that you can translate multiple 
 /// vertex and fragment shaders together.  The Hlsl2Glsl_Translate function will take in a list of parsed 
 /// shaders and link them together to produce the final translated output.
 ///
 /// \return
 ///      Handle to a new translator, or 0 on failure.
-//=========================================================================================================
 SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructTranslator( int debugOptions ); 
 
 
-//=========================================================================================================
 /// Destroy a parser or translator
-///
 /// \param handle
 ///      Handle to a parser or translator.
-//=========================================================================================================
 SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_Destruct( ShHandle handle );
 
 
-//=========================================================================================================
+
 /// Parse HLSL shader(s) to prepare it for final translation.  This function can take a string containing 
 /// multiple HLSL shaders which will effectively be concatenated into a single shader to parse.
 ///
@@ -287,7 +248,6 @@ SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_Destruct( ShHandle handle );
 /// \return 
 ///      The return value of Hlsl2Glsl_Parse is 1 on success, 0 on failure
 ///  The info-log should be written by Hlsl2Glsl_Parse into ShHandle, so it can answer future queries.
-//=========================================================================================================
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
                                              const char* const shaderStrings[],
                                              const int numStrings,                                     
@@ -295,7 +255,6 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 
 
 
-//=========================================================================================================
 /// After parsing one or more HLSL shaders, do the final translation to GLSL.  This function also has
 /// the ability to link together multiple HLSL parsed shaders.  So, for example, you can use this function
 /// to generate both a translated vertex and fragment shader.  
@@ -313,7 +272,6 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 /// \return 
 ///      The return value of Hlsl2Glsl_Translate is 1 on success, 0 on failure
 ///  The info-log should be written by Hlsl2Glsl_Translate into ShHandle, so it can answer future queries.
-//=========================================================================================================
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle,
                                                  const ShHandle parserHandles[],
                                                  const int numHandles,
@@ -321,7 +279,6 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle
                                                  const char* fragmentEntry );
 
 
-//=========================================================================================================
 /// After translating HLSL shader(s), retrieve the translated GLSL source.
 ///
 /// \param handle
@@ -330,41 +287,37 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle translatorHandle
 ///      Language to get the shader source for (vertex of fragment)
 /// \return 
 ///      As a string, the translated GLSL source.  NULL if the GLSL source is not available.
-//=========================================================================================================
 SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetShader( const ShHandle handle, 
                                                          EShLanguage lang );
 
-//=========================================================================================================
+
 /// After parsing or translating, retrieve the info log to get information.
 ///
 /// \param handle
 ///      Handle to a parser or translator
 /// \return 
 ///      As a string, the information log.  0 if the information is not available or the object is bad.
-//=========================================================================================================
 SH_IMPORT_EXPORT const char* C_DECL Hlsl2Glsl_GetInfoLog( const ShHandle handle );
 
-//=========================================================================================================
+
 /// After translating, retrieve the number of uniforms
 ///
 /// \param handle
 ///      Handle to a translator, should be used only after calling Hlsl2Glsl_Translate
 /// \return 
 ///      The number of uniforms in the translated shader.
-//=========================================================================================================
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_GetUniformCount( const ShHandle handle );
 
-//=========================================================================================================
+
 /// After translating, retrieve the uniform info table
 ///
 /// \param handle
 ///      Handle to a translator, should be used only after calling Hlsl2Glsl_Translate
 /// \return 
 ///      The table of uniforms in the translated shader.  NULL if none.
-//=========================================================================================================
 SH_IMPORT_EXPORT const ShUniformInfo* C_DECL Hlsl2Glsl_GetUniformInfo( const ShHandle handle );
 
-//=========================================================================================================
+
 /// Instead of mapping HLSL attributes to GLSL fixed-function attributes, this function can be used to 
 /// override the  attribute mapping.  This tells the code generator to use user-defined attributes for 
 /// the semantics that are specified.
@@ -379,13 +332,12 @@ SH_IMPORT_EXPORT const ShUniformInfo* C_DECL Hlsl2Glsl_GetUniformInfo( const ShH
 ///      Number of semantics to set in the arrays
 /// \return
 ///      1 on success, 0 on failure
-//=========================================================================================================
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_SetUserAttributeNames ( ShHandle handle, 
                                                               const EAttribSemantic *pSemanticEnums, 
                                                               const char *pSemanticNames[], 
                                                               int nNumSemantics );
 
-//=========================================================================================================
+
 /// Instead of using OpenGL fixed-function varyings (such as gl_TexCoord[x]), use user named varyings 
 /// instead.
 /// 
@@ -396,7 +348,6 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_SetUserAttributeNames ( ShHandle handle,
 ///      GL fixed-function varyings
 /// \return
 ///      1 on success, 0 on failure
-//=========================================================================================================
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_UseUserVaryings ( ShHandle handle, 
                                                         bool bUseUserVaryings );
 
@@ -406,4 +357,3 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_UseUserVaryings ( ShHandle handle,
 #endif
 
 #endif // _HLSL2GLSL_INTERFACE_INCLUDED_
-
