@@ -46,6 +46,7 @@ static const char attribString[EAttrSemCount][32] = {
 	"",
 	"gl_Vertex",
 	"",
+	"",
 	"gl_Normal",
 	"gl_Color",
 	"gl_SecondaryColor",
@@ -75,6 +76,7 @@ static const char varOutString[EAttrSemCount][32] = {
 	"gl_Position",
 	"",
 	"",
+	"",
 	"gl_FrontColor",
 	"gl_FrontSecondaryColor",
 	"",
@@ -102,6 +104,7 @@ static const char varInString[EAttrSemCount][32] = {
 	"",
 	"",
 	"gl_FragCoord",
+	"gl_FrontFacing",
 	"",
 	"gl_Color",
 	"gl_SecondaryColor",
@@ -127,6 +130,7 @@ static const char varInString[EAttrSemCount][32] = {
 
 // String table that maps attribute semantics to built-in GLSL fragment shader outputs
 static const char resultString[EAttrSemCount][32] = {
+	"",
 	"",
 	"",
 	"",
@@ -438,6 +442,9 @@ EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic 
 	
 	if ( !_stricmp(curSemantic.c_str(), "vpos"))
 		return EAttrSemVPos;
+
+	if ( !_stricmp(curSemantic.c_str(), "vface"))
+		return EAttrSemVFace;
 
 	if ( !_stricmp(curSemantic.c_str(), "normal"))
 		return EAttrSemNormal;

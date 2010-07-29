@@ -141,6 +141,7 @@ enum EAttribSemantic
    EAttrSemNone,
    EAttrSemPosition,
    EAttrSemVPos,
+   EAttrSemVFace,
    EAttrSemNormal,
    EAttrSemColor0,
    EAttrSemColor1,
