@@ -45,6 +45,7 @@
 static const char attribString[EAttrSemCount][32] = {
 	"",
 	"gl_Vertex",
+	"",
 	"gl_Normal",
 	"gl_Color",
 	"gl_SecondaryColor",
@@ -65,13 +66,14 @@ static const char attribString[EAttrSemCount][32] = {
 	"xlat_attrib_blendweights",
 	"xlat_attrib_blendindices",
 	"",
-	""
+	"",
 };
 
 // String table that maps attribute semantics to built-in GLSL output varyings
 static const char varOutString[EAttrSemCount][32] = {
 	"",
 	"gl_Position",
+	"",
 	"",
 	"gl_FrontColor",
 	"gl_FrontSecondaryColor",
@@ -92,11 +94,12 @@ static const char varOutString[EAttrSemCount][32] = {
 	"",
 	"",
 	"",
-	""
+	"",
 };
 
 // String table that maps attribute semantics to built-in GLSL input varyings
 static const char varInString[EAttrSemCount][32] = {
+	"",
 	"",
 	"gl_FragCoord",
 	"",
@@ -119,11 +122,12 @@ static const char varInString[EAttrSemCount][32] = {
 	"",
 	"",
 	"",
-	""
+	"",
 };
 
 // String table that maps attribute semantics to built-in GLSL fragment shader outputs
 static const char resultString[EAttrSemCount][32] = {
+	"",
 	"",
 	"",
 	"",
@@ -146,7 +150,7 @@ static const char resultString[EAttrSemCount][32] = {
 	"",
 	"",
 	"gl_FragDepth",
-	""
+	"",
 };
 
 
@@ -433,7 +437,7 @@ EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic 
 		return EAttrSemPosition;
 	
 	if ( !_stricmp(curSemantic.c_str(), "vpos"))
-		return EAttrSemPosition;
+		return EAttrSemVPos;
 
 	if ( !_stricmp(curSemantic.c_str(), "normal"))
 		return EAttrSemNormal;
@@ -837,6 +841,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 		else
 			call << funcMain->getName() << "( ";
 
+		// pass main function parameters
 		for (int ii=0; ii<pCount; ii++)
 		{
 			GlslSymbol *sym = funcMain->getParameter(ii);
@@ -845,6 +850,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 			switch (sym->getQualifier())
 			{
 
+			// -------- IN & OUT parameters
 			case EqtIn:
 			case EqtInOut:
 				if ( sym->getType() != EgstStruct)
@@ -854,8 +860,15 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 
 					if ( getArgumentData( sym, lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad) )
 					{
+						// In fragment shader, pass zero for POSITION inputs
+						bool ignoredPositionInFragment = false;
+						if (lang == EShLangFragment && attrSem == EAttrSemPosition)
+						{
+							call << ctor << "(0.0)";
+							ignoredPositionInFragment = true;
+						}
 						// For "in" parameters, just call directly to the main
-						if ( sym->getQualifier() != EqtInOut )
+						else if ( sym->getQualifier() != EqtInOut )
 						{
 							call << ctor << "(" << name;
 							for (int ii = 0; ii<pad; ii++)
@@ -899,7 +912,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 						if (lang == EShLangFragment) // fragment shader: deal with user varyings
 						{
 							// If using user varying, add it to the varying list
-							if ( strstr ( name.c_str(), "xlv" ) )
+							if ( !ignoredPositionInFragment && strstr ( name.c_str(), "xlv" ) )
 							{
 								varying << "varying vec4 " << name <<";\n" ;
 							}
@@ -929,6 +942,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 					for (int jj=0; jj<elem; jj++)
 					{
 						const GlslStruct::member &current = Struct->getMember(jj);
+						EAttribSemantic memberSem = parseAttributeSemantic (current.semantic);
 						std::string name, ctor;
 						int pad;
 						int numArrayElements = 1;
@@ -953,11 +967,20 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 								if ( bIsArray )
 									preamble << "[" << arrayIndex << "]";
 
-								preamble << " = " << ctor << "( " << name;
-								for (int ii = 0; ii<pad; ii++)
-									preamble << ", 0.0";
-
-								preamble << ");\n";
+								// In fragment shader, pass zero for POSITION inputs
+								bool ignoredPositionInFragment = false;
+								if (lang == EShLangFragment && memberSem == EAttrSemPosition)
+								{
+									preamble << " = " << ctor << "(0.0);\n";
+									ignoredPositionInFragment = true;
+								}
+								else
+								{
+									preamble << " = " << ctor << "( " << name;
+									for (int ii = 0; ii<pad; ii++)
+										preamble << ", 0.0";
+									preamble << ");\n";
+								}
 
 								if (lang == EShLangVertex) // vertex shader: gl_ attributes
 								{
@@ -987,7 +1010,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 								if (lang == EShLangFragment) // fragment shader: user varyings
 								{
 									// If using user varying, add it to the varying list
-									if ( strstr ( name.c_str(), "xlv" ) )
+									if (!ignoredPositionInFragment && strstr ( name.c_str(), "xlv" ))
 									{
 										varying << "varying vec4 " << name <<";\n" ;
 									}
@@ -1013,7 +1036,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 					break;
 				}
 
-				// Also a fallthrough for "inout" (see if check above)
+
+			// -------- OUT parameters; also fall-through for INOUT (see the check above)
 			case EqtOut:
 
 				if ( sym->getType() != EgstStruct)
@@ -1125,6 +1149,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 
 		call << ");\n";
 
+
+		// -------- return value of main entry point
 		if (retType != EgstVoid)
 		{
 

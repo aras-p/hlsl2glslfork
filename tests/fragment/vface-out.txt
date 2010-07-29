@@ -3,7 +3,7 @@ vec4 xlat_main( in float face ) {
     return vec4( face);
 }
 void main() {
-    vec4 xlat_retVal;
-    xlat_retVal = xlat_main( float(gl_FrontFacing));
-    gl_FragData[0] = vec4( xlat_retVal);
+    vec4 xl_retval;
+    xl_retval = xlat_main( float(gl_FrontFacing));
+    gl_FragData[0] = vec4( xl_retval);
 }

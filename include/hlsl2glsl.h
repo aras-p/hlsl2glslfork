@@ -140,6 +140,7 @@ enum EAttribSemantic
 {
    EAttrSemNone,
    EAttrSemPosition,
+   EAttrSemVPos,
    EAttrSemNormal,
    EAttrSemColor0,
    EAttrSemColor1,
