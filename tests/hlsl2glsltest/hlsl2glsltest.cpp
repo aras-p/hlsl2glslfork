@@ -87,6 +87,14 @@ static StringVector GetFiles (const std::string& folder, const std::string& ends
 	return res;
 }
 
+static void DeleteFile (const std::string& path)
+{
+	#ifdef _MSC_VER
+	DeleteFileA (path.c_str());
+	#else
+	#endif
+}
+
 static bool ReadStringFromFile (const char* pathName, std::string& output)
 {
 	FILE* file = fopen( pathName, "rb" );
@@ -204,6 +212,8 @@ static bool CheckGLSL (bool vertex, const char* source)
 
 static bool TestFile (bool vertex, const std::string& inputPath, const std::string& outputPath, const std::string& errPath, bool doCheckGLSL)
 {
+	DeleteFile (errPath);
+
 	std::string input;
 	if (!ReadStringFromFile (inputPath.c_str(), input))
 	{
