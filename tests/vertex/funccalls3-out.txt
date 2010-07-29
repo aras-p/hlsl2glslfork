@@ -1,0 +1,31 @@
+struct v2f {
+    vec4 pos;
+    vec4 color;
+};
+struct a2v {
+    vec4 pos;
+};
+uniform mat4 mvp;
+vec4 ComputeColor( in vec4 pos );
+v2f xlat_main( in a2v v );
+vec4 ComputeColor( in vec4 pos ) {
+    pos *= vec4( 1.00000, -1.00000, -1.00000, 1.00000);
+    pos.xyz  *= 0.300000;
+    return pos;
+}
+v2f xlat_main( in a2v v ) {
+    vec4 pos;
+    v2f o;
+    pos = ( mvp * v.pos );
+    o.color = ComputeColor( pos);
+    o.pos = pos;
+    return o;
+}
+void main() {
+    v2f xl_retval;
+    a2v xlt_v;
+    xlt_v.pos = vec4( gl_Vertex);
+    xl_retval = xlat_main( xlt_v);
+    gl_Position = vec4( xl_retval.pos);
+    gl_FrontColor = vec4( xl_retval.color);
+}

@@ -1,0 +1,42 @@
+struct v2f {
+    vec4 pos;
+    vec4 color;
+};
+struct a2v {
+    vec4 pos;
+};
+uniform vec4 _LightColor;
+uniform vec3 _LightPos;
+uniform mat4 mvp;
+float ComputeShadow( in vec3 pos );
+float ComputeAtten( in vec3 pos, in vec3 lightPos );
+vec4 ComputeSomeLighting( in vec3 pos );
+v2f xlat_main( in a2v v );
+float ComputeShadow( in vec3 pos ) {
+    return pow( pos.x , 4.00000);
+}
+float ComputeAtten( in vec3 pos, in vec3 lightPos ) {
+    return (distance( pos, lightPos) * ComputeShadow( pos));
+}
+vec4 ComputeSomeLighting( in vec3 pos ) {
+    vec4 res;
+    res = _LightColor;
+    res *= ComputeAtten( pos, _LightPos);
+    return res;
+}
+v2f xlat_main( in a2v v ) {
+    vec4 pos;
+    v2f o;
+    pos = ( mvp * v.pos );
+    o.pos = pos;
+    o.color = ComputeSomeLighting( v.pos.xyz );
+    return o;
+}
+void main() {
+    v2f xl_retval;
+    a2v xlt_v;
+    xlt_v.pos = vec4( gl_Vertex);
+    xl_retval = xlat_main( xlt_v);
+    gl_Position = vec4( xl_retval.pos);
+    gl_FrontColor = vec4( xl_retval.color);
+}
