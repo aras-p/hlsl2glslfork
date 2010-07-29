@@ -92,6 +92,7 @@ static void DeleteFile (const std::string& path)
 	#ifdef _MSC_VER
 	DeleteFileA (path.c_str());
 	#else
+	unlink (path.c_str());
 	#endif
 }
 
