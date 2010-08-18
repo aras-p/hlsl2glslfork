@@ -256,7 +256,9 @@ static int AddString(StringTable *stable, const char *s)
         memcpy(str, stable->strings, stable->size);
         free(stable->strings);
         stable->strings = str;
+        stable->size *= 2;
     }
+    assert(stable->nextFree + len < stable->size);
     loc = stable->nextFree;
     strcpy(&stable->strings[loc], s);
     stable->nextFree += len + 1;
