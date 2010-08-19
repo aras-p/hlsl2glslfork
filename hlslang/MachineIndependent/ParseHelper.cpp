@@ -1168,6 +1168,15 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 {
    pType.qualifier = (pType.qualifier != EvqGlobal) ? pType.qualifier : EvqUniform;
 
+   // HLSL2GLSL fails spectacularly on const array variables.
+   // I can't quite untangle where it messes them up, so as a workaround let's
+   // change const arrays to regular arrays.
+   if (pType.array && pType.qualifier == EvqConst && variable)
+   {
+	   pType.qualifier = EvqTemporary;
+	   variable->changeQualifier (EvqTemporary);
+   }
+
    TType type = TType(pType);
 
    //check to see if we have a blind aggregate
@@ -1216,6 +1225,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
       error(line, " cannot initialize this type of qualifier ", variable->getType().getQualifierString(), "");
       return true;
    }
+
    //
    // test for and propagate constant
    //
