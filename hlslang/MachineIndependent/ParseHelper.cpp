@@ -1513,6 +1513,46 @@ TOperator TParseContext::getConstructorOp( const TType& type)
    return op;
 }
 
+TIntermTyped* TParseContext::constructBuiltInAllowUpwardVectorPromote(
+    const TType* type, TOperator op, TIntermNode* node, TSourceLoc line, bool subset)
+{
+    TIntermTyped* tNode = node->getAsTyped();
+    // Handle upward promotion of vectors:
+    //   HLSL allows upward promotion of vectors as a special case to function calls.  For example,
+    //   the call mul( mf4, vf3 ) will end up upward promoting the second argument from a float3
+    //   to a float4 ( xyz, 0 ).  This code here generalizes this case, where in the case that
+    //   an upward promotion of a vector is required, the necessary constants initializers are
+    //   added to an aggregate.
+    if ( tNode->getRowsCount() < type->getRowsCount() && tNode->isVector() && type->isVector() )
+    {
+        TIntermAggregate *tempAgg = 0;
+
+        // Add the vector being uprward promoted
+        tempAgg = ir_grow_aggregate(tempAgg, tNode, line);
+
+        // Determine the number of trailing 0's required
+        int nNumZerosToPad = type->getRowsCount() - tNode->getRowsCount();
+        for ( int nPad = 0; nPad < nNumZerosToPad; nPad++ )
+        {
+            // Create a new constant with value 0.0
+            TIntermConstant *cUnion = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());
+            cUnion->setValue(0.0f);
+
+            // Add the constant to the aggregrate node
+            tempAgg = ir_grow_aggregate( tempAgg, cUnion, tNode->getLine()); 
+        }
+
+        // Construct the built-in with padding
+        tNode = constructBuiltIn (type, op, tempAgg, line, subset);
+    }
+    else
+    {
+        tNode = constructBuiltIn(type, op, tNode, line, subset);
+    }
+
+    return tNode;
+}
+
 // This function promotes the function arguments contained in node to
 // match the types from func.
 TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const TFunction* func)
@@ -1536,38 +1576,7 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
          if ( tNode != 0 && tNode->getType() != *(*func)[paramNum].type)
          {
             TOperator op = getConstructorOp(*(*func)[paramNum].type);
-
-            // Handle upward promotion of vectors:
-            //   HLSL allows upward promotion of vectors as a special case to function calls.  For example,
-            //   the call mul( mf4, vf3 ) will end up upward promoting the second argument from a float3
-            //   to a float4 ( xyz, 0 ).  This code here generalizes this case, where in the case that
-            //   an upward promotion of a vector is required, the necessary constants initializers are
-            //   added to an aggregate.
-            if ( tNode->getRowsCount() < (*func)[paramNum].type->getRowsCount() &&
-                 tNode->isVector() && (*func)[paramNum].type->isVector() )
-            {
-               TIntermAggregate *tempAgg = 0;
-
-               // Add the vector being uprward promoted
-               tempAgg = ir_grow_aggregate ( tempAgg, tNode, node->getLine() );                   
-
-               // Determine the number of trailing 0's required
-               int nNumZerosToPad = (*func)[paramNum].type->getRowsCount() - tNode->getRowsCount();
-               for ( int nPad = 0; nPad < nNumZerosToPad; nPad++ )
-               {
-					// Create a new constant with value 0.0 and add the constant to the aggregrate node
-					TIntermConstant *constant = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());
-					constant->setValue(0.f);
-					tempAgg = ir_grow_aggregate (tempAgg, constant, tNode->getLine()); 
-               }
-
-               // Construct the built-in with padding
-               tNode = constructBuiltIn ( (*func)[paramNum].type, op, tempAgg, node->getLine(), false);
-            }
-            else
-            {
-               tNode = constructBuiltIn( (*func)[paramNum].type, op, tNode, node->getLine(), false);
-            }
+            tNode = constructBuiltInAllowUpwardVectorPromote( (*func)[paramNum].type, op, tNode, tNode->getLine(), false);
          }
 
          if ( !tNode )
@@ -1584,7 +1593,7 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
    {
       assert( func->getParamCount() == 1);
       TOperator op = getConstructorOp(*(*func)[0].type);
-      ret = constructBuiltIn( (*func)[0].type, op, node, node->getLine(), false);
+      ret = constructBuiltInAllowUpwardVectorPromote( (*func)[0].type, op, node, node->getLine(), false);
    }
 
    return ret;
@@ -1671,9 +1680,14 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
 	  return 0;
 	}
 
-	//
-	// Now, if there still isn't an operation to do the construction, and we need one, add one.
-	//
+    // this conversion is not allowed, except when passing a parameter to a function
+    if ( newNode->getTypePointer()->isVector() && type->isVector() &&
+         newNode->getRowsCount() < type->getRowsCount())
+        return 0;
+
+    //
+    // Now, if there still isn't an operation to do the construction, and we need one, add one.
+    //
 
 	// Otherwise, skip out early.
 	if (subset || newNode != node && newNode->getType() == *type)

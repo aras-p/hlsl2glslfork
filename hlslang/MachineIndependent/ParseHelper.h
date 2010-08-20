@@ -76,6 +76,7 @@ struct TParseContext
 	TIntermTyped* constructArray(TIntermAggregate*, const TType*, TOperator, TSourceLoc);
 	TIntermTyped* constructStruct(TIntermNode*, TType*, int, TSourceLoc, bool subset);
 	TIntermTyped* constructBuiltIn(const TType*, TOperator, TIntermNode*, TSourceLoc, bool subset);
+    TIntermTyped* constructBuiltInAllowUpwardVectorPromote(const TType*, TOperator, TIntermNode*, TSourceLoc, bool subset);
 	TIntermTyped* addAssign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
 	TIntermAggregate* mergeAggregates( TIntermAggregate *left, TIntermAggregate *right);
 	bool arraySetMaxSize(TIntermSymbol*, TType*, int, bool, TSourceLoc);
