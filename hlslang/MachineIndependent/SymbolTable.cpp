@@ -55,7 +55,8 @@ void TType::buildMangledName(TString& mangledName) const
 			break;
 	}
 	
-	mangledName += static_cast<char>('0' + getNominalSize());
+	mangledName += static_cast<char>('0' + getColsCount());
+	mangledName += static_cast<char>('0' + getRowsCount());
 	if (isArray())
 	{
 		char buf[10];
@@ -110,9 +111,9 @@ TType::ECompatibility TType::determineCompatibility ( const TType *pType ) const
 		// larger vector.  HLSL allows this on function calls and
 		// pads the result to 0.0.  The work to make these promotions
 		// happen is in TParseContext::promoteFunctionArguments
-		if ( getNominalSize() < pType->getNominalSize() &&
-			pType->getNominalSize() > 1 )
-		{
+        if ( getRowsCount() < pType->getRowsCount() &&
+             pType->getRowsCount() > 1 )
+        {
 			if ( isVector() && pType->isVector() )
 				return UPWARD_VECTOR_PROMOTION_EXISTS;
 			else
@@ -124,7 +125,8 @@ TType::ECompatibility TType::determineCompatibility ( const TType *pType ) const
 		{
 			// If the sizes don't match, then this is an implicit cast
 			// with a promotion
-			if ( getNominalSize() != pType->getNominalSize() )
+            if ( getRowsCount() != pType->getRowsCount() ||
+                 getColsCount() != pType->getColsCount())
 				return IMPLICIT_CAST_WITH_PROMOTION_EXISTS;
 			// Otherwise this is just a change of type
 			else
@@ -132,8 +134,12 @@ TType::ECompatibility TType::determineCompatibility ( const TType *pType ) const
 		}
 		
 		// changing the size is a promotion
-		if ( getNominalSize() != pType->getNominalSize() )
+        if (isMatrix() &&
+            getRowsCount() >= pType->getRowsCount() ||
+            getColsCount() >= pType->getColsCount())
 			return PROMOTION_EXISTS;
+        else
+            return NOT_COMPATIBLE;
 	}
 	else if ( getBasicType() == pType->getBasicType() )
 	{

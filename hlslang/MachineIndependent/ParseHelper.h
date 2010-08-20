@@ -40,7 +40,7 @@ struct TParseContext
 	TIntermTyped* add_binary(TOperator op, TIntermTyped* a, TIntermTyped* b, TSourceLoc line, const char* name, bool boolResult);
 	
 	bool parseVectorFields(const TString&, int vecSize, TVectorFields&, const TSourceLoc& line);
-	bool parseMatrixFields(const TString&, int matSize, TVectorFields&, const TSourceLoc& line);
+	bool parseMatrixFields(const TString&, int matCols, int matRows, TVectorFields&, const TSourceLoc& line);
 	void assignError(const TSourceLoc& line, const char* op, TString left, TString right);
 	void unaryOpError(const TSourceLoc& line, const char* op, TString operand);
 	void binaryOpError(const TSourceLoc& line, const char* op, TString left, TString right);
