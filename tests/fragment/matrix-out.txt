@@ -1,0 +1,30 @@
+uniform float val;
+void vec_upcast( in vec4 f );
+void vec_downcast( in vec2 f );
+vec2 mat_downcast( in mat2x3 m );
+vec4 xlat_main(  );
+void vec_upcast( in vec4 f ) {
+}
+void vec_downcast( in vec2 f ) {
+}
+vec2 mat_downcast( in mat2x3 m ) {
+    return m[ 0 ].xx ;
+}
+vec4 xlat_main(  ) {
+    mat4 m;
+    mat2x4 m2;
+    mat2 m3;
+    mat2 m5;
+    vec_upcast( vec4( vec2( 0.000000, 0.000000), 0.000000, 0.000000));
+    vec_downcast( vec2( vec4( 1.00000, 1.00000, 1.00000, 1.00000)));
+    m = mat4( val);
+    m2 = mat2x4( m);
+    m3 = mat2( m2);
+    m5 = (m3 + mat2( m2));
+    return vec4( (vec2( m[ 3 ]) * mat_downcast( mat2x3( m2))), 0.000000, 0.000000);
+}
+void main() {
+    vec4 xl_retval;
+    xl_retval = xlat_main( );
+    gl_FragData[0] = vec4( xl_retval);
+}
