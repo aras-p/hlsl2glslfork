@@ -1766,15 +1766,15 @@ type_specifier_nonarray
     }
     | MATRIX2x3 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
-        $$.setMatrix(2, 3);
+        $$.setMatrix(3, 2);
     }
     | MATRIX2x4 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
-        $$.setMatrix(2, 4);
+        $$.setMatrix(4, 2);
     }
     | MATRIX3x2 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
-        $$.setMatrix(3, 2);
+        $$.setMatrix(2, 3);
     }
     | MATRIX3x3 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
@@ -1782,15 +1782,15 @@ type_specifier_nonarray
     }
     | MATRIX3x4 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
-        $$.setMatrix(3, 4);
+        $$.setMatrix(4, 3);
     }
     | MATRIX4x2 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
-        $$.setMatrix(4, 2);
+        $$.setMatrix(2, 4);
     }
     | MATRIX4x3 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
-        $$.setMatrix(4, 3);
+        $$.setMatrix(3, 4);
     }
     | MATRIX4x4 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
@@ -1802,15 +1802,15 @@ type_specifier_nonarray
     }
     | HMATRIX2x3 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
-        $$.setMatrix(2, 3);
+        $$.setMatrix(3, 2);
     }
     | HMATRIX2x4 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
-        $$.setMatrix(2, 4);
+        $$.setMatrix(4, 2);
     }
     | HMATRIX3x2 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
-        $$.setMatrix(3, 2);
+        $$.setMatrix(2, 3);
     }
     | HMATRIX3x3 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
@@ -1818,15 +1818,15 @@ type_specifier_nonarray
     }
     | HMATRIX3x4 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
-        $$.setMatrix(3, 4);
+        $$.setMatrix(4, 3);
     }
     | HMATRIX4x2 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
-        $$.setMatrix(4, 2);
+        $$.setMatrix(2, 4);
     }
     | HMATRIX4x3 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
-        $$.setMatrix(4, 3);
+        $$.setMatrix(3, 4);
     }
     | HMATRIX4x4 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
@@ -1838,15 +1838,15 @@ type_specifier_nonarray
     }
     | FMATRIX2x3 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
-        $$.setMatrix(2, 3);
+        $$.setMatrix(3, 2);
     }
     | FMATRIX2x4 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
-        $$.setMatrix(2, 4);
+        $$.setMatrix(4, 2);
     }
     | FMATRIX3x2 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
-        $$.setMatrix(3, 2);
+        $$.setMatrix(2, 3);
     }
     | FMATRIX3x3 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
@@ -1854,15 +1854,15 @@ type_specifier_nonarray
     }
     | FMATRIX3x4 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
-        $$.setMatrix(3, 4);
+        $$.setMatrix(4, 3);
     }
     | FMATRIX4x2 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
-        $$.setMatrix(4, 2);
+        $$.setMatrix(2, 4);
     }
     | FMATRIX4x3 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
-        $$.setMatrix(4, 3);
+        $$.setMatrix(3, 4);
     }
     | FMATRIX4x4 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
