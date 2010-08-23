@@ -1,0 +1,15 @@
+uniform vec3 uniColor2;
+uniform float uniFactor;
+vec4 xlat_main(  );
+vec4 xlat_main(  ) {
+    vec3 col;
+    vec4 outcol;
+    col = mix( vec3( 0.500000), uniColor2, vec3( uniFactor));
+    outcol = vec4( col, 1.00000);
+    return mix( vec4( 0.500000), vec4( vec3( 1.00000, 1.00000, 1.00000), 0.000000), outcol);
+}
+void main() {
+    vec4 xl_retval;
+    xl_retval = xlat_main( );
+    gl_FragData[0] = vec4( xl_retval);
+}
