@@ -375,7 +375,7 @@ postfix_expression
             // Create the appropriate constructor based on the number of ".x"'s there are in the selection field
             TString vectorString = *$3.string;
             TQualifier qualifier = $1->getType().getQualifier() == EvqConst ? EvqConst : EvqTemporary;
-            TType type($1->getBasicType(), $1->getPrecision(), qualifier, (int) vectorString.size());
+            TType type($1->getBasicType(), $1->getPrecision(), qualifier, 1, (int) vectorString.size());
             $$ = parseContext.constructBuiltIn(&type, parseContext.getConstructorOp(type),
                                                $$, $1->getLine(), false);
         } else {
