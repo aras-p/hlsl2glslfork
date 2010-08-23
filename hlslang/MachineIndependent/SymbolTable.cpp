@@ -4,6 +4,7 @@
 
 
 #include "SymbolTable.h"
+#include <algorithm>
 
 TString* TParameter::NullSemantic = 0;
 
@@ -88,63 +89,68 @@ TType::ECompatibility TType::determineCompatibility ( const TType *pType ) const
 {
 	// make sure the array info matches
 	if ( isArray() && pType->isArray() &&
-        getArraySize() != pType->getArraySize())
+		 getArraySize() != pType->getArraySize())
 	{
 		return NOT_COMPATIBLE;
 	}
-	
+
 	if ( isArray() != pType->isArray())
 	{
 		return NOT_COMPATIBLE;
 	}
-	
+
 	if ( IsNumeric( getBasicType() ) &&
-        IsNumeric( pType->getBasicType() ) && !isArray() )
+		 IsNumeric( pType->getBasicType() ) && !isArray() )
 	{
 		// both parameters are numeric, so we can possibly convert
-		
+
 		// only allow matrices to convert to matrices
 		if ( isMatrix() != pType->isMatrix())
 			return NOT_COMPATIBLE;
-		
+
 		// Check if this is a promotion from a smaller vector to
 		// larger vector.  HLSL allows this on function calls and
 		// pads the result to 0.0.  The work to make these promotions
 		// happen is in TParseContext::promoteFunctionArguments
-        if ( getRowsCount() < pType->getRowsCount() &&
-             pType->getRowsCount() > 1 )
-        {
+		if ( getRowsCount() < pType->getRowsCount())
+		{
 			if ( isVector() && pType->isVector() )
 				return UPWARD_VECTOR_PROMOTION_EXISTS;
 			else
 				return NOT_COMPATIBLE;
 		}
-		
-		// changing the type also counts as a promotion
-		if ( getBasicType() != pType->getBasicType() )
+
+		if (getBasicType() == pType->getBasicType())
 		{
+			if ( getRowsCount() == pType->getRowsCount() &&
+				 getColsCount() == pType->getColsCount())
+				return MATCH_EXACTLY;
+			else if ( getRowsCount() >= pType->getRowsCount() &&
+					  getColsCount() >= pType->getColsCount())
+				return PROMOTION_EXISTS;
+			else
+				return NOT_COMPATIBLE;
+		}
+		// changing the type also counts as a promotion
+		else
+		{
+			// if size match, it's an implicit cast
+			if ( getRowsCount() == pType->getRowsCount() &&
+				 getColsCount() == pType->getColsCount())
+				return IMPLICIT_CAST_EXISTS;
 			// If the sizes don't match, then this is an implicit cast
 			// with a promotion
-            if ( getRowsCount() != pType->getRowsCount() ||
-                 getColsCount() != pType->getColsCount())
+			else if ( getRowsCount() >= pType->getRowsCount() &&
+					  getColsCount() >= pType->getColsCount())
 				return IMPLICIT_CAST_WITH_PROMOTION_EXISTS;
-			// Otherwise this is just a change of type
 			else
-				return IMPLICIT_CAST_EXISTS;
+				NOT_COMPATIBLE;
 		}
-		
-		// changing the size is a promotion
-        if (isMatrix() &&
-            getRowsCount() >= pType->getRowsCount() ||
-            getColsCount() >= pType->getColsCount())
-			return PROMOTION_EXISTS;
-        else
-            return NOT_COMPATIBLE;
 	}
 	else if ( getBasicType() == pType->getBasicType() )
 	{
 		// base types match, make sure everything else is OK
-		
+
 		// structs are a special case, we need to look inside
 		if ( getBasicType() == EbtStruct)
 		{
@@ -158,7 +164,7 @@ TType::ECompatibility TType::determineCompatibility ( const TType *pType ) const
 		// Presently, this means that we cannot handle sampler conversions
 		return NOT_COMPATIBLE;
 	}
-	
+
 	return MATCH_EXACTLY;
 }
 
@@ -283,7 +289,6 @@ TSymbolTableLevel* TSymbolTableLevel::clone(TStructureMap& remapper)
 	
 	return symTableLevel;
 }
-
 
 // This function uses the matching rules as described in the Cg language doc (the closest
 // thing we have to HLSL function matching description) to find a matching compatible function.  
