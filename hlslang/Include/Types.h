@@ -134,7 +134,7 @@ public:
       checkInvariants();
    }
 
-   TType(const TType& type) { *this = type; }
+   TType(const TType& type) { *this = type; checkInvariants(); }
 
    void copyType(const TType& copyOf, TStructureMap& remapper)
    {
@@ -189,6 +189,8 @@ public:
       maxArraySize = copyOf.maxArraySize;
       assert(copyOf.arrayInformationType == 0);
       arrayInformationType = 0; // arrayInformationType should not be set for builtIn symbol table level
+
+      checkInvariants();
    }
 
    TType* clone(TStructureMap& remapper)

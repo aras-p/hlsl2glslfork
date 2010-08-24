@@ -295,10 +295,8 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
    switch (op)
    {
    case EOpLogicalNot:
-      if (child->getType().getBasicType() != EbtBool || child->getType().isMatrix() || child->getType().isArray() || child->getType().isVector())
-      {
+      if (!child->isScalar())
          return 0;
-      }
       break;
 
    case EOpPostIncrement:
@@ -322,6 +320,7 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
    case EOpConstructInt:   newType = EbtInt;   break;
    case EOpConstructBool:  newType = EbtBool;  break;
    case EOpConstructFloat: newType = EbtFloat; break;
+   case EOpLogicalNot:     newType = EbtBool; break;
    default: break;
    }
 

@@ -553,16 +553,16 @@ bool TParseContext::constErrorCheck(TIntermTyped* node)
 
 //
 // Both test, and if necessary spit out an error, to see if the node is really
-// an integer.
+// an integer or convertible to an integer.
 //
 // Returns true if the was an error.
 //
-bool TParseContext::integerErrorCheck(TIntermTyped* node, const char* token)
+bool TParseContext::scalarErrorCheck(TIntermTyped* node, const char* token)
 {
-   if (node->getBasicType() == EbtInt && node->isScalar())
-      return false;
+    if (node->isScalar())
+        return false;
 
-   error(node->getLine(), "integer expression required", token, "");
+   error(node->getLine(), "scalar expression required", token, "");
 
    return true;
 }

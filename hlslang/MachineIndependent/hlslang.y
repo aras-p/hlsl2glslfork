@@ -360,7 +360,7 @@ postfix_expression
                     $$ = $1;
                 }
             }
-        } else if ($1->getColsCount() == 1 && $1->getRowsCount() == 1) {
+        } else if ($1->isScalar()) {
 
             // HLSL allows ".xxxx" field selection on single component floats.  Handle that here.
             TVectorFields fields;
@@ -409,9 +409,15 @@ postfix_expression
 
 int_expression 
     : expression {
-        if (parseContext.integerErrorCheck($1, "[]"))
+        if (parseContext.scalarErrorCheck($1, "[]"))
             parseContext.recover();
-        $$ = $1;
+        TType type(EbtInt, EbpUndefined);
+        $$ = parseContext.constructBuiltIn(&type, EOpConstructInt, $1, $1->getLine(), true);
+        if ($$ == 0) {
+            parseContext.error($1->getLine(), "cannot convert to index", "[]", "");
+            parseContext.recover();
+            $$ = $1;
+        }
     }
     ;
 
