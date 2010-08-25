@@ -1272,7 +1272,8 @@ bool TGlslOutputTraverser::traverseLoop( bool preVisit, TIntermLoop *node, TInte
       node->getTerminal()->traverse(goit);
       out << ") ";
       current->beginBlock();
-      node->getBody()->traverse(goit);
+      if (node->getBody())
+         node->getBody()->traverse(goit);
       current->endBlock();
    }
    else
@@ -1284,7 +1285,8 @@ bool TGlslOutputTraverser::traverseLoop( bool preVisit, TIntermLoop *node, TInte
          node->getTest()->traverse(goit);
          out << " ) ";
          current->beginBlock();
-         node->getBody()->traverse(goit);
+         if (node->getBody())
+            node->getBody()->traverse(goit);
          current->endBlock();
       }
       else
@@ -1292,7 +1294,8 @@ bool TGlslOutputTraverser::traverseLoop( bool preVisit, TIntermLoop *node, TInte
          // Process do loop
          out << "do ";
          current->beginBlock();
-         node->getBody()->traverse(goit);
+         if (node->getBody())
+            node->getBody()->traverse(goit);
          current->endBlock();
          current->indent();
          out << "while ( ";
