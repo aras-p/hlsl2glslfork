@@ -697,12 +697,18 @@ function_call_header_no_parameters
 
 function_call_header_with_parameters
     : function_call_header assignment_expression {
-        TParameter param = { 0, 0, new TType($2->getType()) };
+		if (!$2) {
+          YYERROR;
+		}
+		TParameter param = { 0, 0, new TType($2->getType()) };
         $1->addParameter(param);
         $$.function = $1;
         $$.intermNode = $2;
     }
     | function_call_header_with_parameters COMMA assignment_expression {
+		if (!$3) {
+          YYERROR;
+		}
         TParameter param = { 0, 0, new TType($3->getType()) };
         $1.function->addParameter(param);
         $$.function = $1.function;
