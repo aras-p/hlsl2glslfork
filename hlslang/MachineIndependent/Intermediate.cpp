@@ -739,6 +739,13 @@ TIntermTyped* TIntermediate::addSelection(TIntermTyped* cond, TIntermTyped* true
 {
    bool bPromoteFromTrueBlockType = true;
 
+   if (cond->getBasicType() != EbtBool)
+   {
+	   cond = addConversion (EOpConstructBool, 
+		   TType (EbtBool, cond->getQualifier(), cond->getNominalSize(), cond->isMatrix(), cond->isArray()),
+		   cond);
+   }
+
    // Choose which one to try to promote to based on which has more precision
    // By default, it will promote from the falseBlock type to the trueBlock type.  However,
    // what we want to do is promote to the type with the most precision of the two.  So here,
