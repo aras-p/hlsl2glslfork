@@ -1,0 +1,15 @@
+uniform float4 uniVar = 1.;
+float4 staticVar = uniVar;
+float4 unusedVar = 50;
+float uninitializedVar;
+
+float test()
+{
+    return staticVar.x * 2. + uninitializedVar;
+}
+
+float4 main() : POSITION
+{
+    float4 tempVar = uniVar * staticVar * test();
+    return tempVar;
+}

@@ -1,0 +1,19 @@
+uniform vec4 uniVar = vec4( 1.00000);
+vec4 staticVar = uniVar;
+vec4 unusedVar = vec4( 50.0000);
+float uninitializedVar;
+float test(  );
+vec4 xlat_main(  );
+float test(  ) {
+    return ((staticVar.x  * 2.00000) + uninitializedVar);
+}
+vec4 xlat_main(  ) {
+    vec4 tempVar;
+    tempVar = ((uniVar * staticVar) * test( ));
+    return tempVar;
+}
+void main() {
+    vec4 xl_retval;
+    xl_retval = xlat_main( );
+    gl_Position = vec4( xl_retval);
+}
