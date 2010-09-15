@@ -325,6 +325,12 @@ void TBuiltIns::initialize()
       // HLSL modf
       s.append(TString("float modf(float x, out int ip);"));
       s.append(TString("float modf(float x, out float ip);"));
+	  s.append(TString("float2 modf(float2 x, out int2 ip);"));
+	  s.append(TString("float2 modf(float2 x, out float2 ip);"));
+	  s.append(TString("float3 modf(float3 x, out int3 ip);"));
+	  s.append(TString("float3 modf(float3 x, out float3 ip);"));
+	  s.append(TString("float4 modf(float4 x, out int4 ip);"));
+	  s.append(TString("float4 modf(float4 x, out float4 ip);"));
 
       // HLSL ldexp
       s.append(TString("float ldexp(float x, float expon);"));

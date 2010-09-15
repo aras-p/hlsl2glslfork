@@ -1,0 +1,56 @@
+float xll_modf( float x, out int ip) {
+  ip = int (x);
+  return x-ip;
+}
+float xll_modf( float x, out float ip) {
+  int i = int (x);
+  ip = i;
+  return x-ip;
+}
+vec2 xll_modf( vec2 x, out ivec2 ip) {
+  ip = ivec2 (x);
+  return x-ip;
+}
+vec2 xll_modf( vec2 x, out vec2 ip) {
+  ivec2 i = ivec2 (x);
+  ip = i;
+  return x-ip;
+}
+vec3 xll_modf( vec3 x, out ivec3 ip) {
+  ip = ivec3 (x);
+  return x-ip;
+}
+vec3 xll_modf( vec3 x, out vec3 ip) {
+  ivec3 i = ivec3 (x);
+  ip = i;
+  return x-ip;
+}
+vec4 xll_modf( vec4 x, out ivec4 ip) {
+  ip = ivec4 (x);
+  return x-ip;
+}
+vec4 xll_modf( vec4 x, out vec4 ip) {
+  ivec4 i = ivec4 (x);
+  ip = i;
+  return x-ip;
+}
+vec4 xlat_main( in vec4 uv );
+vec4 xlat_main( in vec4 uv ) {
+    vec4 c;
+    vec4 d;
+    c = vec4( 0.000000);
+    c.x  += mod( uv.x , 2.00000);
+    c.xy  += mod( uv.xy , vec2( 2.00000));
+    c.xyz  += mod( uv.xyz , vec3( 2.00000));
+    c.xyzw  += mod( uv.xyzw , vec4( 2.00000));
+    c.x  += xll_modf( uv.x , d.x );
+    c.xy  += xll_modf( uv.xy , d.xy );
+    c.xyz  += xll_modf( uv.xyz , d.xyz );
+    c.xyzw  += xll_modf( uv.xyzw , d.xyzw );
+    return c;
+}
+void main() {
+    vec4 xl_retval;
+    xl_retval = xlat_main( vec4(gl_TexCoord[0]));
+    gl_FragData[0] = vec4( xl_retval);
+}
