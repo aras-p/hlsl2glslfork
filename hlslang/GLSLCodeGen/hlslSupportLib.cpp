@@ -456,6 +456,30 @@ void initializeHLSLSupportLibrary()
         "}\n\n")
         );
 
+   hlslSupportLib->insert( CodeMap::value_type( EOpMod,
+	   "float xll_mod( float x, float y ) {\n"
+	   "  float d = x / y;\n"
+	   "  float f = fract (abs(d));\n"
+	   "  return d >= 0.0 ? f : -f;\n"
+	   "}\n\n"
+	   "vec2 xll_mod( vec2 x, vec2 y ) {\n"
+	   "  vec2 d = x / y;\n"
+	   "  vec2 f = fract (abs(d));\n"
+	   "  return vec2 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y);\n"
+	   "}\n\n"
+	   "vec3 xll_mod( vec3 x, vec3 y ) {\n"
+	   "  vec3 d = x / y;\n"
+	   "  vec3 f = fract (abs(d));\n"
+	   "  return vec3 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z);\n"
+	   "}\n\n"
+	   "vec4 xll_mod( vec4 x, vec4 y ) {\n"
+	   "  vec4 d = x / y;\n"
+	   "  vec4 f = fract (abs(d));\n"
+	   "  return vec4 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z, d.w >= 0.0 ? f.w : -f.w);\n"
+	   "}\n\n"
+	   )
+	   );
+
    hlslSupportLib->insert( CodeMap::value_type( EOpModf,
         "float xll_modf( float x, out int ip) {\n"
 		"  ip = int (x);\n"

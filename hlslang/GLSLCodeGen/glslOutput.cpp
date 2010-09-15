@@ -1064,7 +1064,11 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpVectorEqual:      writeFuncCall( "equal", node, goit); return false;
    case EOpVectorNotEqual:   writeFuncCall( "notEqual", node, goit); return false;
 
-   case EOpMod:           writeFuncCall( "mod", node, goit); return false;
+   case EOpMod:
+	   current->addLibFunction(EOpMod);
+	   writeFuncCall( "xll_mod", node, goit);
+	   return false;
+
    case EOpPow:           writeFuncCall( "pow", node, goit, true); return false;
 
    case EOpAtan2:         writeFuncCall( "atan", node, goit, true); return false;
