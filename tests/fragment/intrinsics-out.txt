@@ -20,38 +20,38 @@ vec4 xll_mod( vec4 x, vec4 y ) {
 }
 float xll_modf( float x, out int ip) {
   ip = int (x);
-  return x-ip;
+  return x-float(ip);
 }
 float xll_modf( float x, out float ip) {
   int i = int (x);
-  ip = i;
+  ip = float(i);
   return x-ip;
 }
 vec2 xll_modf( vec2 x, out ivec2 ip) {
   ip = ivec2 (x);
-  return x-ip;
+  return x-vec2(ip);
 }
 vec2 xll_modf( vec2 x, out vec2 ip) {
   ivec2 i = ivec2 (x);
-  ip = i;
+  ip = vec2(i);
   return x-ip;
 }
 vec3 xll_modf( vec3 x, out ivec3 ip) {
   ip = ivec3 (x);
-  return x-ip;
+  return x-vec3(ip);
 }
 vec3 xll_modf( vec3 x, out vec3 ip) {
   ivec3 i = ivec3 (x);
-  ip = i;
+  ip = vec3(i);
   return x-ip;
 }
 vec4 xll_modf( vec4 x, out ivec4 ip) {
   ip = ivec4 (x);
-  return x-ip;
+  return x-vec4(ip);
 }
 vec4 xll_modf( vec4 x, out vec4 ip) {
   ivec4 i = ivec4 (x);
-  ip = i;
+  ip = vec4(i);
   return x-ip;
 }
 vec4 xlat_main( in vec4 uv );
