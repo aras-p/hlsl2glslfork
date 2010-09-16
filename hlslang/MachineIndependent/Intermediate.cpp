@@ -677,17 +677,11 @@ TIntermAggregate* ir_make_aggregate(TIntermNode* node, TSourceLoc line)
 TIntermNode* ir_add_selection(TIntermTyped* cond, TIntermNodePair nodePair, TSourceLoc line, TInfoSink& infoSink)
 {   
    // Convert float/int to bool
-   switch ( cond->getBasicType() )
+   if ( cond->getBasicType() != EbtBool)
    {
-   case EbtFloat:
-   case EbtInt:
-      cond = ir_add_conversion (EOpConstructBool, 
+      cond = ir_add_conversion (EOpConstructBool,
                              TType (EbtBool, cond->getPrecision(), cond->getQualifier(), cond->getColsCount(), cond->getRowsCount(), cond->isMatrix(), cond->isArray()),
                              cond, infoSink);
-      break;
-   default:
-      // Do nothing
-      break;
    }
 
    TIntermSelection* node = new TIntermSelection(cond, nodePair.node1, nodePair.node2);
@@ -1243,7 +1237,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
        }
        else if (left->getTypePointer()->isVector())
        {
-           switch (left->getTypePointer()->getBasicType())
+           switch (right->getTypePointer()->getBasicType())
            {
            case EbtBool:  convert = TOperator( EOpConstructBVec2 + rows - 2); break;
            case EbtInt:   convert = TOperator( EOpConstructIVec2 + rows - 2); break;
@@ -1274,7 +1268,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
        }
        else if (right->getTypePointer()->isVector())
        {
-           switch (right->getTypePointer()->getBasicType())
+           switch (left->getTypePointer()->getBasicType())
            {
            case EbtBool:  convert = TOperator( EOpConstructBVec2 + rows - 2); break;
            case EbtInt:   convert = TOperator( EOpConstructIVec2 + rows - 2); break;
@@ -1401,7 +1395,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          }
          else if (left->isVector() )
          {
-            switch (right->getTypePointer()->getBasicType())
+            switch (left->getTypePointer()->getBasicType())
             {
             case EbtBool:  convert = TOperator( EOpConstructBVec2 + left->getRowsCount() - 2); break;
             case EbtInt:   convert = TOperator( EOpConstructIVec2 + left->getRowsCount() - 2); break;
@@ -1410,7 +1404,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          }
          else
          {
-            switch (right->getTypePointer()->getBasicType())
+            switch (left->getTypePointer()->getBasicType())
             {
             case EbtBool:  convert = EOpConstructBool; break;
             case EbtInt:   convert = EOpConstructInt; break;
