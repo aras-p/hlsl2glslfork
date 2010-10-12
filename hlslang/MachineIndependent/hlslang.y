@@ -131,6 +131,10 @@ Jutta Degener, 1995
     parseContext.recover();                                                            \
 }
 
+#define SET_BASIC_TYPE(RES,PAR,T) \
+	TQualifier qual = parseContext.getDefaultQualifier(); \
+	(RES).setBasic(T, qual, (PAR).line);
+
 
 %}
 %union {
@@ -1902,20 +1906,16 @@ type_specifier
 
 type_specifier_nonarray
     : VOID_TYPE {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtVoid, qual, $1.line); 
+        SET_BASIC_TYPE($$,$1,EbtVoid);
     }
     | FLOAT_TYPE {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtFloat, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtFloat);
     }
     | INT_TYPE {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtInt, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtInt);
     }
     | BOOL_TYPE {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtBool, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtBool);
     }
     | VECTOR LEFT_ANGLE FLOAT_TYPE COMMA INTCONSTANT RIGHT_ANGLE {
         TQualifier qual = parseContext.getDefaultQualifier();
@@ -1951,112 +1951,91 @@ type_specifier_nonarray
         }
     }
     | VEC2 {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtFloat, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtFloat);
         $$.setAggregate(2);
     }
     | VEC3 {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtFloat, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtFloat);
         $$.setAggregate(3);
     }
     | VEC4 {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtFloat, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtFloat);
         $$.setAggregate(4);
     }
     | BVEC2 {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtBool, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtBool);
         $$.setAggregate(2);
     }
     | BVEC3 {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtBool, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtBool);
         $$.setAggregate(3);
     }
     | BVEC4 {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtBool, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtBool);
         $$.setAggregate(4);
     }
     | IVEC2 {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtInt, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtInt);
         $$.setAggregate(2);
     }
     | IVEC3 {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtInt, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtInt);
         $$.setAggregate(3);
     }
     | IVEC4 {
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtInt, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtInt);
         $$.setAggregate(4);
     }
     | MATRIX2 {
         FRAG_VERT_ONLY("mat2", $1.line); 
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtFloat, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtFloat);
         $$.setAggregate(2, true);
     }
     | MATRIX3 { 
         FRAG_VERT_ONLY("mat3", $1.line); 
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtFloat, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtFloat);
         $$.setAggregate(3, true);
     }
     | MATRIX4 { 
         FRAG_VERT_ONLY("mat4", $1.line);
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtFloat, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtFloat);
         $$.setAggregate(4, true);
     }
     | TEXTURE {
         FRAG_VERT_ONLY("texture", $1.line);
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtTexture, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtTexture);
     }  
     | SAMPLERGENERIC {
         FRAG_VERT_ONLY("sampler", $1.line);
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtSamplerGeneric, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtSamplerGeneric);
     }  
     | SAMPLER1D {
         FRAG_VERT_ONLY("sampler1D", $1.line);
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtSampler1D, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtSampler1D);
     } 
     | SAMPLER2D {
         FRAG_VERT_ONLY("sampler2D", $1.line);
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtSampler2D, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtSampler2D);
     } 
     | SAMPLER3D {
         FRAG_VERT_ONLY("sampler3D", $1.line);
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtSampler3D, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtSampler3D);
     } 
     | SAMPLERCUBE {
         FRAG_VERT_ONLY("samplerCube", $1.line);
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtSamplerCube, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtSamplerCube);
     } 
     | SAMPLERRECT {
         FRAG_VERT_ONLY("samplerRECT", $1.line);
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtSamplerRect, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtSamplerRect);
     } 
     | SAMPLER1DSHADOW {
         FRAG_VERT_ONLY("sampler1DShadow", $1.line);
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtSampler1DShadow, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtSampler1DShadow);
     } 
     | SAMPLER2DSHADOW {
         FRAG_VERT_ONLY("sampler2DShadow", $1.line);
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtSampler2DShadow, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtSampler2DShadow);
     }     
     | struct_specifier {
         FRAG_VERT_ONLY("struct", $1.line);
@@ -2069,8 +2048,7 @@ type_specifier_nonarray
         // type.
         //
         TType& structure = static_cast<TVariable*>($1.symbol)->getType();
-        TQualifier qual = parseContext.getDefaultQualifier();
-        $$.setBasic(EbtStruct, qual, $1.line);
+        SET_BASIC_TYPE($$,$1,EbtStruct);
         $$.userDef = &structure;
     }
     ;
