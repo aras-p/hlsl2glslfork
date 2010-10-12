@@ -1902,23 +1902,23 @@ type_specifier
 
 type_specifier_nonarray
     : VOID_TYPE {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtVoid, qual, $1.line); 
     }
     | FLOAT_TYPE {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtFloat, qual, $1.line);
     }
     | INT_TYPE {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtInt, qual, $1.line);
     }
     | BOOL_TYPE {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtBool, qual, $1.line);
     }
     | VECTOR LEFT_ANGLE FLOAT_TYPE COMMA INTCONSTANT RIGHT_ANGLE {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         if ( $5.i > 4 || $5.i < 1 ) {
             parseContext.error($2.line, "vector dimension out of range", "", "");
             parseContext.recover();
@@ -1929,7 +1929,7 @@ type_specifier_nonarray
         }
     }
     | VECTOR LEFT_ANGLE INT_TYPE COMMA INTCONSTANT RIGHT_ANGLE {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         if ( $5.i > 4 || $5.i < 1 ) {
             parseContext.error($2.line, "vector dimension out of range", "", "");
             parseContext.recover();
@@ -1940,7 +1940,7 @@ type_specifier_nonarray
         }
     }
     | VECTOR LEFT_ANGLE BOOL_TYPE COMMA INTCONSTANT RIGHT_ANGLE {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         if ( $5.i > 4 || $5.i < 1 ) {
             parseContext.error($2.line, "vector dimension out of range", "", "");
             parseContext.recover();
@@ -1951,117 +1951,117 @@ type_specifier_nonarray
         }
     }
     | VEC2 {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtFloat, qual, $1.line);
         $$.setAggregate(2);
     }
     | VEC3 {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtFloat, qual, $1.line);
         $$.setAggregate(3);
     }
     | VEC4 {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtFloat, qual, $1.line);
         $$.setAggregate(4);
     }
     | BVEC2 {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtBool, qual, $1.line);
         $$.setAggregate(2);
     }
     | BVEC3 {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtBool, qual, $1.line);
         $$.setAggregate(3);
     }
     | BVEC4 {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtBool, qual, $1.line);
         $$.setAggregate(4);
     }
     | IVEC2 {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtInt, qual, $1.line);
         $$.setAggregate(2);
     }
     | IVEC3 {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtInt, qual, $1.line);
         $$.setAggregate(3);
     }
     | IVEC4 {
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtInt, qual, $1.line);
         $$.setAggregate(4);
     }
     | MATRIX2 {
         FRAG_VERT_ONLY("mat2", $1.line); 
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtFloat, qual, $1.line);
         $$.setAggregate(2, true);
     }
     | MATRIX3 { 
         FRAG_VERT_ONLY("mat3", $1.line); 
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtFloat, qual, $1.line);
         $$.setAggregate(3, true);
     }
     | MATRIX4 { 
         FRAG_VERT_ONLY("mat4", $1.line);
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtFloat, qual, $1.line);
         $$.setAggregate(4, true);
     }
     | TEXTURE {
         FRAG_VERT_ONLY("texture", $1.line);
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtTexture, qual, $1.line);
     }  
     | SAMPLERGENERIC {
         FRAG_VERT_ONLY("sampler", $1.line);
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtSamplerGeneric, qual, $1.line);
     }  
     | SAMPLER1D {
         FRAG_VERT_ONLY("sampler1D", $1.line);
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtSampler1D, qual, $1.line);
     } 
     | SAMPLER2D {
         FRAG_VERT_ONLY("sampler2D", $1.line);
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtSampler2D, qual, $1.line);
     } 
     | SAMPLER3D {
         FRAG_VERT_ONLY("sampler3D", $1.line);
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtSampler3D, qual, $1.line);
     } 
     | SAMPLERCUBE {
         FRAG_VERT_ONLY("samplerCube", $1.line);
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtSamplerCube, qual, $1.line);
     } 
     | SAMPLERRECT {
         FRAG_VERT_ONLY("samplerRECT", $1.line);
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtSamplerRect, qual, $1.line);
     } 
     | SAMPLER1DSHADOW {
         FRAG_VERT_ONLY("sampler1DShadow", $1.line);
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtSampler1DShadow, qual, $1.line);
     } 
     | SAMPLER2DSHADOW {
         FRAG_VERT_ONLY("sampler2DShadow", $1.line);
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtSampler2DShadow, qual, $1.line);
     }     
     | struct_specifier {
         FRAG_VERT_ONLY("struct", $1.line);
         $$ = $1;
-        $$.qualifier = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        $$.qualifier = parseContext.getDefaultQualifier();
     }
     | TYPE_NAME {     
         //
@@ -2069,7 +2069,7 @@ type_specifier_nonarray
         // type.
         //
         TType& structure = static_cast<TVariable*>($1.symbol)->getType();
-        TQualifier qual = parseContext.symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary;
+        TQualifier qual = parseContext.getDefaultQualifier();
         $$.setBasic(EbtStruct, qual, $1.line);
         $$.userDef = &structure;
     }

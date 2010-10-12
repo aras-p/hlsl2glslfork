@@ -113,6 +113,8 @@ struct TParseContext
    bool reservedErrorCheck(int line, const TString& identifier);
    void recover();
 
+   TQualifier getDefaultQualifier() const { return symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary; }
+
    bool parseVectorFields(const TString&, int vecSize, TVectorFields&, int line);
    bool parseMatrixFields(const TString&, int matSize, TVectorFields&, int line);
    void assignError(int line, const char* op, TString left, TString right);
