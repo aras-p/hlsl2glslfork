@@ -246,6 +246,7 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 			"TANGENT",
 		};
 		Hlsl2Glsl_SetUserAttributeNames (parser, kAttribSemantic, kAttribString, 1);
+		Hlsl2Glsl_UseUserVaryings (parser, true);
 		int translateOk = Hlsl2Glsl_Translate (parser, "main");
 		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 		if (translateOk)
