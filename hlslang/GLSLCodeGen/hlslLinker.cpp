@@ -159,10 +159,10 @@ static const char resultString[EAttrSemCount][32] = {
 
 static const char* kUserVaryingPrefix = "xlv_";
 
-static inline void AddToVaryings (std::stringstream& s, const std::string& name)
+static inline void AddToVaryings (std::stringstream& s, const std::string& type, const std::string& name)
 {
 	if (strstr (name.c_str(), kUserVaryingPrefix) == name.c_str())
-		s << "varying vec4 " << name << ";\n";
+		s << "varying " << type << " " << name << ";\n";
 }
 
 HlslLinker::HlslLinker(TInfoSink& infoSink_) : infoSink(infoSink_)
@@ -301,8 +301,6 @@ bool HlslLinker::getArgumentData( const std::string &name, const std::string &se
 				// Use built-in varying name
 				outName = varOutString[sem];                
 			}
-			pad = 4 - size;
-			ctor = "vec4";
 			break;
 
 		case EClassVarIn:
@@ -925,7 +923,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 						if (lang == EShLangFragment) // deal with varyings
 						{
 							if (!ignoredPositionInFragment)
-								AddToVaryings (varying, name);
+								AddToVaryings (varying, ctor, name);
 						}
 					}
 					else
@@ -1020,7 +1018,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 								if (lang == EShLangFragment) // deal with varyings
 								{
 									if (!ignoredPositionInFragment)
-										AddToVaryings (varying, name);
+										AddToVaryings (varying, ctor, name);
 								}
 							}
 							else
@@ -1063,7 +1061,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 						
 						if (lang == EShLangVertex) // deal with varyings
 						{
-							AddToVaryings (varying, name);
+							AddToVaryings (varying, ctor, name);
 						}
 
 						call << "xlt_" << sym->getName();
@@ -1119,7 +1117,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 
 							if (lang == EShLangVertex) // deal with varyings
 							{
-								AddToVaryings (varying, name);
+								AddToVaryings (varying, ctor, name);
 							}
 						}
 						else
@@ -1171,7 +1169,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 
 					if (lang == EShLangVertex) // deal with varyings
 					{
-						AddToVaryings (varying, name);
+						AddToVaryings (varying, ctor, name);
 					}
 				}
 				else
@@ -1223,7 +1221,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 
 							if (lang == EShLangVertex) // deal with varyings
 							{
-								AddToVaryings (varying, name);
+								AddToVaryings (varying, ctor, name);
 							}
 						}
 						else

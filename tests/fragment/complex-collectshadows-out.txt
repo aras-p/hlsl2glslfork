@@ -66,8 +66,8 @@ vec4 xlat_main( in v2f i ) {
     res.zw  = EncodeFloatRG( (1.00000 - depth));
     return res;
 }
-varying vec4 xlv_TEXCOORD0;
-varying vec4 xlv_TEXCOORD1;
+varying vec2 xlv_TEXCOORD0;
+varying vec3 xlv_TEXCOORD1;
 void main() {
     vec4 xl_retval;
     v2f xlt_i;

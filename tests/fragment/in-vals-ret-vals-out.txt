@@ -5,7 +5,7 @@ vec4 xlat_main( in vec2 uv, in vec4 color ) {
     c.xy  += uv;
     return c;
 }
-varying vec4 xlv_TEXCOORD0;
+varying vec2 xlv_TEXCOORD0;
 varying vec4 xlv_COLOR;
 void main() {
     vec4 xl_retval;

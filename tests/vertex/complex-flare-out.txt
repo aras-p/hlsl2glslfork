@@ -25,7 +25,7 @@ void xlat_main( in appdata_t v, out vec4 overtex, out vec4 ocolor, out vec2 otex
     otexcoord = ((v.texcoord.xy  * _FlareTexture_ST.xy ) + _FlareTexture_ST.zw );
 }
 varying vec4 xlv_COLOR;
-varying vec4 xlv_TEXCOORD0;
+varying vec2 xlv_TEXCOORD0;
 void main() {
     appdata_t xlt_v;
     xlt_v.vertex = vec4( gl_Vertex);
@@ -37,5 +37,5 @@ void main() {
     xlat_main( xlt_v, xlt_overtex, xlt_ocolor, xlt_otexcoord);
     gl_Position = vec4( xlt_overtex);
     xlv_COLOR = vec4( xlt_ocolor);
-    xlv_TEXCOORD0 = vec4( xlt_otexcoord, 0.0, 0.0);
+    xlv_TEXCOORD0 = vec2( xlt_otexcoord);
 }

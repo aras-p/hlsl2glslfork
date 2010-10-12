@@ -211,10 +211,8 @@ static bool CheckGLSL (bool vertex, const char* source)
 	return res;
 }
 
-static bool TestFile (bool vertex, const std::string& inputPath, const std::string& outputPath, const std::string& errPath, bool doCheckGLSL)
+static bool TestFile (bool vertex, const std::string& inputPath, const std::string& outputPath, bool doCheckGLSL)
 {
-	DeleteFile (errPath);
-
 	std::string input;
 	if (!ReadStringFromFile (inputPath.c_str(), input))
 	{
@@ -233,7 +231,7 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 	if (kDumpShaderAST)
 	{
 		// write output
-		FILE* f = fopen (errPath.c_str(), "wb");
+		FILE* f = fopen ((outputPath+"-ir.txt").c_str(), "wb");
 		fwrite (infoLog, 1, strlen(infoLog), f);
 		fclose (f);
 	}
@@ -259,7 +257,7 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 			if (text != output)
 			{
 				// write output
-				FILE* f = fopen (errPath.c_str(), "wb");
+				FILE* f = fopen (outputPath.c_str(), "wb");
 				fwrite (text.c_str(), 1, text.size(), f);
 				fclose (f);
 				printf ("  does not match expected output\n");
@@ -317,8 +315,7 @@ int main (int argc, const char** argv)
 			std::string inname = inputFiles[i];
 			printf ("test %s\n", inname.c_str());
 			std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
-			std::string errname = inname.substr (0,inname.size()-7) + "-res.txt";
-			bool ok = TestFile (type==0, testFolder + "/" + inname, testFolder + "/" + outname, testFolder + "/" + errname, hasOpenGL);
+			bool ok = TestFile (type==0, testFolder + "/" + inname, testFolder + "/" + outname, hasOpenGL);
 			if (!ok)
 			{
 				++errors;

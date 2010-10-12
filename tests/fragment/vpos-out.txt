@@ -2,7 +2,7 @@ vec4 xlat_main( in vec2 pos );
 vec4 xlat_main( in vec2 pos ) {
     return vec4( pos, 0.000000, 0.000000);
 }
-varying vec4 xlv_VPOS;
+varying vec2 xlv_VPOS;
 void main() {
     vec4 xl_retval;
     xl_retval = xlat_main( vec2(xlv_VPOS));

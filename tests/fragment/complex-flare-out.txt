@@ -17,7 +17,7 @@ vec4 xlat_main( in vec4 color, in vec2 texcoord ) {
     return (texture2D( _FlareTexture, texcoord) * color);
 }
 varying vec4 xlv_COLOR;
-varying vec4 xlv_TEXCOORD0;
+varying vec2 xlv_TEXCOORD0;
 void main() {
     vec4 xl_retval;
     xl_retval = xlat_main( vec4(xlv_COLOR), vec2(xlv_TEXCOORD0));
