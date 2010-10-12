@@ -1,0 +1,29 @@
+float4x4 mvp;
+
+struct a2v {
+	float4 pos : POSITION;
+	float2 uv : TEXCOORD0;
+	half3 normal : NORMAL;
+	half4 color : COLOR;
+};
+
+struct v2f {
+	float4 pos : POSITION;
+	float fog : FOG;
+	float2 uv : TEXCOORD0;
+	float4 color : COLOR;
+};
+
+v2f main (a2v v)
+{
+	v2f o;
+	o.pos = mul (mvp, v.pos);
+	o.color = v.color;
+	o.color.rgb += v.normal;
+	o.uv = v.uv;
+	
+	float dx = v.pos.x;
+	half dy = v.pos.y;
+	
+	return o;
+}
