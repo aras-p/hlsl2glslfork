@@ -1,21 +1,21 @@
 float xll_mod( float x, float y ) {
   float d = x / y;
-  float f = fract (abs(d));
+  float f = fract (abs(d)) * y;
   return d >= 0.0 ? f : -f;
 }
 vec2 xll_mod( vec2 x, vec2 y ) {
   vec2 d = x / y;
-  vec2 f = fract (abs(d));
+  vec2 f = fract (abs(d)) * y;
   return vec2 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y);
 }
 vec3 xll_mod( vec3 x, vec3 y ) {
   vec3 d = x / y;
-  vec3 f = fract (abs(d));
+  vec3 f = fract (abs(d)) * y;
   return vec3 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z);
 }
 vec4 xll_mod( vec4 x, vec4 y ) {
   vec4 d = x / y;
-  vec4 f = fract (abs(d));
+  vec4 f = fract (abs(d)) * y;
   return vec4 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z, d.w >= 0.0 ? f.w : -f.w);
 }
 float xll_modf( float x, out int ip) {
