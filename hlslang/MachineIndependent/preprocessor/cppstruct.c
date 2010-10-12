@@ -30,12 +30,7 @@ int InitCPPStruct(void)
 
     // Initialize public members:
     cpp->pLastSourceLoc = &cpp->lastSourceLoc;
-    
-	p = (char *) &cpp->options;
-    len = sizeof(cpp->options);
-    while (--len >= 0)
-        p[len] = 0;
-     
+         
     ResetPreprocessor();
     return 1;
 } // InitCPPStruct
@@ -64,7 +59,6 @@ int InitPreprocessor(void)
         #  ifdef CPP_STUFF
             FreeCPPStruct();
             InitCPPStruct();
-            cpp->options.Quiet = 1;
             if (!InitAtomTable(atable, 0))
                 return 1;
             if (!InitScanner(cpp))

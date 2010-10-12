@@ -8,14 +8,9 @@
 
 int InitCPPStruct(void);
 
-typedef struct Options_Rec{
-    int Quiet;
-} Options;
-
 struct CPPStruct_Rec {
     // Public members
     SourceLoc *pLastSourceLoc;  // Set at the start of each statement by the tree walkers
-    Options options;            // Compile options and parameters
 
     // Private members
     SourceLoc lastSourceLoc;

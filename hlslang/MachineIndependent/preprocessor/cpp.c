@@ -38,7 +38,6 @@ static int __LINE__Atom = 0;
 static int __FILE__Atom = 0;
 static int __VERSION__Atom = 0;
 static int versionAtom = 0;
-static int extensionAtom = 0;
 
 static Scope *macros = 0;
 #define MAX_MACRO_ARGS  64
@@ -70,7 +69,6 @@ int InitCPP(void)
     __FILE__Atom = LookUpAddString(atable, "__FILE__");
 	__VERSION__Atom = LookUpAddString(atable, "__VERSION__");
     versionAtom = LookUpAddString(atable, "version");
-    extensionAtom = LookUpAddString(atable, "extension");
     macros = NewScopeInPool(mem_CreatePool(0, 0));
 	return 1;
 } // InitCPP
@@ -613,47 +611,6 @@ static int CPPversion(yystypepp * yylvalpp)
     return token;
 } // CPPversion
 
-static int CPPextension(yystypepp * yylvalpp)
-{
-
-    int token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
-    char extensionName[80];
-
-    if(token=='\n'){
-		DecLineNumber();
-        CPPShInfoLogMsg("extension name not specified");
-        IncLineNumber();
-		return token;
-	}
-
-    if (token != CPP_IDENTIFIER)
-        CPPErrorToInfoLog("#extension");
-    
-    strcpy(extensionName, GetAtomString(atable, yylvalpp->sc_ident));
-	    
-    token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
-    if (token != ':') {
-        CPPShInfoLogMsg("':' missing after extension name");
-        return token;
-    }
-    
-    token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
-    if (token != CPP_IDENTIFIER) {
-        CPPShInfoLogMsg("behavior for extension not specified");
-        return token;
-    }
-
-    //updateExtensionBehavior(extensionName, GetAtomString(atable, yylvalpp->sc_ident));
-
-    token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
-	if (token == '\n'){
-		return token;
-	}
-	else{
-        CPPErrorToInfoLog("#extension");
-	}
-    return token;
-} // CPPextension
 
 int readCPPline(yystypepp * yylvalpp)
 {
@@ -719,8 +676,6 @@ int readCPPline(yystypepp * yylvalpp)
         } else if (yylvalpp->sc_ident == versionAtom) {
             token = CPPversion(yylvalpp);
             isVersion = 1;
-        } else if (yylvalpp->sc_ident == extensionAtom) {
-            token = CPPextension(yylvalpp);
         } else {
             StoreStr("Invalid Directive");
             StoreStr(GetStringOfAtom(atable,yylvalpp->sc_ident));
