@@ -25,7 +25,6 @@ typedef struct MacroSymbol {
 void FreeMacro(MacroSymbol *);
 int PredefineMacro(char *);
 
-void  CPPDebugLogMsg(const char *msg);      // Prints information into debug log
 void  CPPShInfoLogMsg(const char*);         // Store cpp Err Msg into Sh.Info.Log
 void  CPPWarningToInfoLog(const char *msg); // Prints warning messages into info log
 void  HandlePragma(const char**, int numTokens);  // #pragma directive container.

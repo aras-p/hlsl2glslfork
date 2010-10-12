@@ -419,11 +419,6 @@ int PaParseComment(int &lineno, TParseContext& parseContextLocal)
 
 extern "C" {
 
-void CPPDebugLogMsg(const char *msg)
-{
-    ((TParseContext *)cpp->pC)->infoSink.debug.message(EPrefixNone, msg);
-}
-
 void CPPWarningToInfoLog(const char *msg)
 {
     ((TParseContext *)cpp->pC)->infoSink.info.message(EPrefixWarning, msg, lexlineno); 

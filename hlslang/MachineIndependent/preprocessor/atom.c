@@ -567,30 +567,6 @@ int InitAtomTable(AtomTable *atable, int htsize)
 
 
 
-// -------- Debug Printing Functions --------------------------------------------------
-
-
-
-void PrintAtomTable(AtomTable *atable)
-{
-    int ii;
-    char str[200];
-
-    for (ii = 0; ii < atable->nextFree; ii++) {
-        sprintf(str, "%d: \"%s\"", ii, &atable->stable.strings[atable->amap[ii]]);
-        CPPDebugLogMsg(str);
-    }
-    sprintf(str, "Hash table: size=%d, entries=%d, collisions=",
-           atable->htable.size, atable->htable.entries);
-    CPPDebugLogMsg(str);
-    for (ii = 0; ii < HASH_TABLE_MAX_COLLISIONS; ii++) {
-        sprintf(str, " %d", atable->htable.counts[ii]);
-        CPPDebugLogMsg(str);
-    }
-
-} // PrintAtomTable
-
-
 
 char* GetStringOfAtom(AtomTable *atable, int atom)
 {

@@ -14,9 +14,6 @@ extern CPPStruct *cpp;
 #define CPPC_DEBUG_THE_COMPILER 1
 #endif
 
-#undef  CPPC_ENABLE_TOOLS
-#define CPPC_ENABLE_TOOLS 1
-
 #include "memory.h"
 #include "atom.h"
 #include "scanner.h"

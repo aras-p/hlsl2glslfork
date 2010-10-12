@@ -37,10 +37,4 @@ int ReadToken(TokenStream *pTok, yystypepp * yylvalpp);
 int ReadFromTokenStream(TokenStream *pTok, int name, int (*final)(CPPStruct *));
 void UngetToken(int, yystypepp * yylvalpp);
 
-#if defined(CPPC_ENABLE_TOOLS)
-
-void DumpTokenStream(FILE *, TokenStream *, yystypepp * yylvalpp);
-
-#endif // defined(CPPC_ENABLE_TOOLS)
-
 #endif // !defined(__TOKENS_H)

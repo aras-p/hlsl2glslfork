@@ -12,7 +12,6 @@ extern AtomTable *atable;
 int InitAtomTable(AtomTable *atable, int htsize);
 void FreeAtomTable(AtomTable *atable);
 int AddAtom(AtomTable *atable, const char *s);
-void PrintAtomTable(AtomTable *atable);
 int LookUpAddString(AtomTable *atable, const char *s);
 const char *GetAtomString(AtomTable *atable, int atom);
 int GetReversedAtom(AtomTable *atable, int atom);

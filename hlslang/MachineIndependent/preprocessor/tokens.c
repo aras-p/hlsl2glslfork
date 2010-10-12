@@ -332,36 +332,3 @@ void UngetToken(int token, yystypepp * yylvalpp) {
     t->base.line = cpp->currentInput->line;
     cpp->currentInput = &t->base;
 }
-
-
-void DumpTokenStream(FILE *fp, TokenStream *s, yystypepp * yylvalpp) {
-    int token;
-    char str[100];
-
-    if (fp == 0) fp = stdout;
-    RewindTokenStream(s);
-    while ((token = ReadToken(s, yylvalpp)) > 0) {
-        switch (token) {
-        case CPP_IDENTIFIER:
-        case CPP_TYPEIDENTIFIER:
-            sprintf(str, "%s ", GetAtomString(atable, yylvalpp->sc_ident));
-            break;
-        case CPP_STRCONSTANT:
-            sprintf(str, "\"%s\"", GetAtomString(atable, yylvalpp->sc_ident));
-            break;
-        case CPP_FLOATCONSTANT:
-            //printf("%g9.6 ", yylvalpp->sc_fval);
-            break;
-        case CPP_INTCONSTANT:
-            //printf("%d ", yylvalpp->sc_int);
-            break;
-        default:
-            if (token >= 127)
-                sprintf(str, "%s ", GetAtomString(atable, token));
-            else
-                sprintf(str, "%c", token);
-            break;
-        }
-        CPPDebugLogMsg(str);
-    }
-}

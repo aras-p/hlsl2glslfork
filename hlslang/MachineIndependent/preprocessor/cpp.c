@@ -935,15 +935,7 @@ int MacroExpand(int atom, yystypepp * yylvalpp)
             in->args[i] = PrescanMacroArg(in->args[i], yylvalpp);
         }
     }
-#if 0
-    printf("  <%s:%d>found macro %s\n", GetAtomString(atable, loc.file),
-           loc.line, GetAtomString(atable, atom));
-    for (i=0; i<in->mac->argc; i++) {
-        printf("\targ %s = '", GetAtomString(atable, in->mac->args[i]));
-        DumpTokenStream(stdout, in->args[i]);
-        printf("'\n");
-    }
-#endif
+	
 	/*retain the input source*/
     in->base.prev = cpp->currentInput;
     sym->details.mac.busy = 1;
