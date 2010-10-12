@@ -13,9 +13,8 @@
 #undef realloc
 #undef free
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////// String table: //////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////
+
+// -------- String table --------------------------------------------------
 
 static const struct {
     int val;
@@ -53,9 +52,8 @@ static const struct {
     { CPP_TYPEIDENTIFIER, "<type-ident>" },
 };
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////// String table: //////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 #define INIT_STRING_TABLE_SIZE 16384
 
@@ -65,10 +63,7 @@ typedef struct StringTable_Rec {
     int size;
 } StringTable;
 
-/*
- * InitStringTable() - Initialize the string table.
- *
- */
+
 
 static int InitStringTable(StringTable *stable)
 {
@@ -81,10 +76,7 @@ static int InitStringTable(StringTable *stable)
     return 1;
 } // InitStringTable
 
-/*
- * FreeStringTable() - Free the string table.
- *
- */
+
 
 static void FreeStringTable(StringTable *stable)
 {
@@ -95,10 +87,7 @@ static void FreeStringTable(StringTable *stable)
     stable->size = 0;
 } // FreeStringTable
 
-/*
- * HashString() - Hash a string with the base hash function.
- *
- */
+
 
 static int HashString(const char *s)
 {
@@ -111,11 +100,9 @@ static int HashString(const char *s)
     return hval & 0x7fffffff;
 } // HashString
 
-/*
- * HashString2() - Hash a string with the incrimenting hash function.
- *
- */
 
+
+// Hash a string with the incrimenting hash function.
 static int HashString2(const char *s)
 {
     int hval = 0;
@@ -127,11 +114,9 @@ static int HashString2(const char *s)
     return hval;
 } // HashString2
 
-/*
- * AddString() - Add a string to a string table.  Return it's offset.
- *
- */
 
+
+// Add a string to a string table.  Return it's offset.
 static int AddString(StringTable *stable, const char *s)
 {
     int len, loc;
@@ -153,9 +138,12 @@ static int AddString(StringTable *stable, const char *s)
     return loc;
 } // AddString
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////// Hash table: ///////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+// -------- Hash table --------------------------------------------------
+
+
 
 #define INIT_HASH_TABLE_SIZE 2047
 #define HASH_TABLE_MAX_COLLISIONS 3
@@ -172,10 +160,6 @@ typedef struct HashTable_Rec {
     int counts[HASH_TABLE_MAX_COLLISIONS + 1];
 } HashTable;
 
-/*
- * InitHashTable() - Initialize the hash table.
- *
- */
 
 static int InitHashTable(HashTable *htable, int fsize)
 {
@@ -195,10 +179,6 @@ static int InitHashTable(HashTable *htable, int fsize)
     return 1;
 } // InitHashTable
 
-/*
- * FreeHashTable() - Free the hash table.
- *
- */
 
 static void FreeHashTable(HashTable *htable)
 {
@@ -209,10 +189,6 @@ static void FreeHashTable(HashTable *htable)
     htable->entries = 0;
 } // FreeHashTable
 
-/*
- * Empty() - See if a hash table entry is empty.
- *
- */
 
 static int Empty(HashTable *htable, int hashloc)
 {
@@ -224,10 +200,6 @@ static int Empty(HashTable *htable, int hashloc)
     }
 } // Empty
 
-/*
- * Match() - See if a hash table entry is matches a string.
- *
- */
 
 static int Match(HashTable *htable, StringTable *stable, const char *s, int hashloc)
 {
@@ -241,9 +213,12 @@ static int Match(HashTable *htable, StringTable *stable, const char *s, int hash
     }
 } // Match
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////// Atom table: ///////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+// -------- Atom table --------------------------------------------------
+
+
 
 #define INIT_ATOM_TABLE_SIZE 1024
 
@@ -269,10 +244,6 @@ AtomTable *atable = &latable;
 
 static int AddAtomFixed(AtomTable *atable, const char *s, int atom);
 
-/*
- * GrowAtomTable() - Grow the atom table to at least "size" if it's smaller.
- *
- */
 
 static int GrowAtomTable(AtomTable *atable, int size)
 {
@@ -304,11 +275,7 @@ static int GrowAtomTable(AtomTable *atable, int size)
     return 0;
 } // GrowAtomTable
 
-/*
- * lReverse() - Reverse the bottom 20 bits of a 32 bit int.
- *
- */
-
+// Reverse the bottom 20 bits of a 32 bit int.
 static int lReverse(int fval)
 {
     unsigned int in = fval;
@@ -329,11 +296,8 @@ static int lReverse(int fval)
     return result;
 } // lReverse
 
-/*
- * AllocateAtom() - Allocate a new atom.  Associated with the "undefined" value of -1.
- *
- */
 
+// Allocate a new atom.  Associated with the "undefined" value of -1.
 static int AllocateAtom(AtomTable *atable)
 {
     if (atable->nextFree >= atable->size)
@@ -344,22 +308,16 @@ static int AllocateAtom(AtomTable *atable)
     return atable->nextFree - 1;
 } // AllocateAtom
 
-/*
- * SetAtomValue() - Allocate a new atom associated with "hashindex".
- *
- */
 
+// Allocate a new atom associated with "hashindex".
 static void SetAtomValue(AtomTable *atable, int atomnumber, int hashindex)
 {
     atable->amap[atomnumber] = atable->htable.entry[hashindex].index;
     atable->htable.entry[hashindex].value = atomnumber;
 } // SetAtomValue
 
-/*
- * FindHashLoc() - Find the hash location for this string.  Return -1 it hash table is full.
- *
- */
 
+// Find the hash location for this string.  Return -1 it hash table is full.
 static int FindHashLoc(AtomTable *atable, const char *s)
 {
     int hashloc, hashdelta, count;
@@ -411,10 +369,7 @@ static int FindHashLoc(AtomTable *atable, const char *s)
     return hashloc;
 } // FindHashLoc
 
-/*
- * IncreaseHashTableSize()
- *
- */
+
 
 static int IncreaseHashTableSize(AtomTable *atable)
 {
@@ -443,11 +398,9 @@ static int IncreaseHashTableSize(AtomTable *atable)
     return 1;
 } // IncreaseHashTableSize
 
-/*
- * LookUpAddStringHash() - Lookup a string in the hash table.  If it's not there, add it and
- *        initialize the atom value in the hash table to 0.  Return the hash table index.
- */
 
+// Lookup a string in the hash table.  If it's not there, add it and
+// initialize the atom value in the hash table to 0.  Return the hash table index.
 static int LookUpAddStringHash(AtomTable *atable, const char *s)
 {
     int hashloc, strloc;
@@ -468,12 +421,11 @@ static int LookUpAddStringHash(AtomTable *atable, const char *s)
     return hashloc;
 } // LookUpAddStringHash
 
-/*
- * LookUpAddString() - Lookup a string in the hash table.  If it's not there, add it and
- *        initialize the atom value in the hash table to the next atom number.
- *        Return the atom value of string.
- */
 
+
+// Lookup a string in the hash table.  If it's not there, add it and
+// initialize the atom value in the hash table to the next atom number.
+// Return the atom value of string.
 int LookUpAddString(AtomTable *atable, const char *s)
 {
     int hashindex, atom;
@@ -487,10 +439,6 @@ int LookUpAddString(AtomTable *atable, const char *s)
     return atom;
 } // LookUpAddString
 
-/*
- * GetAtomString()
- *
- */
 
 const  char *GetAtomString(AtomTable *atable, int atom)
 {
@@ -516,10 +464,6 @@ const  char *GetAtomString(AtomTable *atable, int atom)
     }
 } // GetAtomString
 
-/*
- * GetReversedAtom()
- *
- */
 
 int GetReversedAtom(AtomTable *atable, int atom)
 {
@@ -530,11 +474,9 @@ int GetReversedAtom(AtomTable *atable, int atom)
     }
 } // GetReversedAtom
 
-/*
- * AddAtom() - Add a string to the atom, hash and string tables if it isn't already there.
- *         Return it's atom index.
- */
 
+// Add a string to the atom, hash and string tables if it isn't already there.
+// Return it's atom index.
 int AddAtom(AtomTable *atable, const char *s)
 {
     int atom;
@@ -543,11 +485,9 @@ int AddAtom(AtomTable *atable, const char *s)
     return atom;
 } // AddAtom
 
-/*
- * AddAtomFixed() - Add an atom to the hash and string tables if it isn't already there.
- *         Assign it the atom value of "atom".
- */
 
+// Add an atom to the hash and string tables if it isn't already there.
+// Assign it the atom value of "atom".
 static int AddAtomFixed(AtomTable *atable, const char *s, int atom)
 {
     int hashindex, lsize;
@@ -570,10 +510,7 @@ static int AddAtomFixed(AtomTable *atable, const char *s, int atom)
     return atom;
 } // AddAtomFixed
 
-/*
- * InitAtomTable() - Initialize the atom table.
- *
- */
+
 
 int InitAtomTable(AtomTable *atable, int htsize)
 {
@@ -627,14 +564,12 @@ int InitAtomTable(AtomTable *atable, int htsize)
     return 1;
 } // InitAtomTable
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////// Debug Printing Functions: //////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////
 
-/*
- * PrintAtomTable()
- *
- */
+
+
+// -------- Debug Printing Functions --------------------------------------------------
+
+
 
 void PrintAtomTable(AtomTable *atable)
 {
@@ -656,10 +591,6 @@ void PrintAtomTable(AtomTable *atable)
 } // PrintAtomTable
 
 
-/*
- * GetStringOfAtom()
- *
- */
 
 char* GetStringOfAtom(AtomTable *atable, int atom)
 {
@@ -668,10 +599,6 @@ char* GetStringOfAtom(AtomTable *atable, int atom)
 	 return chr_str;
 } // GetStringOfAtom
 
-/*
- * FreeAtomTable() - Free the atom table and associated memory
- *
- */
 
 void FreeAtomTable(AtomTable *atable)
 {
@@ -686,8 +613,4 @@ void FreeAtomTable(AtomTable *atable)
     atable->nextFree = 0;
     atable->size = 0;
 } // FreeAtomTable
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////// End of atom.c ///////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////
 

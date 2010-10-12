@@ -9,9 +9,6 @@
 
 #include "slglobals.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////// Symbol Table Variables: ///////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////
 
 Scope *ScopeList = NULL;
 Scope *CurrentScope = NULL;
@@ -28,10 +25,8 @@ static void unlinkScope(void *_scope) {
         ScopeList = scope->next;
 }
 
-/*
- * NewScope()
- *
- */
+
+
 Scope *NewScopeInPool(MemoryPool *pool)
 {
     Scope *lScope;
@@ -53,10 +48,6 @@ Scope *NewScopeInPool(MemoryPool *pool)
     return lScope;
 } // NewScope
 
-/*
- * PushScope()
- *
- */
 
 void PushScope(Scope *fScope)
 {
@@ -86,10 +77,7 @@ void PushScope(Scope *fScope)
     CurrentScope = fScope;
 } // PushScope
 
-/*
- * PopScope()
- *
- */
+
 
 Scope *PopScope(void)
 {
@@ -101,10 +89,7 @@ Scope *PopScope(void)
     return lScope;
 } // PopScope
 
-/*
- * NewSymbol() - Allocate a new symbol node;
- *
- */
+
 
 Symbol *NewSymbol(SourceLoc *loc, Scope *fScope, int name, symbolkind kind)
 {
@@ -128,11 +113,10 @@ Symbol *NewSymbol(SourceLoc *loc, Scope *fScope, int name, symbolkind kind)
     return lSymb;
 } // NewSymbol
 
-/*
- * lAddToTree() - Using a binary tree is not a good idea for basic atom values because they
- *         are generated in order.  We'll fix this later (by reversing the bit pattern).
- */
 
+
+// Using a binary tree is not a good idea for basic atom values because they
+// are generated in order.  We'll fix this later (by reversing the bit pattern).
 static void lAddToTree(Symbol **fSymbols, Symbol *fSymb)
 {
     Symbol *lSymb;
@@ -170,11 +154,8 @@ static void lAddToTree(Symbol **fSymbols, Symbol *fSymb)
 } // lAddToTree
 
 
-/*
- * AddSymbol() - Add a variable, type, or function name to a scope.
- *
- */
 
+// Add a variable, type, or function name to a scope.
 Symbol *AddSymbol(SourceLoc *loc, Scope *fScope, int atom, symbolkind kind)
 {
     Symbol *lSymb;
@@ -187,14 +168,6 @@ Symbol *AddSymbol(SourceLoc *loc, Scope *fScope, int atom, symbolkind kind)
 } // AddSymbol
 
 
-/*********************************************************************************************/
-/************************************ Symbol Semantic Functions ******************************/
-/*********************************************************************************************/
-
-/*
- * LookUpLocalSymbol()
- *
- */
 
 Symbol *LookUpLocalSymbol(Scope *fScope, int atom)
 {
@@ -220,10 +193,7 @@ Symbol *LookUpLocalSymbol(Scope *fScope, int atom)
     return NULL;
 } // LookUpLocalSymbol
 
-/*
- * LookUpSymbol()
- *
- */
+
 
 Symbol *LookUpSymbol(Scope *fScope, int atom)
 {

@@ -10,17 +10,12 @@
 
 #include "slglobals.h"
 
-///////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////// Preprocessor and Token Recorder and Playback: ////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////
 
-/*
- * idstr()
- * Copy a string to a malloc'ed block and convert it into something suitable
- * for an ID
- *
- */
+// ------------------------------------------------------------------
+// Preprocessor and Token Recorder and Playback
 
+
+// Copy a string to a malloc'ed block and convert it into something suitable for an ID
 static char *idstr(const char *fstr, MemoryPool *pool)
 {
     size_t len;
@@ -42,10 +37,6 @@ static char *idstr(const char *fstr, MemoryPool *pool)
 } // idstr
 
 
-/*
- * lNewBlock()
- *
- */
 
 static TokenBlockStruct *lNewBlock(TokenStream *fTok, MemoryPool *pool)
 {
@@ -69,10 +60,7 @@ static TokenBlockStruct *lNewBlock(TokenStream *fTok, MemoryPool *pool)
     return lBlock;
 } // lNewBlock
 
-/*
- * lAddByte()
- *
- */
+
 
 static void lAddByte(TokenStream *fTok, unsigned char fVal)
 {
@@ -84,11 +72,6 @@ static void lAddByte(TokenStream *fTok, unsigned char fVal)
 } // lAddByte
 
 
-
-/*
- * lReadByte() - Get the next byte from a stream.
- *
- */
 
 static int lReadByte(TokenStream *pTok)
 {
@@ -109,12 +92,11 @@ static int lReadByte(TokenStream *pTok)
     return lval;
 } // lReadByte
 
-/////////////////////////////////////// Global Functions://////////////////////////////////////
 
-/*
- * NewTokenStream()
- *
- */
+
+// ------------------------------------------------------------------
+// Global Functions
+
 
 TokenStream *NewTokenStream(const char *name, MemoryPool *pool)
 {
@@ -132,10 +114,7 @@ TokenStream *NewTokenStream(const char *name, MemoryPool *pool)
     return pTok;
 } // NewTokenStream
 
-/*
- * DeleteTokenStream()
- *
- */
+
 
 void DeleteTokenStream(TokenStream *pTok)
 {
@@ -154,11 +133,9 @@ void DeleteTokenStream(TokenStream *pTok)
     }
 } // DeleteTokenStream
 
-/*
- * RecordToken() - Add a token to the end of a list for later playback or printout.
- *
- */
 
+
+// Add a token to the end of a list for later playback or printout.
 void RecordToken(TokenStream *pTok, int token, yystypepp * yylvalpp)
 {
     const char *s;
@@ -193,11 +170,9 @@ void RecordToken(TokenStream *pTok, int token, yystypepp * yylvalpp)
     }
 } // RecordToken
 
-/*
- * RewindTokenStream() - Reset a token stream in preperation for reading.
- *
- */
 
+
+// Reset a token stream in preparation for reading.
 void RewindTokenStream(TokenStream *pTok)
 {
     if (pTok->head) {
@@ -206,10 +181,7 @@ void RewindTokenStream(TokenStream *pTok)
     }
 } // RewindTokenStream
 
-/*
- * ReadToken() - Read the next token from a stream.
- *
- */
+
 
 int ReadToken(TokenStream *pTok, yystypepp * yylvalpp)
 {
@@ -293,11 +265,13 @@ int ReadToken(TokenStream *pTok, yystypepp * yylvalpp)
     return EOF_SY;
 } // ReadToken
 
+
 typedef struct TokenInputSrc {
     InputSrc            base;
     TokenStream         *tokens;
     int                 (*final)(CPPStruct *);
 } TokenInputSrc;
+
 
 static int scan_token(TokenInputSrc *in, yystypepp * yylvalpp)
 {
@@ -391,7 +365,3 @@ void DumpTokenStream(FILE *fp, TokenStream *s, yystypepp * yylvalpp) {
         CPPDebugLogMsg(str);
     }
 }
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////// End of tokens.c ///////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////

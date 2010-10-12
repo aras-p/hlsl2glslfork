@@ -15,10 +15,7 @@ int ResetPreprocessor(void);
 int FreeCPPStruct(void);
 int FinalizePreprocessor(void);
 
-/*
- * InitCPPStruct() - Initilaize the CPP structure.
- *
- */
+
 
 int InitCPPStruct(void)
 {
@@ -43,6 +40,7 @@ int InitCPPStruct(void)
     return 1;
 } // InitCPPStruct
 
+
 int ResetPreprocessor(void)
 {
     // Initialize private members:
@@ -59,7 +57,6 @@ int ResetPreprocessor(void)
     return 1;
 }
 
-//Intializing the Preprocessor.
 
 int InitPreprocessor(void)
 {
@@ -77,7 +74,6 @@ int InitPreprocessor(void)
   return 0; 
 }
 
-//FreeCPPStruct() - Free the CPP structure.
 
 int FreeCPPStruct(void)
 {
@@ -90,7 +86,6 @@ int FreeCPPStruct(void)
     return 1;
 }
 
-//Finalizing the Preprocessor.
 
 int FinalizePreprocessor(void)
 {
@@ -102,8 +97,3 @@ int FinalizePreprocessor(void)
        #  endif
   return 0; 
 }
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////// End of cppstruct.c //////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////

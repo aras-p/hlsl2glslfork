@@ -7,11 +7,11 @@
 #include "../Include/InitializeParseContext.h"
 #include "osinclude.h"
 #include <stdarg.h>
-///////////////////////////////////////////////////////////////////////
-//
+
+
+// ------------------------------------------------------------------
 // Sub- vector and matrix fields
-//
-////////////////////////////////////////////////////////////////////////
+
 
 //
 // Look at a '.' field selector string and change it into offsets
@@ -197,11 +197,8 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TV
    return true;
 }
 
-///////////////////////////////////////////////////////////////////////
-//
+// ------------------------------------------------------------------
 // Errors
-//
-////////////////////////////////////////////////////////////////////////
 
 //
 // Track whether errors have occurred.
@@ -1042,11 +1039,10 @@ bool TParseContext::paramErrorCheck(int line, TQualifier qualifier, TQualifier p
    return false;
 }
 
-/////////////////////////////////////////////////////////////////////////////////
-//
+
+// ------------------------------------------------------------------
 // Non-Errors.
-//
-/////////////////////////////////////////////////////////////////////////////////
+
 
 //
 // Look up a function name in the symbol table, and make sure it is a function.

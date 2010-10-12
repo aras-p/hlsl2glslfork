@@ -13,13 +13,11 @@
 
 bool CompareStructure(const TType& leftNodeType, constUnion* rightUnionArray, constUnion* leftUnionArray);
 
-////////////////////////////////////////////////////////////////////////////
-//
+
 // First set of functions are to help build the intermediate representation.
 // These functions are not member functions of the nodes.
 // They are called from parser productions.
-//
-/////////////////////////////////////////////////////////////////////////////
+
 
 //
 // Add a terminal node for an identifier in an expression.
@@ -832,11 +830,10 @@ void TIntermediate::remove(TIntermNode* root)
       RemoveAllTreeNodes(root);
 }
 
-////////////////////////////////////////////////////////////////
-//
+
+// ------------------------------------------------------------------
 // Member functions of the nodes used for building the tree.
-//
-////////////////////////////////////////////////////////////////
+
 
 //
 // Say whether or not an operation node changes the value of a variable.
