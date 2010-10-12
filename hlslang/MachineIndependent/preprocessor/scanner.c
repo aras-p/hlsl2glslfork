@@ -7,13 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if 0
-    #include <ieeefp.h>
-    #else
-    #define isinff(x) (((*(int *)&(x) & 0x7f800000L)==0x7f800000L) && \
-                       ((*(int *)&(x) & 0x007fffffL)==0000000000L))
-#endif
-
 #include "slglobals.h"
 
 
@@ -32,30 +25,6 @@ static void noop(InputSrc *in, int ch, yystypepp * yylvalpp) {}
 static InputSrc eof_inputsrc = { 0, &eof_scan, &eof_scan, &noop };
 
 static int byte_scan(InputSrc *, yystypepp * yylvalpp);
-
-#define EOL_SY '\n'
-
-#if defined(_WIN32)
-    #define DBG_BREAKPOINT() __asm int 3
-    #elif defined(_M_AMD64)
-    #define DBG_BREAKPOINT() assert(!"Dbg_Breakpoint");
-    #else
-    #define DBG_BREAKPOINT()
-    #endif
-
-    #if defined(_WIN32) && !defined(_M_AMD64)
-    __int64 RDTSC ( void ) {
-
-        __int64 v;
-    
-        __asm __emit 0x0f
-        __asm __emit 0x31
-        __asm mov dword ptr v, eax
-        __asm mov dword ptr v+4, edx
-    
-        return v;
-    }
-#endif
 
 
 int InitScanner(CPPStruct *cpp)

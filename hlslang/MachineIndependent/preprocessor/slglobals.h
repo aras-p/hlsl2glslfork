@@ -9,11 +9,6 @@ typedef struct CPPStruct_Rec CPPStruct;
 
 extern CPPStruct *cpp;
 
-#undef  CPPC_DEBUG_THE_COMPILER
-#if defined(_DEBUG)
-#define CPPC_DEBUG_THE_COMPILER 1
-#endif
-
 #include "memory.h"
 #include "atom.h"
 #include "scanner.h"
@@ -21,9 +16,7 @@ extern CPPStruct *cpp;
 #include "tokens.h"
 #include "symbols.h"
 #include "compile.h"
-#if !defined(NO_PARSER)
 #include "parser.h"
-#endif
 
 #if !defined(NULL)
 #define NULL 0
