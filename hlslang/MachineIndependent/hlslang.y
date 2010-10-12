@@ -2498,12 +2498,9 @@ function_definition
         $$->getAsAggregate()->setName($1.function->getMangledName().c_str());
         $$->getAsAggregate()->setPlainName($1.function->getName().c_str());
         $$->getAsAggregate()->setType($1.function->getReturnType());
+        
 	if ( $1.function->getInfo())
 	    $$->getAsAggregate()->setSemantic($1.function->getInfo()->getSemantic());
-        
-        // store the pragma information for other vendor specific 
-        // information. This information can be queried from the parse tree
-        $$->getAsAggregate()->addToPragmaTable(parseContext.contextPragma.pragmaTable);
     }
     ;
    

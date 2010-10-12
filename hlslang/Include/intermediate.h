@@ -592,16 +592,14 @@ typedef TVector<TIntermNode*> TIntermSequence;
 class TIntermAggregate : public TIntermOperator
 {
 public:
-   TIntermAggregate() : TIntermOperator(EOpNull), pragmaTable(0)
+   TIntermAggregate() : TIntermOperator(EOpNull)
    {
    }
-   TIntermAggregate(TOperator o) : TIntermOperator(o), pragmaTable(0)
+   TIntermAggregate(TOperator o) : TIntermOperator(o)
    {
    }
-   ~TIntermAggregate()
-   {
-      delete pragmaTable;
-   }
+   ~TIntermAggregate() { }
+
    virtual TIntermAggregate* getAsAggregate()
    {
       return this;
@@ -617,11 +615,7 @@ public:
    const TString& getSemantic() const { return semantic; }
 
    virtual void traverse(TIntermTraverser*);
-   void addToPragmaTable(const TPragmaTable& pTable);
-   const TPragmaTable& getPragmaTable() const
-   {
-      return *pragmaTable;
-   }
+
 protected:
    TIntermAggregate(const TIntermAggregate&); // disallow copy constructor
    TIntermAggregate& operator=(const TIntermAggregate&); // disallow assignment operator
@@ -629,7 +623,6 @@ protected:
    TString name;
    TString plainName;
    TString semantic;
-   TPragmaTable *pragmaTable;
 };
 
 //
