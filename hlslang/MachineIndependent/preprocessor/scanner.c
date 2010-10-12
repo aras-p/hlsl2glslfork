@@ -9,6 +9,9 @@
 
 #include "slglobals.h"
 
+#define isinff(x) (((*(int *)&(x) & 0x7f800000L)==0x7f800000L) && ((*(int *)&(x) & 0x007fffffL)==0000000000L))
+
+
 
 typedef struct StringInputSrc {
     InputSrc base;
