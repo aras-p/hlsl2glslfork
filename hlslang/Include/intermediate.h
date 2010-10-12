@@ -403,63 +403,23 @@ public:
    TIntermTyped(const TType& t) : type(t)
    {
    }
-   virtual TIntermTyped* getAsTyped()
-   {
-      return this;
-   }
-   virtual void setType(const TType& t)
-   {
-      type = t;
-   }
-   virtual TType getType() const
-   {
-      return type;
-   }
-   virtual TType* getTypePointer()
-   {
-      return &type;
-   }
 
-   virtual TBasicType getBasicType() const
-   {
-      return type.getBasicType();
-   }
-   virtual TQualifier getQualifier() const
-   {
-      return type.getQualifier();
-   }
-   virtual int getNominalSize() const
-   {
-      return type.getNominalSize();
-   }
-   virtual int getSize() const
-   {
-      return type.getInstanceSize();
-   }
-   virtual bool isMatrix() const
-   {
-      return type.isMatrix();
-   }
-   virtual bool isArray()  const
-   {
-      return type.isArray();
-   }
-   virtual bool isVector() const
-   {
-      return type.isVector();
-   }
-   const char* getBasicString()      const
-   {
-      return type.getBasicString();
-   }
-   const char* getQualifierString()  const
-   {
-      return type.getQualifierString();
-   }
-   TString getCompleteString() const
-   {
-      return type.getCompleteString();
-   }
+   virtual TIntermTyped* getAsTyped() { return this; }
+
+   void setType(const TType& t) { type = t; }
+   TType getType() const { return type; }
+   TType* getTypePointer() { return &type; }
+
+   TBasicType getBasicType() const { return type.getBasicType(); }
+   TQualifier getQualifier() const { return type.getQualifier(); }
+   int getNominalSize() const { return type.getNominalSize(); }
+   int getSize() const { return type.getInstanceSize(); }
+   bool isMatrix() const { return type.isMatrix(); }
+   bool isArray()  const { return type.isArray(); }
+   bool isVector() const { return type.isVector(); }
+   const char* getBasicString() const { return type.getBasicString(); }
+   const char* getQualifierString() const { return type.getQualifierString(); }
+   TString getCompleteString() const { return type.getCompleteString(); }
 
 protected:
    TType type;
