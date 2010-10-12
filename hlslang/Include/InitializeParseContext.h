@@ -5,7 +5,6 @@
 
 #ifndef __INITIALIZE_PARSE_CONTEXT_INCLUDED_
 #define __INITIALIZE_PARSE_CONTEXT_INCLUDED_
-#include "osinclude.h"
 
 bool InitializeParseContextIndex();
 bool InitializeGlobalParseContext();

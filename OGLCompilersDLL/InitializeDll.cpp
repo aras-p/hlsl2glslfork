@@ -6,8 +6,8 @@
 #include "InitializeDll.h"
 #include "../hlslang/Include/InitializeGlobals.h"
 #include "../hlslang/Include/InitializeParseContext.h"
-
 #include "../include/hlsl2glsl.h"
+#include "osinclude.h"
 
 OS_TLSIndex ThreadInitializeIndex = OS_INVALID_TLS_INDEX;
 

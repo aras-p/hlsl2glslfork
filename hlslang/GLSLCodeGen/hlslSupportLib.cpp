@@ -3,20 +3,10 @@
 // found in the LICENSE.txt file.
 
 
-//=================================================================================================================================
-//
-// ATI Research, Inc.
-//
-// Implementation of support library to generate GLSL functions to support HLSL functions that don't map to built-ins
-//=================================================================================================================================
+// Implementation of support library to generate GLSL functions to support HLSL
+// functions that don't map to built-ins
 
 #include <map>
-
-//=================================================================================================================================
-//
-//          Includes / defines / typedefs / static variable initialization block
-//
-//=================================================================================================================================
 #include "hlslSupportLib.h"
 
 typedef std::map<TOperator,std::string> CodeMap;

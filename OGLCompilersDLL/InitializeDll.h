@@ -7,9 +7,6 @@
 #define __INITIALIZEDLL_H
 
 
-#include "osinclude.h"
-
-
 bool InitProcess();
 bool InitThread();
 bool DetachThread();

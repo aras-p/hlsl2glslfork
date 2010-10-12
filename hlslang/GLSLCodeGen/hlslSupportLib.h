@@ -10,9 +10,7 @@
 #include "../Include/intermediate.h"
 
 void initializeHLSLSupportLibrary();
-
 void finalizeHLSLSupportLibrary();
-
-const std::string& getHLSLSupportCode( TOperator op);
+const std::string& getHLSLSupportCode (TOperator op);
 
 #endif //HLSL_SUPPORT_LIB_H
