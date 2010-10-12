@@ -155,6 +155,8 @@ public:
    };
 
    POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
+
+   explicit TType() { }
    explicit TType(TBasicType t, TQualifier q = EvqTemporary, int s = 1, bool m = false, bool a = false) :
       type(t), qualifier(q), size(s), matrix(m), array(a), arraySize(0),
       structure(0), structureSize(0), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), typeName(0),
@@ -178,8 +180,6 @@ public:
    {
       typeName = NewPoolTString(n.c_str());
    }
-   explicit TType() { }
-   virtual ~TType() { }
 
    TType(const TType& type) { *this = type; }
 
@@ -243,11 +243,11 @@ public:
       return newType;
    }
 
-   virtual void setType(TBasicType t, int s, bool m, bool a, int aS = 0)
+   void setType(TBasicType t, int s, bool m, bool a, int aS = 0)
    {
       type = t; size = s; matrix = m; array = a; arraySize = aS;
    }
-   virtual void setType(TBasicType t, int s, bool m, TType* userDef = 0)
+   void setType(TBasicType t, int s, bool m, TType* userDef = 0)
    {
       type = t; 
       size = s; 
@@ -256,47 +256,35 @@ public:
          structure = userDef->getStruct();
       // leave array information intact.
    }
-   virtual void setTypeName(const TString& n)
+   void setTypeName(const TString& n)
    {
       typeName = NewPoolTString(n.c_str());
    }
-   virtual void setFieldName(const TString& n)
+   void setFieldName(const TString& n)
    {
       fieldName = NewPoolTString(n.c_str());
    }
-   virtual const TString& getTypeName() const
+   const TString& getTypeName() const
    {
       assert(typeName);          
       return *typeName; 
    }
 
-   virtual const TString& getFieldName() const
+   const TString& getFieldName() const
    {
       assert(fieldName);
       return *fieldName; 
    }
 
-   virtual TBasicType getBasicType() const
-   {
-      return type;
-   }
-   virtual TQualifier getQualifier() const
-   {
-      return qualifier;
-   }
-   virtual void changeQualifier(TQualifier q)
-   {
-      qualifier = q;
-   }
+   TBasicType getBasicType() const { return type; }
+   TQualifier getQualifier() const { return qualifier; }
+   void changeQualifier(TQualifier q) { qualifier = q; }
 
    // One-dimensional size of single instance type
-   virtual int getNominalSize() const
-   {
-      return size;
-   }  
+   int getNominalSize() const { return size; }  
 
    // Full-dimensional size of single instance of type
-   virtual int getInstanceSize() const  
+   int getInstanceSize() const  
    {
       if (matrix)
          return size * size;
@@ -304,46 +292,16 @@ public:
          return size;
    }
 
-   virtual bool isMatrix() const
-   {
-      return matrix ? true : false;
-   }
-   virtual bool isArray() const
-   {
-      return array ? true : false;
-   }
-   int getArraySize() const
-   {
-      return arraySize;
-   }
-   void setArraySize(int s)
-   {
-      array = true; arraySize = s;
-   }
-   void setMaxArraySize (int s)
-   {
-      maxArraySize = s;
-   }
-   int getMaxArraySize () const
-   {
-      return maxArraySize;
-   }
-   void clearArrayness()
-   {
-      array = false; arraySize = 0; maxArraySize = 0;
-   }
-   void setArrayInformationType(TType* t)
-   {
-      arrayInformationType = t;
-   }
-   TType* getArrayInformationType()
-   {
-      return arrayInformationType;
-   }
-   virtual bool isVector() const
-   {
-      return size > 1 && !matrix;
-   }
+   bool isMatrix() const { return matrix ? true : false; }
+   bool isArray() const { return array ? true : false; }
+   int getArraySize() const { return arraySize; }
+   void setArraySize(int s) { array = true; arraySize = s; }
+   void setMaxArraySize (int s) { maxArraySize = s; }
+   int getMaxArraySize () const { return maxArraySize; }
+   void clearArrayness() { array = false; arraySize = 0; maxArraySize = 0; }
+   void setArrayInformationType(TType* t) { arrayInformationType = t; }
+   TType* getArrayInformationType() { return arrayInformationType; }
+   bool isVector() const { return size > 1 && !matrix; }
    static char* getBasicString(TBasicType t)
    {
       switch (t)
@@ -363,14 +321,6 @@ public:
       case EbtStruct:            return "structure";         break;
       default:                   return "unknown type";
       }
-   }
-   const char* getBasicString() const
-   {
-      return TType::getBasicString(type);
-   }
-   const char* getQualifierString() const
-   {
-      return ::getQualifierString(qualifier);
    }
    TTypeList* getStruct()
    {
@@ -394,10 +344,8 @@ public:
       return totalSize;
    }
 
-   TTypeList* getStruct() const
-   {
-      return structure;
-   }
+   TTypeList* getStruct() const { return structure; }
+
    TString& getMangledName()
    {
       if (!mangled)
@@ -429,26 +377,20 @@ public:
    {
       return !operator==(right);
    }
+   const char* getBasicString() const { return TType::getBasicString(type); }
+   const char* getQualifierString() const { return ::getQualifierString(qualifier); }
    TString getCompleteString() const;
 
-   const TString& getSemantic() const
-   {
-      return *semantic;
-   }
-   void setSemantic( const TString &s)
-   {
-      semantic = NewPoolTString(s.c_str());
-   }
-   bool hasSemantic() const
-   {
-      return semantic != 0;
-   }
+   const TString& getSemantic() const { return *semantic; }
+   void setSemantic( const TString &s) { semantic = NewPoolTString(s.c_str()); }
+   bool hasSemantic() const { return semantic != 0; }
 
    void buildMangledName(TString&);
 
    // Determine the parameter compatibility between this type and the parameter type
    ECompatibility determineCompatibility ( const TType *pType ) const;
-protected:
+
+private:
    int getStructSize() const;
 
    TBasicType type      : 6;
