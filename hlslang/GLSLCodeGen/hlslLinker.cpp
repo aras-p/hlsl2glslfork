@@ -157,7 +157,13 @@ static const char resultString[EAttrSemCount][32] = {
 	"",
 };
 
+static const char* kUserVaryingPrefix = "xlv_";
 
+static inline void AddToVaryings (std::stringstream& s, const std::string& name)
+{
+	if (strstr (name.c_str(), kUserVaryingPrefix) == name.c_str())
+		s << "varying vec4 " << name << ";\n";
+}
 
 HlslLinker::HlslLinker(TInfoSink& infoSink_) : infoSink(infoSink_)
 {
@@ -281,7 +287,7 @@ bool HlslLinker::getArgumentData( const std::string &name, const std::string &se
 			// If using user varyings, create a user varying name
 			if ( (bUserVaryings && sem != EAttrSemPosition) || varOutString[sem][0] == 0 )
 			{
-				outName = "xlv_";
+				outName = kUserVaryingPrefix;
 				outName += semantic;
 				// If an array element, add the semantic offset to the name
 				if ( semanticOffset != 0 )
@@ -303,7 +309,7 @@ bool HlslLinker::getArgumentData( const std::string &name, const std::string &se
 			// If using user varyings, create a user varying name
 			if ( bUserVaryings || varInString[sem][0] == 0 )
 			{
-				outName = "xlv_";
+				outName = kUserVaryingPrefix;
 				outName += stripSemanticModifier ( semantic, false );
 				// If an array element, add the semantic offset to the name
 				if ( semanticOffset != 0 )
@@ -916,13 +922,10 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 							}
 						}
 
-						if (lang == EShLangFragment) // fragment shader: deal with user varyings
+						if (lang == EShLangFragment) // deal with varyings
 						{
-							// If using user varying, add it to the varying list
-							if ( !ignoredPositionInFragment && strstr ( name.c_str(), "xlv" ) )
-							{
-								varying << "varying vec4 " << name <<";\n" ;
-							}
+							if (!ignoredPositionInFragment)
+								AddToVaryings (varying, name);
 						}
 					}
 					else
@@ -1014,13 +1017,10 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 									}
 								}
 								
-								if (lang == EShLangFragment) // fragment shader: user varyings
+								if (lang == EShLangFragment) // deal with varyings
 								{
-									// If using user varying, add it to the varying list
-									if (!ignoredPositionInFragment && strstr ( name.c_str(), "xlv" ))
-									{
-										varying << "varying vec4 " << name <<";\n" ;
-									}
+									if (!ignoredPositionInFragment)
+										AddToVaryings (varying, name);
 								}
 							}
 							else
@@ -1061,13 +1061,9 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 							preamble << getTypeString(sym->getType()) << " xlt_" << sym->getName() << ";\n";                     
 						}
 						
-						if (lang == EShLangVertex) // vertex shader
+						if (lang == EShLangVertex) // deal with varyings
 						{
-							// If using user varying, add it to the varying list
-							if ( strstr ( name.c_str(), "xlv" ) )
-							{
-								varying << "varying vec4 " << name <<";\n" ;
-							}
+							AddToVaryings (varying, name);
 						}
 
 						call << "xlt_" << sym->getName();
@@ -1121,13 +1117,9 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 
 							postamble << ");\n";
 
-							if (lang == EShLangVertex) // vertex shader
+							if (lang == EShLangVertex) // deal with varyings
 							{
-								// If using user varying, add it to the varying list
-								if ( strstr ( name.c_str(), "xlv" ) )
-								{
-									varying << "varying vec4 " << name <<";\n" ;
-								}
+								AddToVaryings (varying, name);
 							}
 						}
 						else
@@ -1177,13 +1169,9 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 
 					postamble << ");\n";
 
-					if (lang == EShLangVertex) // vertex shader
+					if (lang == EShLangVertex) // deal with varyings
 					{
-						// If using user varying, add it to the varying list
-						if ( strstr ( name.c_str(), "xlv" ) )
-						{
-							varying << "varying vec4 " << name <<";\n" ;
-						}
+						AddToVaryings (varying, name);
 					}
 				}
 				else
@@ -1233,13 +1221,9 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 
 							postamble << ");\n";
 
-							if (lang == EShLangVertex) // vertex shader
+							if (lang == EShLangVertex) // deal with varyings
 							{
-								// If using user varying, add it to the varying list
-								if ( strstr ( name.c_str(), "xlv" ) )
-								{
-									varying << "varying vec4 " << name <<";\n" ;
-								}
+								AddToVaryings (varying, name);
 							}
 						}
 						else
