@@ -4,7 +4,7 @@ struct a2v {
 	float4 pos : POSITION;
 	float2 uv : TEXCOORD0;
 	half3 normal : NORMAL;
-	half4 color : COLOR;
+	fixed4 color : COLOR;
 };
 
 struct v2f {
@@ -24,6 +24,7 @@ v2f main (a2v v)
 	
 	float dx = v.pos.x;
 	half dy = v.pos.y;
+	fixed dz = v.pos.z;
 	
 	return o;
 }

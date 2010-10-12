@@ -16,12 +16,14 @@ v2f xlat_main( in a2v v ) {
     v2f o;
     float dx;
     float dy;
+    float dz;
     o.pos = ( mvp * v.pos );
     o.color = v.color;
     o.color.xyz  += v.normal;
     o.uv = v.uv;
     dx = v.pos.x ;
     dy = v.pos.y ;
+    dz = v.pos.z ;
     return o;
 }
 varying float xlv_FOG;
