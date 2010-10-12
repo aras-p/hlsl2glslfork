@@ -13,6 +13,8 @@ void xlat_main( in a2v v, out vec4 opos, out float ofog, out vec2 ouv, out vec4 
     ouv = v.uv;
 }
 varying vec4 xlv_FOG;
+varying vec4 xlv_TEXCOORD0;
+varying vec4 xlv_COLOR;
 void main() {
     a2v xlt_v;
     xlt_v.pos = vec4( gl_Vertex);
@@ -26,6 +28,6 @@ void main() {
     xlat_main( xlt_v, xlt_opos, xlt_ofog, xlt_ouv, xlt_ocolor);
     gl_Position = vec4( xlt_opos);
     xlv_FOG = vec4( xlt_ofog, 0.0, 0.0, 0.0);
-    gl_TexCoord[0] = vec4( xlt_ouv, 0.0, 0.0);
-    gl_FrontColor = vec4( xlt_ocolor);
+    xlv_TEXCOORD0 = vec4( xlt_ouv, 0.0, 0.0);
+    xlv_COLOR = vec4( xlt_ocolor);
 }

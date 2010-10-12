@@ -17,6 +17,8 @@ v2f xlat_main( in appdata v ) {
     o.ray = v.texcoord1;
     return o;
 }
+varying vec4 xlv_TEXCOORD0;
+varying vec4 xlv_TEXCOORD1;
 void main() {
     v2f xl_retval;
     appdata xlt_v;
@@ -25,6 +27,6 @@ void main() {
     xlt_v.texcoord1 = vec3( gl_MultiTexCoord1);
     xl_retval = xlat_main( xlt_v);
     gl_Position = vec4( xl_retval.pos);
-    gl_TexCoord[0] = vec4( xl_retval.uv, 0.0, 0.0);
-    gl_TexCoord[1] = vec4( xl_retval.ray, 0.0);
+    xlv_TEXCOORD0 = vec4( xl_retval.uv, 0.0, 0.0);
+    xlv_TEXCOORD1 = vec4( xl_retval.ray, 0.0);
 }

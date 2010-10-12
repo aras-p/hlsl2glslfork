@@ -21,6 +21,8 @@ v2f xlat_main( in a2v v ) {
     return o;
 }
 varying vec4 xlv_FOG;
+varying vec4 xlv_TEXCOORD0;
+varying vec4 xlv_COLOR;
 void main() {
     v2f xl_retval;
     a2v xlt_v;
@@ -31,6 +33,6 @@ void main() {
     xl_retval = xlat_main( xlt_v);
     gl_Position = vec4( xl_retval.pos);
     xlv_FOG = vec4( xl_retval.fog, 0.0, 0.0, 0.0);
-    gl_TexCoord[0] = vec4( xl_retval.uv, 0.0, 0.0);
-    gl_FrontColor = vec4( xl_retval.color);
+    xlv_TEXCOORD0 = vec4( xl_retval.uv, 0.0, 0.0);
+    xlv_COLOR = vec4( xl_retval.color);
 }

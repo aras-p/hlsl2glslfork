@@ -69,8 +69,9 @@ vec4 xlat_main( in vec4 uv ) {
     c.xyzw  += xll_modf( uv.xyzw , d.xyzw );
     return c;
 }
+varying vec4 xlv_TEXCOORD0;
 void main() {
     vec4 xl_retval;
-    xl_retval = xlat_main( vec4(gl_TexCoord[0]));
+    xl_retval = xlat_main( vec4(xlv_TEXCOORD0));
     gl_FragData[0] = vec4( xl_retval);
 }
