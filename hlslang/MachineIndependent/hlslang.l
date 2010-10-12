@@ -166,6 +166,10 @@ TSourceLoc lexlineno;
 "half3x3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(MATRIX3); }
 "half4x4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(MATRIX4); }
 
+"fixed"          {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FLOAT_TYPE); }
+"fixed2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC2); }
+"fixed3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC3); }
+"fixed4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC4); }
 "half"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FLOAT_TYPE); }
 "half1"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FLOAT_TYPE); }
 "half2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC2); }
@@ -228,7 +232,6 @@ TSourceLoc lexlineno;
 "long"         {  PaReservedWord(); return 0; }
 "short"        {  PaReservedWord(); return 0; }
 "double"       {  PaReservedWord(); return 0; }
-"fixed"        {  PaReservedWord(); return 0; }
 "unsigned"     {  PaReservedWord(); return 0; }
 
 "hvec2"        {  PaReservedWord(); return 0; }
