@@ -9,12 +9,7 @@
 int InitCPPStruct(void);
 
 typedef struct Options_Rec{
-    const char *profileString;
-    int ErrorMode;
     int Quiet;
-	
-    // Debug The Compiler options:
-    int DumpAtomTable;
 } Options;
 
 struct CPPStruct_Rec {

@@ -65,7 +65,6 @@ int InitPreprocessor(void)
             FreeCPPStruct();
             InitCPPStruct();
             cpp->options.Quiet = 1;
-            cpp->options.profileString = "generic";
             if (!InitAtomTable(atable, 0))
                 return 1;
             if (!InitScanner(cpp))

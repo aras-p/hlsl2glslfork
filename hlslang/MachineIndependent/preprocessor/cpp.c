@@ -48,8 +48,6 @@ static SourceLoc ifloc; /* outermost #if */
 
 int InitCPP(void)
 {
-    char        buffer[64], *t;
-    const char  *f;
     // Add various atoms needed by the CPP line scanner:
     bindAtom = LookUpAddString(atable, "bind");
     constAtom = LookUpAddString(atable, "const");
@@ -74,12 +72,6 @@ int InitCPP(void)
     versionAtom = LookUpAddString(atable, "version");
     extensionAtom = LookUpAddString(atable, "extension");
     macros = NewScopeInPool(mem_CreatePool(0, 0));
-    strcpy(buffer, "PROFILE_");
-    t = buffer + strlen(buffer);
-    f = cpp->options.profileString;
-    while ((isalnum(*f) || *f == '_') && t < buffer + sizeof(buffer) - 1)
-        *t++ = toupper(*f++);
-    *t = 0;
 	return 1;
 } // InitCPP
 

@@ -346,21 +346,6 @@ static int FindHashLoc(AtomTable *atable, const char *s)
         }
 
         if (!FoundEmptySlot) {
-            if (cpp->options.DumpAtomTable) {
-                int ii;
-                char str[200];
-                sprintf(str, "*** Hash failed with more than %d collisions. Must increase hash table size. ***",
-                       HASH_TABLE_MAX_COLLISIONS);
-                CPPShInfoLogMsg(str);
-
-                sprintf(str, "*** New string \"%s\", hash=%04x, delta=%04x", s, collision[0], hashdelta);
-                CPPShInfoLogMsg(str);
-                for (ii = 0; ii <= HASH_TABLE_MAX_COLLISIONS; ii++) {
-                    sprintf(str, "*** Collides on try %d at hash entry %04x with \"%s\"",
-                           ii + 1, collision[ii], GetAtomString(atable, atable->htable.entry[collision[ii]].value));
-                    CPPShInfoLogMsg(str);
-                }
-            }
             return -1;
         } else {
             atable->htable.counts[count]++;
@@ -555,9 +540,6 @@ int InitAtomTable(AtomTable *atable, int htsize)
         AddAtomFixed(atable, tokens[ii].str, tokens[ii].val);
 
     // Add error symbol if running in error mode:
-
-    if (cpp->options.ErrorMode)
-        AddAtomFixed(atable, "error", ERROR_SY);
 
     AddAtom(atable, "<*** end fixed atoms ***>");
 
