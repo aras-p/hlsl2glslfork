@@ -23,14 +23,6 @@
    #pragma warning(disable : 4201) // nameless union
 #endif
 
-//
-// Doing the push and pop below for warnings does not leave the warning state
-// the way it was.  This seems like a defect in the compiler.  We would like
-// to do this, but since it does not work correctly right now, it is turned
-// off.
-//
-//??#pragma warning(push, 3)
-
 #include <set>
 #include <vector>
 #include <map>
@@ -38,8 +30,6 @@
 #include <string>
 #include <stdio.h>
 #include <sstream>
-
-//??#pragma warning(pop)
 
 typedef int TSourceLoc;
 
@@ -173,12 +163,6 @@ __inline TPersistString FormatSourceLoc(const TSourceLoc loc)
    return TPersistString(locText);
 }
 
-#ifdef _WIN32
-typedef TMap<TString, TString> TPragmaTable;
-#else
-typedef TMap<const TString, TString> TPragmaTable;
-#endif
-typedef TMap<TString, TString>::tAllocator TPragmaTableAllocator;
 
 #endif // _COMMON_INCLUDED_
 

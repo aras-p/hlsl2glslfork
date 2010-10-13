@@ -564,7 +564,7 @@ static int CPPpragma(yystypepp * yylvalpp)
 	}
 
 	cpp->currentInput->ungetch(cpp->currentInput, token, yylvalpp);
-	HandlePragma((const char**)allTokens, tokenCount);
+	// just ignore #pragmas
 	token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
 	
 	for (i = 0; i < tokenCount; ++i) {

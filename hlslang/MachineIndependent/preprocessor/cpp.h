@@ -27,7 +27,6 @@ int PredefineMacro(char *);
 
 void  CPPShInfoLogMsg(const char*);         // Store cpp Err Msg into Sh.Info.Log
 void  CPPWarningToInfoLog(const char *msg); // Prints warning messages into info log
-void  HandlePragma(const char**, int numTokens);  // #pragma directive container.
 void  ResetTString(void);                   // #error Message as TString.
 void  CPPErrorToInfoLog(char*);             // Stick all cpp errors into Sh.Info.log   .
 void  StoreStr(char*);                      // Store the TString in Parse Context.

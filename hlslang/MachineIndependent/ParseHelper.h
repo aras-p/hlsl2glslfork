@@ -10,16 +10,6 @@
 #include "localintermediate.h"
 
 
-struct TPragma
-{
-   TPragma(bool o, bool d) : optimize(o), debug(d)
-   {
-   }
-   bool optimize;
-   bool debug;
-   TPragmaTable pragmaTable;
-};
-
 //
 // The following are extra variables needed during parsing, grouped together so
 // they can be passed to the parser without needing a global.
@@ -29,7 +19,7 @@ struct TParseContext
    TParseContext(TSymbolTable& symt, TIntermediate& interm, EShLanguage L, TInfoSink& is) : 
    intermediate(interm), symbolTable(symt), infoSink(is), language(L), treeRoot(0),
    recoveredFromError(false), numErrors(0), lexAfterType(false), loopNestingLevel(0), 
-   inTypeParen(false), contextPragma(true, false)
+   inTypeParen(false)
    {
    }
    TIntermediate& intermediate; // to hold and build a parse tree
@@ -100,7 +90,6 @@ struct TParseContext
    bool arraySetMaxSize(TIntermSymbol*, TType*, int, bool, TSourceLoc);
    TOperator getConstructorOp( const TType&);
    TIntermNode* promoteFunctionArguments( TIntermNode *node, const TFunction* func);
-   struct TPragma contextPragma;
    TString HashErrMsg; 
    bool AfterEOF;
 };
