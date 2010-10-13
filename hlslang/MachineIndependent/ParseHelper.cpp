@@ -1529,7 +1529,7 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
                   unionArray->setFConst(0.0f);
 
                   // Add the constant to the aggregrate node
-                  TIntermConstantUnion *cUnion = intermediate.addConstantUnion(unionArray, TType(EbtFloat, EvqConst), tNode->getLine());                      
+                  TIntermConstantUnion *cUnion = intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());                      
                   tempAgg = intermediate.growAggregate ( tempAgg, cUnion, tNode->getLine()); 
                }
 

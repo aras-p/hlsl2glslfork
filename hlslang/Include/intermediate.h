@@ -326,6 +326,7 @@ public:
 
    TBasicType getBasicType() const { return type.getBasicType(); }
    TQualifier getQualifier() const { return type.getQualifier(); }
+   TPrecision getPrecision() const { return type.getPrecision(); }
    int getNominalSize() const { return type.getNominalSize(); }
    int getSize() const { return type.getInstanceSize(); }
    bool isMatrix() const { return type.isMatrix(); }
@@ -452,10 +453,7 @@ protected:
 class TIntermOperator : public TIntermTyped
 {
 public:
-   TOperator getOp()
-   {
-      return op;
-   }
+   TOperator getOp() const { return op; }
    bool modifiesState() const;
    bool isConstructor() const;
    virtual bool promote(TInfoSink&)
@@ -463,12 +461,8 @@ public:
       return true;
    }
 protected:
-   TIntermOperator(TOperator o) : TIntermTyped(TType(EbtFloat)), op(o)
-   {
-   }
-   TIntermOperator(TOperator o, TType& t) : TIntermTyped(t), op(o)
-   {
-   }   
+   TIntermOperator(TOperator o) : TIntermTyped(TType(EbtFloat, EbpUndefined)), op(o) {}
+   TIntermOperator(TOperator o, TType& t) : TIntermTyped(t), op(o) {}   
    TOperator op;
 };
 
@@ -568,13 +562,9 @@ class TIntermSelection : public TIntermTyped
 {
 public:
    TIntermSelection(TIntermTyped* cond, TIntermNode* trueB, TIntermNode* falseB) :
-   TIntermTyped(TType(EbtVoid)), condition(cond), trueBlock(trueB), falseBlock(falseB)
-   {
-   }
+	  TIntermTyped(TType(EbtVoid,EbpUndefined)), condition(cond), trueBlock(trueB), falseBlock(falseB) { }
    TIntermSelection(TIntermTyped* cond, TIntermNode* trueB, TIntermNode* falseB, const TType& type) :
-   TIntermTyped(type), condition(cond), trueBlock(trueB), falseBlock(falseB)
-   {
-   }
+	  TIntermTyped(type), condition(cond), trueBlock(trueB), falseBlock(falseB) { }
    virtual void traverse(TIntermTraverser*);
 
    TIntermNode* getCondition() const { return condition; }

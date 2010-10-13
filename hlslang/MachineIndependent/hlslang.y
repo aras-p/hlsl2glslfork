@@ -187,7 +187,7 @@ variable_identifier
         if (symbol == 0) {
             parseContext.error($1.line, "undeclared identifier", $1.string->c_str(), "");
             parseContext.recover();
-            TType type(EbtFloat);
+            TType type(EbtFloat, EbpUndefined);
             TVariable* fakeVariable = new TVariable($1.string, type);
             parseContext.symbolTable.insert(*fakeVariable);
             variable = fakeVariable;
@@ -222,17 +222,17 @@ primary_expression
     | INTCONSTANT {        
         constUnion *unionArray = new constUnion[1];
         unionArray->setIConst($1.i);
-        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EvqConst), $1.line);
+        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $1.line);
     }
     | FLOATCONSTANT {
         constUnion *unionArray = new constUnion[1];
         unionArray->setFConst($1.f);
-        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EvqConst), $1.line);
+        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
     }
     | BOOLCONSTANT {
         constUnion *unionArray = new constUnion[1];
         unionArray->setBConst($1.b);
-        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EvqConst), $1.line);
+        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $1.line);
     }
     | LEFT_PAREN expression RIGHT_PAREN {
         $$ = $2;
@@ -300,23 +300,23 @@ postfix_expression
         if ($$ == 0) {
             constUnion *unionArray = new constUnion[1];
             unionArray->setFConst(0.0f);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EvqConst), $2.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), $2.line);
         } else if ($1->isArray()) {
             if ($1->getType().getStruct())
                 $$->setType(TType($1->getType().getStruct(), $1->getType().getTypeName()));
             else
-                $$->setType(TType($1->getBasicType(), EvqTemporary, $1->getNominalSize(), $1->isMatrix()));
+                $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, $1->getNominalSize(), $1->isMatrix()));
                 
             if ($1->getType().getQualifier() == EvqConst)
                 $$->getTypePointer()->changeQualifier(EvqConst);
         } else if ($1->isMatrix() && $1->getType().getQualifier() == EvqConst)         
-            $$->setType(TType($1->getBasicType(), EvqConst, $1->getNominalSize()));     
+            $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqConst, $1->getNominalSize()));     
         else if ($1->isMatrix())            
-            $$->setType(TType($1->getBasicType(), EvqTemporary, $1->getNominalSize()));     
+            $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, $1->getNominalSize()));     
         else if ($1->isVector() && $1->getType().getQualifier() == EvqConst)          
-            $$->setType(TType($1->getBasicType(), EvqConst));     
+            $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqConst));
         else if ($1->isVector())       
-            $$->setType(TType($1->getBasicType(), EvqTemporary));
+            $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary));
         else
             $$->setType($1->getType()); 
     }
@@ -348,19 +348,19 @@ postfix_expression
                     $$ = $1;
                 }
                 else
-                    $$->setType(TType($1->getBasicType(), EvqConst, (int) (*$3.string).size()));
+                    $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqConst, (int) (*$3.string).size()));
             } else {
                 if (fields.num == 1) {
                     constUnion *unionArray = new constUnion[1];
                     unionArray->setIConst(fields.offsets[0]);
-                    TIntermTyped* index = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EvqConst), $3.line);
+                    TIntermTyped* index = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $3.line);
                     $$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, index, $2.line);
-                    $$->setType(TType($1->getBasicType()));
+                    $$->setType(TType($1->getBasicType(), $1->getPrecision()));
                 } else {
                     TString vectorString = *$3.string;
                     TIntermTyped* index = parseContext.intermediate.addSwizzle(fields, $3.line);                
                     $$ = parseContext.intermediate.addIndex(EOpVectorSwizzle, $1, index, $2.line);
-                    $$->setType(TType($1->getBasicType(),EvqTemporary, (int) vectorString.size()));  
+                    $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, (int) vectorString.size()));  
                 }
             }
         } else if ($1->isMatrix()) {
@@ -374,7 +374,7 @@ postfix_expression
             TString vectorString = *$3.string;
             TIntermTyped* index = parseContext.intermediate.addSwizzle(fields, $3.line);                
             $$ = parseContext.intermediate.addIndex(EOpMatrixSwizzle, $1, index, $2.line);
-            $$->setType(TType($1->getBasicType(),EvqTemporary, fields.num));
+            $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, fields.num));
                     
         } else if ($1->getBasicType() == EbtStruct) {
             bool fieldFound = false;
@@ -407,7 +407,7 @@ postfix_expression
                     } else {
                         constUnion *unionArray = new constUnion[1];
                         unionArray->setIConst(i);
-                        TIntermTyped* index = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EvqConst), $3.line);
+                        TIntermTyped* index = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $3.line);
                         $$ = parseContext.intermediate.addIndex(EOpIndexDirectStruct, $1, index, $2.line);                
                         $$->setType(*(*fields)[i].type);
                     }
@@ -437,7 +437,7 @@ postfix_expression
 
                // Create the appropriate constructor based on the number of ".x"'s there are in the selection field
                 TString vectorString = *$3.string;
-                $$->setType(TType($1->getBasicType(),EvqTemporary, (int) vectorString.size()));  
+                $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, (int) vectorString.size()));  
                 $$ = parseContext.constructBuiltIn ( &$$->getType(), parseContext.getConstructorOp($$->getType()),
                                                      $$, $1->getLine(), false);                               
             }           
@@ -491,14 +491,14 @@ function_call
 
             constUnion *unionArray = new constUnion[1];
             unionArray->setIConst($1.intermNode->getAsTyped()->getType().getArraySize());
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EvqConst), $1.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $1.line);
         } else if (op != EOpNull) {
             //
             // Then this should be a constructor.
             // Don't go through the symbol table for constructors.  
             // Their parameters will be verified algorithmically.
             //
-            TType type(EbtVoid);  // use this to get the type back
+            TType type(EbtVoid, EbpUndefined);  // use this to get the type back
             if (parseContext.constructorErrorCheck($1.line, $1.intermNode, *fnCall, op, &type)) {
                 $$ = 0;
             } else {
@@ -584,7 +584,7 @@ function_call
                 // Put on a dummy node for error recovery
                 constUnion *unionArray = new constUnion[1];
                 unionArray->setFConst(0.0f);
-                $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EvqConst), $1.line);
+                $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
                 parseContext.recover();
             }
         }
@@ -729,7 +729,7 @@ function_identifier
     | IDENTIFIER {
         if (parseContext.reservedErrorCheck($1.line, *$1.string)) 
             parseContext.recover();
-        TType type(EbtVoid);
+        TType type(EbtVoid, EbpUndefined);
 	const TString *mangled;
 	if ( *$1.string == "main")
 	    mangled = NewPoolTString("xlat_main");
@@ -741,7 +741,7 @@ function_identifier
     | FIELD_SELECTION {
         if (parseContext.reservedErrorCheck($1.line, *$1.string)) 
             parseContext.recover();
-        TType type(EbtVoid);
+        TType type(EbtVoid, EbpUndefined);
         TFunction *function = new TFunction($1.string, type);
         $$ = function;
     }
@@ -840,7 +840,7 @@ unary_expression
         TFunction *function = new TFunction(&tempString, type, op);
         TParameter param = { 0, 0, new TType($4->getType()) };
         function->addParameter(param);
-        TType type2(EbtVoid);  // use this to get the type back
+        TType type2(EbtVoid, EbpUndefined);  // use this to get the type back
         if (parseContext.constructorErrorCheck($2.line, $4, *function, op, &type2)) {
             $$ = 0;
         } else {
@@ -949,7 +949,7 @@ relational_expression
             parseContext.recover();
             constUnion *unionArray = new constUnion[1];
             unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EvqConst), $2.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
         }
     }
     | relational_expression RIGHT_ANGLE shift_expression  { 
@@ -959,7 +959,7 @@ relational_expression
             parseContext.recover();
             constUnion *unionArray = new constUnion[1];
             unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EvqConst), $2.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
         }
     }
     | relational_expression LE_OP shift_expression  { 
@@ -969,7 +969,7 @@ relational_expression
             parseContext.recover();
             constUnion *unionArray = new constUnion[1];
             unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EvqConst), $2.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
         }
     }
     | relational_expression GE_OP shift_expression  { 
@@ -979,7 +979,7 @@ relational_expression
             parseContext.recover();
             constUnion *unionArray = new constUnion[1];
             unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EvqConst), $2.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
         }
     }
     ;
@@ -993,7 +993,7 @@ equality_expression
             parseContext.recover();
             constUnion *unionArray = new constUnion[1];
             unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EvqConst), $2.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
         } else if (($1->isArray() || $3->isArray()))
             parseContext.recover();
     }
@@ -1004,7 +1004,7 @@ equality_expression
             parseContext.recover();
             constUnion *unionArray = new constUnion[1];
             unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EvqConst), $2.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
         } else if (($1->isArray() || $3->isArray()))
             parseContext.recover();
     }
@@ -1058,7 +1058,7 @@ logical_and_expression
             parseContext.recover();
             constUnion *unionArray = new constUnion[1];
             unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EvqConst), $2.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
         }
     }
     ;
@@ -1072,7 +1072,7 @@ logical_xor_expression
             parseContext.recover();
             constUnion *unionArray = new constUnion[1];
             unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EvqConst), $2.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
         }
     }
     ;
@@ -1086,7 +1086,7 @@ logical_or_expression
             parseContext.recover();
             constUnion *unionArray = new constUnion[1];
             unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EvqConst), $2.line);
+            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
         }
     }
     ;
@@ -2063,18 +2063,18 @@ struct_declarator_list
     
 struct_declarator
     : IDENTIFIER {
-        $$.type = new TType(EbtVoid);
+        $$.type = new TType(EbtVoid, EbpUndefined);
         $$.line = $1.line;
         $$.type->setFieldName(*$1.string);
     }
     | IDENTIFIER COLON IDENTIFIER {
-        $$.type = new TType(EbtVoid);
+        $$.type = new TType(EbtVoid, EbpUndefined);
         $$.line = $1.line;
         $$.type->setFieldName(*$1.string);
         $$.type->setSemantic(*$3.string);
     }
     | IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET {
-        $$.type = new TType(EbtVoid);
+        $$.type = new TType(EbtVoid, EbpUndefined);
         $$.line = $1.line;
         $$.type->setFieldName(*$1.string);
         
@@ -2084,7 +2084,7 @@ struct_declarator
         $$.type->setArraySize(size);
     }
     | IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET COLON IDENTIFIER {
-        $$.type = new TType(EbtVoid);
+        $$.type = new TType(EbtVoid, EbpUndefined);
         $$.line = $1.line;
         $$.type->setFieldName(*$1.string);
         
@@ -2569,7 +2569,7 @@ sampler_initializer
 : SAMPLERSTATE LEFT_BRACE sampler_init_list RIGHT_BRACE {
     constUnion *cUnion = new constUnion[1];
     cUnion[0].setFConst(0.0f);
-    $$ = parseContext.intermediate.addConstantUnion( cUnion, TType(EbtFloat, EvqConst, 1), $1.line);
+    $$ = parseContext.intermediate.addConstantUnion( cUnion, TType(EbtFloat, EbpUndefined, EvqConst, 1), $1.line);
 }
 | SAMPLERSTATE LEFT_BRACE RIGHT_BRACE {
 }

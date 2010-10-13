@@ -40,6 +40,7 @@ class TPublicType
 public:
    TBasicType type;
    TQualifier qualifier;
+   TPrecision precision;
    int size;          // size of vector or matrix, not size of array
    bool matrix;
    bool array;
@@ -51,6 +52,7 @@ public:
    {
       type = bt;
       qualifier = q;
+	  precision = EbpUndefined;
       size = 1;
       matrix = false;
       array = false;
@@ -93,14 +95,14 @@ public:
    POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
 
    explicit TType() { }
-   explicit TType(TBasicType t, TQualifier q = EvqTemporary, int s = 1, bool m = false, bool a = false) :
-      type(t), qualifier(q), size(s), matrix(m), array(a), arraySize(0),
+   explicit TType(TBasicType t, TPrecision p, TQualifier q = EvqTemporary, int s = 1, bool m = false, bool a = false) :
+      type(t), precision(p), qualifier(q), size(s), matrix(m), array(a), arraySize(0),
       structure(0), structureSize(0), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), typeName(0),
       semantic(0)
    {
    }
    explicit TType(const TPublicType &p) :
-      type(p.type), qualifier(p.qualifier), size(p.size), matrix(p.matrix), array(p.array), arraySize(p.arraySize), 
+      type(p.type), precision(p.precision), qualifier(p.qualifier), size(p.size), matrix(p.matrix), array(p.array), arraySize(p.arraySize), 
       structure(0), structureSize(0), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), typeName(0),
       semantic(0)
    {
@@ -110,8 +112,8 @@ public:
          typeName = NewPoolTString(p.userDef->getTypeName().c_str());
       }
    }
-   explicit TType(TTypeList* userDef, const TString& n) :
-      type(EbtStruct), qualifier(EvqTemporary), size(1), matrix(false), array(false), arraySize(0),
+   explicit TType(TTypeList* userDef, const TString& n, TPrecision p = EbpUndefined) :
+      type(EbtStruct), precision(p), qualifier(EvqTemporary), size(1), matrix(false), array(false), arraySize(0),
       structure(userDef), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), semantic(0)
    {
       typeName = NewPoolTString(n.c_str());
@@ -122,6 +124,7 @@ public:
    void copyType(const TType& copyOf, TStructureMap& remapper)
    {
       type = copyOf.type;
+	  precision = copyOf.precision;
       qualifier = copyOf.qualifier;
       size = copyOf.size;
       matrix = copyOf.matrix;
@@ -213,7 +216,10 @@ public:
    }
 
    TBasicType getBasicType() const { return type; }
+   TPrecision getPrecision() const { return precision; }
    TQualifier getQualifier() const { return qualifier; }
+
+   void setPrecision(TPrecision p) { precision = p; }
    void changeQualifier(TQualifier q) { qualifier = q; }
 
    // One-dimensional size of single instance type
@@ -314,6 +320,7 @@ public:
       return !operator==(right);
    }
    const char* getBasicString() const { return TType::getBasicString(type); }
+   const char* getPrecisionString() const { return ::getPrecisionString(precision); }
    const char* getQualifierString() const { return ::getQualifierString(qualifier); }
    TString getCompleteString() const;
 
@@ -329,6 +336,7 @@ public:
 private:
    int getStructSize() const;
 
+   TPrecision precision;
    TBasicType type      : 6;
    TQualifier qualifier : 7;
    int size             : 8; // size of vector or matrix, not size of array

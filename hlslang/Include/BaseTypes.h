@@ -7,6 +7,30 @@
 #define _BASICTYPES_INCLUDED_
 
 //
+// Precision qualifiers
+//
+enum TPrecision
+{
+	// These need to be kept sorted
+	EbpUndefined,
+	EbpLow,
+	EbpMedium,
+	EbpHigh,
+};
+
+inline const char* getPrecisionString(TPrecision p)
+{
+	switch(p)
+	{
+	case EbpHigh:		return "highp";		break;
+	case EbpMedium:		return "mediump";	break;
+	case EbpLow:		return "lowp";		break;
+	default:			return "mediump";   break;   // Safest fallback
+	}
+}
+
+
+//
 // Basic type.  Arrays, vectors, etc., are orthogonal to this.
 //
 enum TBasicType

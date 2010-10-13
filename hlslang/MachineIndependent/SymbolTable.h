@@ -138,7 +138,7 @@ class TFunction : public TSymbol
 public:
    TFunction(TOperator o) :
         TSymbol(0),
-        returnType(TType(EbtVoid)),
+        returnType(TType(EbtVoid, EbpUndefined)),
         op(o),
         defined(false) { }
    TFunction(const TString *name, TType& retType, TOperator tOp = EOpNull) : 
