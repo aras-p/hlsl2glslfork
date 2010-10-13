@@ -59,7 +59,7 @@ public:
    TInfoSink& getInfoSink() { return infoSink; }
 
    /// Main function that initiates code generation for the shader.  
-   bool link(HlslCrossCompiler*, const char* entry);
+   bool link(HlslCrossCompiler*, const char* entry, bool usePrecision);
 
    /// Strip the semantic string of any modifiers (e.g. _centroid)
    std::string stripSemanticModifier(const std::string &semantic, bool bWarn);
@@ -93,8 +93,8 @@ protected:
    bool addCalledFunctions( GlslFunction *func, FunctionSet& funcSet, std::vector<GlslFunction*> &funcList);
 
    /// Get the GLSL name, constructor type and padding for a given argument 
-   bool getArgumentData( const std::string &name, const std::string &semantic, EGlslSymbolType type,
-                               EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset = 0);
+   bool getArgumentData2( const std::string &name, const std::string &semantic, EGlslSymbolType type,
+                               EClassifier c, std::string &outName, std::string &ctor, int &pad, TPrecision prec, int semanticOffset);
 
    /// Get the GLSL name, constructor type and padding for a given symbol
    bool getArgumentData( GlslSymbol* sym, EClassifier c, std::string &outName,

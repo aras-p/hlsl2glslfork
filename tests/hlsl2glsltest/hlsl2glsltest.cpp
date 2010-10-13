@@ -211,7 +211,11 @@ static bool CheckGLSL (bool vertex, const char* source)
 	return res;
 }
 
-static bool TestFile (bool vertex, const std::string& inputPath, const std::string& outputPath, bool doCheckGLSL)
+static bool TestFile (bool vertex,
+	const std::string& inputPath,
+	const std::string& outputPath,
+	bool usePrecision,
+	bool doCheckGLSL)
 {
 	std::string input;
 	if (!ReadStringFromFile (inputPath.c_str(), input))
@@ -226,7 +230,12 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 
 	bool res = true;
 
-	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, kDumpShaderAST ? ETranslateOpIntermediate : 0);
+	int options = 0;
+	if (kDumpShaderAST)
+		options |= ETranslateOpIntermediate;
+	if (usePrecision)
+		options |= ETranslateOpUsePrecision;
+	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, options);
 	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 	if (kDumpShaderAST)
 	{
@@ -245,7 +254,7 @@ static bool TestFile (bool vertex, const std::string& inputPath, const std::stri
 		};
 		Hlsl2Glsl_SetUserAttributeNames (parser, kAttribSemantic, kAttribString, 1);
 		Hlsl2Glsl_UseUserVaryings (parser, true);
-		int translateOk = Hlsl2Glsl_Translate (parser, "main");
+		int translateOk = Hlsl2Glsl_Translate (parser, "main", options);
 		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 		if (translateOk)
 		{
@@ -315,7 +324,20 @@ int main (int argc, const char** argv)
 			std::string inname = inputFiles[i];
 			printf ("test %s\n", inname.c_str());
 			std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
-			bool ok = TestFile (type==0, testFolder + "/" + inname, testFolder + "/" + outname, hasOpenGL);
+			std::string outnameES = inname.substr (0,inname.size()-7) + "-outES.txt";
+			bool ok = TestFile (type==0,
+				testFolder + "/" + inname,
+				testFolder + "/" + outname,
+				false,
+				hasOpenGL);
+			if (ok)
+			{
+				ok = TestFile (type==0,
+					testFolder + "/" + inname,
+					testFolder + "/" + outnameES,
+					true,
+					false);
+			}
 			if (!ok)
 			{
 				++errors;

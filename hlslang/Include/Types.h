@@ -182,19 +182,6 @@ public:
       return newType;
    }
 
-   void setType(TBasicType t, int s, bool m, bool a, int aS = 0)
-   {
-      type = t; size = s; matrix = m; array = a; arraySize = aS;
-   }
-   void setType(TBasicType t, int s, bool m, TType* userDef = 0)
-   {
-      type = t; 
-      size = s; 
-      matrix = m; 
-      if (userDef)
-         structure = userDef->getStruct();
-      // leave array information intact.
-   }
    void setTypeName(const TString& n)
    {
       typeName = NewPoolTString(n.c_str());
@@ -219,11 +206,13 @@ public:
    TPrecision getPrecision() const { return precision; }
    TQualifier getQualifier() const { return qualifier; }
 
+   void setBasicType(TBasicType t) { type = t; }
    void setPrecision(TPrecision p) { precision = p; }
    void changeQualifier(TQualifier q) { qualifier = q; }
 
    // One-dimensional size of single instance type
    int getNominalSize() const { return size; }  
+   void setNominalSize(int s) { size = s; }
 
    // Full-dimensional size of single instance of type
    int getInstanceSize() const  
@@ -235,6 +224,8 @@ public:
    }
 
    bool isMatrix() const { return matrix ? true : false; }
+   void setMatrix(bool m) { matrix = m; }
+
    bool isArray() const { return array ? true : false; }
    int getArraySize() const { return arraySize; }
    void setArraySize(int s) { array = true; arraySize = s; }
@@ -264,10 +255,8 @@ public:
       default:                   return "unknown type";
       }
    }
-   TTypeList* getStruct()
-   {
-      return structure;
-   }
+   TTypeList* getStruct() const { return structure; }
+   void setStruct(TTypeList* s) { structure = s; }
 
    int getObjectSize() const
    {
@@ -285,8 +274,6 @@ public:
 
       return totalSize;
    }
-
-   TTypeList* getStruct() const { return structure; }
 
    TString& getMangledName()
    {
@@ -320,7 +307,6 @@ public:
       return !operator==(right);
    }
    const char* getBasicString() const { return TType::getBasicString(type); }
-   const char* getPrecisionString() const { return ::getPrecisionString(precision); }
    const char* getQualifierString() const { return ::getQualifierString(qualifier); }
    TString getCompleteString() const;
 

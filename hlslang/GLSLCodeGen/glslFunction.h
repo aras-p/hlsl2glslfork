@@ -63,7 +63,8 @@ public:
    const std::string &getName() { return name; }
    const std::string &getMangledName() { return mangledName; }
 
-   EGlslSymbolType getReturnType() { return returnType; }   
+   EGlslSymbolType getReturnType() { return returnType; }
+   TPrecision getPrecision() const { return precision; }
    const std::string& getSemantic() const { return semantic; }    
    GlslStruct* getStruct() { return structPtr; }   
    void setStruct( GlslStruct *s ) { structPtr = s;}

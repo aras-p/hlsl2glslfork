@@ -2067,17 +2067,23 @@ struct_declaration
             //
             // Careful not to replace already know aspects of type, like array-ness
             //
-            (*$$)[i].type->setType($1.type, $1.size, $1.matrix, $1.userDef);
-
+            TType* type = (*$$)[i].type;
+            type->setBasicType($1.type);
+            type->setPrecision($1.precision);
+            type->setNominalSize($1.size);
+            type->setMatrix($1.matrix);
+            
             // don't allow arrays of arrays
-            if ((*$$)[i].type->isArray()) {
+            if (type->isArray()) {
                 if (parseContext.arrayTypeErrorCheck($1.line, $1))
                     parseContext.recover();
             }
             if ($1.array)
-                (*$$)[i].type->setArraySize($1.arraySize);
-            if ($1.userDef)
-                (*$$)[i].type->setTypeName($1.userDef->getTypeName());
+                type->setArraySize($1.arraySize);
+            if ($1.userDef) {
+                type->setStruct($1.userDef->getStruct());
+                type->setTypeName($1.userDef->getTypeName());
+            }
         }
     }
     ;

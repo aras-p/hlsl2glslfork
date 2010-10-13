@@ -16,12 +16,8 @@ void TSamplerTraverser::traverseSymbol( TIntermSymbol *node, TIntermTraverser *i
    if (sit->typing && sit->id == node->getId())
    {
       TType* type = node->getTypePointer();
-
       // Technically most of these should never happen
-      if ( type->isArray())
-         type->setType( sit->sampType, type->getNominalSize(), type->isMatrix(), true, type->getArraySize());
-      else
-         type->setType( sit->sampType, type->getNominalSize(), type->isMatrix(), false);
+	  type->setBasicType (sit->sampType);
    }
 }
 

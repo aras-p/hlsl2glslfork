@@ -33,6 +33,16 @@ const char typeString[EgstTypeCount][32] =
    "struct"
 };
 
+const char* getGLSLPrecisiontring (TPrecision p)
+{
+	switch (p) {
+	case EbpLow: return "lowp ";
+	case EbpMedium: return "mediump ";
+	case EbpHigh: return "highp ";
+	case EbpUndefined: return "";
+	default: assert(false); return "";
+	}
+}
 
 /// Outputs the type of the symbol to the output buffer
 ///    \param out
@@ -43,13 +53,7 @@ const char typeString[EgstTypeCount][32] =
 ///       If it is a structure, a pointer to the structure to write out
 void writeType (std::stringstream &out, EGlslSymbolType type, GlslStruct *s, TPrecision precision)
 {
-	switch (precision) {
-	case EbpLow: out << "lowp "; break;
-	case EbpMedium: out << "mediump "; break;
-	case EbpHigh: out << "highp "; break;
-	case EbpUndefined: break;
-	default: assert(false);
-	}
+	out << getGLSLPrecisiontring (precision);
 
    switch (type)
    {

@@ -161,7 +161,7 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 
 
 /// After parsing a HLSL shader, do the final translation to GLSL.
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry );
+SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry, int options );
 
 
 /// After translating HLSL shader(s), retrieve the translated GLSL source.

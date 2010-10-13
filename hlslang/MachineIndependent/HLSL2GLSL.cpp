@@ -298,7 +298,7 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 }
 
 
-int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry )
+int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry, int options )
 {
    if (handle == 0)
       return 0;
@@ -311,7 +311,7 @@ int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry )
 		return 0;
 	}
 
-   bool ret = compiler->GetLinker()->link(compiler, entry);
+   bool ret = compiler->GetLinker()->link(compiler, entry, (options & ETranslateOpUsePrecision) ? true : false);
 
    return ret ? 1 : 0;
 }

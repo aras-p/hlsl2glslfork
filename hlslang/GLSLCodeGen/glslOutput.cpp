@@ -1309,7 +1309,7 @@ bool TGlslOutputTraverser::traverseBranch( bool preVisit, TIntermBranch *node,  
 }
 
 
-GlslStruct *TGlslOutputTraverser::createStructFromType( TType *type )
+GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
 {
    GlslStruct *s = 0;
    std::string structName = type->getTypeName().c_str();
@@ -1351,6 +1351,7 @@ GlslStruct *TGlslOutputTraverser::createStructFromType( TType *type )
 
          m.type = translateType( it->type);
          m.arraySize = it->type->isArray() ? it->type->getArraySize() : 0;
+		 m.precision = m_UsePrecision ? it->type->getPrecision() : EbpUndefined;
          s->addMember(m);
       }
 

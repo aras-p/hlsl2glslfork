@@ -179,8 +179,8 @@ HlslLinker::~HlslLinker()
 ///   When using an array variable bound to a semantic, this is the array offset
 /// \return 
 ///   True if argument data was retrieved succesfully, false otherwise.
-bool HlslLinker::getArgumentData( const std::string &name, const std::string &semantic, EGlslSymbolType type,
-								 EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset)
+bool HlslLinker::getArgumentData2( const std::string &name, const std::string &semantic, EGlslSymbolType type,
+								 EClassifier c, std::string &outName, std::string &ctor, int &pad, TPrecision prec, int semanticOffset)
 {
 	int size;
 	EGlslSymbolType base = EgstVoid;
@@ -225,7 +225,8 @@ bool HlslLinker::getArgumentData( const std::string &name, const std::string &se
 	if ( c != EClassUniform)
 	{
 
-		ctor = getTypeString( (EGlslSymbolType)((int)base + size - 1)); //default constructor
+		ctor = getGLSLPrecisiontring (prec);
+		ctor += getTypeString( (EGlslSymbolType)((int)base + size - 1)); //default constructor
 		pad = 0;
 
 		switch (c)
@@ -299,10 +300,14 @@ bool HlslLinker::getArgumentData( const std::string &name, const std::string &se
 			if ( sem != EAttrSemDepth)
 			{
 				pad = 4 - size;
-				ctor = "vec4";
+				ctor = getGLSLPrecisiontring (prec);
+				ctor += "vec4";
 			}
 			else
-				ctor = "float";
+			{
+				ctor = getGLSLPrecisiontring (prec);
+				ctor += "float";
+			}
 			break;
 
 		case EClassUniform:
@@ -342,8 +347,9 @@ bool HlslLinker::getArgumentData( GlslSymbol* sym, EClassifier c, std::string &o
 	const std::string &name = sym->getName();
 	const std::string &semantic = sym->getSemantic();
 	EGlslSymbolType type = sym->getType();
+	TPrecision prec = sym->getPrecision();
 
-	return getArgumentData( name, semantic, type, c, outName, ctor, pad);
+	return getArgumentData2( name, semantic, type, c, outName, ctor, pad, prec, 0);
 }
 
 
@@ -588,7 +594,7 @@ static const char* kShaderTypeNames[2] = { "Vertex", "Fragment" };
 
 
 
-bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
+bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool usePrecision)
 {
 	std::vector<GlslFunction*> globalList;
 	std::vector<GlslFunction*> functionList;
@@ -689,7 +695,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 	{
 		for (std::set<TOperator>::iterator it = libFunctions.begin(); it != libFunctions.end(); it++)
 		{
-			const std::string &func = getHLSLSupportCode( *it);
+			const std::string &func = getHLSLSupportCode(*it);
 			if (func.size())
 				shader << func << "\n";
 		}
@@ -799,7 +805,9 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 		{
 			if ( retType != EgstVoid)
 			{
-				preamble << "    " << getTypeString(retType) << " xl_retval;\n";
+				preamble << "    ";
+				writeType (preamble, retType, NULL, usePrecision?funcMain->getPrecision():EbpUndefined);
+				preamble << " xl_retval;\n";
 			}
 		}
 
@@ -861,7 +869,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 						else
 						{
 							preamble << "    ";
-							preamble << getTypeString(sym->getType()) << " xlt_" << sym->getName() << " = ";
+							writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
+							preamble << " xlt_" << sym->getName() << " = ";
 							preamble << ctor << "(" << name;
 							for (int ii = 0; ii<pad; ii++)
 								preamble << ", 0.0";
@@ -936,8 +945,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 
 						for ( int arrayIndex = 0; arrayIndex <  numArrayElements; arrayIndex++ )
 						{
-							if ( getArgumentData( current.name, current.semantic, current.type,
-								lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, arrayIndex ) )
+							if ( getArgumentData2( current.name, current.semantic, current.type,
+								lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, current.precision, arrayIndex ) )
 							{
 
 								preamble << "    ";
@@ -1027,7 +1036,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 						if ( sym->getQualifier() != EqtInOut )
 						{
 							preamble << "    ";
-							preamble << getTypeString(sym->getType()) << " xlt_" << sym->getName() << ";\n";                     
+							writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
+							preamble << " xlt_" << sym->getName() << ";\n";                     
 						}
 						
 						if (lang == EShLangVertex) // deal with varyings
@@ -1076,7 +1086,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 						std::string name, ctor;
 						int pad;
 
-						if ( getArgumentData( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad) )
+						if ( getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, current.precision, 0) )
 						{
 							postamble << "    ";
 							postamble << name << " = " << ctor;
@@ -1103,8 +1113,9 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 				break;
 
 			case EqtUniform:
-				uniform << "uniform " << getTypeString(sym->getType()) << " ";
-				uniform << "xlu_" << sym->getName() << ";\n";
+				uniform << "uniform ";
+				writeType (uniform, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
+				uniform << " xlu_" << sym->getName() << ";\n";
 				call << "xlu_" << sym->getName();
 				break;
 
@@ -1127,8 +1138,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 				std::string name, ctor;
 				int pad;
 
-				if ( getArgumentData( "", funcMain->getSemantic(), retType, lang==EShLangVertex ? EClassVarOut : EClassRes,
-					name, ctor, pad) )
+				if ( getArgumentData2( "", funcMain->getSemantic(), retType, lang==EShLangVertex ? EClassVarOut : EClassRes,
+					name, ctor, pad, funcMain->getPrecision(), 0) )
 				{
 
 					postamble << "    ";
@@ -1175,7 +1186,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc)
 					for ( int arrayIndex = 0; arrayIndex < numArrayElements; arrayIndex++ )
 					{
 
-						if ( getArgumentData( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, arrayIndex) )
+						if ( getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, current.precision, arrayIndex) )
 						{
 							postamble << "    ";
 							postamble << name;                                                            

@@ -58,8 +58,8 @@ class GlslStruct;
 /// Outputs the type of the symbol to the output buffer
 void writeType(std::stringstream &out, EGlslSymbolType type, GlslStruct *s, TPrecision precision);
 
-/// Gets the type as a string
 const char *getTypeString( const EGlslSymbolType t );
+const char *getGLSLPrecisiontring (TPrecision prec);
 
 /// Translates the type to a GLSL symbol type
 EGlslSymbolType translateType( const TType *type );
