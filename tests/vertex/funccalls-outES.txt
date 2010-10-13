@@ -1,0 +1,48 @@
+struct v2f {
+    highp vec4 pos;
+    highp float fog;
+    highp vec2 uv;
+    highp vec4 color;
+};
+struct a2v {
+    highp vec4 pos;
+    highp vec2 uv;
+    highp vec3 normal;
+    highp vec4 color;
+};
+uniform highp mat4 mvp;
+highp vec4 DoPosMul( in highp vec4 pos, in highp mat4 mvp );
+highp vec4 DoColor( in highp vec4 color, in highp vec3 normal );
+v2f xlat_main( in a2v v );
+highp vec4 DoPosMul( in highp vec4 pos, in highp mat4 mvp ) {
+    return ( mvp * pos );
+}
+highp vec4 DoColor( in highp vec4 color, in highp vec3 normal ) {
+    highp vec4 c;
+    c = color;
+    c.xyz  += normal;
+    return c;
+}
+v2f xlat_main( in a2v v ) {
+    v2f o;
+    o.pos = DoPosMul( v.pos, mvp);
+    o.color = DoColor( v.color, v.normal);
+    o.uv = v.uv;
+    return o;
+}
+varying highp float xlv_FOG;
+varying highp vec2 xlv_TEXCOORD0;
+varying highp vec4 xlv_COLOR;
+void main() {
+    v2f xl_retval;
+    a2v xlt_v;
+    xlt_v.pos = highp vec4( gl_Vertex);
+    xlt_v.uv = highp vec2( gl_MultiTexCoord0);
+    xlt_v.normal = highp vec3( gl_Normal);
+    xlt_v.color = highp vec4( gl_Color);
+    xl_retval = xlat_main( xlt_v);
+    gl_Position = highp vec4( xl_retval.pos);
+    xlv_FOG = highp float( xl_retval.fog);
+    xlv_TEXCOORD0 = highp vec2( xl_retval.uv);
+    xlv_COLOR = highp vec4( xl_retval.color);
+}

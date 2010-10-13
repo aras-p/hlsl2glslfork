@@ -1,0 +1,9 @@
+mediump vec4 xlat_main( in highp vec4 pos );
+mediump vec4 xlat_main( in highp vec4 pos ) {
+    return pos;
+}
+void main() {
+    mediump vec4 xl_retval;
+    xl_retval = xlat_main( highp vec4(0.0));
+    gl_FragData[0] = mediump vec4( xl_retval);
+}

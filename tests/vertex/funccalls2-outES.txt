@@ -1,0 +1,43 @@
+struct v2f {
+    highp vec4 pos;
+    highp vec4 color;
+};
+struct a2v {
+    highp vec4 pos;
+};
+uniform highp vec4 _LightColor;
+uniform highp vec3 _LightPos;
+uniform highp mat4 mvp;
+highp float ComputeShadow( in highp vec3 pos );
+highp float ComputeAtten( in highp vec3 pos, in highp vec3 lightPos );
+highp vec4 ComputeSomeLighting( in highp vec3 pos );
+v2f xlat_main( in a2v v );
+highp float ComputeShadow( in highp vec3 pos ) {
+    return pow( pos.x , 4.00000);
+}
+highp float ComputeAtten( in highp vec3 pos, in highp vec3 lightPos ) {
+    return (distance( pos, lightPos) * ComputeShadow( pos));
+}
+highp vec4 ComputeSomeLighting( in highp vec3 pos ) {
+    highp vec4 res;
+    res = _LightColor;
+    res *= ComputeAtten( pos, _LightPos);
+    return res;
+}
+v2f xlat_main( in a2v v ) {
+    highp vec4 pos;
+    v2f o;
+    pos = ( mvp * v.pos );
+    o.pos = pos;
+    o.color = ComputeSomeLighting( v.pos.xyz );
+    return o;
+}
+varying highp vec4 xlv_COLOR;
+void main() {
+    v2f xl_retval;
+    a2v xlt_v;
+    xlt_v.pos = highp vec4( gl_Vertex);
+    xl_retval = xlat_main( xlt_v);
+    gl_Position = highp vec4( xl_retval.pos);
+    xlv_COLOR = highp vec4( xl_retval.color);
+}

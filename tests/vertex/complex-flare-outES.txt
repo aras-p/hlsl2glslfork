@@ -1,0 +1,41 @@
+struct v2f_vertex_lit {
+    highp vec2 uv;
+    highp vec4 diff;
+    highp vec4 spec;
+};
+struct v2f_img {
+    highp vec4 pos;
+    highp vec2 uv;
+};
+struct appdata_img {
+    highp vec4 vertex;
+    highp vec2 texcoord;
+};
+struct appdata_t {
+    highp vec4 vertex;
+    highp vec4 color;
+    highp vec2 texcoord;
+};
+uniform highp vec4 _FlareTexture_ST;
+uniform highp mat4 glstate_matrix_mvp;
+void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, out highp vec2 otexcoord );
+void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, out highp vec2 otexcoord ) {
+    overtex = ( glstate_matrix_mvp * v.vertex );
+    ocolor = v.color;
+    otexcoord = ((v.texcoord.xy  * _FlareTexture_ST.xy ) + _FlareTexture_ST.zw );
+}
+varying highp vec4 xlv_COLOR;
+varying highp vec2 xlv_TEXCOORD0;
+void main() {
+    appdata_t xlt_v;
+    xlt_v.vertex = highp vec4( gl_Vertex);
+    xlt_v.color = highp vec4( gl_Color);
+    xlt_v.texcoord = highp vec2( gl_MultiTexCoord0);
+    highp vec4 xlt_overtex;
+    highp vec4 xlt_ocolor;
+    highp vec2 xlt_otexcoord;
+    xlat_main( xlt_v, xlt_overtex, xlt_ocolor, xlt_otexcoord);
+    gl_Position = highp vec4( xlt_overtex);
+    xlv_COLOR = highp vec4( xlt_ocolor);
+    xlv_TEXCOORD0 = highp vec2( xlt_otexcoord);
+}
