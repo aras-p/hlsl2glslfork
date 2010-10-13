@@ -160,25 +160,6 @@ HlslLinker::~HlslLinker()
 
 
 
-/// Get the GLSL name, constructor type and padding for a given argument 
-/// \param name
-///   The name of the symbol
-/// \param semantic
-///   The HLSL semantic for the symbol
-/// \param type
-///   The GLSL type of the symbol
-/// \param c
-///   The classifier for the symbol (e.g. attribute, varying, etc.)
-/// \param outName
-///   The final name to use for the symbol in the output GLSL code
-/// \param ctor
-///   The constructor to use for creating the GLSL symbol
-/// \param pad
-///   Any padding required in constructing the symbol
-/// \param semanticOffset
-///   When using an array variable bound to a semantic, this is the array offset
-/// \return 
-///   True if argument data was retrieved succesfully, false otherwise.
 bool HlslLinker::getArgumentData2( const std::string &name, const std::string &semantic, EGlslSymbolType type,
 								 EClassifier c, std::string &outName, std::string &ctor, int &pad, TPrecision prec, int semanticOffset)
 {
@@ -328,19 +309,6 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 }
 
 
-/// Get the GLSL name, constructor type and padding for a given symbol
-/// \param symbol
-///   The symbol to get data for
-/// \param c
-///   The classifier for the symbol (e.g. attribute, varying, etc.)
-/// \param outName
-///   The final name to use for the symbol in the output GLSL code
-/// \param ctor
-///   The constructor to use for creating the GLSL symbol
-/// \param pad
-///   Any padding required in constructing the symbol
-/// \return 
-///   True if argument data was retrieved succesfully, false otherwise.
 bool HlslLinker::getArgumentData( GlslSymbol* sym, EClassifier c, std::string &outName,
 								 std::string &ctor, int &pad)
 {
@@ -354,14 +322,6 @@ bool HlslLinker::getArgumentData( GlslSymbol* sym, EClassifier c, std::string &o
 
 
 
-/// If the user elects to use user attributes rather than built-ins, this function will set the user
-/// attribute name the user wishes to use for the semantic passed in.
-/// \param eSemantic
-///   The semantic to set to a user attribute name
-/// \param pName
-///   The name to use for the user attribute 
-/// \return
-///   True if the semantic value is valid, false otherwise.
 bool HlslLinker::setUserAttribName ( EAttribSemantic eSemantic, const char *pName )
 {
 	if ( eSemantic >= EAttrSemPosition && eSemantic <= EAttrSemDepth )
@@ -381,13 +341,8 @@ bool HlslLinker::setUserAttribName ( EAttribSemantic eSemantic, const char *pNam
 }
 
 
-/// Strip the semantic string of any modifiers (e.g. _centroid)
-/// \param semantic
-///   String of HLSL semantic for variable
-/// \param bWarn
-///   Boolean value of whether to add a warning to the output log about the existence of the semantic
-///   modifier.
-/// \return The semantic name with the modifier stripped
+
+// Strip the semantic string of any modifiers (e.g. _centroid)
 std::string HlslLinker::stripSemanticModifier( const std::string &semantic, bool bWarn ) 
 {
 	std::string newSemantic = semantic;
@@ -406,10 +361,8 @@ std::string HlslLinker::stripSemanticModifier( const std::string &semantic, bool
 }
 
 
-/// Determine the GLSL attribute semantic for a given HLSL semantic
-/// \param semantic
-///   String of HLSL semantic for variable
-/// \return The GLSL attribute semantic associated with the HLSL smenatic, or none if not matched
+
+// Determine the GLSL attribute semantic for a given HLSL semantic
 EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic )
 {
 
