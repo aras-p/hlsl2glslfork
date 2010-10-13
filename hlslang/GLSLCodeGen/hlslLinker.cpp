@@ -361,106 +361,52 @@ std::string HlslLinker::stripSemanticModifier( const std::string &semantic, bool
 }
 
 
+struct AttrSemanticMapping {
+	const char* name;
+	EAttribSemantic sem;
+};
+
+static AttrSemanticMapping kAttributeSemantic[] = {	
+	{ "position", EAttrSemPosition },
+	{ "position0", EAttrSemPosition },
+	{ "vpos", EAttrSemVPos },
+	{ "vface", EAttrSemVFace },
+	{ "normal", EAttrSemNormal },
+	{ "normal0", EAttrSemNormal },
+	{ "tangent", EAttrSemTangent },
+	{ "tangent0", EAttrSemTangent },
+	{ "binormal", EAttrSemBinormal },
+	{ "binormal0", EAttrSemBinormal },
+	{ "blendweight", EAttrSemBlendWeight },
+	{ "blendweight0", EAttrSemBlendWeight },
+	{ "blendindices", EAttrSemBlendIndices },
+	{ "blendindices0", EAttrSemBlendIndices },
+	{ "color", EAttrSemColor0 },
+	{ "color0", EAttrSemColor0 },
+	{ "color1", EAttrSemColor1 },
+	{ "color2", EAttrSemColor2 },
+	{ "color3", EAttrSemColor3 },
+	{ "texcoord", EAttrSemTex0 },
+	{ "texcoord0", EAttrSemTex0 },
+	{ "texcoord1", EAttrSemTex1 },
+	{ "texcoord2", EAttrSemTex2 },
+	{ "texcoord3", EAttrSemTex3 },
+	{ "texcoord4", EAttrSemTex4 },
+	{ "texcoord5", EAttrSemTex5 },
+	{ "texcoord6", EAttrSemTex6 },
+	{ "texcoord7", EAttrSemTex7 },
+	{ "texcoord8", EAttrSemTex8 },
+	{ "texcoord9", EAttrSemTex9 },
+	{ "depth", EAttrSemDepth },
+};
 
 // Determine the GLSL attribute semantic for a given HLSL semantic
 EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic )
 {
-
 	std::string curSemantic = stripSemanticModifier (semantic, true);
-
-	if ( !_stricmp(curSemantic.c_str(), "position"))
-		return EAttrSemPosition;
-
-	if ( !_stricmp(curSemantic.c_str(), "position0"))
-		return EAttrSemPosition;
-	
-	if ( !_stricmp(curSemantic.c_str(), "vpos"))
-		return EAttrSemVPos;
-
-	if ( !_stricmp(curSemantic.c_str(), "vface"))
-		return EAttrSemVFace;
-
-	if ( !_stricmp(curSemantic.c_str(), "normal"))
-		return EAttrSemNormal;
-
-	if ( !_stricmp(curSemantic.c_str(), "normal0"))
-		return EAttrSemNormal;
-
-	if ( !_stricmp(curSemantic.c_str(), "tangent"))
-		return EAttrSemTangent;
-
-	if ( !_stricmp(curSemantic.c_str(), "tangent0"))
-		return EAttrSemTangent;
-
-	if ( !_stricmp(curSemantic.c_str(), "binormal"))
-		return EAttrSemBinormal;
-
-	if ( !_stricmp(curSemantic.c_str(), "binormal0"))
-		return EAttrSemBinormal;
-
-	if ( !_stricmp(curSemantic.c_str(), "blendweight"))
-		return EAttrSemBlendWeight;
-
-	if ( !_stricmp(curSemantic.c_str(), "blendweight0"))
-		return EAttrSemBlendWeight;
-
-	if ( !_stricmp(curSemantic.c_str(), "blendindices"))
-		return EAttrSemBlendIndices;
-
-	if ( !_stricmp(curSemantic.c_str(), "blendindices0"))
-		return EAttrSemBlendIndices;
-
-	if ( !_stricmp(curSemantic.c_str(), "color"))
-		return EAttrSemColor0;
-
-	if ( !_stricmp(curSemantic.c_str(), "color0"))
-		return EAttrSemColor0;
-
-	if ( !_stricmp(curSemantic.c_str(), "color1"))
-		return EAttrSemColor1;
-
-	if ( !_stricmp(curSemantic.c_str(), "color2"))
-		return EAttrSemColor2;
-
-	if ( !_stricmp(curSemantic.c_str(), "color3"))
-		return EAttrSemColor3;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord"))
-		return EAttrSemTex0;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord0"))
-		return EAttrSemTex0;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord1"))
-		return EAttrSemTex1;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord2"))
-		return EAttrSemTex2;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord3"))
-		return EAttrSemTex3;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord4"))
-		return EAttrSemTex4;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord5"))
-		return EAttrSemTex5;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord6"))
-		return EAttrSemTex6;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord7"))
-		return EAttrSemTex7;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord8"))
-		return EAttrSemTex8;
-
-	if ( !_stricmp(curSemantic.c_str(), "texcoord9"))
-		return EAttrSemTex9;
-
-	if ( !_stricmp(curSemantic.c_str(), "depth"))
-		return EAttrSemDepth;
-	
+	for (size_t i = 0; i < sizeof(kAttributeSemantic)/sizeof(kAttributeSemantic[0]); ++i)
+		if (!_stricmp(curSemantic.c_str(), kAttributeSemantic[i].name))
+			return kAttributeSemantic[i].sem;
 	return EAttrSemUnknown;
 }
 
