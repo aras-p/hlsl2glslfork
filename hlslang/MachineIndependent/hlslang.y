@@ -67,9 +67,10 @@ Jutta Degener, 1995
     parseContext.recover();                                                            \
 }
 
-#define SET_BASIC_TYPE(RES,PAR,T) \
+#define SET_BASIC_TYPE(RES,PAR,T,PREC) \
 	TQualifier qual = parseContext.getDefaultQualifier(); \
-	(RES).setBasic(T, qual, (PAR).line);
+	(RES).setBasic(T, qual, (PAR).line); \
+	(RES).precision = PREC
 
 
 %}
@@ -1842,16 +1843,16 @@ type_specifier
 
 type_specifier_nonarray
     : VOID_TYPE {
-        SET_BASIC_TYPE($$,$1,EbtVoid);
+        SET_BASIC_TYPE($$,$1,EbtVoid,EbpUndefined);
     }
     | FLOAT_TYPE {
-        SET_BASIC_TYPE($$,$1,EbtFloat);
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
     }
     | INT_TYPE {
-        SET_BASIC_TYPE($$,$1,EbtInt);
+        SET_BASIC_TYPE($$,$1,EbtInt,EbpHigh);
     }
     | BOOL_TYPE {
-        SET_BASIC_TYPE($$,$1,EbtBool);
+        SET_BASIC_TYPE($$,$1,EbtBool,EbpHigh);
     }
     | VECTOR LEFT_ANGLE FLOAT_TYPE COMMA INTCONSTANT RIGHT_ANGLE {
         TQualifier qual = parseContext.getDefaultQualifier();
@@ -1887,91 +1888,91 @@ type_specifier_nonarray
         }
     }
     | VEC2 {
-        SET_BASIC_TYPE($$,$1,EbtFloat);
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setAggregate(2);
     }
     | VEC3 {
-        SET_BASIC_TYPE($$,$1,EbtFloat);
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setAggregate(3);
     }
     | VEC4 {
-        SET_BASIC_TYPE($$,$1,EbtFloat);
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setAggregate(4);
     }
     | BVEC2 {
-        SET_BASIC_TYPE($$,$1,EbtBool);
+        SET_BASIC_TYPE($$,$1,EbtBool,EbpHigh);
         $$.setAggregate(2);
     }
     | BVEC3 {
-        SET_BASIC_TYPE($$,$1,EbtBool);
+        SET_BASIC_TYPE($$,$1,EbtBool,EbpHigh);
         $$.setAggregate(3);
     }
     | BVEC4 {
-        SET_BASIC_TYPE($$,$1,EbtBool);
+        SET_BASIC_TYPE($$,$1,EbtBool,EbpHigh);
         $$.setAggregate(4);
     }
     | IVEC2 {
-        SET_BASIC_TYPE($$,$1,EbtInt);
+        SET_BASIC_TYPE($$,$1,EbtInt,EbpHigh);
         $$.setAggregate(2);
     }
     | IVEC3 {
-        SET_BASIC_TYPE($$,$1,EbtInt);
+        SET_BASIC_TYPE($$,$1,EbtInt,EbpHigh);
         $$.setAggregate(3);
     }
     | IVEC4 {
-        SET_BASIC_TYPE($$,$1,EbtInt);
+        SET_BASIC_TYPE($$,$1,EbtInt,EbpHigh);
         $$.setAggregate(4);
     }
     | MATRIX2 {
         FRAG_VERT_ONLY("mat2", $1.line); 
-        SET_BASIC_TYPE($$,$1,EbtFloat);
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setAggregate(2, true);
     }
     | MATRIX3 { 
         FRAG_VERT_ONLY("mat3", $1.line); 
-        SET_BASIC_TYPE($$,$1,EbtFloat);
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setAggregate(3, true);
     }
     | MATRIX4 { 
         FRAG_VERT_ONLY("mat4", $1.line);
-        SET_BASIC_TYPE($$,$1,EbtFloat);
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setAggregate(4, true);
     }
     | TEXTURE {
         FRAG_VERT_ONLY("texture", $1.line);
-        SET_BASIC_TYPE($$,$1,EbtTexture);
+        SET_BASIC_TYPE($$,$1,EbtTexture,EbpUndefined);
     }  
     | SAMPLERGENERIC {
         FRAG_VERT_ONLY("sampler", $1.line);
-        SET_BASIC_TYPE($$,$1,EbtSamplerGeneric);
+        SET_BASIC_TYPE($$,$1,EbtSamplerGeneric,EbpUndefined);
     }  
     | SAMPLER1D {
         FRAG_VERT_ONLY("sampler1D", $1.line);
-        SET_BASIC_TYPE($$,$1,EbtSampler1D);
+        SET_BASIC_TYPE($$,$1,EbtSampler1D,EbpUndefined);
     } 
     | SAMPLER2D {
         FRAG_VERT_ONLY("sampler2D", $1.line);
-        SET_BASIC_TYPE($$,$1,EbtSampler2D);
+        SET_BASIC_TYPE($$,$1,EbtSampler2D,EbpUndefined);
     } 
     | SAMPLER3D {
         FRAG_VERT_ONLY("sampler3D", $1.line);
-        SET_BASIC_TYPE($$,$1,EbtSampler3D);
+        SET_BASIC_TYPE($$,$1,EbtSampler3D,EbpUndefined);
     } 
     | SAMPLERCUBE {
         FRAG_VERT_ONLY("samplerCube", $1.line);
-        SET_BASIC_TYPE($$,$1,EbtSamplerCube);
+        SET_BASIC_TYPE($$,$1,EbtSamplerCube,EbpUndefined);
     } 
     | SAMPLERRECT {
         FRAG_VERT_ONLY("samplerRECT", $1.line);
-        SET_BASIC_TYPE($$,$1,EbtSamplerRect);
+        SET_BASIC_TYPE($$,$1,EbtSamplerRect,EbpUndefined);
     } 
     | SAMPLER1DSHADOW {
         FRAG_VERT_ONLY("sampler1DShadow", $1.line);
-        SET_BASIC_TYPE($$,$1,EbtSampler1DShadow);
+        SET_BASIC_TYPE($$,$1,EbtSampler1DShadow,EbpUndefined);
     } 
     | SAMPLER2DSHADOW {
         FRAG_VERT_ONLY("sampler2DShadow", $1.line);
-        SET_BASIC_TYPE($$,$1,EbtSampler2DShadow);
+        SET_BASIC_TYPE($$,$1,EbtSampler2DShadow,EbpUndefined);
     }     
     | struct_specifier {
         FRAG_VERT_ONLY("struct", $1.line);
@@ -1984,7 +1985,7 @@ type_specifier_nonarray
         // type.
         //
         TType& structure = static_cast<TVariable*>($1.symbol)->getType();
-        SET_BASIC_TYPE($$,$1,EbtStruct);
+        SET_BASIC_TYPE($$,$1,EbtStruct,EbpUndefined);
         $$.userDef = &structure;
     }
     ;
