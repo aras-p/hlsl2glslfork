@@ -9,69 +9,19 @@
 class constUnion
 {
 public:
+   POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
 
-   POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)        
-   void setIConst(int i)
-   {
-      iConst = i; type = EbtInt;
-   }
-   void setFConst(float f)
-   {
-      fConst = f; type = EbtFloat;
-   }
-   void setBConst(bool b)
-   {
-      bConst = b; type = EbtBool;
-   }
+   void setIConst(int i) { iConst = i; type = EbtInt; }
+   void setFConst(float f) { fConst = f; type = EbtFloat; }
+   void setBConst(bool b) { bConst = b; type = EbtBool; }
 
-   int getIConst()
-   {
-      return iConst;
-   }
-   float getFConst()
-   {
-      return fConst;
-   }
-   bool getBConst()
-   {
-      return bConst;
-   }
-   int getIConst() const
-   {
-      return iConst;
-   }
-   float getFConst() const
-   {
-      return fConst;
-   }
-   bool getBConst() const
-   {
-      return bConst;
-   }
+   int getIConst() const { return iConst; }
+   float getFConst() const { return fConst; }
+   bool getBConst() const { return bConst; }
 
-   bool operator==(const int i) const
-   {
-      if (i == iConst)
-         return true;
-
-      return false;
-   }
-
-   bool operator==(const float f) const
-   {
-      if (f == fConst)
-         return true;
-
-      return false;
-   }
-
-   bool operator==(const bool b) const
-   {
-      if (b == bConst)
-         return true;
-
-      return false;
-   }
+   bool operator==(const int i) const { return (i == iConst); }
+   bool operator==(const float f) const { return (f == fConst); }
+   bool operator==(const bool b) const { return (b == bConst); }
 
    bool operator==(const constUnion& constant) const
    {
@@ -100,25 +50,10 @@ public:
       return false;
    }
 
-   bool operator!=(const int i) const
-   {
-      return !operator==(i);
-   }
-
-   bool operator!=(const float f) const
-   {
-      return !operator==(f);
-   }
-
-   bool operator!=(const bool b) const
-   {
-      return !operator==(b);
-   }
-
-   bool operator!=(const constUnion& constant) const
-   {
-      return !operator==(constant);
-   }
+   bool operator!=(const int i) const { return !operator==(i); }
+   bool operator!=(const float f) const { return !operator==(f); }
+   bool operator!=(const bool b) const { return !operator==(b); }
+   bool operator!=(const constUnion& constant) const { return !operator==(constant); }
 
    bool operator>(const constUnion& constant) const
    {
@@ -312,10 +247,8 @@ public:
       return returnValue;
    }
 
-   TBasicType getType()
-   {
-      return type;
-   }
+   TBasicType getType() const { return type; }
+
 private:
 
    union
