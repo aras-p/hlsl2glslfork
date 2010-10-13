@@ -138,45 +138,13 @@ TPoolAllocator::~TPoolAllocator()
    //
    // Always delete the free list memory - it can't be being
    // (correctly) referenced, whether the pool allocator was
-   // global or not.  We should not check the guard blocks
-   // here, because we did it already when the block was
-   // placed into the free list.
+   // global or not.
    //
    while (freeList)
    {
       tHeader* next = freeList->nextPage;
       delete [] reinterpret_cast<char*>(freeList);
       freeList = next;
-   }
-}
-
-// Support MSVC++ 6.0
-const unsigned char TAllocation::guardBlockBeginVal = 0xfb;
-const unsigned char TAllocation::guardBlockEndVal   = 0xfe;
-const unsigned char TAllocation::userDataFill       = 0xcd;
-
-#ifdef GUARD_BLOCKS
-const size_t TAllocation::guardBlockSize = 16;
-#else
-const size_t TAllocation::guardBlockSize = 0;
-#endif
-
-//
-// Check a single guard block for damage
-//
-void TAllocation::checkGuardBlock(unsigned char* blockMem, unsigned char val, char* locText) const
-{
-   for (int x = 0; x < guardBlockSize; x++)
-   {
-      if (blockMem[x] != val)
-      {
-         char assertMsg[80];
-
-         // We don't print the assert message.  It's here just to be helpful.
-         sprintf(assertMsg, "PoolAlloc: Damage %s %lu byte allocation at 0x%p\n",
-                 locText, size, data());
-         assert(0 && "PoolAlloc: Damage in guard block");
-      }
    }
 }
 
@@ -239,12 +207,7 @@ void TPoolAllocator::popAll()
 
 void* TPoolAllocator::allocate(size_t numBytes)
 {
-   // If we are using guard blocks, all allocations are bracketed by
-   // them: [guardblock][allocation][guardblock].  numBytes is how
-   // much memory the caller asked for.  allocationSize is the total
-   // size including guard blocks.  In release build,
-   // guardBlockSize=0 and this all gets optimized away.
-   size_t allocationSize = TAllocation::allocationSize(numBytes);
+   size_t allocationSize = numBytes;
 
    //
    // Just keep some interesting statistics.
@@ -285,7 +248,6 @@ void* TPoolAllocator::allocate(size_t numBytes)
 
       currentPageOffset = pageSize;  // make next allocation come from a new page
 
-      // No guard blocks for multi-page allocations (yet)
       return reinterpret_cast<void*>(reinterpret_cast<UINT_PTR>(memory) + headerSkip);
    }
 
@@ -314,14 +276,3 @@ void* TPoolAllocator::allocate(size_t numBytes)
 
    return initializeAllocation(inUseList, ret, numBytes);
 }
-
-
-//
-// Check all allocations in a list for damage by calling check on each.
-//
-void TAllocation::checkAllocList() const
-{
-   for (const TAllocation* alloc = this; alloc != 0; alloc = alloc->prevAlloc)
-      alloc->GB_check();
-}
-
