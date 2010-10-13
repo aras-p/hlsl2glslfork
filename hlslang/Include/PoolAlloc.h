@@ -123,11 +123,6 @@ protected:
    };
    typedef std::vector<tAllocState> tAllocStack;
 
-   void* initializeAllocation(tHeader* block, unsigned char* memory, size_t numBytes) 
-   {
-      return memory;
-   }
-
    bool global;            // should be true if this object is globally scoped
    size_t pageSize;        // granularity of allocation from the OS
    size_t alignment;       // all returned allocations will be aligned at 

@@ -228,7 +228,7 @@ void* TPoolAllocator::allocate(size_t numBytes)
       currentPageOffset += allocationSize;
       currentPageOffset = (currentPageOffset + alignmentMask) & ~alignmentMask;
 
-      return initializeAllocation(inUseList, memory, numBytes);
+      return memory;
    }
 
    if (allocationSize + headerSkip > pageSize)
@@ -274,5 +274,5 @@ void* TPoolAllocator::allocate(size_t numBytes)
    unsigned char* ret = reinterpret_cast<unsigned char *>(inUseList) + headerSkip;
    currentPageOffset = (headerSkip + allocationSize + alignmentMask) & ~alignmentMask;
 
-   return initializeAllocation(inUseList, ret, numBytes);
+   return ret;
 }
