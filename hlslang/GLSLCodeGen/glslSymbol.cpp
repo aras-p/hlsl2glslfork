@@ -12,10 +12,11 @@ static void writeBool( std::stringstream &out, bool b )
 }
 
 
-GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, EGlslQualifier q, int as ) :
+GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, TPrecision prec, EGlslQualifier q, int as ) :
    semantic(s),
    identifier(id),
    type(t),
+   precision(prec),
    qual(q),
    arraySize(as),
    mangle(0),
@@ -73,7 +74,7 @@ void GlslSymbol::writeDecl( std::stringstream &out, bool local )
    case EqtInOut:           out << "inout ";   break;
    }
 
-   writeType( out, type, structPtr);
+   writeType (out, type, structPtr, precision);
 
    out << " ";
 

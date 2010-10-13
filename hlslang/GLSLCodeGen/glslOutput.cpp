@@ -38,14 +38,14 @@ int getElements( EGlslSymbolType t )
 }
 
 
-void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, constUnion *c, GlslStruct *str = 0 )
+void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPrecision prec, constUnion *c, GlslStruct *str = 0 )
 {
    int elementCount = getElements(t);
    bool construct = elementCount > 1 || str != 0;
 
    if (construct)
    {
-      writeType( out, t, str);
+      writeType (out, t, str, prec);
       out << "( ";
    }
 
@@ -85,7 +85,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, constU
          if (construct && ii > 0)
             out << ", ";
 
-         writeConstantConstructor( out, m.type, c);
+         writeConstantConstructor (out, m.type, m.precision, c);
       }
    }
 
@@ -226,11 +226,12 @@ void writeTex( const TString &name, TIntermAggregate *node, TGlslOutputTraverser
 
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList ) :
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision ) :
       infoSink(i),
       generatingCode(true),
       functionList(funcList),
-      structList(sList)
+      structList(sList),
+	  m_UsePrecision(usePrecision)
 {
    visitSymbol = traverseSymbol;
    visitConstantUnion = traverseConstantUnion;
@@ -240,7 +241,7 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
    visitAggregate = traverseAggregate;
    visitLoop = traverseLoop;
    visitBranch = traverseBranch;
-   global = new GlslFunction( "__global__", "__global__", EgstVoid, "");
+   global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "");
    functionList.push_back(global);
    current = global;
 }
@@ -269,7 +270,7 @@ void TGlslOutputTraverser::traverseSymbol(TIntermSymbol *node, TIntermTraverser 
          if (node->getInfo())
             semantic = node->getInfo()->getSemantic().c_str();
          GlslSymbol * sym = new GlslSymbol( node->getSymbol().c_str(), semantic, node->getId(),
-                                            translateType(node->getTypePointer()), translateQualifier(node->getQualifier()), array);
+			 translateType(node->getTypePointer()), goit->m_UsePrecision?node->getPrecision():EbpUndefined, translateQualifier(node->getQualifier()), array);
          current->addSymbol(sym);
          if (sym->getType() == EgstStruct)
          {
@@ -294,7 +295,7 @@ void TGlslOutputTraverser::traverseParameterSymbol(TIntermSymbol *node, TIntermT
    if (node->getInfo())
       semantic = node->getInfo()->getSemantic().c_str();
    GlslSymbol * sym = new GlslSymbol( node->getSymbol().c_str(), semantic, node->getId(),
-                                      translateType(node->getTypePointer()), translateQualifier(node->getQualifier()), array);
+                                      translateType(node->getTypePointer()), goit->m_UsePrecision?node->getPrecision():EbpUndefined, translateQualifier(node->getQualifier()), array);
    current->addParameter(sym);
 
    if (sym->getType() == EgstStruct)
@@ -322,7 +323,7 @@ void TGlslOutputTraverser::traverseConstantUnion( TIntermConstantUnion *node, TI
       str = goit->createStructFromType( node->getTypePointer());
    }
 
-   writeConstantConstructor( out, type, c, str);
+   writeConstantConstructor (out, type, goit->m_UsePrecision?node->getPrecision():EbpUndefined, c, str);
 }
 
 
@@ -951,7 +952,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpFunction:
       {
          GlslFunction *func = new GlslFunction( node->getPlainName().c_str(), node->getName().c_str(),
-                                                translateType(node->getTypePointer()), node->getSemantic().c_str()); 
+                                                translateType(node->getTypePointer()), goit->m_UsePrecision?node->getPrecision():EbpUndefined, node->getSemantic().c_str()); 
          if (func->getReturnType() == EgstStruct)
          {
             GlslStruct *s = goit->createStructFromType( node->getTypePointer());
@@ -1396,7 +1397,7 @@ bool TGlslOutputTraverser::parseInitializer( TIntermBinary *node )
          semantic = symNode->getInfo()->getSemantic().c_str();
 
       sym = new GlslSymbol( symNode->getSymbol().c_str(), semantic, symNode->getId(),
-                            translateType(symNode->getTypePointer()), translateQualifier(symNode->getQualifier()), array);
+                            translateType(symNode->getTypePointer()), m_UsePrecision?node->getPrecision():EbpUndefined, translateQualifier(symNode->getQualifier()), array);
 
       current->addSymbol(sym);
    }

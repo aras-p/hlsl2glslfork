@@ -14,7 +14,7 @@ std::string GlslStruct::getDecl() const
    for (std::vector<member>::const_iterator it = memberList.begin(); it != memberList.end(); it++) 
    {
       out << "    ";
-      writeType( out, it->type, 0);
+      writeType (out, it->type, 0, it->precision);
       out << " " << it->name;
 
       if (it->arraySize > 0)

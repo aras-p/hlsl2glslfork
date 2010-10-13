@@ -6,10 +6,11 @@
 #include "glslFunction.h"
 
 
-GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSymbolType type, const std::string &s ) :
+GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision prec, const std::string &s ) :
       name(n),
       mangledName(m),
       returnType(type),
+	  precision(prec),
       semantic(s),
       structPtr(0),
       depth(0),
@@ -93,7 +94,7 @@ std::string GlslFunction::getPrototype()
 {
    std::stringstream out;
 
-   writeType( out, returnType, structPtr);
+   writeType (out, returnType, structPtr, precision);
    out << " " << name << "( ";
 
    std::vector<GlslSymbol*>::iterator it = parameters.begin();

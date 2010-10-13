@@ -103,15 +103,15 @@ TSourceLoc lexlineno;
 "half3x3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(MATRIX3); }
 "half4x4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(MATRIX4); }
 
-"fixed"          {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FLOAT_TYPE); }
-"fixed2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC2); }
-"fixed3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC3); }
-"fixed4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC4); }
-"half"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FLOAT_TYPE); }
-"half1"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FLOAT_TYPE); }
-"half2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC2); }
-"half3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC3); }
-"half4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC4); }
+"fixed"          {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FIXED_TYPE); }
+"fixed2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (FVEC2); }
+"fixed3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (FVEC3); }
+"fixed4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (FVEC4); }
+"half"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(HALF_TYPE); }
+"half1"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(HALF_TYPE); }
+"half2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (HVEC2); }
+"half3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (HVEC3); }
+"half4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (HVEC4); }
 "float2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC2); }
 "float3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC3); }
 "float4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (VEC4); }

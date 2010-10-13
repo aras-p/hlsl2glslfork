@@ -41,8 +41,16 @@ const char typeString[EgstTypeCount][32] =
 ///       The type of the GLSL symbol to output
 ///    \param s
 ///       If it is a structure, a pointer to the structure to write out
-void writeType( std::stringstream &out, EGlslSymbolType type, GlslStruct *s )
+void writeType (std::stringstream &out, EGlslSymbolType type, GlslStruct *s, TPrecision precision)
 {
+	switch (precision) {
+	case EbpLow: out << "lowp "; break;
+	case EbpMedium: out << "mediump "; break;
+	case EbpHigh: out << "highp "; break;
+	case EbpUndefined: break;
+	default: assert(false);
+	}
+
    switch (type)
    {
    case EgstVoid:  

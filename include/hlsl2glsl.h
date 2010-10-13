@@ -115,11 +115,12 @@ typedef struct
 } ShUniformInfo;
 
 
-/// Debug options
-enum TDebugOptions
+/// Translation options
+enum TTranslateOptions
 {
-   EDebugOpNone               = 0x000,
-   EDebugOpIntermediate       = 0x001,      
+   ETranslateOpNone = 0,
+   ETranslateOpIntermediate = (1<<0),
+   ETranslateOpUsePrecision = (1<<1),
 };
 
 
@@ -155,7 +156,7 @@ SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle );
 /// Parse HLSL shader to prepare it for final translation.
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
                                              const char* shaderString,
-                                             int debugOptions );
+                                             int option );
 
 
 

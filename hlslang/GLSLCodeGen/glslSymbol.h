@@ -14,7 +14,7 @@ class GlslSymbol
 {
 public:
 
-   GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, EGlslQualifier q, int as = 0 );   
+   GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, TPrecision precision, EGlslQualifier q, int as = 0 );
    virtual ~GlslSymbol();
    
    bool getIsParameter() const { return isParameter; }
@@ -40,6 +40,7 @@ public:
 
    EGlslSymbolType getType() const { return type; }
    EGlslQualifier getQualifier() const { return qual; }
+   TPrecision getPrecision() const { return precision; }
    
    void updateType( EGlslSymbolType t ) { assert( type == EgstSamplerGeneric); type = t; }
 
@@ -76,6 +77,7 @@ private:
    int identifier;
    EGlslSymbolType type;
    EGlslQualifier qual;
+   TPrecision precision;
    int arraySize;
    int mangle;
    GlslStruct *structPtr;

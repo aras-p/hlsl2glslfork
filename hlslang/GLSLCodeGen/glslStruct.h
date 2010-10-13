@@ -18,9 +18,10 @@ public:
       std::string semantic;
       EGlslSymbolType type;
       int arraySize;
+	  TPrecision precision;
    };
 
-   GlslStruct( const std::string &n) : name(n) {}
+   GlslStruct (const std::string &n) : name(n) {}
    virtual ~GlslStruct() {}
 
    const std::string& getName() const { return name; }

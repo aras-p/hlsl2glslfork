@@ -40,9 +40,9 @@ void HlslCrossCompiler::TransformAST (TIntermNode *root)
    TPropagateMutable::PropagateMutable (root, infoSink);
 }
 
-void HlslCrossCompiler::ProduceGLSL (TIntermNode *root)
+void HlslCrossCompiler::ProduceGLSL (TIntermNode *root, bool usePrecision)
 {
 	m_GlslProduced = true;
-	TGlslOutputTraverser glslTraverse( infoSink, functionList, structList);
+	TGlslOutputTraverser glslTraverse( infoSink, functionList, structList, usePrecision);
 	root->traverse(&glslTraverse);
 }

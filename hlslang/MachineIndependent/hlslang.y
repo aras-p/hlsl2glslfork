@@ -115,9 +115,9 @@ Jutta Degener, 1995
 
 %pure_parser /* Just in case is called from multiple threads */
 %expect 1 /* One shift reduce conflict because of if | else */
-%token <lex> ATTRIBUTE CONST_QUAL BOOL_TYPE FLOAT_TYPE INT_TYPE STRING_TYPE
+%token <lex> ATTRIBUTE CONST_QUAL BOOL_TYPE FLOAT_TYPE INT_TYPE STRING_TYPE FIXED_TYPE HALF_TYPE
 %token <lex> BREAK CONTINUE DO ELSE FOR IF DISCARD RETURN
-%token <lex> BVEC2 BVEC3 BVEC4 IVEC2 IVEC3 IVEC4 VEC2 VEC3 VEC4
+%token <lex> BVEC2 BVEC3 BVEC4 IVEC2 IVEC3 IVEC4 VEC2 VEC3 VEC4 HVEC2 HVEC3 HVEC4 FVEC2 FVEC3 FVEC4
 %token <lex> MATRIX2 MATRIX3 MATRIX4 IN_QUAL OUT_QUAL INOUT_QUAL UNIFORM VARYING
 %token <lex> STRUCT VOID_TYPE WHILE
 %token <lex> SAMPLER1D SAMPLER2D SAMPLER3D SAMPLERCUBE SAMPLER1DSHADOW SAMPLER2DSHADOW SAMPLERRECT
@@ -1848,6 +1848,12 @@ type_specifier_nonarray
     | FLOAT_TYPE {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
     }
+    | HALF_TYPE {
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
+    }
+    | FIXED_TYPE {
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
+    }
     | INT_TYPE {
         SET_BASIC_TYPE($$,$1,EbtInt,EbpHigh);
     }
@@ -1897,6 +1903,30 @@ type_specifier_nonarray
     }
     | VEC4 {
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
+        $$.setAggregate(4);
+    }
+    | HVEC2 {
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
+        $$.setAggregate(2);
+    }
+    | HVEC3 {
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
+        $$.setAggregate(3);
+    }
+    | HVEC4 {
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
+        $$.setAggregate(4);
+    }
+    | FVEC2 {
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
+        $$.setAggregate(2);
+    }
+    | FVEC3 {
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
+        $$.setAggregate(3);
+    }
+    | FVEC4 {
+        SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
         $$.setAggregate(4);
     }
     | BVEC2 {
@@ -2499,6 +2529,8 @@ annotation_item
 
 ann_type
     : FLOAT_TYPE {}
+    | HALF_TYPE {}
+    | FIXED_TYPE {}
     | INT_TYPE {}
     | BOOL_TYPE {}
     | STRING_TYPE {}
@@ -2511,6 +2543,12 @@ ann_type
     | VEC2 {}
     | VEC3 {}
     | VEC4 {}
+    | HVEC2 {}
+    | HVEC3 {}
+    | HVEC4 {}
+    | FVEC2 {}
+    | FVEC3 {}
+    | FVEC4 {}
     ;
 
 ann_literal

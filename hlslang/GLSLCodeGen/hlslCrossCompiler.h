@@ -24,7 +24,7 @@ public:
    TInfoSink& getInfoSink() { return infoSink; }
 
    void TransformAST (TIntermNode* root);
-   void ProduceGLSL (TIntermNode* root);
+   void ProduceGLSL (TIntermNode* root, bool usePrecision);
    bool IsASTTransformed() const { return m_ASTTransformed; }
    bool IsGlslProduced() const { return m_GlslProduced; }
 

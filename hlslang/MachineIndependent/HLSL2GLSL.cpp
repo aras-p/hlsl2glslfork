@@ -213,7 +213,7 @@ void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle )
 
 int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
                             const char* shaderString,
-                            int debugOptions )
+                            int options )
 {
    if (!InitThread())
       return 0;
@@ -264,18 +264,18 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 		if (aggRoot && aggRoot->getOp() == EOpNull)
 			aggRoot->setOperator(EOpSequence);
 
-		if (debugOptions & EDebugOpIntermediate)
+		if (options & ETranslateOpIntermediate)
 			intermediate.outputTree(parseContext.treeRoot);
 
 		compiler->TransformAST (parseContext.treeRoot);
-		compiler->ProduceGLSL (parseContext.treeRoot);
+		compiler->ProduceGLSL (parseContext.treeRoot, (options & ETranslateOpUsePrecision) ? true : false);
    }
    else if (!success)
    {
       parseContext.infoSink.info.prefix(EPrefixError);
       parseContext.infoSink.info << parseContext.numErrors << " compilation errors.  No code generated.\n\n";
       success = false;
-      if (debugOptions & EDebugOpIntermediate)
+	  if (options & ETranslateOpIntermediate)
          intermediate.outputTree(parseContext.treeRoot);
    }
 

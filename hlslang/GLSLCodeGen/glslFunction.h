@@ -17,7 +17,7 @@
 class GlslFunction 
 {
 public:
-   GlslFunction( const std::string &n, const std::string &m, EGlslSymbolType type, const std::string &s );
+   GlslFunction (const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision precision, const std::string &s );
    virtual ~GlslFunction();
    
    void addSymbol( GlslSymbol *sym );   
@@ -76,6 +76,7 @@ protected:
    std::string name;
    std::string mangledName;
    EGlslSymbolType returnType;
+   TPrecision precision;
    std::string semantic;
 
    // Structure return value
