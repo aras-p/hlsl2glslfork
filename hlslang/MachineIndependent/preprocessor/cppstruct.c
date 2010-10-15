@@ -19,9 +19,6 @@ int FinalizePreprocessor(void);
 
 int InitCPPStruct(void)
 {
-    int len;
-    char *p;
-
     cpp = (CPPStruct *) malloc(sizeof(CPPStruct));
     if (cpp == NULL)
         return 0;
