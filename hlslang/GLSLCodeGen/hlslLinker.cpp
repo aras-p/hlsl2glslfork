@@ -258,7 +258,7 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 
 		case EClassVarIn:
 			// If using user varyings, create a user varying name
-			if ( bUserVaryings || varInString[sem][0] == 0 )
+			if ( (bUserVaryings && sem != EAttrSemVPos && sem != EAttrSemVFace) || varInString[sem][0] == 0 )
 			{
 				outName = kUserVaryingPrefix;
 				outName += stripSemanticModifier ( semantic, false );
