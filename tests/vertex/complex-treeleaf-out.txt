@@ -117,7 +117,7 @@ v2f_surf xlat_main( in appdata_full v ) {
     o.hip_pack0.xy  = ((v.texcoord.xy  * _MainTex_ST.xy ) + _MainTex_ST.zw );
     o.lop_color = v.color;
     binormal = (cross( v.normal, v.tangent.xyz ) * v.tangent.w );
-    rotation = mat3( v.tangent.x , binormal.x , v.normal.x , v.tangent.y , binormal.y , v.normal.y , v.tangent.z , binormal.z , v.normal.z );
+    rotation = mat3( v.tangent.x , v.tangent.y , v.tangent.z , binormal.x , binormal.y , binormal.z , v.normal.x , v.normal.y , v.normal.z );
     o.lightDir = ( rotation * ObjSpaceLightDir( v.vertex) );
     o.viewDir = ( rotation * ObjSpaceViewDir( v.vertex) );
     o._LightCoord = ( _LightMatrix0 * ( _Object2World * v.vertex ) ).xy ;
