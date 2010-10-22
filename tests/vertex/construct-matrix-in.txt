@@ -5,19 +5,43 @@ float4 main (float4 pos : POSITION) : POSITION
 		1, 2,
 		3, 4
 	);
+	float2x2 m2b = float2x2(
+		float2 (1,2),
+		float2 (3,4)
+	);
 	v.xy += mul (m2, pos.xy);
+	v.xy += mul (m2b, pos.xy);
 	float3x3 m3 = float3x3(
 		1, 2, 3,
 		4, 5, 6,
 		7, 8, 9
 	);
+	float3x3 m3b = float3x3(
+		float3(1, 2, 3),
+		float3(4, 5, 6),
+		float3(7, 8, 9)
+	);
+	float3x3 m3c = float3x3(
+		float3(1, 2, 3),
+		float3(4, 5, 6),
+		pos.xyz
+	);
 	v.xyz += mul (m3, pos.xyz);
+	v.xyz += mul (m3b, pos.xyz);
+	v.xyz += mul (m3c, pos.xyz);
 	float4x4 m4 = float4x4(
 		1, 2, 3, 4,
 		5, 6, 7, 8,
 		9, 10, 11, 12,
 		13, 14, 15, 16
 	);
+	float4x4 m4b = float4x4(
+		float4(1, 2, 3, 4),
+		float4(5, 6, 7, 8),
+		float4(9, 10, 11, 12),
+		float4(13, 14, 15, 16)
+	);
 	v.xyzw += mul (m4, pos.xyzw);
+	v.xyzw += mul (m4b, pos.xyzw);
 	return v;
 }
