@@ -1,0 +1,12 @@
+vec4 xlat_main( in vec4 pos );
+vec4 xlat_main( in vec4 pos ) {
+    mat3 mat = mat3( 1.00000, 2.00000, 3.00000, 4.00000, 5.00000, 6.00000, 7.00000, 8.00000, 9.00000);
+    vec3 v;
+    v = ( mat * pos.xyz  );
+    return vec4( v, 1.00000);
+}
+void main() {
+    vec4 xl_retval;
+    xl_retval = xlat_main( vec4(gl_Vertex));
+    gl_Position = vec4( xl_retval);
+}

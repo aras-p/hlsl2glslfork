@@ -1,0 +1,12 @@
+highp vec4 xlat_main( in highp vec4 pos );
+highp vec4 xlat_main( in highp vec4 pos ) {
+    highp mat3 mat = mat3( 1.00000, 2.00000, 3.00000, 4.00000, 5.00000, 6.00000, 7.00000, 8.00000, 9.00000);
+    highp vec3 v;
+    v = ( mat * pos.xyz  );
+    return vec4( v, 1.00000);
+}
+void main() {
+    highp vec4 xl_retval;
+    xl_retval = xlat_main( highp vec4(gl_Vertex));
+    gl_Position = highp vec4( xl_retval);
+}
