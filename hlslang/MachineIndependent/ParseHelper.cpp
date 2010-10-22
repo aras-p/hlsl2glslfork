@@ -1267,6 +1267,27 @@ bool TParseContext::areAllChildConst(TIntermAggregate* aggrNode)
    return allConstant;
 }
 
+static void TransposeMatrixConstructor (const TType* type, TOperator op, TIntermSequence& args)
+{
+	if (!type->isMatrix())
+		return;
+	if (args.size() != type->getObjectSize())
+		return;
+
+	// HLSL vs. GLSL construct matrices in transposed order, so transpose the arguments for the constructor
+	const int size = type->getNominalSize();
+	for (int r = 0; r < size; ++r)
+	{
+		for (int c = r+1; c < size; ++c)
+		{
+			size_t idx1 = r*size+c;
+			size_t idx2 = c*size+r;
+			std::swap (args[idx1], args[idx2]);
+		}
+	}
+}
+
+
 // This function is used to test for the correctness of the parameters passed to various constructor functions
 // and also convert them to the right datatype if it is allowed and required. 
 //
@@ -1390,6 +1411,8 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
          sequenceVector.insert(p, newNode);
       }
    }
+
+   TransposeMatrixConstructor (type, op, sequenceVector);
 
    TIntermTyped* constructor = intermediate.setAggregateOperator(aggrNode, op, line);
    TIntermTyped* constConstructor = foldConstConstructor(constructor->getAsAggregate(), *type);
