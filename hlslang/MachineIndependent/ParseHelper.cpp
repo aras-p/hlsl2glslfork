@@ -1267,11 +1267,29 @@ bool TParseContext::areAllChildConst(TIntermAggregate* aggrNode)
    return allConstant;
 }
 
-static void TransposeMatrixConstructor (const TType* type, TOperator op, TIntermSequence& args)
+static void TransposeMatrixConstructorArgs (const TType* type, TIntermSequence& args)
 {
 	if (!type->isMatrix())
 		return;
 	if (args.size() != type->getObjectSize())
+		return;
+
+	// HLSL vs. GLSL construct matrices in transposed order, so transpose the arguments for the constructor
+	const int size = type->getNominalSize();
+	for (int r = 0; r < size; ++r)
+	{
+		for (int c = r+1; c < size; ++c)
+		{
+			size_t idx1 = r*size+c;
+			size_t idx2 = c*size+r;
+			std::swap (args[idx1], args[idx2]);
+		}
+	}
+}
+
+static void TransposeMatrixConstructorConstUnion (const TType* type, constUnion* args)
+{
+	if (!type->isMatrix())
 		return;
 
 	// HLSL vs. GLSL construct matrices in transposed order, so transpose the arguments for the constructor
@@ -1412,12 +1430,13 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
       }
    }
 
-   TransposeMatrixConstructor (type, op, sequenceVector);
 
    TIntermTyped* constructor = intermediate.setAggregateOperator(aggrNode, op, line);
    TIntermTyped* constConstructor = foldConstConstructor(constructor->getAsAggregate(), *type);
    if (constConstructor)
       return constConstructor;
+
+   TransposeMatrixConstructorArgs (type, sequenceVector);
 
    return constructor;
 }
@@ -1440,6 +1459,8 @@ TIntermTyped* TParseContext::foldConstConstructor(TIntermAggregate* aggrNode, co
       }
       if (returnVal)
          return 0;
+
+	  TransposeMatrixConstructorConstUnion (&type, unionArray);
 
       return intermediate.addConstantUnion(unionArray, type, aggrNode->getLine());
    }
