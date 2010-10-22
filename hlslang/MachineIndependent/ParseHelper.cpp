@@ -1267,12 +1267,13 @@ bool TParseContext::areAllChildConst(TIntermAggregate* aggrNode)
    return allConstant;
 }
 
-static void TransposeMatrixConstructorArgs (const TType* type, TIntermSequence& args)
+// Returns false if this was a matrix that still needs a transpose
+static bool TransposeMatrixConstructorArgs (const TType* type, TIntermSequence& args)
 {
 	if (!type->isMatrix())
-		return;
+		return true;
 	if (args.size() != type->getObjectSize())
-		return;
+		return false;
 
 	// HLSL vs. GLSL construct matrices in transposed order, so transpose the arguments for the constructor
 	const int size = type->getNominalSize();
@@ -1285,6 +1286,8 @@ static void TransposeMatrixConstructorArgs (const TType* type, TIntermSequence& 
 			std::swap (args[idx1], args[idx2]);
 		}
 	}
+
+	return true;
 }
 
 static void TransposeMatrixConstructorConstUnion (const TType* type, constUnion* args)
@@ -1436,7 +1439,11 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
    if (constConstructor)
       return constConstructor;
 
-   TransposeMatrixConstructorArgs (type, sequenceVector);
+	if (!TransposeMatrixConstructorArgs (type, sequenceVector))
+	{
+		TIntermTyped* transpose = intermediate.addUnaryMath (EOpTranspose, constructor, line, symbolTable);
+		return transpose;
+	}
 
    return constructor;
 }
