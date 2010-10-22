@@ -1,10 +1,23 @@
 float4 main (float4 pos : POSITION) : POSITION
 {
-	float3x3 mat = float3x3(
+	float4 v = 0;
+	float2x2 m2 = float2x2(
+		1, 2,
+		3, 4
+	);
+	v.xy += mul (m2, pos.xy);
+	float3x3 m3 = float3x3(
 		1, 2, 3,
 		4, 5, 6,
 		7, 8, 9
 	);
-	float3 v = mul (mat, pos.xyz);
-	return float4 (v, 1);
+	v.xyz += mul (m3, pos.xyz);
+	float4x4 m4 = float4x4(
+		1, 2, 3, 4,
+		5, 6, 7, 8,
+		9, 10, 11, 12,
+		13, 14, 15, 16
+	);
+	v.xyzw += mul (m4, pos.xyzw);
+	return v;
 }
