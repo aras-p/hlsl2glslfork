@@ -1,6 +1,6 @@
-vec2 xll_matrixindex (mat2 m, int i) { return vec2( m[0][i], m[1][i] ); }
-vec3 xll_matrixindex (mat3 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }
-vec4 xll_matrixindex (mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }
+vec2 xll_matrixindex (mat2 m, int i) { vec2 v; v.x=m[0][i]; v.y=m[1][i]; return v; }
+vec3 xll_matrixindex (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }
+vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }
 struct appdata_full {
     vec4 vertex;
     vec4 tangent;
