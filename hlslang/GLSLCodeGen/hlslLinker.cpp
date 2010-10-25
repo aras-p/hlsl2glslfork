@@ -130,10 +130,10 @@ static const char resultString[EAttrSemCount][32] = {
 
 static const char* kUserVaryingPrefix = "xlv_";
 
-static inline void AddToVaryings (std::stringstream& s, const std::string& type, const std::string& name)
+static inline void AddToVaryings (std::stringstream& s, TPrecision prec, const std::string& type, const std::string& name)
 {
 	if (strstr (name.c_str(), kUserVaryingPrefix) == name.c_str())
-		s << "varying " << type << " " << name << ";\n";
+		s << "varying " << getGLSLPrecisiontring(prec) << type << " " << name << ";\n";
 }
 
 HlslLinker::HlslLinker(TInfoSink& infoSink_) : infoSink(infoSink_)
@@ -161,7 +161,7 @@ HlslLinker::~HlslLinker()
 
 
 bool HlslLinker::getArgumentData2( const std::string &name, const std::string &semantic, EGlslSymbolType type,
-								 EClassifier c, std::string &outName, std::string &ctor, int &pad, TPrecision prec, int semanticOffset)
+								 EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset)
 {
 	int size;
 	EGlslSymbolType base = EgstVoid;
@@ -206,8 +206,7 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 	if ( c != EClassUniform)
 	{
 
-		ctor = getGLSLPrecisiontring (prec);
-		ctor += getTypeString( (EGlslSymbolType)((int)base + size - 1)); //default constructor
+		ctor = getTypeString( (EGlslSymbolType)((int)base + size - 1)); //default constructor
 		pad = 0;
 
 		switch (c)
@@ -281,13 +280,11 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 			if ( sem != EAttrSemDepth)
 			{
 				pad = 4 - size;
-				ctor = getGLSLPrecisiontring (prec);
-				ctor += "vec4";
+				ctor = "vec4";
 			}
 			else
 			{
-				ctor = getGLSLPrecisiontring (prec);
-				ctor += "float";
+				ctor = "float";
 			}
 			break;
 
@@ -315,9 +312,8 @@ bool HlslLinker::getArgumentData( GlslSymbol* sym, EClassifier c, std::string &o
 	const std::string &name = sym->getName();
 	const std::string &semantic = sym->getSemantic();
 	EGlslSymbolType type = sym->getType();
-	TPrecision prec = sym->getPrecision();
 
-	return getArgumentData2( name, semantic, type, c, outName, ctor, pad, prec, 0);
+	return getArgumentData2( name, semantic, type, c, outName, ctor, pad, 0);
 }
 
 
@@ -802,7 +798,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 						if (lang == EShLangFragment) // deal with varyings
 						{
 							if (!ignoredPositionInFragment)
-								AddToVaryings (varying, ctor, name);
+								AddToVaryings (varying, sym->getPrecision(), ctor, name);
 						}
 					}
 					else
@@ -845,7 +841,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 						for ( int arrayIndex = 0; arrayIndex <  numArrayElements; arrayIndex++ )
 						{
 							if ( getArgumentData2( current.name, current.semantic, current.type,
-								lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, current.precision, arrayIndex ) )
+								lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, arrayIndex ) )
 							{
 
 								preamble << "    ";
@@ -897,7 +893,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 								if (lang == EShLangFragment) // deal with varyings
 								{
 									if (!ignoredPositionInFragment)
-										AddToVaryings (varying, ctor, name);
+										AddToVaryings (varying, current.precision, ctor, name);
 								}
 							}
 							else
@@ -941,7 +937,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 						
 						if (lang == EShLangVertex) // deal with varyings
 						{
-							AddToVaryings (varying, ctor, name);
+							AddToVaryings (varying, sym->getPrecision(), ctor, name);
 						}
 
 						call << "xlt_" << sym->getName();
@@ -985,7 +981,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 						std::string name, ctor;
 						int pad;
 
-						if ( getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, current.precision, 0) )
+						if ( getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, 0) )
 						{
 							postamble << "    ";
 							postamble << name << " = " << ctor;
@@ -997,7 +993,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 
 							if (lang == EShLangVertex) // deal with varyings
 							{
-								AddToVaryings (varying, ctor, name);
+								AddToVaryings (varying, current.precision, ctor, name);
 							}
 						}
 						else
@@ -1038,7 +1034,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 				int pad;
 
 				if ( getArgumentData2( "", funcMain->getSemantic(), retType, lang==EShLangVertex ? EClassVarOut : EClassRes,
-					name, ctor, pad, funcMain->getPrecision(), 0) )
+					name, ctor, pad, 0) )
 				{
 
 					postamble << "    ";
@@ -1050,7 +1046,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 
 					if (lang == EShLangVertex) // deal with varyings
 					{
-						AddToVaryings (varying, ctor, name);
+						AddToVaryings (varying, funcMain->getPrecision(), ctor, name);
 					}
 				}
 				else
@@ -1085,7 +1081,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 					for ( int arrayIndex = 0; arrayIndex < numArrayElements; arrayIndex++ )
 					{
 
-						if ( getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, current.precision, arrayIndex) )
+						if ( getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, arrayIndex) )
 						{
 							postamble << "    ";
 							postamble << name;                                                            
@@ -1102,7 +1098,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 
 							if (lang == EShLangVertex) // deal with varyings
 							{
-								AddToVaryings (varying, ctor, name);
+								AddToVaryings (varying, current.precision, ctor, name);
 							}
 						}
 						else
