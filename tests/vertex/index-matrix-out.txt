@@ -30,7 +30,7 @@ vec4 xlat_main( in vec4 pos ) {
     v.xyz  += m3[ 0 ];
     v.xyz  += m3b[ 1 ];
     v.xyz  += m3c[ 2 ];
-    v.xyz  += vec3( 3.00000, 6.00000, 9.00000);
+    v.xyz  += vec3( 7.00000, 8.00000, 9.00000);
     for ( ; (i < 3); ( ++i )) {
         v.xyz  += m3c[ i ];
         v.x  += m3b[ i ].z ;

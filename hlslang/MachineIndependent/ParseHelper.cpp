@@ -1853,12 +1853,11 @@ TIntermTyped* TParseContext::addConstVectorNode(TVectorFields& fields, TIntermTy
    return typedNode;
 }
 
-//
-// This function returns the column being accessed from a constant matrix. The values are retrieved from
-// the symbol table and parse-tree is built for a vector (each column of a matrix is a vector). The input 
+
+// This function returns the row being accessed from a constant matrix. The values are retrieved from
+// the symbol table and parse-tree is built for a vector (each row of a matrix is a vector). The input 
 // to the function could either be a symbol node (m[0] where m is a constant matrix)that represents a 
 // constant matrix or it could be the tree representation of the constant matrix (s.m1[0] where s is a constant structure)
-//
 TIntermTyped* TParseContext::addConstMatrixNode(int index, TIntermTyped* node, TSourceLoc line)
 {
    TIntermTyped* typedNode;
@@ -1875,7 +1874,11 @@ TIntermTyped* TParseContext::addConstMatrixNode(int index, TIntermTyped* node, T
    {
       constUnion* unionArray = tempConstantNode->getUnionArrayPointer();
       int size = tempConstantNode->getType().getNominalSize();
-      typedNode = intermediate.addConstantUnion(&unionArray[size*index], tempConstantNode->getType(), line);
+	  constUnion* res = new constUnion[size];
+	  for (int i = 0; i < size; ++i)
+		  res[i] = unionArray[size*i+index];
+
+      typedNode = intermediate.addConstantUnion(res, tempConstantNode->getType(), line);
    }
    else
    {
