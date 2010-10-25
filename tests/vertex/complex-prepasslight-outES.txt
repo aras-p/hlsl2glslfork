@@ -32,10 +32,10 @@ varying highp vec3 xlv_TEXCOORD1;
 void main() {
     v2f xl_retval;
     appdata xlt_v;
-    xlt_v.vertex = highp vec4( gl_Vertex);
-    xlt_v.normal = highp vec3( gl_Normal);
+    xlt_v.vertex = vec4( gl_Vertex);
+    xlt_v.normal = vec3( gl_Normal);
     xl_retval = xlat_main( xlt_v);
-    gl_Position = highp vec4( xl_retval.pos);
-    xlv_TEXCOORD0 = highp vec4( xl_retval.uv);
-    xlv_TEXCOORD1 = highp vec3( xl_retval.ray);
+    gl_Position = vec4( xl_retval.pos);
+    xlv_TEXCOORD0 = vec4( xl_retval.uv);
+    xlv_TEXCOORD1 = vec3( xl_retval.ray);
 }

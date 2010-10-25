@@ -17,17 +17,17 @@ varying highp vec2 xlv_TEXCOORD0;
 varying highp vec4 xlv_COLOR;
 void main() {
     a2v xlt_v;
-    xlt_v.pos = highp vec4( gl_Vertex);
-    xlt_v.uv = highp vec2( gl_MultiTexCoord0);
-    xlt_v.normal = highp vec3( gl_Normal);
-    xlt_v.color = highp vec4( gl_Color);
+    xlt_v.pos = vec4( gl_Vertex);
+    xlt_v.uv = vec2( gl_MultiTexCoord0);
+    xlt_v.normal = vec3( gl_Normal);
+    xlt_v.color = vec4( gl_Color);
     highp vec4 xlt_opos;
     highp float xlt_ofog;
     highp vec2 xlt_ouv;
     highp vec4 xlt_ocolor;
     xlat_main( xlt_v, xlt_opos, xlt_ofog, xlt_ouv, xlt_ocolor);
-    gl_Position = highp vec4( xlt_opos);
-    xlv_FOG = highp float( xlt_ofog);
-    xlv_TEXCOORD0 = highp vec2( xlt_ouv);
-    xlv_COLOR = highp vec4( xlt_ocolor);
+    gl_Position = vec4( xlt_opos);
+    xlv_FOG = float( xlt_ofog);
+    xlv_TEXCOORD0 = vec2( xlt_ouv);
+    xlv_COLOR = vec4( xlt_ocolor);
 }

@@ -22,11 +22,11 @@ varying highp vec3 xlv_TEXCOORD1;
 void main() {
     v2f xl_retval;
     appdata xlt_v;
-    xlt_v.vertex = highp vec4( gl_Vertex);
-    xlt_v.texcoord = highp vec2( gl_MultiTexCoord0);
-    xlt_v.texcoord1 = highp vec3( gl_MultiTexCoord1);
+    xlt_v.vertex = vec4( gl_Vertex);
+    xlt_v.texcoord = vec2( gl_MultiTexCoord0);
+    xlt_v.texcoord1 = vec3( gl_MultiTexCoord1);
     xl_retval = xlat_main( xlt_v);
-    gl_Position = highp vec4( xl_retval.pos);
-    xlv_TEXCOORD0 = highp vec2( xl_retval.uv);
-    xlv_TEXCOORD1 = highp vec3( xl_retval.ray);
+    gl_Position = vec4( xl_retval.pos);
+    xlv_TEXCOORD0 = vec2( xl_retval.uv);
+    xlv_TEXCOORD1 = vec3( xl_retval.ray);
 }
