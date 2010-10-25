@@ -356,11 +356,13 @@ void initializeHLSLSupportLibrary()
         "               m[0][3], m[1][3], m[2][3], m[3][3]);\n"
         "}\n")
         );
-	
+
+	// Note: constructing temporary vector and assigning individual components; seems to avoid
+	// some GLSL bugs on AMD (Win7, Radeon HD 58xx, Catalyst 10.5).
 	hlslSupportLib->insert( CodeMap::value_type( EOpMatrixIndex,
-		"vec2 xll_matrixindex (mat2 m, int i) { return vec2( m[0][i], m[1][i] ); }\n"
-		"vec3 xll_matrixindex (mat3 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }\n"
-		"vec4 xll_matrixindex (mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }\n")
+		"vec2 xll_matrixindex (mat2 m, int i) { vec2 v; v.x=m[0][i]; v.y=m[1][i]; return v; }\n"
+		"vec3 xll_matrixindex (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }\n"
+		"vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }\n")
 		);
 	
    hlslSupportLib->insert( CodeMap::value_type( EOpConstructMat2FromMat,
