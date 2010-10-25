@@ -220,6 +220,8 @@ enum TOperator
    EOpConstructMat2FromMat,
    EOpConstructMat3FromMat,
 
+   EOpMatrixIndex,
+
    //
    // moves
    //

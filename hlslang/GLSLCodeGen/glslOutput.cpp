@@ -434,6 +434,17 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 
          current->beginStatement();
 
+		 if (left->isMatrix() && !left->isArray())
+		 {
+			 current->addLibFunction (EOpMatrixIndex);
+			 out << "xll_matrixindex (";
+			 left->traverse(goit);
+			 out << ", ";
+			 right->traverse(goit);
+			 out << ")";
+			 return false;
+		 }
+
          left->traverse(goit);
 
          // Special code for handling a vector component select (this improves readability)
@@ -460,15 +471,30 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          return false;
       }
    case EOpIndexIndirect:
+      {
+      TIntermTyped *left = node->getLeft();
+      TIntermTyped *right = node->getRight();
       current->beginStatement();
 
-      if (node->getLeft())
-         node->getLeft()->traverse(goit);
+	  if (left && right && left->isMatrix() && !left->isArray())
+	  {
+		  current->addLibFunction (EOpMatrixIndex);
+		  out << "xll_matrixindex (";
+		  left->traverse(goit);
+		  out << ", ";
+		  right->traverse(goit);
+		  out << ")";
+		  return false;
+	  }
+
+      if (left)
+         left->traverse(goit);
       out << "[ ";
-      if (node->getRight())
-         node->getRight()->traverse(goit);
+      if (right)
+         right->traverse(goit);
       out << " ]";
       return false;
+	  }
 
    case EOpIndexDirectStruct:
       {

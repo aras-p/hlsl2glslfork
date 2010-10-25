@@ -1,3 +1,6 @@
+vec2 xll_matrixindex (mat2 m, int i) { return vec2( m[0][i], m[1][i] ); }
+vec3 xll_matrixindex (mat3 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }
+vec4 xll_matrixindex (mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }
 struct appdata_full {
     highp vec4 vertex;
     highp vec4 tangent;
@@ -76,7 +79,7 @@ highp vec4 AnimateVertex( in highp vec4 pos, in highp vec3 normal, in highp vec4
     highp vec4 vWaves;
     highp vec2 vWavesSum;
     highp vec3 bend;
-    fObjPhase = dot( _Object2World[ 3 ].xyz , vec3( 1.00000));
+    fObjPhase = dot( xll_matrixindex (_Object2World, 3).xyz , vec3( 1.00000));
     fBranchPhase = (fObjPhase + animParams.x );
     fVtxPhase = dot( pos.xyz , vec3( (animParams.y  + fBranchPhase)));
     vWavesIn = (_Time.yy  + vec2( fVtxPhase, fBranchPhase));

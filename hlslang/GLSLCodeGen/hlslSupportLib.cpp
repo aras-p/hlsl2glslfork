@@ -356,7 +356,13 @@ void initializeHLSLSupportLibrary()
         "               m[0][3], m[1][3], m[2][3], m[3][3]);\n"
         "}\n")
         );
-
+	
+	hlslSupportLib->insert( CodeMap::value_type( EOpMatrixIndex,
+		"vec2 xll_matrixindex (mat2 m, int i) { return vec2( m[0][i], m[1][i] ); }\n"
+		"vec3 xll_matrixindex (mat3 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }\n"
+		"vec4 xll_matrixindex (mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }\n")
+		);
+	
    hlslSupportLib->insert( CodeMap::value_type( EOpConstructMat2FromMat,
         "mat2 xll_constructMat2( mat3 m) {\n"
         "  return mat2( vec2( m[0]), vec2( m[1]));\n"
