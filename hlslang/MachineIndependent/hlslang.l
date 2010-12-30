@@ -99,9 +99,9 @@ TSourceLoc lexlineno;
 "float2x2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(MATRIX2); }
 "float3x3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(MATRIX3); }
 "float4x4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(MATRIX4); }
-"half2x2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(MATRIX2); }
-"half3x3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(MATRIX3); }
-"half4x4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(MATRIX4); }
+"half2x2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(HMATRIX2); }
+"half3x3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(HMATRIX3); }
+"half4x4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(HMATRIX4); }
 
 "fixed"          {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FIXED_TYPE); }
 "fixed2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (FVEC2); }

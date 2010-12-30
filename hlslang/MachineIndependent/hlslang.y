@@ -118,7 +118,8 @@ Jutta Degener, 1995
 %token <lex> ATTRIBUTE CONST_QUAL BOOL_TYPE FLOAT_TYPE INT_TYPE STRING_TYPE FIXED_TYPE HALF_TYPE
 %token <lex> BREAK CONTINUE DO ELSE FOR IF DISCARD RETURN
 %token <lex> BVEC2 BVEC3 BVEC4 IVEC2 IVEC3 IVEC4 VEC2 VEC3 VEC4 HVEC2 HVEC3 HVEC4 FVEC2 FVEC3 FVEC4
-%token <lex> MATRIX2 MATRIX3 MATRIX4 IN_QUAL OUT_QUAL INOUT_QUAL UNIFORM VARYING
+%token <lex> MATRIX2 MATRIX3 MATRIX4 HMATRIX2 HMATRIX3 HMATRIX4
+%token <lex> IN_QUAL OUT_QUAL INOUT_QUAL UNIFORM VARYING
 %token <lex> STRUCT VOID_TYPE WHILE
 %token <lex> SAMPLER1D SAMPLER2D SAMPLER3D SAMPLERCUBE SAMPLER1DSHADOW SAMPLER2DSHADOW SAMPLERRECT
 %token <lex> SAMPLERGENERIC VECTOR MATRIX REGISTER TEXTURE SAMPLERSTATE
@@ -1968,7 +1969,22 @@ type_specifier_nonarray
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setAggregate(4, true);
     }
-    | TEXTURE {
+	| HMATRIX2 {
+		FRAG_VERT_ONLY("mat2", $1.line);
+		SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
+		$$.setAggregate(2, true);
+	}
+	| HMATRIX3 { 
+		FRAG_VERT_ONLY("mat3", $1.line);
+		SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
+		$$.setAggregate(3, true);
+	}
+	| HMATRIX4 { 
+		FRAG_VERT_ONLY("mat4", $1.line);
+		SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
+		$$.setAggregate(4, true);
+	}
+	| TEXTURE {
         FRAG_VERT_ONLY("texture", $1.line);
         SET_BASIC_TYPE($$,$1,EbtTexture,EbpUndefined);
     }  
