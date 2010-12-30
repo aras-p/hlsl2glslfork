@@ -102,6 +102,9 @@ TSourceLoc lexlineno;
 "half2x2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(HMATRIX2); }
 "half3x3"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(HMATRIX3); }
 "half4x4"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(HMATRIX4); }
+"fixed2x2"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FMATRIX2); }
+"fixed3x3"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FMATRIX3); }
+"fixed4x4"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FMATRIX4); }
 
 "fixed"          {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FIXED_TYPE); }
 "fixed2"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (FVEC2); }

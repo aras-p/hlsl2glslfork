@@ -2,6 +2,9 @@ float4x4 mvp;
 half4x4 hmat4;
 half3x3 hmat3;
 half2x2 hmat2;
+fixed4x4 fmat4;
+fixed3x3 fmat3;
+fixed2x2 fmat2;
 
 struct a2v {
 	float4 pos : POSITION;
@@ -24,6 +27,9 @@ v2f main (a2v v)
 	o.pos += mul (hmat4, v.pos);
 	o.pos.xyz += mul (hmat3, v.pos.xyz);
 	o.pos.xy += mul (hmat2, v.pos.xy);
+	o.pos += mul (fmat4, v.pos);
+	o.pos.xyz += mul (fmat3, v.pos.xyz);
+	o.pos.xy += mul (fmat2, v.pos.xy);
 	o.color = v.color;
 	o.color.rgb += v.normal;
 	o.uv = v.uv;
