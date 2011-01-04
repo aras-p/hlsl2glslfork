@@ -623,7 +623,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	{
 		for (std::map<std::string,GlslSymbol*>::iterator sit = globalSymMap.begin(); sit != globalSymMap.end(); sit++)
 		{
-			sit->second->writeDecl(shader);
+			sit->second->writeDecl(shader,false);
 			shader << ";\n";
 
 			if ( sit->second->getIsMutable() )
