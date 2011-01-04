@@ -58,12 +58,15 @@ bool GlslSymbol::isReservedGlslKeyword ( const std::string &name ) const
 }
 
 
-void GlslSymbol::writeDecl( std::stringstream &out, bool local )
+void GlslSymbol::writeDecl (std::stringstream &out, bool local, bool skipUniform)
 {
    switch (qual)
    {
    case EqtNone:            break;
-   case EqtUniform:         out << "uniform "; break;
+   case EqtUniform:
+      if (!skipUniform)
+		  out << "uniform ";
+      break;
    case EqtMutableUniform:
       if (!local)
          out << "uniform ";

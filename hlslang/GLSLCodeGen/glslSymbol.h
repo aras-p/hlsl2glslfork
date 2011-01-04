@@ -52,7 +52,7 @@ public:
    const float* getInitializer() const { return &initializer[0]; }
    int initializerSize() const { return (int)initializer.size(); }
 
-   void writeDecl( std::stringstream &out, bool local );
+   void writeDecl( std::stringstream &out, bool local, bool skipUniform );
    void writeInitializer( std::stringstream &out, int element = 0);
 
    void setInitializer( const constUnion *ptr );

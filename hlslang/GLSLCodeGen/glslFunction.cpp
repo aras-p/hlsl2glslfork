@@ -101,14 +101,14 @@ std::string GlslFunction::getPrototype()
 
    if (it != parameters.end())
    {
-      (*it)->writeDecl(out,false);
+      (*it)->writeDecl(out,false,true);
       it++;
    }
 
    while ( it != parameters.end())
    {
       out << ", ";
-      (*it)->writeDecl(out,false);
+      (*it)->writeDecl(out,false,true);
       it++;
    }
 
@@ -144,7 +144,7 @@ std::string GlslFunction::getLocalDecls( int indentLevel )
          indent(out);
          if ((*it)->hasInitializer())
          {
-            (*it)->writeDecl(out, true);         
+            (*it)->writeDecl(out, true, false);         
             if ((*it)->isArray())
             {
                out <<";\n";
@@ -165,7 +165,7 @@ std::string GlslFunction::getLocalDecls( int indentLevel )
          }
          else
          {
-            (*it)->writeDecl(out, true);         
+            (*it)->writeDecl(out, true, false);         
          }
          out << ";\n";
       }
