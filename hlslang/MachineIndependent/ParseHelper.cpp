@@ -1020,7 +1020,7 @@ bool TParseContext::nonInitErrorCheck(int line, TString& identifier, const TType
 
 bool TParseContext::paramErrorCheck(int line, TQualifier qualifier, TQualifier paramQualifier, TType* type)
 {
-   if (qualifier != EvqConst && qualifier != EvqTemporary)
+   if (qualifier != EvqConst && qualifier != EvqTemporary && qualifier != EvqUniform)
    {
       error(line, "qualifier not allowed on function parameter", getQualifierString(qualifier), "");
       return true;
@@ -1031,7 +1031,9 @@ bool TParseContext::paramErrorCheck(int line, TQualifier qualifier, TQualifier p
       return true;
    }
 
-   if (qualifier == EvqConst)
+   if (qualifier == EvqUniform)
+      type->changeQualifier(EvqUniform);
+   else if (qualifier == EvqConst)
       type->changeQualifier(EvqConstReadOnly);
    else
       type->changeQualifier(paramQualifier);
