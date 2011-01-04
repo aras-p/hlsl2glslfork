@@ -1,0 +1,3 @@
+fixed4 main (float4 uv:TEXCOORD0, uniform float4 unicolor) : COLOR0 {
+	return uv + unicolor;
+}

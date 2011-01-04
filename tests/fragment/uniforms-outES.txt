@@ -1,0 +1,12 @@
+uniform highp vec4 unicolor;
+lowp vec4 xlat_main( in highp vec4 uv, highp vec4 unicolor );
+lowp vec4 xlat_main( in highp vec4 uv, highp vec4 unicolor ) {
+    return (uv + unicolor);
+}
+uniform highp vec4 xlu_unicolor;
+varying highp vec4 xlv_TEXCOORD0;
+void main() {
+    lowp vec4 xl_retval;
+    xl_retval = xlat_main( vec4(xlv_TEXCOORD0), xlu_unicolor);
+    gl_FragData[0] = vec4( xl_retval);
+}
