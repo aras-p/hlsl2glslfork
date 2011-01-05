@@ -67,6 +67,7 @@ TSourceLoc lexlineno;
 <*>"//"[^\n]*"\n"     { /* ?? carriage and/or line-feed? */ };
 
 "const"        {  pyylval->lex.line = lexlineno; return(CONST_QUAL); }
+"static"       {  pyylval->lex.line = lexlineno; return(STATIC_QUAL); }
 "uniform"      {  pyylval->lex.line = lexlineno; return(UNIFORM); }
 
 "break"        {  pyylval->lex.line = lexlineno; return(BREAK); }
@@ -164,7 +165,6 @@ TSourceLoc lexlineno;
 "noinline"     {  /* just ignore it PaReservedWord(); return 0; */ }
 "volatile"     {  PaReservedWord(); return 0; }
 "public"       {  PaReservedWord(); return 0; }
-"static"       {  PaReservedWord(); return 0; }
 "extern"       {  PaReservedWord(); return 0; }
 "external"     {  PaReservedWord(); return 0; }
 "interface"    {  PaReservedWord(); return 0; }

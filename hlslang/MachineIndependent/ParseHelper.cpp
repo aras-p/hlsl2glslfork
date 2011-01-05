@@ -836,7 +836,12 @@ bool TParseContext::arrayErrorCheck(int line, TString& identifier, const TTypeIn
    // because reserved arrays can be redeclared.
    //
 
-   type.qualifier = (type.qualifier != EvqGlobal) ? type.qualifier : EvqUniform;
+   switch (type.qualifier)
+   {
+   case EvqGlobal: type.qualifier = EvqUniform; break; // according to hlsl, non static globals are uniforms
+   case EvqStatic: type.qualifier = EvqGlobal; break;
+   case EvqStaticConst: type.qualifier = EvqConst; break;
+   }
 
    bool builtIn = false; 
    bool sameScope = false;
@@ -1001,7 +1006,12 @@ bool TParseContext::nonInitErrorCheck(int line, TString& identifier, const TType
    if (reservedErrorCheck(line, identifier))
       recover();
 
-   type.qualifier = (type.qualifier != EvqGlobal) ? type.qualifier : EvqUniform;
+   switch (type.qualifier)
+   {
+   case EvqGlobal: type.qualifier = EvqUniform; break; // according to hlsl, non static globals are uniforms
+   case EvqStatic: type.qualifier = EvqGlobal; break;
+   case EvqStaticConst: type.qualifier = EvqConst; break;
+   }
 
    TVariable* variable = new TVariable(&identifier, info, TType(type));
 
@@ -1101,7 +1111,12 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, TPu
 bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, const TTypeInfo *info, TPublicType& pType, 
                                        TIntermTyped* initializer, TIntermNode*& intermNode, TVariable* variable)
 {
-   pType.qualifier = (pType.qualifier != EvqGlobal) ? pType.qualifier : EvqUniform;
+   switch (pType.qualifier)
+   {
+   case EvqGlobal: pType.qualifier = EvqUniform; break; // according to hlsl, non static globals are uniforms
+   case EvqStatic: pType.qualifier = EvqGlobal; break;
+   case EvqStaticConst: pType.qualifier = EvqConst; break;
+   }
 
    // HLSL2GLSL fails spectacularly on const array variables.
    // I can't quite untangle where it messes them up, so as a workaround let's
