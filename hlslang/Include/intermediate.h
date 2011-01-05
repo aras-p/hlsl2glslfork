@@ -136,6 +136,8 @@ enum TOperator
    EOpReflect,
    EOpRefract,
 
+   EOpLit,
+
    EOpDPdx,            // Fragment only
    EOpDPdy,            // Fragment only
    EOpFwidth,          // Fragment only

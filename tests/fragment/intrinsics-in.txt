@@ -11,5 +11,7 @@ half4 main (float4 uv:TEXCOORD0) : COLOR0 {
 	c.xy += modf (uv.xy, d.xy);
 	c.xyz += modf (uv.xyz, d.xyz);
 	c.xyzw += modf (uv.xyzw, d.xyzw);
+	
+	c += lit(c.x, 0.2, 0.3);
 	return c;
 }

@@ -18,6 +18,9 @@ vec4 xll_mod( vec4 x, vec4 y ) {
   vec4 f = fract (abs(d)) * y;
   return vec4 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z, d.w >= 0.0 ? f.w : -f.w);
 }
+vec4 xll_lit( float n_dot_l, float n_dot_h, float m ) {
+   return vec4(1, max(0.0, n_dot_l), (n_dot_l < 0.0 || n_dot_h < 0.0) ? 0.0 : n_dot_h * m, 1);
+}
 float xll_modf( float x, out int ip) {
   ip = int (x);
   return x-float(ip);
@@ -67,6 +70,7 @@ mediump vec4 xlat_main( in highp vec4 uv ) {
     c.xy  += xll_modf( uv.xy , d.xy );
     c.xyz  += xll_modf( uv.xyz , d.xyz );
     c.xyzw  += xll_modf( uv.xyzw , d.xyzw );
+    c += xll_lit( c.x , 0.200000, 0.300000);
     return c;
 }
 varying highp vec4 xlv_TEXCOORD0;

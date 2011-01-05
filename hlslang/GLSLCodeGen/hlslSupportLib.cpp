@@ -580,6 +580,12 @@ void initializeHLSLSupportLibrary()
         "}\n\n")      
         );
 
+   hlslSupportLib->insert( CodeMap::value_type( EOpLit,
+        "vec4 xll_lit( float n_dot_l, float n_dot_h, float m ) {\n"
+        "   return vec4(1, max(0.0, n_dot_l), (n_dot_l < 0.0 || n_dot_h < 0.0) ? 0.0 : n_dot_h * m, 1);\n"
+        "}\n\n")
+        );
+
    hlslSupportLib->insert( CodeMap::value_type( EOpSmoothStep,
         "mat2 xll_smoothstep( mat2 x, mat2 y, mat2 s ) {\n"
         "  return mat2( smoothstep(x[0],y[0],s[0]), smoothstep(x[1],y[1],s[1]) ); \n"

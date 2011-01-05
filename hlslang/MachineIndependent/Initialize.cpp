@@ -313,6 +313,8 @@ void TBuiltIns::initialize()
       s.append(TString("float4x4  smoothstep(float4x4  edge0, float4x4  edge1, float4x4  x);"));
       
 
+      s.append(TString("float4   lit(float n_dot_l, float n_dot_h, float m);"));
+
       //
       // Geometric Functions.
       //
@@ -600,6 +602,8 @@ void IdentifyBuiltIns(EShLanguage language, TSymbolTable& symbolTable)
    symbolTable.relateToOperator("saturate",     EOpSaturate);
    symbolTable.relateToOperator("modf",         EOpModf);
    symbolTable.relateToOperator("ldexp",        EOpLdexp);
+
+   symbolTable.relateToOperator("lit",          EOpLit);
 
    symbolTable.relateToOperator("D3DCOLORtoUBYTE4", EOpD3DCOLORtoUBYTE4);
 

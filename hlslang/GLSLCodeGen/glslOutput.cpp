@@ -1238,6 +1238,11 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       writeFuncCall ( "xll_sincos", node, goit);
       break;
 
+   case EOpLit:
+      current->addLibFunction(EOpLit);
+      writeFuncCall( "xll_lit", node, goit);
+      break;
+
    case EOpItof:         
    case EOpFtoi:         
    case EOpSkipPixels:   

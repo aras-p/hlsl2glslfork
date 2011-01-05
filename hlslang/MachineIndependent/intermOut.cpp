@@ -281,6 +281,7 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    case EOpMix:           out.debug << "mix";         break;
    case EOpStep:          out.debug << "step";        break;
    case EOpSmoothStep:    out.debug << "smoothstep";  break;
+   case EOpLit:           out.debug << "lit";  break;
 
    case EOpDistance:      out.debug << "distance";                break;
    case EOpDot:           out.debug << "dot";             break;

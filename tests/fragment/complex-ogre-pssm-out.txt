@@ -1,0 +1,90 @@
+vec4 xll_lit( float n_dot_l, float n_dot_h, float m ) {
+   return vec4(1, max(0.0, n_dot_l), (n_dot_l < 0.0 || n_dot_h < 0.0) ? 0.0 : n_dot_h * m, 1);
+}
+uniform vec4 ambient;
+uniform sampler2D diffuse;
+uniform vec4 invShadowMapSize0;
+uniform vec4 invShadowMapSize1;
+uniform vec4 invShadowMapSize2;
+uniform vec4 lightDiffuse;
+uniform vec4 lightSpecular;
+uniform sampler2D normalMap;
+uniform vec4 pssmSplitPoints;
+uniform sampler2D shadowMap0;
+uniform sampler2D shadowMap1;
+uniform sampler2D shadowMap2;
+uniform sampler2D specular;
+float shadowPCF( in sampler2D shadowMap, in vec4 shadowMapPos, in vec2 offset );
+void xlat_main( in vec3 uv, in vec3 OSlightDir, in vec3 OShalfAngle, in vec4 LightPosition0, in vec4 LightPosition1, in vec4 LightPosition2, in vec3 normal, out vec4 oColour, vec4 invShadowMapSize0, vec4 invShadowMapSize1, vec4 invShadowMapSize2, vec4 pssmSplitPoints, sampler2D diffuse, sampler2D specular, sampler2D normalMap, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, vec4 lightDiffuse, vec4 lightSpecular, vec4 ambient );
+float shadowPCF( in sampler2D shadowMap, in vec4 shadowMapPos, in vec2 offset ) {
+    vec2 uv;
+    vec3 o;
+    float c;
+    shadowMapPos = (shadowMapPos / shadowMapPos.w );
+    uv = shadowMapPos.xy ;
+    o = (vec3( offset, ( -offset.x  )) * 0.300000);
+    c = float( ( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  - o.xy )).x ) ) ? ( 1 ) : ( 0 ) );
+    c += float( ( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  + o.xy )).x ) ) ? ( 1 ) : ( 0 ) );
+    c += float( ( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  + o.zy )).x ) ) ? ( 1 ) : ( 0 ) );
+    c += float( ( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  - o.zy )).x ) ) ? ( 1 ) : ( 0 ) );
+    return (c / 4.00000);
+}
+void xlat_main( in vec3 uv, in vec3 OSlightDir, in vec3 OShalfAngle, in vec4 LightPosition0, in vec4 LightPosition1, in vec4 LightPosition2, in vec3 normal, out vec4 oColour, vec4 invShadowMapSize0, vec4 invShadowMapSize1, vec4 invShadowMapSize2, vec4 pssmSplitPoints, sampler2D diffuse, sampler2D specular, sampler2D normalMap, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, vec4 lightDiffuse, vec4 lightSpecular, vec4 ambient ) {
+    float shadowing = 1.00000;
+    vec4 splitColour;
+    vec3 lightVec;
+    vec3 halfAngle;
+    vec4 diffuseColour;
+    vec4 specularColour;
+    float shininess;
+    vec4 lighting;
+    if ( (uv.z  <= pssmSplitPoints.y ) ){
+        splitColour = vec4( 0.100000, 0.000000, 0.000000, 1.00000);
+        shadowing = shadowPCF( shadowMap0, LightPosition0, invShadowMapSize0.xy );
+    }
+    else{
+        if ( (uv.z  <= pssmSplitPoints.z ) ){
+            splitColour = vec4( 0.000000, 0.100000, 0.000000, 1.00000);
+            shadowing = shadowPCF( shadowMap1, LightPosition1, invShadowMapSize1.xy );
+        }
+        else{
+            splitColour = vec4( 0.100000, 0.100000, 0.000000, 1.00000);
+            shadowing = shadowPCF( shadowMap2, LightPosition2, invShadowMapSize2.xy );
+        }
+    }
+    lightVec = normalize( OSlightDir );
+    halfAngle = normalize( OShalfAngle );
+    diffuseColour = texture2D( diffuse, uv.xy );
+    specularColour = texture2D( specular, uv.xy );
+    shininess = specularColour.w ;
+    specularColour.w  = 1.00000;
+    lighting = (xll_lit( dot( normal, lightVec), dot( normal, halfAngle), (shininess * 128.000)) * shadowing);
+    oColour = ((diffuseColour * clamp( (ambient + (lightDiffuse * lighting.y )), vec4( 0.000000), vec4( 1.00000))) + ((lightSpecular * specularColour) * lighting.z ));
+    oColour.w  = diffuseColour.w ;
+}
+uniform vec4 xlu_invShadowMapSize0;
+uniform vec4 xlu_invShadowMapSize1;
+uniform vec4 xlu_invShadowMapSize2;
+uniform vec4 xlu_pssmSplitPoints;
+uniform sampler2D xlu_diffuse;
+uniform sampler2D xlu_specular;
+uniform sampler2D xlu_normalMap;
+uniform sampler2D xlu_shadowMap0;
+uniform sampler2D xlu_shadowMap1;
+uniform sampler2D xlu_shadowMap2;
+uniform vec4 xlu_lightDiffuse;
+uniform vec4 xlu_lightSpecular;
+uniform vec4 xlu_ambient;
+varying vec3 xlv_TEXCOORD0;
+varying vec3 xlv_TEXCOORD1;
+varying vec3 xlv_TEXCOORD2;
+varying vec4 xlv_TEXCOORD3;
+varying vec4 xlv_TEXCOORD4;
+varying vec4 xlv_TEXCOORD5;
+varying vec3 xlv_TEXCOORD6;
+void main() {
+    vec4 xlt_oColour;
+    xlat_main( vec3(xlv_TEXCOORD0), vec3(xlv_TEXCOORD1), vec3(xlv_TEXCOORD2), vec4(xlv_TEXCOORD3), vec4(xlv_TEXCOORD4), vec4(xlv_TEXCOORD5), vec3(xlv_TEXCOORD6), xlt_oColour, xlu_invShadowMapSize0, xlu_invShadowMapSize1, xlu_invShadowMapSize2, xlu_pssmSplitPoints, xlu_diffuse, xlu_specular, xlu_normalMap, xlu_shadowMap0, xlu_shadowMap1, xlu_shadowMap2, xlu_lightDiffuse, xlu_lightSpecular, xlu_ambient);
+    gl_FragData[0] = vec4( xlt_oColour);
+;
+}
