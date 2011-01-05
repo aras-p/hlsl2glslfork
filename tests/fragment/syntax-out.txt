@@ -1,11 +1,18 @@
 vec4 xlat_main(  );
 vec4 xlat_main(  ) {
     float foo = 1.00000;
+    vec4 v;
+    vec3 f3;
+    vec3 boo;
     foo += 1.00000;
     foo += 100000.;
     foo += -0.00100000;
     foo += 2.00000;
     foo += 3.00000;
+    v = vec4( f3.zyx , 1.00000);
+    v = vec4( vec3( foo), 1.00000);
+    v = vec4( vec3( boo), 1.00000);
+    v = vec4( foo);
     return vec4( foo);
 }
 void main() {

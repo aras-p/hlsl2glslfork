@@ -1713,7 +1713,9 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
    }
 
    // setAggregateOperator will insert a new node for the constructor, as needed.
-   return intermediate.setAggregateOperator(newNode, op, line);
+   newNode = intermediate.setAggregateOperator(newNode, op, line);
+   newNode->setType(*type);
+   return newNode;
 }
 
 // This function tests for the type of the parameters to the structures constructors. Raises

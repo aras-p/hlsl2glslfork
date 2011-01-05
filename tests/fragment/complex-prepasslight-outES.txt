@@ -78,7 +78,7 @@ mediump float unitySampleShadow( in highp vec3 vec, in highp float mydist ) {
     shadowVals.y  = SampleCubeDistance( (vec + vec3( ( -z ), ( -z ), z)));
     shadowVals.z  = SampleCubeDistance( (vec + vec3( ( -z ), z, ( -z ))));
     shadowVals.w  = SampleCubeDistance( (vec + vec3( z, ( -z ), ( -z ))));
-    shadows = xll_vecTSel (lessThan( shadowVals, vec4( vec4( mydist) )), vec4( _LightShadowData.xxxx ), vec4( 1.00000));
+    shadows = xll_vecTSel (lessThan( shadowVals, vec4( mydist)), vec4( _LightShadowData.xxxx ), vec4( 1.00000));
     return dot( shadows, vec4( 0.250000));
 }
 mediump float ComputeShadow( in highp vec3 vec, in highp float z, in highp vec2 uv ) {
@@ -119,7 +119,7 @@ mediump vec4 xlat_main( in v2f i ) {
     tolight = (wpos - _LightPos.xyz );
     lightDir = ( -normalize( tolight ) );
     att = (dot( tolight, tolight) * _LightPos.w );
-    atten = texture2D( _LightTextureB0, vec2( vec2( att))).w ;
+    atten = texture2D( _LightTextureB0, vec2( att)).w ;
     atten *= ComputeShadow( tolight, vpos.z , uv);
     atten *= textureCube( _LightTexture0, ( _LightMatrix0 * vec4( wpos, 1.00000) ).xyz ).w ;
     diff = max( 0.000000, dot( lightDir, normal));

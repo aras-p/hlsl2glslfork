@@ -5,5 +5,14 @@ half4 main() : COLOR0 {
 	foo += -1.0e-3;
 	foo += 2f;
 	foo += 3;
+	
+	float3 f3;
+	half4 v;
+	float boo;
+	v = half4(f3.zyx, 1);
+	v = half4(foo.xxx, 1);
+	v = half4(boo.xxx, 1);
+	v = foo.xxxx;
+	
 	return foo;
 }
