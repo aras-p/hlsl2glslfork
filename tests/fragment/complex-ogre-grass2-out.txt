@@ -1,0 +1,44 @@
+uniform sampler2D diffuseMap;
+uniform float fixedDepthBias;
+uniform float gradientClamp;
+uniform float gradientScaleBias;
+uniform sampler2D shadowMap;
+void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLight, out vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, float fixedDepthBias, float gradientClamp, float gradientScaleBias );
+void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLight, out vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, float fixedDepthBias, float gradientClamp, float gradientScaleBias ) {
+    vec4 diffuse;
+    vec4 shadowDepths;
+    float gradientFactor;
+    float depthAdjust;
+    float centerdepth;
+    if ( (shadowUV.z  > 0.000000) ){
+        diffuse = texture2D( diffuseMap, uv.xy );
+        if ( (diffuse.w  > 0.00100000) ){
+            oColour = vec4( 0.000000, 0.000000, 0.000000, 0.000000);
+        }
+        else{
+            shadowUV = (shadowUV / shadowUV.w );
+            shadowDepths = texture2D( shadowMap, shadowUV.xy );
+            gradientFactor = (gradientClamp * gradientScaleBias);
+            depthAdjust = (gradientFactor + (fixedDepthBias * shadowDepths.x ));
+            centerdepth = (shadowDepths.x  + depthAdjust);
+            oColour = ( (centerdepth > shadowUV.z ) ) ? ( vec4( vertexLight.xyz , diffuse.w ) ) : ( vec4( 0.000000, 0.000000, 0.000000, diffuse.w ) );
+        }
+    }
+    else{
+        oColour = vec4( 0.000000, 0.000000, 0.000000, 0.000000);
+    }
+}
+uniform sampler2D xlu_shadowMap;
+uniform sampler2D xlu_diffuseMap;
+uniform float xlu_fixedDepthBias;
+uniform float xlu_gradientClamp;
+uniform float xlu_gradientScaleBias;
+varying vec4 xlv_TEXCOORD0;
+varying vec3 xlv_TEXCOORD1;
+varying vec4 xlv_COLOR;
+void main() {
+    vec4 xlt_oColour;
+    xlat_main( vec4(0.0), vec4(xlv_TEXCOORD0), vec3(xlv_TEXCOORD1), vec4(xlv_COLOR), xlt_oColour, xlu_shadowMap, xlu_diffuseMap, xlu_fixedDepthBias, xlu_gradientClamp, xlu_gradientScaleBias);
+    gl_FragData[0] = vec4( xlt_oColour);
+;
+}

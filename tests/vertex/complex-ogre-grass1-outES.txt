@@ -1,0 +1,36 @@
+uniform highp vec4 ambient;
+uniform highp vec4 lightColour;
+uniform highp vec4 objSpaceLight;
+uniform highp vec4 offset;
+uniform highp mat4 worldViewProj;
+void xlat_main( in highp vec4 position, in highp vec3 normal, in highp vec2 uv, out highp vec4 oPosition, out highp vec2 oUv, out highp vec4 oColour, highp mat4 worldViewProj, highp vec4 ambient, highp vec4 objSpaceLight, highp vec4 lightColour, highp vec4 offset );
+void xlat_main( in highp vec4 position, in highp vec3 normal, in highp vec2 uv, out highp vec4 oPosition, out highp vec2 oUv, out highp vec4 oColour, highp mat4 worldViewProj, highp vec4 ambient, highp vec4 objSpaceLight, highp vec4 lightColour, highp vec4 offset ) {
+    highp vec4 mypos;
+    highp vec4 factor;
+    highp vec3 light;
+    highp float diffuseFactor;
+    mypos = position;
+    factor = (highp vec4( 1.00000, 1.00000, 1.00000, 1.00000) - uv.yyyy );
+    mypos = (mypos + (offset * factor));
+    oPosition = ( worldViewProj * mypos );
+    oUv = uv;
+    light = normalize( (objSpaceLight.xyz  - (mypos.xyz  * objSpaceLight.w )) );
+    diffuseFactor = abs( dot( normal.xyz , light) );
+    oColour = (ambient + (diffuseFactor * lightColour));
+}
+uniform highp mat4 xlu_worldViewProj;
+uniform highp vec4 xlu_ambient;
+uniform highp vec4 xlu_objSpaceLight;
+uniform highp vec4 xlu_lightColour;
+uniform highp vec4 xlu_offset;
+varying highp vec2 xlv_TEXCOORD0;
+varying highp vec4 xlv_COLOR;
+void main() {
+    highp vec4 xlt_oPosition;
+    highp vec2 xlt_oUv;
+    highp vec4 xlt_oColour;
+    xlat_main( vec4(gl_Vertex), vec3(gl_Normal), vec2(gl_MultiTexCoord0), xlt_oPosition, xlt_oUv, xlt_oColour, xlu_worldViewProj, xlu_ambient, xlu_objSpaceLight, xlu_lightColour, xlu_offset);
+    gl_Position = vec4( xlt_oPosition);
+    xlv_TEXCOORD0 = vec2( xlt_oUv);
+    xlv_COLOR = vec4( xlt_oColour);
+}

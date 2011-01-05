@@ -1,0 +1,23 @@
+uniform sampler2D diffuseMap;
+void xlat_main( in highp vec4 position, in highp vec2 uv, in highp vec2 depth, out highp vec4 result, sampler2D diffuseMap );
+void xlat_main( in highp vec4 position, in highp vec2 uv, in highp vec2 depth, out highp vec4 result, sampler2D diffuseMap ) {
+    highp float alpha;
+    highp float finalDepth;
+    alpha = texture2D( diffuseMap, uv).w ;
+    if ( (alpha > 0.00100000) ){
+        result = highp vec4( 1.00000, 1.00000, 1.00000, 0.000000);
+    }
+    else{
+        finalDepth = (depth.x  / depth.y );
+        result = vec4( vec3( finalDepth), 1.00000);
+    }
+}
+uniform sampler2D xlu_diffuseMap;
+varying highp vec2 xlv_TEXCOORD0;
+varying highp vec2 xlv_TEXCOORD1;
+void main() {
+    highp vec4 xlt_result;
+    xlat_main( vec4(0.0), vec2(xlv_TEXCOORD0), vec2(xlv_TEXCOORD1), xlt_result, xlu_diffuseMap);
+    gl_FragData[0] = vec4( xlt_result);
+;
+}
