@@ -1,0 +1,66 @@
+float xll_saturate( float x) {
+  return clamp( x, 0.0, 1.0);
+}
+vec2 xll_saturate( vec2 x) {
+  return clamp( x, 0.0, 1.0);
+}
+vec3 xll_saturate( vec3 x) {
+  return clamp( x, 0.0, 1.0);
+}
+vec4 xll_saturate( vec4 x) {
+  return clamp( x, 0.0, 1.0);
+}
+mat2 xll_saturate(mat2 m) {
+  return mat2( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0));
+}
+mat3 xll_saturate(mat3 m) {
+  return mat3( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0), clamp(m[2], 0.0, 1.0));
+}
+mat4 xll_saturate(mat4 m) {
+  return mat4( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0), clamp(m[2], 0.0, 1.0), clamp(m[3], 0.0, 1.0));
+}
+uniform highp float sampleDist;
+uniform highp float sampleStrength;
+uniform sampler2D tex;
+highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength );
+highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength ) {
+    highp vec2 dir;
+    highp float dist;
+    highp vec4 color;
+    highp vec4 sum;
+    highp int i = 0;
+    highp vec4 res;
+    highp float samples[10];
+    samples[0] = -0.0800000;
+    samples[1] = -0.0500000;
+    samples[2] = -0.0300000;
+    samples[3] = -0.0200000;
+    samples[4] = -0.0100000;
+    samples[5] = 0.0100000;
+    samples[6] = 0.0200000;
+    samples[7] = 0.0300000;
+    samples[8] = 0.0500000;
+    samples[9] = 0.0800000;
+    highp float t;
+    dir = (0.500000 - texCoord);
+    dist = sqrt( ((dir.x  * dir.x ) + (dir.y  * dir.y )) );
+    dir = normalize( dir );
+    color = texture2D( tex, texCoord);
+    sum = color;
+    for ( ; (i < 10); ( i++ )) {
+        res = texture2D( tex, (texCoord + ((dir * samples[ i ]) * sampleDist)));
+        sum += res;
+    }
+    sum /= 11.0000;
+    t = (dist * sampleStrength);
+    t = xll_saturate( t );
+    return mix( color, sum, vec4( t));
+}
+uniform highp float xlu_sampleDist;
+uniform highp float xlu_sampleStrength;
+varying highp vec2 xlv_TEXCOORD0;
+void main() {
+    highp vec4 xl_retval;
+    xl_retval = xlat_main( vec4(0.0), vec2(xlv_TEXCOORD0), xlu_sampleDist, xlu_sampleStrength);
+    gl_FragData[0] = vec4( xl_retval);
+}
