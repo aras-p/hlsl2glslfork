@@ -201,8 +201,9 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 		base = EgstFloat;
 		size = type - EgstFloat + 1;
 		break;
-        default:
-            return false;
+
+    default:
+        return false;
 	};
 
 	if ( c != EClassUniform)
@@ -1109,6 +1110,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 							//assert(0);
 							infoSink.info << (lang==EShLangVertex ? "Unsupported element type in struct for shader return value (" : "Unsupported struct element type in return type for shader entry function (");
 							infoSink.info << getTypeString(current.type) << ")\n";
+							return false;
 						}
 					}
 				}
