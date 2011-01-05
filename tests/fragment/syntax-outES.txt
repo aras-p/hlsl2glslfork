@@ -13,6 +13,7 @@ mediump vec4 xlat_main(  ) {
     v = vec4( vec3( foo), 1.00000);
     v = vec4( vec3( boo), 1.00000);
     v = vec4( foo);
+    v = vec4( 2.00000);
     v = vec4( 1.90000);
     return vec4( foo);
 }

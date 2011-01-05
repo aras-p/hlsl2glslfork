@@ -13,7 +13,7 @@ half4 main() : COLOR0 {
 	v = half4(foo.xxx, 1);
 	v = half4(boo.xxx, 1);
 	v = foo.xxxx;
-	//v = 2..xxxx;
+	v = 2..xxxx;
 	//const float fci = 1;
 	//v = fci.xxxx;
 	const float fcf = 1.9;
