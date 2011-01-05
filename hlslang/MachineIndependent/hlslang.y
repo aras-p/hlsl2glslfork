@@ -1322,6 +1322,18 @@ parameter_declarator
         
         //TODO: add initializer support
     }
+    | type_specifier IDENTIFIER register_specifier {
+        // register is being ignored
+        if ($1.type == EbtVoid) {
+            parseContext.error($2.line, "illegal use of type 'void'", $2.string->c_str(), "");
+            parseContext.recover();
+        }
+        if (parseContext.reservedErrorCheck($2.line, *$2.string))
+            parseContext.recover();
+        TParameter param = {$2.string, 0, new TType($1)};
+        $$.line = $2.line;
+        $$.param = param; 
+    }
     | type_specifier IDENTIFIER COLON IDENTIFIER {
         //Parameter with semantic
         if ($1.type == EbtVoid) {
