@@ -17,6 +17,7 @@ public:
       std::string name;
       std::string semantic;
       EGlslSymbolType type;
+      GlslStruct*     structType; // NULL if type != EgstStruct
       int arraySize;
 	  TPrecision precision;
    };

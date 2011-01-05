@@ -1411,6 +1411,13 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
          if (it->type->hasSemantic())
             m.semantic = it->type->getSemantic().c_str();
 
+        if (it->type->getBasicType() == EbtStruct)
+        {
+            m.structType = createStructFromType(it->type);
+        }
+        else
+            m.structType = NULL;
+
          m.type = translateType( it->type);
          m.arraySize = it->type->isArray() ? it->type->getArraySize() : 0;
 		 m.precision = m_UsePrecision ? it->type->getPrecision() : EbpUndefined;
