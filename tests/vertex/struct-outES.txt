@@ -1,20 +1,20 @@
 struct Inner {
-    float member1;
-    ivec3 member2;
+    highp float member1;
+    highp ivec3 member2;
 };
 struct Outer {
     Inner inner;
     Inner inner2;
 };
-vec4 xlat_main(  );
-vec4 xlat_main(  ) {
+highp vec4 xlat_main(  );
+highp vec4 xlat_main(  ) {
     Outer test;
     test.inner.member1 = 1.00000;
     test.inner.member2 = ivec3( 0);
     return vec4( vec3( test.inner.member2 ), test.inner.member1);
 }
 void main() {
-    vec4 xl_retval;
+    highp vec4 xl_retval;
     xl_retval = xlat_main( );
     gl_Position = vec4( xl_retval);
 }
