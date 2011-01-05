@@ -431,18 +431,12 @@ postfix_expression
                 parseContext.recover();
             }
 
-            if ($1->getType().getQualifier() == EvqConst) { 
-                parseContext.error($2.line, " field selection requires structure, vector, or matrix on left hand side", $3.string->c_str(), "");
-                parseContext.recover();
-                $$ = $1;
-            } else {    
-
-               // Create the appropriate constructor based on the number of ".x"'s there are in the selection field
-                TString vectorString = *$3.string;
-                $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, (int) vectorString.size()));  
-                $$ = parseContext.constructBuiltIn ( &$$->getType(), parseContext.getConstructorOp($$->getType()),
-                                                     $$, $1->getLine(), false);                               
-            }           
+            // Create the appropriate constructor based on the number of ".x"'s there are in the selection field
+            TString vectorString = *$3.string;
+            TQualifier qualifier = $1->getType().getQualifier() == EvqConst ? EvqConst : EvqTemporary;
+            TType type($1->getBasicType(), $1->getPrecision(), qualifier, (int) vectorString.size());
+            $$ = parseContext.constructBuiltIn(&type, parseContext.getConstructorOp(type),
+                                               $$, $1->getLine(), false);
         } else {
             parseContext.error($2.line, " field selection requires structure, vector, or matrix on left hand side", $3.string->c_str(), "");
             parseContext.recover();
