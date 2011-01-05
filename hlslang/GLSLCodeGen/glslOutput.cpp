@@ -355,6 +355,31 @@ void TGlslOutputTraverser::traverseImmediateConstant( TIntermConstantUnion *node
 }
 
 
+// Special case for matrix[idx1][idx2]: output as matrix[idx2][idx1]
+static bool Check2DMatrixIndex (TGlslOutputTraverser* goit, std::stringstream& out, TIntermTyped* left, TIntermTyped* right)
+{
+	if (left->isVector() && !left->isArray())
+	{
+		TIntermBinary* leftBin = left->getAsBinaryNode();
+		if (leftBin && (leftBin->getOp() == EOpIndexDirect || leftBin->getOp() == EOpIndexIndirect))
+		{
+			TIntermTyped* superLeft = leftBin->getLeft();
+			TIntermTyped* superRight = leftBin->getRight();
+			if (superLeft->isMatrix() && !superLeft->isArray())
+			{
+				superLeft->traverse (goit);
+				out << "[";
+				right->traverse(goit);
+				out << "][";
+				superRight->traverse(goit);
+				out << "]";
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
 bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, TIntermTraverser *it )
 {
    TString op = "??";
@@ -434,6 +459,9 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 
          current->beginStatement();
 
+		 if (Check2DMatrixIndex (goit, out, left, right))
+			 return false;
+
 		 if (left->isMatrix() && !left->isArray())
 		 {
 			 current->addLibFunction (EOpMatrixIndex);
@@ -475,6 +503,9 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
       TIntermTyped *left = node->getLeft();
       TIntermTyped *right = node->getRight();
       current->beginStatement();
+
+	  if (Check2DMatrixIndex (goit, out, left, right))
+		  return false;
 
 	  if (left && right && left->isMatrix() && !left->isArray())
 	  {
