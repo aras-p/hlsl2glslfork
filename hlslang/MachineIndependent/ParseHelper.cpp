@@ -341,7 +341,7 @@ bool TParseContext::lValueErrorCheck(int line, char* op, TIntermTyped* node)
    if (symNode != 0)
       symbol = symNode->getSymbol().c_str();
 
-   char* message = 0;
+   const char* message = 0;
    switch (node->getQualifier())
    {
    case EvqConst:          message = "can't modify a const";        break;
@@ -1921,7 +1921,6 @@ TIntermTyped* TParseContext::addConstArrayNode(int index, TIntermTyped* node, TS
 {
    TIntermTyped* typedNode;
    TIntermConstantUnion* tempConstantNode = node->getAsConstantUnion();
-   int arraySize = node->getType().getArraySize();
    TType arrayElementType = node->getType();
    arrayElementType.clearArrayness();
 

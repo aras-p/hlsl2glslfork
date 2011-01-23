@@ -139,7 +139,7 @@ void DeleteTokenStream(TokenStream *pTok)
 void RecordToken(TokenStream *pTok, int token, yystypepp * yylvalpp)
 {
     const char *s;
-    unsigned char *str=NULL;
+    const char *str=NULL;
 
     if (token > 256)
         lAddByte(pTok, (unsigned char)((token & 0x7f) + 0x80));

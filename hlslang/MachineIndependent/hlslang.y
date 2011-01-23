@@ -771,14 +771,14 @@ unary_expression
         if ($1.op != EOpNull) {
             $$ = parseContext.intermediate.addUnaryMath($1.op, $2, $1.line, parseContext.symbolTable);
             if ($$ == 0) {
-                char* errorOp = "";
+                const char* errorOp = "";
                 switch($1.op) {
                 case EOpNegative:   errorOp = "-"; break;
                 case EOpLogicalNot: errorOp = "!"; break;
                 case EOpBitwiseNot: errorOp = "~"; break;
 				default: break;
                 }
-                parseContext.unaryOpError($1.line, errorOp, $2->getCompleteString());
+                parseContext.unaryOpError($1.line, const_cast<char*> (errorOp), $2->getCompleteString());
                 parseContext.recover();
                 $$ = $2;
             }

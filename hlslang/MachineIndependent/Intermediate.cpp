@@ -1491,7 +1491,6 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, TIntermTyped* constantNod
 
       constUnion* tempConstArray = 0;
       TIntermConstantUnion *tempNode;
-      int index = 0;
       bool boolNodeFlag = false;
       switch (op)
       {

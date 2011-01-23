@@ -206,7 +206,6 @@ void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle )
    if (handle == 0)
       return;
 
-   HlslCrossCompiler* compiler = handle;
    delete handle;
 }
 

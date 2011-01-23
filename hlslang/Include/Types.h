@@ -235,7 +235,7 @@ public:
    void setArrayInformationType(TType* t) { arrayInformationType = t; }
    TType* getArrayInformationType() { return arrayInformationType; }
    bool isVector() const { return size > 1 && !matrix; }
-   static char* getBasicString(TBasicType t)
+   static const char* getBasicString(TBasicType t)
    {
       switch (t)
       {

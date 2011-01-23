@@ -292,8 +292,7 @@ extern "C" {
 
 int yy_input(char* buf, int max_size)
 {
-     char *char_token =NULL;
-     int len;
+	int len;
 
     if ((len = yylex_CPP(buf, max_size)) == 0)
         return 0;
