@@ -635,9 +635,9 @@ void initializeHLSLSupportLibrary()
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex1DGrad,
-        "#extension GL_ATI_shader_texture_lod : require\n"
+        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex1Dgrad(sampler1D s, float coord, float ddx, float ddy) {\n"
-        "  return texture1D_ATI( s, coord, ddx, ddy);\n"
+        "  return texture1D_ARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
    
@@ -654,9 +654,9 @@ void initializeHLSLSupportLibrary()
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DGrad,
-        "#extension GL_ATI_shader_texture_lod : require\n"
+        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
-        "   return texture2D_ATI( s, coord, ddx, ddy);\n"
+        "   return texture2D_ARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
 
@@ -673,9 +673,9 @@ void initializeHLSLSupportLibrary()
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DGrad,
-        "#extension GL_ATI_shader_texture_lod : require\n"
+        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex3Dgrad(sampler3D s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
-        "  return texture3D_ATI( s, coord, ddx, ddy);\n"
+        "  return texture3D_ARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
 
@@ -692,9 +692,9 @@ void initializeHLSLSupportLibrary()
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeGrad,  
-        "#extension GL_ATI_shader_texture_lod : require\n"
+        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_texCUBEgrad(samplerCUBE s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
-        "  return textureCube_ATI( s, coord, ddx, ddy);\n"
+        "  return textureCube_ARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
 
