@@ -629,6 +629,7 @@ void initializeHLSLSupportLibrary()
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex1DLod,
+        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex1Dlod(sampler1D s, vec4 coord) {\n"
         "  return texture1DLod( s, coord.x, coord.w);\n"
         "}\n\n" )
@@ -648,6 +649,7 @@ void initializeHLSLSupportLibrary()
         );
    
    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DLod,
+        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {\n"
         "   return texture2DLod( s, coord.xy, coord.w);\n"
         "}\n\n" )
@@ -667,6 +669,7 @@ void initializeHLSLSupportLibrary()
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DLod,
+        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex3Dlod(sampler3D s, vec4 coord) {\n"
         "  return texture3DLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
@@ -686,6 +689,7 @@ void initializeHLSLSupportLibrary()
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeLod,   
+        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_texCUBElod(samplerCube s, vec4 coord) {\n"
         "  return textureCubeLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
