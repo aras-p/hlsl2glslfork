@@ -1,7 +1,7 @@
 vec4 xlat_main( in vec4 uv, in vec4 foobar_xlv_foo );
 vec4 xlat_main( in vec4 uv, in vec4 foobar_xlv_foo ) {
     vec4 c;
-    c = vec4( 0.000000);
+    c = vec4( 0.00000);
     return c;
 }
 varying vec4 xlv_TEXCOORD0;

@@ -61,7 +61,7 @@ vec4 xlat_main( in vec4 uv );
 vec4 xlat_main( in vec4 uv ) {
     vec4 c;
     vec4 d;
-    c = vec4( 0.000000);
+    c = vec4( 0.00000);
     c.x  += xll_mod( uv.x , 2.00000);
     c.xy  += xll_mod( uv.xy , vec2( 2.00000));
     c.xyz  += xll_mod( uv.xyz , vec3( 2.00000));

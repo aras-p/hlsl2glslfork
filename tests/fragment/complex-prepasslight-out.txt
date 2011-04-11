@@ -62,7 +62,7 @@ float Linear01Depth( in float z ) {
     return (1.00000 / ((_ZBufferParams.x  * z) + _ZBufferParams.y ));
 }
 float DecodeFloatRGBA( in vec4 enc ) {
-    vec4 kDecodeDot = vec4( 1.00000, 0.00392157, 1.53787e-005, 6.22737e-009);
+    vec4 kDecodeDot = vec4( 1.00000, 0.00392157, 1.53787e-05, 6.22737e-09);
     return dot( enc, kDecodeDot);
 }
 float SampleCubeDistance( in vec3 vec ) {
@@ -122,9 +122,9 @@ vec4 xlat_main( in v2f i ) {
     atten = texture2D( _LightTextureB0, vec2( att)).w ;
     atten *= ComputeShadow( tolight, vpos.z , uv);
     atten *= textureCube( _LightTexture0, ( _LightMatrix0 * vec4( wpos, 1.00000) ).xyz ).w ;
-    diff = max( 0.000000, dot( lightDir, normal));
+    diff = max( 0.00000, dot( lightDir, normal));
     h = normalize( (lightDir - normalize( (wpos - _WorldSpaceCameraPos) )) );
-    spec = pow( max( 0.000000, dot( h, normal)), (nspec.w  * 128.000));
+    spec = pow( max( 0.00000, dot( h, normal)), (nspec.w  * 128.000));
     spec *= xll_saturate( atten );
     res.xyz  = (_LightColor.xyz  * (diff * atten));
     res.w  = (spec * Luminance( _LightColor.xyz ));

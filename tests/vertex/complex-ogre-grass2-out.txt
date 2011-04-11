@@ -24,13 +24,13 @@ void xlat_main( in vec4 position, in vec4 normal, in vec2 uv, out vec4 oPosition
     oShadowUV = ( texViewProj * worldPos );
     EyeVec = (camObjPos - mypos);
     alignedEye = dot( normal, EyeVec);
-    if ( (alignedEye < 0.000000) ){
+    if ( (alignedEye < 0.00000) ){
         normal = ( -normal );
     }
     lightVec = normalize( (objSpaceLight.xyz  - (mypos.xyz  * objSpaceLight.w )) );
     alignedLight = dot( normal.xyz , lightVec);
-    oUv.z  = float( ( (alignedLight < 0.000000) ) ? ( 0 ) : ( 1 ) );
-    diffuseFactor = max( alignedLight, 0.000000);
+    oUv.z  = float( ( (alignedLight < 0.00000) ) ? ( 0 ) : ( 1 ) );
+    diffuseFactor = max( alignedLight, 0.00000);
     oColour = lightColour;
 }
 uniform mat4 xlu_world;

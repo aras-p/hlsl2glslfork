@@ -54,9 +54,9 @@ void ExpandBillboard( in highp mat4 mat, inout highp vec4 pos, inout highp vec3 
     highp vec3 norb;
     highp vec3 tanb;
     isBillboard = (1.00000 - abs( tangent.w  ));
-    norb = vec3( normalize( ( vec4( normal, 0.000000) * mat ) ));
-    tanb = vec3( normalize( ( vec4( tangent.xyz , 0.000000) * mat ) ));
-    pos += (( vec4( normal.xy , 0.000000, 0.000000) * mat ) * isBillboard);
+    norb = vec3( normalize( ( vec4( normal, 0.00000) * mat ) ));
+    tanb = vec3( normalize( ( vec4( tangent.xyz , 0.00000) * mat ) ));
+    pos += (( vec4( normal.xy , 0.00000, 0.00000) * mat ) * isBillboard);
     normal = mix( normal, norb, vec3( isBillboard));
     tangent = mix( tangent, vec4( tanb, -1.00000), vec4( isBillboard));
 }

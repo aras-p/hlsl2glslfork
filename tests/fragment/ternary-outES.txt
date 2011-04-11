@@ -1,7 +1,7 @@
 mediump vec4 xlat_main( in highp vec4 uv );
 mediump vec4 xlat_main( in highp vec4 uv ) {
     mediump vec4 c;
-    c = vec4( 0.000000);
+    c = vec4( 0.00000);
     c += ( (uv.x  > 0.500000) ) ? ( 0.900000 ) : ( 0.100000 );
     c += ( (uv.x  > 0.500000) ) ? ( highp vec4( 0.900000, 0.900000, 0.900000, 0.900000) ) : ( highp vec4( 0.100000, 0.100000, 0.100000, 0.100000) );
     c.xyz  += ( (uv.x  > 0.500000) ) ? ( highp vec3( 0.900000, 0.900000, 0.900000) ) : ( highp vec3( 0.100000, 0.100000, 0.100000) );

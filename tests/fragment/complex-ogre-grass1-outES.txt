@@ -5,7 +5,7 @@ void xlat_main( in highp vec4 position, in highp vec2 uv, in highp vec2 depth, o
     highp float finalDepth;
     alpha = texture2D( diffuseMap, uv).w ;
     if ( (alpha > 0.00100000) ){
-        result = highp vec4( 1.00000, 1.00000, 1.00000, 0.000000);
+        result = highp vec4( 1.00000, 1.00000, 1.00000, 0.00000);
     }
     else{
         finalDepth = (depth.x  / depth.y );
