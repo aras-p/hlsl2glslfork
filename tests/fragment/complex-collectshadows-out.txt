@@ -37,7 +37,7 @@ float unitySampleShadow( in vec4 eyePos ) {
     far = vec4( lessThan( vec4( z ), _LightSplitsFar) );
     weights = (near * far);
     coord = vec4( ((((sc0 * weights.x ) + (sc1 * weights.y )) + (sc2 * weights.z )) + (sc3 * weights.w )), 1.00000);
-    shadow = ( (texture2D( _ShadowMapTexture, coord.xy ).x  < coord.z ) ) ? ( _LightShadowData.x  ) : ( 1.00000 );
+    shadow = (( (texture2D( _ShadowMapTexture, coord.xy ).x  < coord.z ) ) ? ( _LightShadowData.x  ) : ( 1.00000 ));
     return shadow;
 }
 float Linear01Depth( in float z ) {

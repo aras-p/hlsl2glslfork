@@ -23,10 +23,10 @@ highp float shadowPCF( in sampler2D shadowMap, in highp vec4 shadowMapPos, in hi
     shadowMapPos = (shadowMapPos / shadowMapPos.w );
     uv = shadowMapPos.xy ;
     o = (vec3( offset, ( -offset.x  )) * 0.300000);
-    c = float( ( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  - o.xy )).x ) ) ? ( 1 ) : ( 0 ) );
-    c += float( ( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  + o.xy )).x ) ) ? ( 1 ) : ( 0 ) );
-    c += float( ( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  + o.zy )).x ) ) ? ( 1 ) : ( 0 ) );
-    c += float( ( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  - o.zy )).x ) ) ? ( 1 ) : ( 0 ) );
+    c = float( (( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  - o.xy )).x ) ) ? ( 1 ) : ( 0 )) );
+    c += float( (( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  + o.xy )).x ) ) ? ( 1 ) : ( 0 )) );
+    c += float( (( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  + o.zy )).x ) ) ? ( 1 ) : ( 0 )) );
+    c += float( (( (shadowMapPos.z  <= texture2D( shadowMap, (uv.xy  - o.zy )).x ) ) ? ( 1 ) : ( 0 )) );
     return (c / 4.00000);
 }
 void xlat_main( in highp vec3 uv, in highp vec3 OSlightDir, in highp vec3 OShalfAngle, in highp vec4 LightPosition0, in highp vec4 LightPosition1, in highp vec4 LightPosition2, in highp vec3 normal, out highp vec4 oColour, highp vec4 invShadowMapSize0, highp vec4 invShadowMapSize1, highp vec4 invShadowMapSize2, highp vec4 pssmSplitPoints, sampler2D diffuse, sampler2D specular, sampler2D normalMap, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, highp vec4 lightDiffuse, highp vec4 lightSpecular, highp vec4 ambient ) {

@@ -29,7 +29,7 @@ void xlat_main( in highp vec4 position, in highp vec4 normal, in highp vec2 uv, 
     }
     lightVec = normalize( (objSpaceLight.xyz  - (mypos.xyz  * objSpaceLight.w )) );
     alignedLight = dot( normal.xyz , lightVec);
-    oUv.z  = float( ( (alignedLight < 0.00000) ) ? ( 0 ) : ( 1 ) );
+    oUv.z  = float( (( (alignedLight < 0.00000) ) ? ( 0 ) : ( 1 )) );
     diffuseFactor = max( alignedLight, 0.00000);
     oColour = lightColour;
 }
