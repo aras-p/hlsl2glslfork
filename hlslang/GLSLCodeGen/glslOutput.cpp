@@ -947,7 +947,7 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 	else
 	{
 		// simple ?: selection
-		out << "( ";
+		out << "(( ";
 		node->getCondition()->traverse(goit);
 		out << " ) ? ( ";
 		node->getTrueBlock()->traverse(goit);
@@ -958,7 +958,7 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 		}
 		else
 			assert(0);
-		out << " )";
+		out << " ))";
 	}
 
 	return false;
