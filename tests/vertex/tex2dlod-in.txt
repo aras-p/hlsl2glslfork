@@ -1,0 +1,6 @@
+sampler2D tex;
+
+float4 main (float4 pos : POSITION, float2 uv : TEXCOORD0) : POSITION {
+	float4 c = tex2Dlod (tex, float4(uv,0,0));
+	return pos + c;
+}
