@@ -11,13 +11,16 @@
 
 typedef std::map<TOperator,std::string> CodeMap;
 static CodeMap *hlslSupportLib = 0;
+static CodeMap *hlslSupportLibExtensions = 0;
 
 
 void initializeHLSLSupportLibrary() 
 {
-   assert( hlslSupportLib == 0);
+	assert (hlslSupportLib == 0);
+	assert (hlslSupportLibExtensions == 0);
 
-   hlslSupportLib = new CodeMap;
+	hlslSupportLib = new CodeMap();
+	hlslSupportLibExtensions = new CodeMap();
 
    // Initialize GLSL code for the op codes that require support helper functions
 
@@ -629,18 +632,18 @@ void initializeHLSLSupportLibrary()
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex1DLod,
-        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex1Dlod(sampler1D s, vec4 coord) {\n"
         "  return texture1DLod( s, coord.x, coord.w);\n"
         "}\n\n" )
         );
+	hlslSupportLibExtensions->insert (CodeMap::value_type(EOpTex1DLod, "#extension GL_ARB_shader_texture_lod : require\n"));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex1DGrad,
-        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex1Dgrad(sampler1D s, float coord, float ddx, float ddy) {\n"
         "  return texture1DGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
+	hlslSupportLibExtensions->insert (CodeMap::value_type(EOpTex1DGrad, "#extension GL_ARB_shader_texture_lod : require\n"));
    
    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DBias,
         "vec4 xll_tex2Dbias(sampler2D s, vec4 coord) {\n"
@@ -649,18 +652,18 @@ void initializeHLSLSupportLibrary()
         );
    
    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DLod,
-        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {\n"
         "   return texture2DLod( s, coord.xy, coord.w);\n"
         "}\n\n" )
         );
+	hlslSupportLibExtensions->insert (CodeMap::value_type(EOpTex2DLod, "#extension GL_ARB_shader_texture_lod : require\n"));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DGrad,
-        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
         "   return texture2DGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
+	hlslSupportLibExtensions->insert (CodeMap::value_type(EOpTex2DGrad, "#extension GL_ARB_shader_texture_lod : require\n"));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DBias,
         "vec4 xll_tex3Dbias(sampler3D s, vec4 coord) {\n"
@@ -669,18 +672,18 @@ void initializeHLSLSupportLibrary()
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DLod,
-        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex3Dlod(sampler3D s, vec4 coord) {\n"
         "  return texture3DLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
+	hlslSupportLibExtensions->insert (CodeMap::value_type(EOpTex3DLod, "#extension GL_ARB_shader_texture_lod : require\n"));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DGrad,
-        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_tex3Dgrad(sampler3D s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return texture3DGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
+	hlslSupportLibExtensions->insert (CodeMap::value_type(EOpTex3DGrad, "#extension GL_ARB_shader_texture_lod : require\n"));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeBias,   
         "vec4 xll_texCUBEbias(samplerCube s, vec4 coord) {\n"
@@ -689,18 +692,18 @@ void initializeHLSLSupportLibrary()
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeLod,   
-        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_texCUBElod(samplerCube s, vec4 coord) {\n"
         "  return textureCubeLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
+	hlslSupportLibExtensions->insert (CodeMap::value_type(EOpTexCubeLod, "#extension GL_ARB_shader_texture_lod : require\n"));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeGrad,  
-        "#extension GL_ARB_shader_texture_lod : require\n"
         "vec4 xll_texCUBEgrad(samplerCUBE s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return textureCubeGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
+	hlslSupportLibExtensions->insert (CodeMap::value_type(EOpTexCubeGrad, "#extension GL_ARB_shader_texture_lod : require\n"));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpD3DCOLORtoUBYTE4,  
         "ivec4 xll_D3DCOLORtoUBYTE4(vec4 x) {\n"
@@ -725,17 +728,28 @@ void initializeHLSLSupportLibrary()
 
 void finalizeHLSLSupportLibrary() 
 {
-   delete hlslSupportLib;
-   hlslSupportLib = 0;
+	delete hlslSupportLib;
+	hlslSupportLib = 0;
+	delete hlslSupportLibExtensions;
+	hlslSupportLibExtensions = 0;
 }
 
-const std::string& getHLSLSupportCode( TOperator op ) 
+const std::string& getHLSLSupportCode (TOperator op, std::string& inoutExtensions)
 {
-   assert( hlslSupportLib);
-   CodeMap::iterator it = hlslSupportLib->find( op );
+	assert (hlslSupportLibExtensions);
+	CodeMap::iterator it;
+	it = hlslSupportLibExtensions->find(op);
+	if (it != hlslSupportLibExtensions->end())
+	{
+		if (inoutExtensions.find (it->second) == std::string::npos)
+			inoutExtensions += it->second;
+	}
+	
+	assert (hlslSupportLib);
+	it = hlslSupportLib->find(op);
 
-   if ( it == hlslSupportLib->end())
-      it = hlslSupportLib->find( EOpNull ); // this always exists
+	if (it == hlslSupportLib->end())
+		it = hlslSupportLib->find(EOpNull); // this always exists
 
-   return it->second;
+	return it->second;
 }

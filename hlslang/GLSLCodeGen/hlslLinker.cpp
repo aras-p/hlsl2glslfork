@@ -588,16 +588,22 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	// semantics on the arguments and return values to connect items appropriately.
 
 	//
-	// Write Library Functions
+	// Write Library Functions & required extensions
+	std::string shaderExtensions, shaderLibFunctions;
 	if (!libFunctions.empty())
 	{
 		for (std::set<TOperator>::iterator it = libFunctions.begin(); it != libFunctions.end(); it++)
 		{
-			const std::string &func = getHLSLSupportCode(*it);
-			if (func.size())
-				shader << func << "\n";
+			const std::string &func = getHLSLSupportCode(*it, shaderExtensions);
+			if (!func.empty())
+			{
+				shaderLibFunctions += func;
+				shaderLibFunctions += '\n';
+			}
 		}
 	}
+	shader << shaderExtensions;
+	shader << shaderLibFunctions;
 
 	//
 	//Structure addition hack

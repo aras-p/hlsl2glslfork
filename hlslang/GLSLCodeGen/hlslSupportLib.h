@@ -11,6 +11,6 @@
 
 void initializeHLSLSupportLibrary();
 void finalizeHLSLSupportLibrary();
-const std::string& getHLSLSupportCode (TOperator op);
+const std::string& getHLSLSupportCode (TOperator op, std::string& inoutExtensions);
 
 #endif //HLSL_SUPPORT_LIB_H

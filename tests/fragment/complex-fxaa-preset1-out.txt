@@ -2,7 +2,6 @@
 vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {
    return texture2DLod( s, coord.xy, coord.w);
 }
-#extension GL_ARB_shader_texture_lod : require
 vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {
    return texture2DGradARB( s, coord, ddx, ddy);
 }
