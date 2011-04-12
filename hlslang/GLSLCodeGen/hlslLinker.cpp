@@ -594,7 +594,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	{
 		for (std::set<TOperator>::iterator it = libFunctions.begin(); it != libFunctions.end(); it++)
 		{
-			const std::string &func = getHLSLSupportCode(*it, shaderExtensions);
+			const std::string &func = getHLSLSupportCode(*it, shaderExtensions, lang==EShLangVertex);
 			if (!func.empty())
 			{
 				shaderLibFunctions += func;

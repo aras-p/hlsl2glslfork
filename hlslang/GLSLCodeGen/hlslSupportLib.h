@@ -11,6 +11,6 @@
 
 void initializeHLSLSupportLibrary();
 void finalizeHLSLSupportLibrary();
-const std::string& getHLSLSupportCode (TOperator op, std::string& inoutExtensions);
+const std::string& getHLSLSupportCode (TOperator op, std::string& inoutExtensions, bool vertexShader);
 
 #endif //HLSL_SUPPORT_LIB_H
