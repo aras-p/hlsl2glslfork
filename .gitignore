@@ -1,5 +1,3 @@
-syntax: glob
-
 *.user
 *.ncb
 *.suo
