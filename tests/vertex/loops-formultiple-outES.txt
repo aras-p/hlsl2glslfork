@@ -1,0 +1,35 @@
+struct v2f {
+    mediump vec4 pos;
+    mediump vec4 color;
+};
+struct appdata {
+    highp vec4 vertex;
+    highp vec3 normal;
+};
+uniform highp mat4 UNITY_MATRIX_MVP;
+uniform highp vec4 unity_LightColor[4];
+v2f xlat_main( in appdata v );
+v2f xlat_main( in appdata v ) {
+    v2f o;
+    highp int i = 0;
+    highp int i_1 = 0;
+    o.pos = ( UNITY_MATRIX_MVP * v.vertex );
+    o.color = vec4( 0.00000);
+    for ( ; (i < 4); ( ++i )) {
+        o.color += max( 0.00000, float( unity_LightColor[ i ]));
+    }
+    for ( ; (i_1 < 4); ( ++i_1 )) {
+        o.color *= min( 1.00000, float( unity_LightColor[ i_1 ]));
+    }
+    return o;
+}
+varying mediump vec4 xlv_TEXCOORD0;
+void main() {
+    v2f xl_retval;
+    appdata xlt_v;
+    xlt_v.vertex = vec4( gl_Vertex);
+    xlt_v.normal = vec3( gl_Normal);
+    xl_retval = xlat_main( xlt_v);
+    gl_Position = vec4( xl_retval.pos);
+    xlv_TEXCOORD0 = vec4( xl_retval.color);
+}
