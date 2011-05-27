@@ -304,6 +304,9 @@ int main (int argc, const char** argv)
 	}
 
 	bool hasOpenGL = InitializeOpenGL ();
+	
+	clock_t time0 = clock();
+	
 	Hlsl2Glsl_Initialize ();
 
 	std::string baseFolder = argv[1];
@@ -344,10 +347,12 @@ int main (int argc, const char** argv)
 			}
 		}
 	}
+	clock_t time1 = clock();
+	float t = float(time1-time0) / float(CLOCKS_PER_SEC);
 	if (errors != 0)
-		printf ("%i tests, %i FAILED\n", tests, errors);
+		printf ("%i tests, %i FAILED, %.2fs\n", tests, errors, t);
 	else
-		printf ("%i tests succeeded\n", tests);
+		printf ("%i tests succeeded, %.2fs\n", tests, t);
 
 	return errors ? 1 : 0;
 }
