@@ -5,15 +5,15 @@ project(hlsl2glslfork)
 set(CMAKE_SUPPRESS_REGENERATION TRUE)
 
 set(HEADER_FILES
-  hlslang/include/BaseTypes.h
-  hlslang/include/Common.h
-  hlslang/include/ConstantUnion.h
-  hlslang/include/InfoSink.h
-  hlslang/include/InitializeGlobals.h
-  hlslang/include/InitializeParseContext.h
-  hlslang/include/intermediate.h
-  hlslang/include/PoolAlloc.h
-  hlslang/include/Types.h
+  hlslang/Include/BaseTypes.h
+  hlslang/Include/Common.h
+  hlslang/Include/ConstantUnion.h
+  hlslang/Include/InfoSink.h
+  hlslang/Include/InitializeGlobals.h
+  hlslang/Include/InitializeParseContext.h
+  hlslang/Include/intermediate.h
+  hlslang/Include/PoolAlloc.h
+  hlslang/Include/Types.h
   hlslang/MachineIndependent/SymbolTable.h
   hlslang/MachineIndependent/unistd.h
   OGLCompilersDLL/InitializeDll.h
@@ -46,7 +46,7 @@ set(GLSL_CODE_GEN_FILES
 source_group("GLSL Code Gen" FILES ${GLSL_CODE_GEN_FILES})
 
 set(INCLUDE_FILES
-  include/hlsl2glsl.h
+  include
 )
 
 source_group("include" FILES ${INCLUDE_FILES})
@@ -126,8 +126,8 @@ if (WIN32)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hlslang/OSDependent/Windows)
     
     add_custom_command(OUTPUT hlslang/MachineIndependent/Gen_hlslang_tab.cpp hlslang/MachineIndependent/hlslang_tab.h 
-                         COMMAND SET ARGS "BISON_SIMPLE=../../tools/bison.simple"
-                         COMMAND SET ARGS "BISON_HAIRY=../../tools/bison.simple"
+                         COMMAND set ARGS "BISON_SIMPLE=../../tools/bison.simple"
+                         COMMAND set ARGS "BISON_HAIRY=../../tools/bison.simple"
                          COMMAND ../../tools/bison.exe ARGS  -d -t -v hlslang.y
                          COMMAND copy ARGS /y hlslang_tab.c Gen_hlslang_tab.cpp
                          COMMAND del ARGS hlslang_tab.c
@@ -155,8 +155,8 @@ elseif (APPLE)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hlslang/OSDependent/Mac)    
 
     add_custom_command(OUTPUT hlslang/MachineIndependent/Gen_hlslang_tab.cpp hlslang/MachineIndependent/hlslang_tab.h 
-                         COMMAND SET ARGS "BISON_SIMPLE=../../tools/bison.simple"
-                         COMMAND SET ARGS "BISON_HAIRY=../../tools/bison.simple"
+                         COMMAND set ARGS "BISON_SIMPLE=../../tools/bison.simple"
+                         COMMAND set ARGS "BISON_HAIRY=../../tools/bison.simple"
                          COMMAND bison ARGS -o Gen_hlslang_tab.cpp -d -t -v hlslang.y
                          MAIN_DEPENDENCY hlslang/MachineIndependent/hlslang.y
                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent
@@ -179,8 +179,8 @@ elseif (UNIX)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hlslang/OSDependent/Linux)
 
     add_custom_command(OUTPUT hlslang/MachineIndependent/Gen_hlslang_tab.cpp hlslang/MachineIndependent/hlslang_tab.h 
-                         COMMAND SET ARGS "BISON_SIMPLE=../../tools/bison.simple"
-                         COMMAND SET ARGS "BISON_HAIRY=../../tools/bison.simple"
+                         COMMAND set ARGS "BISON_SIMPLE=../../tools/bison.simple"
+                         COMMAND set ARGS "BISON_HAIRY=../../tools/bison.simple"
                          COMMAND bison ARGS -o Gen_hlslang_tab.cpp -d -t -v hlslang.y
                          MAIN_DEPENDENCY hlslang/MachineIndependent/hlslang.y
                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent

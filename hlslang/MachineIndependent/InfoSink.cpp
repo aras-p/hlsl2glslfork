@@ -3,6 +3,7 @@
 // found in the LICENSE.txt file.
 
 #include "../Include/InfoSink.h"
+#include <string.h>
 
 void TInfoSinkBase::append(const char *s)           
 {

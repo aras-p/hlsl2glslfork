@@ -13,7 +13,7 @@
 #include "../GLSLCodeGen/hlslSupportLib.h"
 
 #include "../GLSLCodeGen/hlslCrossCompiler.h"
-#include "../GLSLCodeGen/HlslLinker.h"
+#include "../GLSLCodeGen/hlslLinker.h"
 
 
 // A symbol table for each language.  Each has a different set of built-ins, and we want to preserve that 
