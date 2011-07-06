@@ -316,7 +316,7 @@ int yy_input(char* buf, int max_size)
 //
 int PaParseString(char* source, TParseContext& parseContextLocal)
 {
-    int argv0len;
+    int sourceLen;
     
     ScanFromString(source);
     
@@ -329,18 +329,14 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
         return 1;
     }
     
-    argv0len = (int) strlen(source);
+    sourceLen = (int) strlen(source);
     
     yyrestart(0);
     (&parseContextLocal)->AfterEOF = false;
-    cpp->PaWhichStr = 0;
-    cpp->PaArgv     = &source;
-    cpp->PaArgc     = 1;
-    cpp->PaStrLen   = &argv0len;
     cpp->notAVersionToken = 0;
     lexlineno   = 1;
    
-    if (*cpp->PaStrLen >= 0) {    
+    if (sourceLen >= 0) {
         int ret;
         #ifdef _WIN32
             ret = yyparse(parseContextLocal);            

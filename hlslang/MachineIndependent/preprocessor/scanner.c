@@ -62,36 +62,22 @@ int FreeScanner(void)
  */
 static int str_getch(StringInputSrc *in)
 {
-	for(;;){
-	   if (*in->p){
-	      if (*in->p == '\n') {
-             in->base.line++;
-             IncLineNumber();
-          }
-          return *in->p++;
-	   }
-	   if(++(cpp->PaWhichStr) < cpp->PaArgc){
-		  free(in);
-		  SetStringNumber(cpp->PaWhichStr);
-    	  SetLineNumber(1);
-		  ScanFromString(cpp->PaArgv[cpp->PaWhichStr]);
-		  in=(StringInputSrc*)cpp->currentInput;
-	      continue;             
-	   }
-	   else{
-	      cpp->currentInput = in->base.prev;
-	      cpp->PaWhichStr=0;
-          free(in);
-          return EOF;
-       }  
+	if (*in->p) {
+		if (*in->p == '\n') {
+			in->base.line++;
+			IncLineNumber();
+		}
+		return *in->p++;
 	}
+	cpp->currentInput = in->base.prev;
+	free(in);
+	return EOF;
 } // str_getch
 
 static void str_ungetch(StringInputSrc *in, int ch, yystypepp *type) {
     if (in->p[-1] == ch)in->p--;
 	else {
 		*(in->p)='\0'; //this would take care of shifting to the previous string.
-	    cpp->PaWhichStr--;
 	}  
 	if (ch == '\n') {
         in->base.line--;
