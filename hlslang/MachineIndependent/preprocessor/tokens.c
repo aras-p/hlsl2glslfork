@@ -277,7 +277,6 @@ static int scan_token(TokenInputSrc *in, yystypepp * yylvalpp)
 {
     int token = ReadToken(in->tokens, yylvalpp);
     int (*final)(CPPStruct *);
-    cpp->tokenLoc->file = cpp->currentInput->name;
     cpp->tokenLoc->line = cpp->currentInput->line;
     if (token == '\n') {
         in->base.line++;
@@ -291,11 +290,10 @@ static int scan_token(TokenInputSrc *in, yystypepp * yylvalpp)
     return cpp->currentInput->scan(cpp->currentInput, yylvalpp);
 }
 
-int ReadFromTokenStream(TokenStream *ts, int name, int (*final)(CPPStruct *))
+int ReadFromTokenStream(TokenStream *ts, int (*final)(CPPStruct *))
 {
     TokenInputSrc *in = malloc(sizeof(TokenInputSrc));
     memset(in, 0, sizeof(TokenInputSrc));
-    in->base.name = name;
     in->base.prev = cpp->currentInput;
     in->base.scan = (int (*)(InputSrc *, yystypepp *))scan_token;
     in->base.line = 1;
@@ -328,7 +326,6 @@ void UngetToken(int token, yystypepp * yylvalpp) {
     t->lval = *yylvalpp;
     t->base.scan = (void *)reget_token;
     t->base.prev = cpp->currentInput;
-    t->base.name = cpp->currentInput->name;
     t->base.line = cpp->currentInput->line;
     cpp->currentInput = &t->base;
 }

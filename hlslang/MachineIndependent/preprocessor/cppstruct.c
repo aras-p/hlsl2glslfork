@@ -37,7 +37,6 @@ int ResetPreprocessor(void)
 {
     // Initialize private members:
 
-    cpp->lastSourceLoc.file = 0;
     cpp->lastSourceLoc.line = 0;
 	cpp->pC=0;
     cpp->CompileError=0; 

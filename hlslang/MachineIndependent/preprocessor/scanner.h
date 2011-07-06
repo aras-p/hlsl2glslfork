@@ -13,7 +13,7 @@
 // Not really atom table stuff but needed first...
 
 typedef struct SourceLoc_Rec {
-    unsigned short file, line;
+    unsigned short line;
 } SourceLoc;
 
 int yyparse (void);
@@ -25,7 +25,6 @@ typedef struct InputSrc {
     int			(*scan)(struct InputSrc *, yystypepp *);
     int			(*getch)(struct InputSrc *, yystypepp *);
     void		(*ungetch)(struct InputSrc *, int, yystypepp *);
-    int			name;  /* atom */
     int			line;
 } InputSrc;
 

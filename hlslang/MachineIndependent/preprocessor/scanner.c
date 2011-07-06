@@ -39,7 +39,6 @@ int InitScanner(CPPStruct *cpp)
     cpp->mostRecentToken = 0;
     cpp->tokenLoc = &cpp->ltokenLoc;
 
-    cpp->ltokenLoc.file = 0;
     cpp->ltokenLoc.line = 0;
 
     cpp->currentInput = &eof_inputsrc;
@@ -249,7 +248,6 @@ static int byte_scan(InputSrc *in, yystypepp * yylvalpp)
             ch = cpp->currentInput->getch(cpp->currentInput, yylvalpp);
         }
 		
-        cpp->ltokenLoc.file = cpp->currentInput->name;
         cpp->ltokenLoc.line = cpp->currentInput->line;
         len = 0;
         switch (ch) {

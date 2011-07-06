@@ -171,7 +171,6 @@ static int CPPdefine(yystypepp * yylvalpp)
         }
         //FreeMacro(&symb->details.mac);
     } else {
-        dummyLoc.file = 0;
         dummyLoc.line = 0;
         symb = AddSymbol(&dummyLoc, macros, name, MACRO_S);
     }
@@ -730,7 +729,7 @@ static TokenStream *PrescanMacroArg(TokenStream *a, yystypepp * yylvalpp) {
     if (token <= 0) return a;
     n = NewTokenStream("macro arg", 0);
     PushEofSrc();
-    ReadFromTokenStream(a, 0, 0);
+    ReadFromTokenStream(a, 0);
     while ((token = cpp->currentInput->scan(cpp->currentInput, yylvalpp)) > 0) {
         if (token == CPP_IDENTIFIER && MacroExpand(yylvalpp->sc_ident, yylvalpp))
             continue;
@@ -757,7 +756,7 @@ static int macro_scan(MacroInputSrc *in, yystypepp * yylvalpp) {
         for (i = in->mac->argc-1; i>=0; i--)
             if (in->mac->args[i] == yylvalpp->sc_ident) break;
         if (i >= 0) {
-            ReadFromTokenStream(in->args[i], yylvalpp->sc_ident, 0);
+            ReadFromTokenStream(in->args[i], 0);
             return cpp->currentInput->scan(cpp->currentInput, yylvalpp);
         }
     }
@@ -809,7 +808,6 @@ int MacroExpand(int atom, yystypepp * yylvalpp)
     memset(in, 0, sizeof(*in));
     in->base.scan = (void *)macro_scan;
     in->base.line = cpp->currentInput->line;
-    in->base.name = cpp->currentInput->name;
     in->mac = &sym->details.mac;
     if (sym->details.mac.args) {
         token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
