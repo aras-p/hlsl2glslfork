@@ -8,15 +8,11 @@
 
 #include <Carbon/Carbon.h>
 #include <pthread.h>
+#include <strings.h>
 
 #define min(X,Y) ((X) < (Y) ? X : Y)
 #define _vsnprintf vsnprintf
-#define _stricmp stricmp
-
-//
-// string manipulation
-//
-int stricmp(const char *str1, const char *str2);
+#define _stricmp strcasecmp
 
 //
 // Thread Local Storage Operations
