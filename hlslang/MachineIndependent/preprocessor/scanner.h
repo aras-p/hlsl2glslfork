@@ -23,8 +23,8 @@ int yylex_CPP(char* buf, int maxSize);
 typedef struct InputSrc {
     struct InputSrc	*prev;
     int			(*scan)(struct InputSrc *, yystypepp *);
-    int			(*getch)(struct InputSrc *, yystypepp *);
-    void		(*ungetch)(struct InputSrc *, int, yystypepp *);
+    int			(*getch)(struct InputSrc *);
+    void		(*ungetch)(struct InputSrc *, int);
     int			line;
 } InputSrc;
 

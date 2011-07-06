@@ -562,7 +562,7 @@ static int CPPpragma(yystypepp * yylvalpp)
 		token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
 	}
 
-	cpp->currentInput->ungetch(cpp->currentInput, token, yylvalpp);
+	cpp->currentInput->ungetch(cpp->currentInput, token);
 	// just ignore #pragmas
 	token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
 	
