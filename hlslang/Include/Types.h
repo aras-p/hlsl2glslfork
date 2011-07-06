@@ -314,7 +314,7 @@ public:
    void setSemantic( const TString &s) { semantic = NewPoolTString(s.c_str()); }
    bool hasSemantic() const { return semantic != 0; }
 
-   void buildMangledName(TString&);
+   void buildMangledName(TString& res) const;
 
    // Determine the parameter compatibility between this type and the parameter type
    ECompatibility determineCompatibility ( const TType *pType ) const;

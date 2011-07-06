@@ -9,7 +9,7 @@ TString* TParameter::NullSemantic = 0;
 
 
 // Recursively generate mangled names.
-void TType::buildMangledName(TString& mangledName)
+void TType::buildMangledName(TString& mangledName) const
 {
    if (isMatrix())
       mangledName += 'm';
