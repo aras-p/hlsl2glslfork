@@ -736,13 +736,18 @@ void finalizeHLSLSupportLibrary()
 	hlslSupportLibExtensions = 0;
 }
 
-const std::string& getHLSLSupportCode (TOperator op, std::string& inoutExtensions, bool vertexShader)
+const std::string& getHLSLSupportCode (TOperator op, std::string& inoutExtensions, bool vertexShader, bool gles)
 {
 	assert (hlslSupportLibExtensions);
 	CodeExtensionMap::iterator eit = hlslSupportLibExtensions->find(op);
 	if (eit != hlslSupportLibExtensions->end())
 	{
-		const std::string& ext = vertexShader ? eit->second.first : eit->second.second;
+		std::string ext = vertexShader ? eit->second.first : eit->second.second;
+		if (gles)
+		{
+			if (ext == "#extension GL_ARB_shader_texture_lod : require\n")
+				ext = "#extension GL_EXT_shader_texture_lod : require\n";
+		}
 		if (inoutExtensions.find (ext) == std::string::npos)
 			inoutExtensions += ext;
 	}
