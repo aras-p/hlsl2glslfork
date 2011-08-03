@@ -53,7 +53,8 @@ const char* getGLSLPrecisiontring (TPrecision p)
 ///       If it is a structure, a pointer to the structure to write out
 void writeType (std::stringstream &out, EGlslSymbolType type, GlslStruct *s, TPrecision precision)
 {
-	out << getGLSLPrecisiontring (precision);
+	if (type >= EgstInt) // precision does not apply to void/bool
+		out << getGLSLPrecisiontring (precision);
 
    switch (type)
    {

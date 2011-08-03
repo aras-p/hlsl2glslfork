@@ -45,7 +45,7 @@ highp vec4 FxaaPixelShader( in highp vec2 pos, in highp vec4 fxaaConsolePosPos, 
     highp vec4 rgbyP2;
     highp vec4 rgbyA;
     highp vec4 rgbyB;
-    highp bool twoTap;
+    bool twoTap;
     lumaNw = FxaaLuma( xll_tex2Dlod( tex, vec4( fxaaConsolePosPos.xy , 0.00000, 0.00000)));
     lumaSw = FxaaLuma( xll_tex2Dlod( tex, vec4( fxaaConsolePosPos.xw , 0.00000, 0.00000)));
     lumaNe = FxaaLuma( xll_tex2Dlod( tex, vec4( fxaaConsolePosPos.zy , 0.00000, 0.00000)));
