@@ -83,7 +83,7 @@ highp vec4 AnimateVertex( in highp vec4 pos, in highp vec3 normal, in highp vec4
     fBranchPhase = (fObjPhase + animParams.x );
     fVtxPhase = dot( pos.xyz , vec3( (animParams.y  + fBranchPhase)));
     vWavesIn = (_Time.yy  + vec2( fVtxPhase, fBranchPhase));
-    vWaves = ((fract( (vWavesIn.xxyy  * highp vec4( 1.97500, 0.793000, 0.375000, 0.193000)) ) * 2.00000) - 1.00000);
+    vWaves = ((fract( (vWavesIn.xxyy  * vec4( 1.97500, 0.793000, 0.375000, 0.193000)) ) * 2.00000) - 1.00000);
     vWaves = SmoothTriangleWave( vWaves);
     vWavesSum = (vWaves.xz  + vWaves.yw );
     bend = ((animParams.y  * fDetailAmp) * normal.xyz );

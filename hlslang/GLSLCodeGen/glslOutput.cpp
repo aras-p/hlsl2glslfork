@@ -45,7 +45,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 
    if (construct)
    {
-      writeType (out, t, str, prec);
+      writeType (out, t, str, EbpUndefined);
       out << "( ";
    }
 

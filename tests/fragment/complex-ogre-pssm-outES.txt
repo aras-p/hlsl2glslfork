@@ -39,16 +39,16 @@ void xlat_main( in highp vec3 uv, in highp vec3 OSlightDir, in highp vec3 OShalf
     highp float shininess;
     highp vec4 lighting;
     if ( (uv.z  <= pssmSplitPoints.y ) ){
-        splitColour = highp vec4( 0.100000, 0.00000, 0.00000, 1.00000);
+        splitColour = vec4( 0.100000, 0.00000, 0.00000, 1.00000);
         shadowing = shadowPCF( shadowMap0, LightPosition0, invShadowMapSize0.xy );
     }
     else{
         if ( (uv.z  <= pssmSplitPoints.z ) ){
-            splitColour = highp vec4( 0.00000, 0.100000, 0.00000, 1.00000);
+            splitColour = vec4( 0.00000, 0.100000, 0.00000, 1.00000);
             shadowing = shadowPCF( shadowMap1, LightPosition1, invShadowMapSize1.xy );
         }
         else{
-            splitColour = highp vec4( 0.100000, 0.100000, 0.00000, 1.00000);
+            splitColour = vec4( 0.100000, 0.100000, 0.00000, 1.00000);
             shadowing = shadowPCF( shadowMap2, LightPosition2, invShadowMapSize2.xy );
         }
     }

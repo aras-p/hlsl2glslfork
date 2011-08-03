@@ -25,7 +25,7 @@ highp vec4 xlat_main( in highp vec4 pos ) {
     v = vec4( 0.00000);
     v.xy  += ( m2 * pos.xy  );
     v.xy  += ( m2b * pos.xy  );
-    m3c = xll_transpose( mat3( highp vec3( 1.00000, 2.00000, 3.00000), highp vec3( 4.00000, 5.00000, 6.00000), pos.xyz ) );
+    m3c = xll_transpose( mat3( vec3( 1.00000, 2.00000, 3.00000), vec3( 4.00000, 5.00000, 6.00000), pos.xyz ) );
     v.xyz  += ( m3 * pos.xyz  );
     v.xyz  += ( m3b * pos.xyz  );
     v.xyz  += ( m3c * pos.xyz  );

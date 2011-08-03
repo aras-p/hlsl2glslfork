@@ -10,7 +10,7 @@ void xlat_main( in highp vec4 position, in highp vec3 normal, in highp vec2 uv, 
     highp vec3 light;
     highp float diffuseFactor;
     mypos = position;
-    factor = (highp vec4( 1.00000, 1.00000, 1.00000, 1.00000) - uv.yyyy );
+    factor = (vec4( 1.00000, 1.00000, 1.00000, 1.00000) - uv.yyyy );
     mypos = (mypos + (offset * factor));
     oPosition = ( worldViewProj * mypos );
     oUv = uv;

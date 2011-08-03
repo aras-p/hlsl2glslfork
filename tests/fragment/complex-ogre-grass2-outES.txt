@@ -13,7 +13,7 @@ void xlat_main( in highp vec4 position, in highp vec4 shadowUV, in highp vec3 uv
     if ( (shadowUV.z  > 0.00000) ){
         diffuse = texture2D( diffuseMap, uv.xy );
         if ( (diffuse.w  > 0.00100000) ){
-            oColour = highp vec4( 0.00000, 0.00000, 0.00000, 0.00000);
+            oColour = vec4( 0.00000, 0.00000, 0.00000, 0.00000);
         }
         else{
             shadowUV = (shadowUV / shadowUV.w );
@@ -25,7 +25,7 @@ void xlat_main( in highp vec4 position, in highp vec4 shadowUV, in highp vec3 uv
         }
     }
     else{
-        oColour = highp vec4( 0.00000, 0.00000, 0.00000, 0.00000);
+        oColour = vec4( 0.00000, 0.00000, 0.00000, 0.00000);
     }
 }
 uniform sampler2D xlu_shadowMap;

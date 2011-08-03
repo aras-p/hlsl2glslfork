@@ -29,11 +29,11 @@ highp vec4 xlat_main( in highp vec4 pos ) {
     v = vec4( 0.00000);
     v.xy  += xll_matrixindex (m2, 0);
     v.xy  += xll_matrixindex (m2b, 1);
-    m3c = xll_transpose( mat3( highp vec3( 1.00000, 2.00000, 3.00000), highp vec3( 4.00000, 5.00000, 6.00000), pos.xyz ) );
+    m3c = xll_transpose( mat3( vec3( 1.00000, 2.00000, 3.00000), vec3( 4.00000, 5.00000, 6.00000), pos.xyz ) );
     v.xyz  += xll_matrixindex (m3, 0);
     v.xyz  += xll_matrixindex (m3b, 1);
     v.xyz  += xll_matrixindex (m3c, 2);
-    v.xyz  += highp vec3( 7.00000, 8.00000, 9.00000);
+    v.xyz  += vec3( 7.00000, 8.00000, 9.00000);
     for ( ; (i < 3); ( ++i )) {
         v.xyz  += xll_matrixindex (m3c, i);
         v.x  += m3b[2][i];
