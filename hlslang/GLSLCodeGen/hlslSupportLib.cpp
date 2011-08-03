@@ -654,6 +654,9 @@ void initializeHLSLSupportLibrary()
         );
    
    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DLod,
+		"#ifdef GL_ES\n"
+		"#define texture2DLod texture2DLodEXT\n"
+		"#endif\n"
         "vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {\n"
         "   return texture2DLod( s, coord.xy, coord.w);\n"
         "}\n\n" )
