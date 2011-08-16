@@ -4,9 +4,13 @@
 *.ilk
 *.pbxuser
 *.perspectivev3
+*.cmake
 .svn/
 .DS_Store
 _ReSharper.*
+CMakeFiles/
+CMakeCache.txt
+Makefile
 build/
 lib/
 Gen_hlslang.cpp
