@@ -11,6 +11,7 @@
 #include "hlslSupportLib.h"
 #include "osinclude.h"
 #include <algorithm>
+#include <string.h>
 
 // String table that maps attribute semantics to built-in GLSL attributes
 static const char attribString[EAttrSemCount][32] = {

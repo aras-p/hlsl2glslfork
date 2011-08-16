@@ -21,7 +21,7 @@
 #include "Include/PoolAlloc.h"
 
 #define _vsnprintf vsnprintf
-
+#define _stricmp strcasecmp
 
 void DetachThreadLinux(void *);
 
