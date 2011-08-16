@@ -104,7 +104,7 @@ EXEC_PROGRAM(${CMAKE_COMMAND} ARGS "-E write_regv \"${hkey}\" \"${dir}\"")
 
 set(MACHINE_INDEPENDENT_GENERATED_SOURCE_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/Gen_hlslang.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/Gen_hlslang_tab.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/hlslang_tab.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/hlslang_tab.h
 )
 
@@ -178,10 +178,11 @@ elseif (UNIX)
     source_group("OSDependent\\Linux" FILES ${OSDEPENDENT_FILES})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hlslang/OSDependent/Linux)
 
-    add_custom_command(OUTPUT hlslang/MachineIndependent/Gen_hlslang_tab.cpp hlslang/MachineIndependent/hlslang_tab.h 
+    add_custom_command(OUTPUT hlslang/MachineIndependent/hlslang_tab.cpp hlslang/MachineIndependent/hlslang_tab.h 
                          COMMAND set ARGS "BISON_SIMPLE=../../tools/bison.simple"
                          COMMAND set ARGS "BISON_HAIRY=../../tools/bison.simple"
-                         COMMAND bison ARGS -o Gen_hlslang_tab.cpp -d -t -v hlslang.y
+                         COMMAND bison ARGS -o hlslang_tab.cpp -d -t -v hlslang.y
+                         COMMAND mv hlslang_tab.hpp hlslang_tab.h
                          MAIN_DEPENDENCY hlslang/MachineIndependent/hlslang.y
                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent
                          COMMENT "Executing Bison on hlslang.y"
