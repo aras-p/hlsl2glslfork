@@ -654,9 +654,6 @@ void initializeHLSLSupportLibrary()
         );
    
    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DLod,
-		"#ifdef GL_ES\n"
-		"#define texture2DLod texture2DLodEXT\n"
-		"#endif\n"
         "vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {\n"
         "   return texture2DLod( s, coord.xy, coord.w);\n"
         "}\n\n" )
@@ -739,7 +736,7 @@ void finalizeHLSLSupportLibrary()
 	hlslSupportLibExtensions = 0;
 }
 
-const std::string& getHLSLSupportCode (TOperator op, std::string& inoutExtensions, bool vertexShader, bool gles)
+std::string getHLSLSupportCode (TOperator op, std::string& inoutExtensions, bool vertexShader, bool gles)
 {
 	assert (hlslSupportLibExtensions);
 	CodeExtensionMap::iterator eit = hlslSupportLibExtensions->find(op);
@@ -761,5 +758,10 @@ const std::string& getHLSLSupportCode (TOperator op, std::string& inoutExtension
 	if (it == hlslSupportLib->end())
 		it = hlslSupportLib->find(EOpNull); // this always exists
 
+	// special hack-around for tex2DLod & GLES
+	if (op == EOpTex2DLod && gles && !vertexShader)
+	{
+		return "#define texture2DLod texture2DLodEXT\n" + it->second;
+	}
 	return it->second;
 }
