@@ -1,5 +1,5 @@
 float uni1 : register(c0);
 uniform float uni2 : register(c1);
-fixed4 main (float4 uv:TEXCOORD0, uniform float4 unicolor, uniform float4 reg : register(c2)) : COLOR0 {
-	return uv + unicolor + fixed4(uni1+uni2) + reg;
+fixed4 main (float4 uv:TEXCOORD0, uniform float4 unicolor, uniform float4 reg : register(c2), uniform float4 lights[2]) : COLOR0 {
+	return uv + unicolor + fixed4(uni1+uni2) + reg + lights[1];
 }
