@@ -1020,7 +1020,10 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 			case EqtUniform:
 				uniform << "uniform ";
 				writeType (uniform, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
-				uniform << " xlu_" << sym->getName() << ";\n";
+				uniform << " xlu_" << sym->getName();
+				if(sym->getArraySize())
+					uniform << "[" << sym->getArraySize() << "]";
+				uniform << ";\n";
 				call << "xlu_" << sym->getName();
 				break;
 
