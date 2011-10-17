@@ -1445,8 +1445,7 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 
       if (newNode)
       {
-         sequenceVector.erase(p); 
-         sequenceVector.insert(p, newNode);
+         *p = newNode;
       }
    }
 
