@@ -341,7 +341,7 @@ int C_DECL Hlsl2Glsl_GetUniformCount( const ShHandle handle )
 {
 	if (!handle)
 		return 0;
-   const HlslLinker *linker = reinterpret_cast<const HlslLinker*>(handle);
+   const HlslLinker *linker = handle->GetLinker();
    if (!linker)
       return 0;
    return linker->getUniformCount();
@@ -352,7 +352,7 @@ const ShUniformInfo* C_DECL Hlsl2Glsl_GetUniformInfo( const ShHandle handle )
 {
 	if (!handle)
 		return 0;
-   const HlslLinker *linker = reinterpret_cast<const HlslLinker*>(handle);
+   const HlslLinker *linker = handle->GetLinker();
    if (!linker)
       return 0;
    return linker->getUniformInfo();
