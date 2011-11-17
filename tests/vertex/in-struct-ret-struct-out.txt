@@ -12,6 +12,7 @@ struct a2v {
 };
 uniform mat4 mvp;
 v2f xlat_main( in a2v v );
+#line 17
 v2f xlat_main( in a2v v ) {
     v2f o;
     o.pos = ( mvp * v.pos );

@@ -73,11 +73,13 @@ void CalcOrthonormalBasis( in highp vec3 dir, out highp vec3 right, out highp ve
 highp float CalcFadeOutFactor( in highp float dist );
 highp float CalcDistScale( in highp float dist );
 v2f xlat_main( in appdata_full v );
+#line 35
 void CalcOrthonormalBasis( in highp vec3 dir, out highp vec3 right, out highp vec3 up ) {
     up = (( (abs( dir.y  ) > 0.999000) ) ? ( vec3( 0.00000, 0.00000, 1.00000) ) : ( vec3( 0.00000, 1.00000, 0.00000) ));
     right = normalize( cross( up, dir) );
     up = cross( dir, right);
 }
+#line 42
 highp float CalcFadeOutFactor( in highp float dist ) {
     highp float nfadeout;
     highp float ffadeout;
@@ -89,11 +91,13 @@ highp float CalcFadeOutFactor( in highp float dist ) {
     nfadeout *= ffadeout;
     return nfadeout;
 }
+#line 57
 highp float CalcDistScale( in highp float dist ) {
     highp float distScale;
     distScale = min( (max( (dist - _SizeGrowStartDist), 0.00000) / _SizeGrowEndDist), 1.00000);
     return ((distScale * distScale) * _MaxGrowSize);
 }
+#line 64
 v2f xlat_main( in appdata_full v ) {
     highp vec3 centerOffs;
     highp vec3 centerLocal;

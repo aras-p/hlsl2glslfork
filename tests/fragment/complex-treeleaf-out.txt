@@ -58,12 +58,14 @@ vec4 UnpackNormal( in vec4 packednormal );
 void surf( in Input IN, inout LeafSurfaceOutput o );
 vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in vec3 lightDir, in vec3 viewDir, in float atten );
 vec4 xlat_main( in v2f_surf IN );
+#line 1
 vec4 UnpackNormal( in vec4 packednormal ) {
     vec4 normal;
     normal.xy  = ((packednormal.wy  * 2.00000) - 1.00000);
     normal.z  = sqrt( ((1.00000 - (normal.x  * normal.x )) - (normal.y  * normal.y )) );
     return normal;
 }
+#line 53
 void surf( in Input IN, inout LeafSurfaceOutput o ) {
     vec4 c;
     vec4 trngls;
@@ -79,6 +81,7 @@ void surf( in Input IN, inout LeafSurfaceOutput o ) {
     o.ShadowOffset = norspc.z ;
     o.Normal = vec3( UnpackNormal( norspc));
 }
+#line 28
 vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in vec3 lightDir, in vec3 viewDir, in float atten ) {
     vec3 h;
     float nl;
@@ -100,6 +103,7 @@ vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in vec3 lightDir, in vec3 viewDir
     c.xyz  *= mix( 2.00000, (atten * 2.00000), _ShadowStrength);
     return c;
 }
+#line 77
 vec4 xlat_main( in v2f_surf IN ) {
     Input surfIN;
     LeafSurfaceOutput o;

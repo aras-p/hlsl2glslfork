@@ -1,4 +1,5 @@
 vec4 xlat_main(  );
+#line 1
 vec4 xlat_main(  ) {
     vec2 poisson[8];
     poisson[0] = vec2( 0.00000, 0.00000);

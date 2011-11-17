@@ -4,6 +4,7 @@ vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {
 }
 uniform sampler2D tex;
 vec4 xlat_main( in vec4 uv );
+#line 3
 vec4 xlat_main( in vec4 uv ) {
     return xll_tex2Dlod( tex, vec4( uv.xy , 0.00000, 0.00000));
 }

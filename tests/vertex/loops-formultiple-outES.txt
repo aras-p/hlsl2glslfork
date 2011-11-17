@@ -9,6 +9,7 @@ struct appdata {
 uniform highp mat4 UNITY_MATRIX_MVP;
 uniform highp vec4 unity_LightColor[4];
 v2f xlat_main( in appdata v );
+#line 15
 v2f xlat_main( in appdata v ) {
     v2f o;
     highp int i = 0;

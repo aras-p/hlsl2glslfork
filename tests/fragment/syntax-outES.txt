@@ -1,4 +1,5 @@
 mediump vec4 xlat_main(  );
+#line 1
 mediump vec4 xlat_main(  ) {
     highp float foo = 1.00000;
     mediump vec4 v;

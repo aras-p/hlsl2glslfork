@@ -18,6 +18,7 @@ uniform mat3 hmat3;
 uniform mat4 hmat4;
 uniform mat4 mvp;
 v2f xlat_main( in a2v v );
+#line 23
 v2f xlat_main( in a2v v ) {
     v2f o;
     float dx;

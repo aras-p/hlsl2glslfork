@@ -23,6 +23,7 @@ uniform float sampleDist;
 uniform float sampleStrength;
 uniform sampler2D tex;
 vec4 xlat_main( in vec4 Pos, in vec2 texCoord, float sampleDist, float sampleStrength );
+#line 21
 vec4 xlat_main( in vec4 Pos, in vec2 texCoord, float sampleDist, float sampleStrength ) {
     vec2 dir;
     float dist;

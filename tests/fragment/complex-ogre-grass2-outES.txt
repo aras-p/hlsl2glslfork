@@ -4,6 +4,7 @@ uniform highp float gradientClamp;
 uniform highp float gradientScaleBias;
 uniform sampler2D shadowMap;
 void xlat_main( in highp vec4 position, in highp vec4 shadowUV, in highp vec3 uv, in highp vec4 vertexLight, out highp vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, highp float fixedDepthBias, highp float gradientClamp, highp float gradientScaleBias );
+#line 17
 void xlat_main( in highp vec4 position, in highp vec4 shadowUV, in highp vec3 uv, in highp vec4 vertexLight, out highp vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, highp float fixedDepthBias, highp float gradientClamp, highp float gradientScaleBias ) {
     highp vec4 diffuse;
     highp vec4 shadowDepths;

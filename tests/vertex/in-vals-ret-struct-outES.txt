@@ -6,6 +6,7 @@ struct v2f {
 };
 uniform highp mat4 mvp;
 v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in highp vec4 color );
+#line 15
 v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in highp vec4 color ) {
     v2f o;
     o.pos = ( mvp * pos );

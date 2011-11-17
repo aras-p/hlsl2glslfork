@@ -41,6 +41,7 @@ void TreeVertLeaf( inout appdata_full v );
 highp vec3 ObjSpaceViewDir( in highp vec4 v );
 highp vec3 ObjSpaceLightDir( in highp vec4 v );
 v2f_surf xlat_main( in appdata_full v );
+#line 45
 highp vec4 Squash( in highp vec4 pos ) {
     highp vec3 planeNormal;
     highp vec3 projectedVertex;
@@ -49,6 +50,7 @@ highp vec4 Squash( in highp vec4 pos ) {
     pos = vec4( mix( projectedVertex, pos.xyz , vec3( _SquashAmount)), 1.00000);
     return pos;
 }
+#line 53
 void ExpandBillboard( in highp mat4 mat, inout highp vec4 pos, inout highp vec3 normal, inout highp vec4 tangent ) {
     highp float isBillboard;
     highp vec3 norb;
@@ -60,15 +62,19 @@ void ExpandBillboard( in highp mat4 mat, inout highp vec4 pos, inout highp vec3 
     normal = mix( normal, norb, vec3( isBillboard));
     tangent = mix( tangent, vec4( tanb, -1.00000), vec4( isBillboard));
 }
+#line 66
 highp vec4 TriangleWave( in highp vec4 x ) {
     return abs( ((fract( (x + 0.500000) ) * 2.00000) - 1.00000) );
 }
+#line 62
 highp vec4 SmoothCurve( in highp vec4 x ) {
     return ((x * x) * (3.00000 - (2.00000 * x)));
 }
+#line 70
 highp vec4 SmoothTriangleWave( in highp vec4 x ) {
     return SmoothCurve( TriangleWave( x));
 }
+#line 74
 highp vec4 AnimateVertex( in highp vec4 pos, in highp vec3 normal, in highp vec4 animParams ) {
     highp float fDetailAmp = 0.100000;
     highp float fBranchAmp = 0.300000;
@@ -92,6 +98,7 @@ highp vec4 AnimateVertex( in highp vec4 pos, in highp vec3 normal, in highp vec4
     pos.xyz  += (animParams.z  * _Wind.xyz );
     return pos;
 }
+#line 91
 void TreeVertLeaf( inout appdata_full v ) {
     ExpandBillboard( glstate_matrix_invtrans_modelview0, v.vertex, v.normal, v.tangent);
     v.vertex.xyz  *= _Scale.xyz ;
@@ -101,16 +108,19 @@ void TreeVertLeaf( inout appdata_full v ) {
     v.normal = normalize( v.normal );
     v.tangent.xyz  = normalize( v.tangent.xyz  );
 }
+#line 25
 highp vec3 ObjSpaceViewDir( in highp vec4 v ) {
     highp vec3 objSpaceCameraPos;
     objSpaceCameraPos = (( _World2Object * vec4( _WorldSpaceCameraPos.xyz , 1.00000) ).xyz  * unity_Scale.w );
     return (objSpaceCameraPos - v.xyz );
 }
+#line 20
 highp vec3 ObjSpaceLightDir( in highp vec4 v ) {
     highp vec3 objSpaceLightPos;
     objSpaceLightPos = ( _World2Object * _WorldSpaceLightPos0 ).xyz ;
     return objSpaceLightPos.xyz ;
 }
+#line 116
 v2f_surf xlat_main( in appdata_full v ) {
     v2f_surf o;
     highp vec3 binormal;

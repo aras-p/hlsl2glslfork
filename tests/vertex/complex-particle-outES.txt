@@ -11,6 +11,7 @@ struct appdata_t {
 uniform highp vec4 _MainTex_ST;
 uniform highp mat4 glstate_matrix_mvp;
 v2f xlat_main( in appdata_t v );
+#line 13
 v2f xlat_main( in appdata_t v ) {
     v2f o;
     o.vertex = ( glstate_matrix_mvp * v.vertex );

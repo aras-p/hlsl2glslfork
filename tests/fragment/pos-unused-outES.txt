@@ -1,4 +1,5 @@
 mediump vec4 xlat_main( in highp vec4 pos, in highp vec4 color );
+#line 1
 mediump vec4 xlat_main( in highp vec4 pos, in highp vec4 color ) {
     return color;
 }

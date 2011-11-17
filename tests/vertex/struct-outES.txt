@@ -7,6 +7,7 @@ struct Outer {
     Inner inner2;
 };
 highp vec4 xlat_main(  );
+#line 13
 highp vec4 xlat_main(  ) {
     Outer test;
     test.inner.member1 = 1.00000;

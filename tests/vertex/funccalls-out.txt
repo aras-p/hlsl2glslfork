@@ -14,15 +14,18 @@ uniform mat4 mvp;
 vec4 DoPosMul( in vec4 pos, in mat4 mvp );
 vec4 DoColor( in vec4 color, in vec3 normal );
 v2f xlat_main( in a2v v );
+#line 17
 vec4 DoPosMul( in vec4 pos, in mat4 mvp ) {
     return ( mvp * pos );
 }
+#line 22
 vec4 DoColor( in vec4 color, in vec3 normal ) {
     vec4 c;
     c = color;
     c.xyz  += normal;
     return c;
 }
+#line 29
 v2f xlat_main( in a2v v ) {
     v2f o;
     o.pos = DoPosMul( v.pos, mvp);

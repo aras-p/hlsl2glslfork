@@ -55,21 +55,26 @@ highp float SampleCubeDistance( in highp vec3 vec );
 mediump float unitySampleShadow( in highp vec3 vec, in highp float mydist );
 mediump float ComputeShadow( in highp vec3 vec, in highp float z, in highp vec2 uv );
 mediump vec4 xlat_main( in v2f i );
+#line 4
 mediump float Luminance( in mediump vec3 c ) {
     return dot( c, vec3( 0.220000, 0.707000, 0.0710000));
 }
+#line 14
 highp float Linear01Depth( in highp float z ) {
     return (1.00000 / ((_ZBufferParams.x  * z) + _ZBufferParams.y ));
 }
+#line 8
 highp float DecodeFloatRGBA( in highp vec4 enc ) {
     highp vec4 kDecodeDot = vec4( 1.00000, 0.00392157, 1.53787e-05, 6.22737e-09);
     return dot( enc, kDecodeDot);
 }
+#line 39
 highp float SampleCubeDistance( in highp vec3 vec ) {
     highp vec4 packDist;
     packDist = textureCube( _ShadowMapTexture, vec);
     return DecodeFloatRGBA( packDist);
 }
+#line 44
 mediump float unitySampleShadow( in highp vec3 vec, in highp float mydist ) {
     highp float z = 0.00781250;
     highp vec4 shadowVals;
@@ -81,6 +86,7 @@ mediump float unitySampleShadow( in highp vec3 vec, in highp float mydist ) {
     shadows = xll_vecTSel (lessThan( shadowVals, vec4( mydist)), vec4( _LightShadowData.xxxx ), vec4( 1.00000));
     return dot( shadows, vec4( 0.250000));
 }
+#line 55
 mediump float ComputeShadow( in highp vec3 vec, in highp float z, in highp vec2 uv ) {
     highp float fade;
     highp float mydist;
@@ -91,6 +97,7 @@ mediump float ComputeShadow( in highp vec3 vec, in highp float z, in highp vec2 
     return unitySampleShadow( vec, mydist);
     return 1.00000;
 }
+#line 64
 mediump vec4 xlat_main( in v2f i ) {
     highp vec2 uv;
     mediump vec4 nspec;

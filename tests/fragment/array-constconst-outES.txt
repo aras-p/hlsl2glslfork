@@ -1,4 +1,5 @@
 mediump vec4 xlat_main(  );
+#line 1
 mediump vec4 xlat_main(  ) {
     highp vec2 poisson[8];
     poisson[0] = vec2( 0.00000, 0.00000);

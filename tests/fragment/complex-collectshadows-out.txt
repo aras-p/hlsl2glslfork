@@ -17,6 +17,7 @@ float unitySampleShadow( in vec4 eyePos );
 float Linear01Depth( in float z );
 vec2 EncodeFloatRG( in float v );
 vec4 xlat_main( in v2f i );
+#line 37
 float unitySampleShadow( in vec4 eyePos ) {
     vec3 sc0;
     vec3 sc1;
@@ -40,9 +41,11 @@ float unitySampleShadow( in vec4 eyePos ) {
     shadow = (( (texture2D( _ShadowMapTexture, coord.xy ).x  < coord.z ) ) ? ( _LightShadowData.x  ) : ( 1.00000 ));
     return shadow;
 }
+#line 22
 float Linear01Depth( in float z ) {
     return (1.00000 / ((_ZBufferParams.x  * z) + _ZBufferParams.y ));
 }
+#line 27
 vec2 EncodeFloatRG( in float v ) {
     vec2 kEncodeMul = vec2( 1.00000, 255.000);
     float kEncodeBit = 0.00392157;
@@ -52,6 +55,7 @@ vec2 EncodeFloatRG( in float v ) {
     enc.x  -= (enc.y  * kEncodeBit);
     return enc;
 }
+#line 54
 vec4 xlat_main( in v2f i ) {
     float depth;
     vec4 vpos;

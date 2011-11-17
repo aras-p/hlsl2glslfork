@@ -23,6 +23,7 @@ uniform highp float sampleDist;
 uniform highp float sampleStrength;
 uniform sampler2D tex;
 highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength );
+#line 21
 highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength ) {
     highp vec2 dir;
     highp float dist;

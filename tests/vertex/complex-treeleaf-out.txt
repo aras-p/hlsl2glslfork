@@ -41,6 +41,7 @@ void TreeVertLeaf( inout appdata_full v );
 vec3 ObjSpaceViewDir( in vec4 v );
 vec3 ObjSpaceLightDir( in vec4 v );
 v2f_surf xlat_main( in appdata_full v );
+#line 45
 vec4 Squash( in vec4 pos ) {
     vec3 planeNormal;
     vec3 projectedVertex;
@@ -49,6 +50,7 @@ vec4 Squash( in vec4 pos ) {
     pos = vec4( mix( projectedVertex, pos.xyz , vec3( _SquashAmount)), 1.00000);
     return pos;
 }
+#line 53
 void ExpandBillboard( in mat4 mat, inout vec4 pos, inout vec3 normal, inout vec4 tangent ) {
     float isBillboard;
     vec3 norb;
@@ -60,15 +62,19 @@ void ExpandBillboard( in mat4 mat, inout vec4 pos, inout vec3 normal, inout vec4
     normal = mix( normal, norb, vec3( isBillboard));
     tangent = mix( tangent, vec4( tanb, -1.00000), vec4( isBillboard));
 }
+#line 66
 vec4 TriangleWave( in vec4 x ) {
     return abs( ((fract( (x + 0.500000) ) * 2.00000) - 1.00000) );
 }
+#line 62
 vec4 SmoothCurve( in vec4 x ) {
     return ((x * x) * (3.00000 - (2.00000 * x)));
 }
+#line 70
 vec4 SmoothTriangleWave( in vec4 x ) {
     return SmoothCurve( TriangleWave( x));
 }
+#line 74
 vec4 AnimateVertex( in vec4 pos, in vec3 normal, in vec4 animParams ) {
     float fDetailAmp = 0.100000;
     float fBranchAmp = 0.300000;
@@ -92,6 +98,7 @@ vec4 AnimateVertex( in vec4 pos, in vec3 normal, in vec4 animParams ) {
     pos.xyz  += (animParams.z  * _Wind.xyz );
     return pos;
 }
+#line 91
 void TreeVertLeaf( inout appdata_full v ) {
     ExpandBillboard( glstate_matrix_invtrans_modelview0, v.vertex, v.normal, v.tangent);
     v.vertex.xyz  *= _Scale.xyz ;
@@ -101,16 +108,19 @@ void TreeVertLeaf( inout appdata_full v ) {
     v.normal = normalize( v.normal );
     v.tangent.xyz  = normalize( v.tangent.xyz  );
 }
+#line 25
 vec3 ObjSpaceViewDir( in vec4 v ) {
     vec3 objSpaceCameraPos;
     objSpaceCameraPos = (( _World2Object * vec4( _WorldSpaceCameraPos.xyz , 1.00000) ).xyz  * unity_Scale.w );
     return (objSpaceCameraPos - v.xyz );
 }
+#line 20
 vec3 ObjSpaceLightDir( in vec4 v ) {
     vec3 objSpaceLightPos;
     objSpaceLightPos = ( _World2Object * _WorldSpaceLightPos0 ).xyz ;
     return objSpaceLightPos.xyz ;
 }
+#line 116
 v2f_surf xlat_main( in appdata_full v ) {
     v2f_surf o;
     vec3 binormal;

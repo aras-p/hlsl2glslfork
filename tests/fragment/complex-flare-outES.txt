@@ -13,6 +13,7 @@ struct appdata_img {
 };
 uniform sampler2D _FlareTexture;
 mediump vec4 xlat_main( in highp vec4 color, in highp vec2 texcoord );
+#line 270
 mediump vec4 xlat_main( in highp vec4 color, in highp vec2 texcoord ) {
     return (texture2D( _FlareTexture, texcoord) * color);
 }

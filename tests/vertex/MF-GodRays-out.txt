@@ -73,11 +73,13 @@ void CalcOrthonormalBasis( in vec3 dir, out vec3 right, out vec3 up );
 float CalcFadeOutFactor( in float dist );
 float CalcDistScale( in float dist );
 v2f xlat_main( in appdata_full v );
+#line 35
 void CalcOrthonormalBasis( in vec3 dir, out vec3 right, out vec3 up ) {
     up = (( (abs( dir.y  ) > 0.999000) ) ? ( vec3( 0.00000, 0.00000, 1.00000) ) : ( vec3( 0.00000, 1.00000, 0.00000) ));
     right = normalize( cross( up, dir) );
     up = cross( dir, right);
 }
+#line 42
 float CalcFadeOutFactor( in float dist ) {
     float nfadeout;
     float ffadeout;
@@ -89,11 +91,13 @@ float CalcFadeOutFactor( in float dist ) {
     nfadeout *= ffadeout;
     return nfadeout;
 }
+#line 57
 float CalcDistScale( in float dist ) {
     float distScale;
     distScale = min( (max( (dist - _SizeGrowStartDist), 0.00000) / _SizeGrowEndDist), 1.00000);
     return ((distScale * distScale) * _MaxGrowSize);
 }
+#line 64
 v2f xlat_main( in appdata_full v ) {
     vec3 centerOffs;
     vec3 centerLocal;

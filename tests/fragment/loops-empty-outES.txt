@@ -1,4 +1,5 @@
 mediump vec4 xlat_main(  );
+#line 1
 mediump vec4 xlat_main(  ) {
     highp int i = 0;
     highp int j = 0;

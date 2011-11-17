@@ -34,6 +34,7 @@ vec3 xll_matrixindexdynamic (mat3 m, int i) { return xll_matrixindex (m, i); }
 vec4 xll_matrixindexdynamic (mat4 m, int i) { return xll_matrixindex (m, i); }
 #endif
 highp vec4 xlat_main( in highp vec4 pos );
+#line 1
 highp vec4 xlat_main( in highp vec4 pos ) {
     highp vec4 v;
     highp mat2 m2 = mat2( 1.00000, 3.00000, 2.00000, 4.00000);

@@ -11,21 +11,27 @@ vec3 FxaaLerp3( in vec3 a, in vec3 b, in float amountOfA );
 vec3 FxaaFilterReturn( in vec3 rgb );
 vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame );
 vec4 xlat_main( in vec2 uv );
+#line 120
 vec4 FxaaTexOff( in sampler2D tex, in vec2 pos, in vec2 off, in vec2 rcpFrame ) {
     return xll_tex2Dlod( tex, vec4( (pos.xy  + (off * rcpFrame)), 0.00000, 0.00000));
 }
+#line 90
 vec4 FxaaTexLod0( in sampler2D tex, in vec2 pos ) {
     return xll_tex2Dlod( tex, vec4( pos.xy , 0.00000, 0.00000));
 }
+#line 281
 float FxaaLuma( in vec3 rgb ) {
     return ((rgb.y  * 1.96321) + rgb.x );
 }
+#line 284
 vec3 FxaaLerp3( in vec3 a, in vec3 b, in float amountOfA ) {
     return ((vec3( ( -amountOfA ), ( -amountOfA ), ( -amountOfA )) * b) + ((a * vec3( amountOfA, amountOfA, amountOfA)) + b));
 }
+#line 289
 vec3 FxaaFilterReturn( in vec3 rgb ) {
     return rgb;
 }
+#line 313
 vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     vec3 rgbN;
     vec3 rgbW;
@@ -169,6 +175,7 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     rgbF = FxaaTexLod0( tex, vec2( (pos.x  + (( horzSpan ) ? ( 0.00000 ) : ( subPixelOffset ))), (pos.y  + (( horzSpan ) ? ( subPixelOffset ) : ( 0.00000 ))))).xyz ;
     return FxaaFilterReturn( FxaaLerp3( rgbL, rgbF, blendL));
 }
+#line 471
 vec4 xlat_main( in vec2 uv ) {
     return vec4( FxaaPixelShader( uv.xy , _MainTex, _MainTex_TexelSize.xy ).xyz , 0.00000);
 }

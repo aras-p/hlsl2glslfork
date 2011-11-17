@@ -17,6 +17,7 @@ uniform highp vec4 unity_LightColor[4];
 uniform highp vec4 unity_LightPosition[4];
 highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal );
 v2f xlat_main( in appdata v );
+#line 19
 highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal ) {
     highp vec3 viewpos;
     highp vec3 viewN;
@@ -37,6 +38,7 @@ highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal ) {
     }
     return (lightColor * 2.00000);
 }
+#line 35
 v2f xlat_main( in appdata v ) {
     v2f o;
     o.pos = ( UNITY_MATRIX_MVP * v.vertex );

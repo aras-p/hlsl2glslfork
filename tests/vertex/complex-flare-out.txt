@@ -19,6 +19,7 @@ struct appdata_t {
 uniform vec4 _FlareTexture_ST;
 uniform mat4 glstate_matrix_mvp;
 void xlat_main( in appdata_t v, out vec4 overtex, out vec4 ocolor, out vec2 otexcoord );
+#line 270
 void xlat_main( in appdata_t v, out vec4 overtex, out vec4 ocolor, out vec2 otexcoord ) {
     overtex = ( glstate_matrix_mvp * v.vertex );
     ocolor = v.color;

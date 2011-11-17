@@ -12,9 +12,11 @@ uniform vec4 _MainTex_TexelSize;
 float FxaaLuma( in vec4 rgba );
 vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, in sampler2D fxaaConsole360TexExpBiasNegOne, in sampler2D fxaaConsole360TexExpBiasNegTwo, in vec2 fxaaQualityRcpFrame, in vec4 fxaaConsoleRcpFrameOpt, in vec4 fxaaConsoleRcpFrameOpt2, in vec4 fxaaConsole360RcpFrameOpt2, in float fxaaQualitySubpix, in float fxaaQualityEdgeThreshold, in float fxaaQualityEdgeThresholdMin, in float fxaaConsoleEdgeSharpness, in float fxaaConsoleEdgeThreshold, in float fxaaConsoleEdgeThresholdMin, in vec4 fxaaConsole360ConstDir );
 vec4 xlat_main( in v2f i );
+#line 344
 float FxaaLuma( in vec4 rgba ) {
     return rgba.y ;
 }
+#line 904
 vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, in sampler2D fxaaConsole360TexExpBiasNegOne, in sampler2D fxaaConsole360TexExpBiasNegTwo, in vec2 fxaaQualityRcpFrame, in vec4 fxaaConsoleRcpFrameOpt, in vec4 fxaaConsoleRcpFrameOpt2, in vec4 fxaaConsole360RcpFrameOpt2, in float fxaaQualitySubpix, in float fxaaQualityEdgeThreshold, in float fxaaQualityEdgeThresholdMin, in float fxaaConsoleEdgeSharpness, in float fxaaConsoleEdgeThreshold, in float fxaaConsoleEdgeThresholdMin, in vec4 fxaaConsole360ConstDir ) {
     float lumaNw;
     float lumaSw;
@@ -86,6 +88,7 @@ vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, 
     }
     return rgbyB;
 }
+#line 978
 vec4 xlat_main( in v2f i ) {
     float fxaaN = 0.500000;
     return FxaaPixelShader( i.uv, i.uvPosPos, _MainTex, _MainTex, _MainTex, _MainTex_TexelSize.xy , (_MainTex_TexelSize.xyxy  * vec4( ( -fxaaN ), ( -fxaaN ), fxaaN, fxaaN)), (_MainTex_TexelSize.xyxy  * vec4( -2.00000, -2.00000, 2.00000, 2.00000)), (_MainTex_TexelSize.xyxy  * vec4( 8.00000, 8.00000, -4.00000, -4.00000)), 0.750000, 0.166000, 0.0833000, 8.00000, 0.125000, 0.0500000, vec4( 1.00000, -1.00000, 0.250000, -0.250000));
