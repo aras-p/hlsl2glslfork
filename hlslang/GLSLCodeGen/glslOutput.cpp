@@ -1447,7 +1447,7 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
       //This is a new structure, build a type for it
       TTypeList &tList = *type->getStruct();
 
-      s = new GlslStruct(structName);
+      s = new GlslStruct(structName, type->getLine());
 
       for (TTypeList::iterator it = tList.begin(); it != tList.end(); it++)
       {

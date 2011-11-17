@@ -621,6 +621,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 		{
 			for (std::vector<GlslStruct*>::iterator it = sList.begin(); it < sList.end(); it++)
 			{
+				shader << "\n#line " << (*it)->getLine() << '\n';
 				shader << (*it)->getDecl() << "\n";
 			}
 		}

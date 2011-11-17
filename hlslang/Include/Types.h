@@ -96,24 +96,25 @@ public:
 
    explicit TType() { }
    explicit TType(TBasicType t, TPrecision p, TQualifier q = EvqTemporary, int s = 1, bool m = false, bool a = false) :
-      type(t), precision(p), qualifier(q), size(s), matrix(m), array(a), arraySize(0),
+      type(t), precision(p), qualifier(q), size(s), line(0), matrix(m), array(a), arraySize(0),
       structure(0), structureSize(0), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), typeName(0),
       semantic(0)
    {
    }
    explicit TType(const TPublicType &p) :
-      type(p.type), precision(p.precision), qualifier(p.qualifier), size(p.size), matrix(p.matrix), array(p.array), arraySize(p.arraySize), 
+      type(p.type), precision(p.precision), qualifier(p.qualifier), size(p.size), line(p.line), matrix(p.matrix), array(p.array), arraySize(p.arraySize), 
       structure(0), structureSize(0), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), typeName(0),
       semantic(0)
    {
       if (p.userDef)
       {
          structure = p.userDef->getStruct();
+		  line = p.userDef->line;
          typeName = NewPoolTString(p.userDef->getTypeName().c_str());
       }
    }
-   explicit TType(TTypeList* userDef, const TString& n, TPrecision p = EbpUndefined) :
-      type(EbtStruct), precision(p), qualifier(EvqTemporary), size(1), matrix(false), array(false), arraySize(0),
+   explicit TType(TTypeList* userDef, const TString& n, int l, TPrecision p = EbpUndefined) :
+      type(EbtStruct), precision(p), qualifier(EvqTemporary), size(1), line(l), matrix(false), array(false), arraySize(0),
       structure(userDef), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), semantic(0)
    {
       typeName = NewPoolTString(n.c_str());
@@ -130,6 +131,7 @@ public:
       matrix = copyOf.matrix;
       array = copyOf.array;
       arraySize = copyOf.arraySize;
+	   line = copyOf.line;
 
       TStructureMapIterator iter;
       if (copyOf.structure)
@@ -205,6 +207,7 @@ public:
    TBasicType getBasicType() const { return type; }
    TPrecision getPrecision() const { return precision; }
    TQualifier getQualifier() const { return qualifier; }
+	int getLine() const { return line; }
 
    void setBasicType(TBasicType t) { type = t; }
    void setPrecision(TPrecision p) { precision = p; }
@@ -329,6 +332,7 @@ private:
    unsigned int matrix  : 1;
    unsigned int array   : 1;
    int arraySize;
+	int line;
 
    TTypeList* structure;      // 0 unless this is a struct
    mutable int structureSize;
