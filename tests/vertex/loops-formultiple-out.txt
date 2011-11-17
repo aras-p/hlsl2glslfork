@@ -1,7 +1,10 @@
+
+#line 10
 struct v2f {
     vec4 pos;
     vec4 color;
 };
+#line 5
 struct appdata {
     vec4 vertex;
     vec3 normal;

@@ -1,12 +1,16 @@
+
+#line 123
 struct v2f_vertex_lit {
     highp vec2 uv;
     highp vec4 diff;
     highp vec4 spec;
 };
+#line 159
 struct v2f_img {
     highp vec4 pos;
     highp vec2 uv;
 };
+#line 153
 struct appdata_img {
     highp vec4 vertex;
     highp vec2 texcoord;

@@ -1,3 +1,5 @@
+
+#line 1
 struct v2f {
     highp vec4 pos;
     highp vec2 uv;

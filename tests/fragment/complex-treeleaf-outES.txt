@@ -22,6 +22,7 @@ mat3 xll_saturate(mat3 m) {
 mat4 xll_saturate(mat4 m) {
   return mat4( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0), clamp(m[2], 0.0, 1.0), clamp(m[3], 0.0, 1.0));
 }
+#line 16
 struct LeafSurfaceOutput {
     mediump vec3 Albedo;
     mediump vec3 Normal;
@@ -32,10 +33,12 @@ struct LeafSurfaceOutput {
     mediump float Gloss;
     mediump float Alpha;
 };
+#line 47
 struct Input {
     highp vec2 uv_MainTex;
     highp vec4 color;
 };
+#line 66
 struct v2f_surf {
     highp vec4 pos;
     highp vec2 hip_pack0;

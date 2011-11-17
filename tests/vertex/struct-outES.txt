@@ -1,7 +1,10 @@
+
+#line 0
 struct Inner {
     highp float member1;
     highp ivec3 member2;
 };
+#line 7
 struct Outer {
     Inner inner;
     Inner inner2;

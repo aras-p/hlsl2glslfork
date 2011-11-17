@@ -1,16 +1,21 @@
+
+#line 123
 struct v2f_vertex_lit {
     vec2 uv;
     vec4 diff;
     vec4 spec;
 };
+#line 159
 struct v2f_img {
     vec4 pos;
     vec2 uv;
 };
+#line 153
 struct appdata_img {
     vec4 vertex;
     vec2 texcoord;
 };
+#line 262
 struct appdata_t {
     vec4 vertex;
     vec4 color;

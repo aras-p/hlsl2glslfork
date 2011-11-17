@@ -1,3 +1,5 @@
+
+#line 3
 struct a2v {
     vec4 pos;
     vec2 uv;

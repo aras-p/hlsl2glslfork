@@ -1,3 +1,5 @@
+
+#line 12
 struct v2f {
     highp vec4 vertex;
     lowp vec4 color;

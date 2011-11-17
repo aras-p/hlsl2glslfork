@@ -1,9 +1,12 @@
+
+#line 10
 struct v2f {
     vec4 pos;
     float fog;
     vec2 uv;
     vec4 color;
 };
+#line 3
 struct a2v {
     vec4 pos;
     vec2 uv;

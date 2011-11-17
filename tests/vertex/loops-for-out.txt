@@ -1,10 +1,12 @@
 mat3 xll_constructMat3( mat4 m) {
   return mat3( vec3( m[0]), vec3( m[1]), vec3( m[2]));
 }
+#line 14
 struct v2f {
     vec4 pos;
     vec4 color;
 };
+#line 9
 struct appdata {
     vec4 vertex;
     vec3 normal;

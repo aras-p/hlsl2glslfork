@@ -28,6 +28,7 @@ vec3 xll_vecTSel (bvec3 a, vec3 b, vec3 c) {
 vec4 xll_vecTSel (bvec4 a, vec4 b, vec4 c) {
   return vec4 (a.x ? b.x : c.x, a.y ? b.y : c.y, a.z ? b.z : c.z, a.w ? b.w : c.w);
 }
+#line 19
 struct v2f {
     highp vec4 pos;
     highp vec4 uv;

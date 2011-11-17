@@ -1,6 +1,7 @@
 vec2 xll_matrixindex (mat2 m, int i) { vec2 v; v.x=m[0][i]; v.y=m[1][i]; return v; }
 vec3 xll_matrixindex (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }
 vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }
+#line 10
 struct appdata_full {
     highp vec4 vertex;
     highp vec4 tangent;
@@ -9,6 +10,7 @@ struct appdata_full {
     highp vec4 texcoord1;
     highp vec4 color;
 };
+#line 105
 struct v2f_surf {
     highp vec4 pos;
     highp vec2 hip_pack0;

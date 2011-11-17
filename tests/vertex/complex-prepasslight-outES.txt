@@ -1,8 +1,11 @@
+
+#line 17
 struct v2f {
     highp vec4 pos;
     highp vec4 uv;
     highp vec3 ray;
 };
+#line 11
 struct appdata {
     highp vec4 vertex;
     highp vec3 normal;

@@ -1,8 +1,11 @@
+
+#line 7
 struct v2f {
     highp vec4 vertex;
     lowp vec4 color;
     mediump vec2 texcoord;
 };
+#line 2
 struct appdata_t {
     highp vec4 vertex;
     lowp vec4 color;

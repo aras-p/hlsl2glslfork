@@ -1,3 +1,5 @@
+
+#line 3
 struct v2f {
     highp vec4 pos;
     highp float fog;
