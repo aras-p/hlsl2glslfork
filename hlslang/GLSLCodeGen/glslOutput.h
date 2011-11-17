@@ -28,9 +28,11 @@ private:
    static bool traverseAggregate(bool preVisit, TIntermAggregate*, TIntermTraverser*);
    static bool traverseLoop(bool preVisit, TIntermLoop*, TIntermTraverser*);
    static bool traverseBranch(bool preVisit, TIntermBranch*,  TIntermTraverser*);
+	
+	void outputLineDirective (int line);
 
 public:
-   TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision);
+   TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision, bool outputLines);
    GlslStruct *createStructFromType( TType *type );
    bool parseInitializer( TIntermBinary *node );
 
@@ -58,7 +60,9 @@ public:
    // Persistent data for collecting indices
    std::vector<int> indexList;
 
-   bool m_UsePrecision;
+	bool m_UsePrecision;
+	bool m_OutputLines;
+	int m_LastLineOutput;
 };
 
 #endif //GLSL_OUTPUT_H

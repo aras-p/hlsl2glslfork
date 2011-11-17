@@ -224,14 +224,29 @@ void writeTex( const TString &name, TIntermAggregate *node, TGlslOutputTraverser
 }
 
 
+void TGlslOutputTraverser::outputLineDirective (int line)
+{
+	if (line <= 0 || !m_OutputLines || !current)
+		return;
+	if (abs(line - m_LastLineOutput) < 4) // don't sprinkle too many #line directives ;)
+		return;
+	std::stringstream& out = current->getActiveOutput();
+	out << '\n';
+	current->indent();
+	out << "#line " << line << '\n';
+	m_LastLineOutput = line;
+}
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision ) :
-      infoSink(i),
-      generatingCode(true),
-      functionList(funcList),
-      structList(sList),
-	  m_UsePrecision(usePrecision)
+
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision, bool outputLines)
+: infoSink(i)
+, generatingCode(true)
+, functionList(funcList)
+, structList(sList)
+, m_UsePrecision(usePrecision)
+, m_OutputLines(outputLines)
+, m_LastLineOutput(-1)
 {
    visitSymbol = traverseSymbol;
    visitConstantUnion = traverseConstantUnion;
@@ -241,7 +256,7 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
    visitAggregate = traverseAggregate;
    visitLoop = traverseLoop;
    visitBranch = traverseBranch;
-   global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "");
+   global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "", 1);
    functionList.push_back(global);
    current = global;
 }
@@ -1012,13 +1027,14 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    switch (node->getOp())
    {
    case EOpSequence:
-      if (goit->generatingCode )
+      if (goit->generatingCode)
       {
+		  goit->outputLineDirective (node->getLine());
          TIntermSequence::iterator sit;
          TIntermSequence &sequence = node->getSequence(); 
 		 for (sit = sequence.begin(); sit != sequence.end(); ++sit)
 		 {
-		   //current->indent();
+		   goit->outputLineDirective((*sit)->getLine());
 		   (*sit)->traverse(it);
 		   //out << ";\n";
 		   current->endStatement();
@@ -1039,7 +1055,8 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpFunction:
       {
          GlslFunction *func = new GlslFunction( node->getPlainName().c_str(), node->getName().c_str(),
-                                                translateType(node->getTypePointer()), goit->m_UsePrecision?node->getPrecision():EbpUndefined, node->getSemantic().c_str()); 
+                                                translateType(node->getTypePointer()), goit->m_UsePrecision?node->getPrecision():EbpUndefined,
+											   node->getSemantic().c_str(), node->getLine()); 
          if (func->getReturnType() == EgstStruct)
          {
             GlslStruct *s = goit->createStructFromType( node->getTypePointer());
@@ -1052,7 +1069,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
          TIntermSequence &sequence = node->getSequence(); 
 		 for (sit = sequence.begin(); sit != sequence.end(); ++sit)
 		 {
-		   (*sit)->traverse(it);
+			 (*sit)->traverse(it);
 		 }
          goit->current->endBlock();
          goit->current = goit->global;

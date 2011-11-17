@@ -467,6 +467,7 @@ static void EmitCalledFunctions (std::stringstream& shader, const FunctionSet& f
 
 	for (FunctionSet::const_reverse_iterator fit = functions.rbegin(); fit != functions.rend(); fit++) // emit backwards, will put least used ones in front
 	{
+		shader << "\n#line " << (*fit)->getLine() << '\n';
 		shader << (*fit)->getPrototype() << " {\n";
 		shader << (*fit)->getLocalDecls(1) << "\n";
 		shader << (*fit)->getCode() << "\n"; //has embedded }
@@ -607,7 +608,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	shader << shaderLibFunctions;
 
 	//
-	//Structure addition hack
+	// Structure addition hack
 	// Presently, structures are not tracked per function, just dump them all
 	// This could be improved by building a complete list of structures for the
 	// shaders based on the variables in each function

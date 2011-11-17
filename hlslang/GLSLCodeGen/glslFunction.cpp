@@ -6,13 +6,14 @@
 #include "glslFunction.h"
 
 
-GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision prec, const std::string &s ) :
+GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision prec, const std::string &s, int l) :
       name(n),
       mangledName(m),
       returnType(type),
-	  precision(prec),
-      semantic(s),
-      structPtr(0),
+	  precision(prec)
+, semantic(s)
+, line(l)
+, structPtr(0),
       depth(0),
       inStatement(false)
 { 
