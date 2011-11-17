@@ -32,7 +32,7 @@ private:
 	void outputLineDirective (int line);
 
 public:
-   TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision, bool outputLines);
+   TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision);
    GlslStruct *createStructFromType( TType *type );
    bool parseInitializer( TIntermBinary *node );
 
@@ -61,7 +61,6 @@ public:
    std::vector<int> indexList;
 
 	bool m_UsePrecision;
-	bool m_OutputLines;
 	int m_LastLineOutput;
 };
 

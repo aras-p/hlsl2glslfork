@@ -335,7 +335,6 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
     (&parseContextLocal)->AfterEOF = false;
     cpp->notAVersionToken = 0;
     lexlineno = 1;
-	parseContextLocal.hadLineDirectives = false;
    
     if (sourceLen >= 0) {
         int ret;
@@ -439,7 +438,6 @@ void SetLineNumber(int line)
 {
     lexlineno &= ~SourceLocLineMask;
     lexlineno |= line;
-	GlobalParseContext->hadLineDirectives = true;
 }
 
 int GetStringNumber(void)

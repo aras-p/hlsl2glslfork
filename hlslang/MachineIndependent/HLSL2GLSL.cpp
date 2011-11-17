@@ -267,7 +267,7 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 			intermediate.outputTree(parseContext.treeRoot);
 
 		compiler->TransformAST (parseContext.treeRoot);
-		compiler->ProduceGLSL (parseContext.treeRoot, (options & ETranslateOpUsePrecision) ? true : false, parseContext.hadLineDirectives);
+		compiler->ProduceGLSL (parseContext.treeRoot, (options & ETranslateOpUsePrecision) ? true : false);
    }
    else if (!success)
    {

@@ -226,7 +226,7 @@ void writeTex( const TString &name, TIntermAggregate *node, TGlslOutputTraverser
 
 void TGlslOutputTraverser::outputLineDirective (int line)
 {
-	if (line <= 0 || !m_OutputLines || !current)
+	if (line <= 0 || !current)
 		return;
 	if (abs(line - m_LastLineOutput) < 4) // don't sprinkle too many #line directives ;)
 		return;
@@ -239,13 +239,12 @@ void TGlslOutputTraverser::outputLineDirective (int line)
 
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision, bool outputLines)
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision)
 : infoSink(i)
 , generatingCode(true)
 , functionList(funcList)
 , structList(sList)
 , m_UsePrecision(usePrecision)
-, m_OutputLines(outputLines)
 , m_LastLineOutput(-1)
 {
    visitSymbol = traverseSymbol;
