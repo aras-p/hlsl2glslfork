@@ -10,6 +10,8 @@ float4 _LightColor0 ;
 float4 _SpecColor ;
 uniform sampler2D _LightTexture0 ;
 uniform float4x4 _LightMatrix0 ;
+
+#line 1014
 float4 _Color ;
 half3 _TranslucencyColor ;
 half _TranslucencyViewDependency ;
@@ -42,6 +44,8 @@ inline half4 LightingTreeLeaf ( LeafSurfaceOutput s , half3 lightDir , half3 vie
     c . rgb *= lerp ( 2 , atten * 2 , _ShadowStrength ) ;
     return c ;
 }
+
+#line 10048
 sampler2D _MainTex ;
 sampler2D _BumpSpecMap ;
 sampler2D _TranslucencyMap ;
