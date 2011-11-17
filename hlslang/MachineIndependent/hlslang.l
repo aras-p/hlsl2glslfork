@@ -42,7 +42,7 @@ I           [uUlL]
 #endif
 
 int yy_input(char* buf, int max_size);
-TSourceLoc lexlineno;
+static TSourceLoc lexlineno;
 
 #ifdef _WIN32
     extern int yyparse(TParseContext&);
@@ -334,7 +334,8 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
     yyrestart(0);
     (&parseContextLocal)->AfterEOF = false;
     cpp->notAVersionToken = 0;
-    lexlineno   = 1;
+    lexlineno = 1;
+	parseContextLocal.hadLineDirectives = false;
    
     if (sourceLen >= 0) {
         int ret;
@@ -438,11 +439,7 @@ void SetLineNumber(int line)
 {
     lexlineno &= ~SourceLocLineMask;
     lexlineno |= line;
-}
-
-void SetStringNumber(int string)
-{
-    lexlineno = (string << SourceLocStringShift) | (lexlineno & SourceLocLineMask);
+	GlobalParseContext->hadLineDirectives = true;
 }
 
 int GetStringNumber(void)

@@ -18,7 +18,7 @@ struct TParseContext
 {
    TParseContext(TSymbolTable& symt, TIntermediate& interm, EShLanguage L, TInfoSink& is) : 
    intermediate(interm), symbolTable(symt), infoSink(is), language(L), treeRoot(0),
-   recoveredFromError(false), numErrors(0), lexAfterType(false), loopNestingLevel(0), 
+   recoveredFromError(false), numErrors(0), hadLineDirectives(false), lexAfterType(false), loopNestingLevel(0), 
    inTypeParen(false)
    {
    }
@@ -29,6 +29,7 @@ struct TParseContext
    TIntermNode* treeRoot;       // root of parse tree being created
    bool recoveredFromError;     // true if a parse error has occurred, but we continue to parse
    int numErrors;
+   bool hadLineDirectives;
    bool lexAfterType;           // true if we've recognized a type, so can only be looking for an identifier
    int loopNestingLevel;        // 0 if outside all loops
    bool inTypeParen;            // true if in parentheses, looking only for an identifier

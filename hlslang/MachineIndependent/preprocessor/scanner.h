@@ -33,7 +33,6 @@ int ScanFromString(char *);      // Start scanning the input from the string men
 int check_EOF(int);              // check if we hit a EOF abruptly 
 void CPPErrorToInfoLog(char *);   // sticking the msg,line into the Shader's.Info.log
 void SetLineNumber(int);
-void SetStringNumber(int);
 void IncLineNumber(void);
 void DecLineNumber(void);
 int FreeScanner(void);                 // Free the cpp scanner
