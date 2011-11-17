@@ -15,6 +15,7 @@ v2f xlat_main( in appdata v ) {
     highp int i = 0;
     highp int i_1 = 0;
     o.pos = ( UNITY_MATRIX_MVP * v.vertex );
+    #line 19
     o.color = vec4( 0.00000);
     for ( ; (i < 4); ( ++i )) {
         o.color += max( 0.00000, float( unity_LightColor[ i ]));
@@ -22,6 +23,7 @@ v2f xlat_main( in appdata v ) {
     for ( ; (i_1 < 4); ( ++i_1 )) {
         o.color *= min( 1.00000, float( unity_LightColor[ i_1 ]));
     }
+    #line 24
     return o;
 }
 varying mediump vec4 xlv_TEXCOORD0;

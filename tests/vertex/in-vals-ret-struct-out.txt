@@ -10,6 +10,7 @@ v2f xlat_main( in vec4 pos, in vec2 uv, in vec3 normal, in vec4 color );
 v2f xlat_main( in vec4 pos, in vec2 uv, in vec3 normal, in vec4 color ) {
     v2f o;
     o.pos = ( mvp * pos );
+    #line 19
     o.color = color;
     o.color.xyz  += normal;
     o.uv = uv;

@@ -12,6 +12,7 @@ vec4 xlat_main(  ) {
     poisson[7] = vec2( 0.574619, 0.685879);
     vec4 c;
     int i = 0;
+    #line 12
     c = vec4( 0.00000);
     for ( ; (i < 8); ( ++i )) {
         c.xy  += poisson[ i ];

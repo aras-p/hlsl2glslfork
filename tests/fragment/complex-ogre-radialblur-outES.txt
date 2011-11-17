@@ -44,17 +44,23 @@ highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sam
     samples[9] = 0.0800000;
     highp float t;
     dir = (0.500000 - texCoord);
+    #line 28
     dist = sqrt( ((dir.x  * dir.x ) + (dir.y  * dir.y )) );
+    #line 32
     dir = normalize( dir );
     color = texture2D( tex, texCoord);
+    #line 37
     sum = color;
     for ( ; (i < 10); ( i++ )) {
         res = texture2D( tex, (texCoord + ((dir * samples[ i ]) * sampleDist)));
+        #line 41
         sum += res;
     }
     sum /= 11.0000;
+    #line 47
     t = (dist * sampleStrength);
     t = xll_saturate( t );
+    #line 51
     return mix( color, sum, vec4( t));
 }
 uniform highp float xlu_sampleDist;

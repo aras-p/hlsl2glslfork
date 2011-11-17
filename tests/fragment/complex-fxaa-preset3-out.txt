@@ -13,10 +13,12 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame );
 vec4 xlat_main( in vec2 uv );
 #line 120
 vec4 FxaaTexOff( in sampler2D tex, in vec2 pos, in vec2 off, in vec2 rcpFrame ) {
+    #line 128
     return xll_tex2Dlod( tex, vec4( (pos.xy  + (off * rcpFrame)), 0.00000, 0.00000));
 }
 #line 90
 vec4 FxaaTexLod0( in sampler2D tex, in vec2 pos ) {
+    #line 98
     return xll_tex2Dlod( tex, vec4( pos.xy , 0.00000, 0.00000));
 }
 #line 281
@@ -25,10 +27,12 @@ float FxaaLuma( in vec3 rgb ) {
 }
 #line 284
 vec3 FxaaLerp3( in vec3 a, in vec3 b, in float amountOfA ) {
+    #line 285
     return ((vec3( ( -amountOfA ), ( -amountOfA ), ( -amountOfA )) * b) + ((a * vec3( amountOfA, amountOfA, amountOfA)) + b));
 }
 #line 289
 vec3 FxaaFilterReturn( in vec3 rgb ) {
+    #line 299
     return rgb;
 }
 #line 313
@@ -80,38 +84,50 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     float subPixelOffset;
     vec3 rgbF;
     rgbN = FxaaTexOff( tex, pos.xy , vec2( 0.00000, -1.00000), rcpFrame).xyz ;
+    #line 317
     rgbW = FxaaTexOff( tex, pos.xy , vec2( -1.00000, 0.00000), rcpFrame).xyz ;
     rgbM = FxaaTexOff( tex, pos.xy , vec2( 0.00000, 0.00000), rcpFrame).xyz ;
     rgbE = FxaaTexOff( tex, pos.xy , vec2( 1.00000, 0.00000), rcpFrame).xyz ;
     rgbS = FxaaTexOff( tex, pos.xy , vec2( 0.00000, 1.00000), rcpFrame).xyz ;
+    #line 321
     lumaN = FxaaLuma( rgbN);
     lumaW = FxaaLuma( rgbW);
     lumaM = FxaaLuma( rgbM);
     lumaE = FxaaLuma( rgbE);
+    #line 325
     lumaS = FxaaLuma( rgbS);
     rangeMin = min( lumaM, min( min( lumaN, lumaW), min( lumaS, lumaE)));
     rangeMax = max( lumaM, max( max( lumaN, lumaW), max( lumaS, lumaE)));
     range = (rangeMax - rangeMin);
+    #line 329
     if ( (range < max( 0.0416667, (rangeMax * 0.125000))) ){
         return FxaaFilterReturn( rgbM);
     }
+    #line 336
     rgbL = ((((rgbN + rgbW) + rgbM) + rgbE) + rgbS);
+    #line 342
     lumaL = ((((lumaN + lumaW) + lumaE) + lumaS) * 0.250000);
     rangeL = abs( (lumaL - lumaM) );
+    #line 346
     blendL = (max( 0.00000, ((rangeL / range) - 0.250000)) * 1.33333);
     blendL = min( 0.750000, blendL);
+    #line 355
     rgbNW = FxaaTexOff( tex, pos.xy , vec2( -1.00000, -1.00000), rcpFrame).xyz ;
     rgbNE = FxaaTexOff( tex, pos.xy , vec2( 1.00000, -1.00000), rcpFrame).xyz ;
     rgbSW = FxaaTexOff( tex, pos.xy , vec2( -1.00000, 1.00000), rcpFrame).xyz ;
     rgbSE = FxaaTexOff( tex, pos.xy , vec2( 1.00000, 1.00000), rcpFrame).xyz ;
+    #line 360
     rgbL += (((rgbNW + rgbNE) + rgbSW) + rgbSE);
     rgbL *= vec3( 0.111111, 0.111111, 0.111111);
     lumaNW = FxaaLuma( rgbNW);
+    #line 364
     lumaNE = FxaaLuma( rgbNE);
     lumaSW = FxaaLuma( rgbSW);
     lumaSE = FxaaLuma( rgbSE);
     edgeVert = ((abs( (((0.250000 * lumaNW) + (-0.500000 * lumaN)) + (0.250000 * lumaNE)) ) + abs( (((0.500000 * lumaW) + (-1.00000 * lumaM)) + (0.500000 * lumaE)) )) + abs( (((0.250000 * lumaSW) + (-0.500000 * lumaS)) + (0.250000 * lumaSE)) ));
+    #line 371
     edgeHorz = ((abs( (((0.250000 * lumaNW) + (-0.500000 * lumaW)) + (0.250000 * lumaSW)) ) + abs( (((0.500000 * lumaN) + (-1.00000 * lumaM)) + (0.500000 * lumaS)) )) + abs( (((0.250000 * lumaNE) + (-0.500000 * lumaE)) + (0.250000 * lumaSE)) ));
+    #line 375
     horzSpan = (edgeHorz >= edgeVert);
     lengthSign = (( horzSpan ) ? ( ( -rcpFrame.y  ) ) : ( ( -rcpFrame.x  ) ));
     if ( ( !horzSpan ) ){
@@ -120,10 +136,12 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     if ( ( !horzSpan ) ){
         lumaS = lumaE;
     }
+    #line 379
     gradientN = abs( (lumaN - lumaM) );
     gradientS = abs( (lumaS - lumaM) );
     lumaN = ((lumaN + lumaM) * 0.500000);
     lumaS = ((lumaS + lumaM) * 0.500000);
+    #line 385
     pairN = (gradientN >= gradientS);
     if ( ( !pairN ) ){
         lumaN = lumaS;
@@ -134,22 +152,30 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     if ( ( !pairN ) ){
         lengthSign *= -1.00000;
     }
+    #line 390
     posN.x  = (pos.x  + (( horzSpan ) ? ( 0.00000 ) : ( (lengthSign * 0.500000) )));
     posN.y  = (pos.y  + (( horzSpan ) ? ( (lengthSign * 0.500000) ) : ( 0.00000 )));
+    #line 394
     gradientN *= 0.250000;
     posP = posN;
+    #line 398
     offNP = (( horzSpan ) ? ( vec2( rcpFrame.x , 0.00000) ) : ( vec2( 0.00000, rcpFrame.y ) ));
     lumaEndN = lumaN;
+    #line 402
     lumaEndP = lumaN;
+    #line 406
     posN += (offNP * vec2( -1.00000, -1.00000));
     posP += (offNP * vec2( 1.00000, 1.00000));
+    #line 424
     for ( ; (i < 16); ( i++ )) {
         if ( ( !doneN ) ){
             lumaEndN = FxaaLuma( FxaaTexLod0( tex, posN.xy ).xyz );
         }
+        #line 428
         if ( ( !doneP ) ){
             lumaEndP = FxaaLuma( FxaaTexLod0( tex, posP.xy ).xyz );
         }
+        #line 436
         doneN = (doneN || (abs( (lumaEndN - lumaN) ) >= gradientN));
         doneP = (doneP || (abs( (lumaEndP - lumaN) ) >= gradientN));
         if ( (doneN && doneP) ){
@@ -158,21 +184,26 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
         if ( ( !doneN ) ){
             posN -= offNP;
         }
+        #line 440
         if ( ( !doneP ) ){
             posP += offNP;
         }
     }
     dstN = (( horzSpan ) ? ( (pos.x  - posN.x ) ) : ( (pos.y  - posN.y ) ));
+    #line 444
     dstP = (( horzSpan ) ? ( (posP.x  - pos.x ) ) : ( (posP.y  - pos.y ) ));
     directionN = (dstN < dstP);
     lumaEndN = (( directionN ) ? ( lumaEndN ) : ( lumaEndP ));
+    #line 449
     if ( (((lumaM - lumaN) < 0.00000) == ((lumaEndN - lumaN) < 0.00000)) ){
         lengthSign = 0.00000;
     }
+    #line 453
     spanLength = (dstP + dstN);
     dstN = (( directionN ) ? ( dstN ) : ( dstP ));
     subPixelOffset = ((0.500000 + (dstN * (-1.00000 / spanLength))) * lengthSign);
     rgbF = FxaaTexLod0( tex, vec2( (pos.x  + (( horzSpan ) ? ( 0.00000 ) : ( subPixelOffset ))), (pos.y  + (( horzSpan ) ? ( subPixelOffset ) : ( 0.00000 ))))).xyz ;
+    #line 462
     return FxaaFilterReturn( FxaaLerp3( rgbL, rgbF, blendL));
 }
 #line 471

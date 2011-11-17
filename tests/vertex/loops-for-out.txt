@@ -29,18 +29,22 @@ vec3 ShadeMyVertexLights( in vec4 vertex, in vec3 normal ) {
     float diff;
     viewpos = ( UNITY_MATRIX_MV * vertex ).xyz ;
     viewN = ( xll_constructMat3( UNITY_MATRIX_IT_MV) * normal );
+    #line 23
     for ( ; (i < 2); ( i++ )) {
         toLight = (unity_LightPosition[ i ].xyz  - viewpos.xyz );
+        #line 27
         lengthSq = dot( toLight, toLight);
         atten = (1.00000 / (1.00000 + (lengthSq * unity_LightAtten[ i ].z )));
         diff = max( 0.00000, dot( viewN, normalize( toLight )));
         lightColor += (unity_LightColor[ i ].xyz  * (diff * atten));
     }
+    #line 32
     return (lightColor * 2.00000);
 }
 #line 35
 v2f xlat_main( in appdata v ) {
     v2f o;
+    #line 38
     o.pos = ( UNITY_MATRIX_MVP * v.vertex );
     o.color = vec4( ShadeMyVertexLights( v.vertex, v.normal), 1.00000);
     return o;

@@ -16,6 +16,7 @@ v2f xlat_main( in a2v v );
 v2f xlat_main( in a2v v ) {
     v2f o;
     o.pos = ( mvp * v.pos );
+    #line 21
     o.color = v.color;
     o.color.xyz  += v.normal;
     o.uv = v.uv;

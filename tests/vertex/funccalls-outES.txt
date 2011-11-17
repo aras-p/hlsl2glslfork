@@ -23,11 +23,13 @@ highp vec4 DoColor( in highp vec4 color, in highp vec3 normal ) {
     highp vec4 c;
     c = color;
     c.xyz  += normal;
+    #line 26
     return c;
 }
 #line 29
 v2f xlat_main( in a2v v ) {
     v2f o;
+    #line 32
     o.pos = DoPosMul( v.pos, mvp);
     o.color = DoColor( v.color, v.normal);
     o.uv = v.uv;

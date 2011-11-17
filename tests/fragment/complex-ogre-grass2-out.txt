@@ -11,21 +11,26 @@ void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLi
     float gradientFactor;
     float depthAdjust;
     float centerdepth;
+    #line 19
     if ( (shadowUV.z  > 0.00000) ){
         diffuse = texture2D( diffuseMap, uv.xy );
         if ( (diffuse.w  > 0.00100000) ){
+            #line 24
             oColour = vec4( 0.00000, 0.00000, 0.00000, 0.00000);
         }
         else{
+            #line 29
             shadowUV = (shadowUV / shadowUV.w );
             shadowDepths = texture2D( shadowMap, shadowUV.xy );
             gradientFactor = (gradientClamp * gradientScaleBias);
+            #line 33
             depthAdjust = (gradientFactor + (fixedDepthBias * shadowDepths.x ));
             centerdepth = (shadowDepths.x  + depthAdjust);
             oColour = (( (centerdepth > shadowUV.z ) ) ? ( vec4( vertexLight.xyz , diffuse.w ) ) : ( vec4( 0.00000, 0.00000, 0.00000, diffuse.w ) ));
         }
     }
     else{
+        #line 41
         oColour = vec4( 0.00000, 0.00000, 0.00000, 0.00000);
     }
 }

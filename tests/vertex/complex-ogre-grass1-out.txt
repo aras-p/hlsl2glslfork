@@ -10,13 +10,17 @@ void xlat_main( in vec4 position, in vec3 normal, in vec2 uv, out vec4 oPosition
     vec4 factor;
     vec3 light;
     float diffuseFactor;
+    #line 15
     mypos = position;
     factor = (vec4( 1.00000, 1.00000, 1.00000, 1.00000) - uv.yyyy );
     mypos = (mypos + (offset * factor));
+    #line 19
     oPosition = ( worldViewProj * mypos );
     oUv = uv;
+    #line 24
     light = normalize( (objSpaceLight.xyz  - (mypos.xyz  * objSpaceLight.w )) );
     diffuseFactor = abs( dot( normal.xyz , light) );
+    #line 28
     oColour = (ambient + (diffuseFactor * lightColour));
 }
 uniform mat4 xlu_worldViewProj;

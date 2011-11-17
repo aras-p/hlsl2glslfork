@@ -5,16 +5,21 @@ vec4 xlat_main(  ) {
     vec4 v;
     vec3 f3;
     float boo;
+    #line 3
     foo += 1.00000;
     foo += 100000.;
     foo += -0.00100000;
     foo += 2.00000;
+    #line 7
     foo += 3.00000;
+    #line 12
     v = vec4( f3.zyx , 1.00000);
     v = vec4( vec3( foo), 1.00000);
     v = vec4( vec3( boo), 1.00000);
     v = vec4( foo);
+    #line 16
     v = vec4( 2.00000);
+    #line 20
     v = vec4( 1.90000);
     return vec4( foo);
 }

@@ -5,8 +5,10 @@ mediump vec4 xlat_main(  ) {
     highp int j = 0;
     for ( ; (i < 10); ( ++i )) {
     }
+    #line 4
     while ( (( j++ ) < 10) ) {
     }
+    #line 8
     do {
     }
     while (     (( j-- ) > 0) )

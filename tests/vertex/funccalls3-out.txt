@@ -12,12 +12,14 @@ v2f xlat_main( in a2v v );
 vec4 ComputeColor( in vec4 pos ) {
     pos *= vec4( 1.00000, -1.00000, -1.00000, 1.00000);
     pos.xyz  *= 0.300000;
+    #line 16
     return pos;
 }
 #line 19
 v2f xlat_main( in a2v v ) {
     vec4 pos;
     v2f o;
+    #line 22
     pos = ( mvp * v.pos );
     o.color = ComputeColor( pos);
     o.pos = pos;

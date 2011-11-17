@@ -24,6 +24,7 @@ float ComputeAtten( in vec3 pos, in vec3 lightPos ) {
 vec4 ComputeSomeLighting( in vec3 pos ) {
     vec4 res;
     res = _LightColor;
+    #line 29
     res *= ComputeAtten( pos, _LightPos);
     return res;
 }
@@ -32,6 +33,7 @@ v2f xlat_main( in a2v v ) {
     vec4 pos;
     v2f o;
     pos = ( mvp * v.pos );
+    #line 37
     o.pos = pos;
     o.color = ComputeSomeLighting( v.pos.xyz );
     return o;

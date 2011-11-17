@@ -10,6 +10,7 @@ void xlat_main( in a2v v, out highp vec4 opos, out highp float ofog, out highp v
 void xlat_main( in a2v v, out highp vec4 opos, out highp float ofog, out highp vec2 ouv, out highp vec4 ocolor ) {
     opos = ( mvp * v.pos );
     ocolor = v.color;
+    #line 19
     ocolor.xyz  += v.normal;
     ouv = v.uv;
 }

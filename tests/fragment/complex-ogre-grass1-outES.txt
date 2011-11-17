@@ -4,11 +4,13 @@ void xlat_main( in highp vec4 position, in highp vec2 uv, in highp vec2 depth, o
 void xlat_main( in highp vec4 position, in highp vec2 uv, in highp vec2 depth, out highp vec4 result, sampler2D diffuseMap ) {
     highp float alpha;
     highp float finalDepth;
+    #line 12
     alpha = texture2D( diffuseMap, uv).w ;
     if ( (alpha > 0.00100000) ){
         result = vec4( 1.00000, 1.00000, 1.00000, 0.00000);
     }
     else{
+        #line 19
         finalDepth = (depth.x  / depth.y );
         result = vec4( vec3( finalDepth), 1.00000);
     }
