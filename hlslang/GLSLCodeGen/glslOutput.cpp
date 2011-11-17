@@ -464,13 +464,28 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 
 		 if (left->isMatrix() && !left->isArray())
 		 {
-			 current->addLibFunction (EOpMatrixIndex);
-			 out << "xll_matrixindex (";
-			 left->traverse(goit);
-			 out << ", ";
-			 right->traverse(goit);
-			 out << ")";
-			 return false;
+			 if (right->getAsConstantUnion())
+			 {
+				 current->addLibFunction (EOpMatrixIndex);
+				 out << "xll_matrixindex (";
+				 left->traverse(goit);
+				 out << ", ";
+				 right->traverse(goit);
+				 out << ")";
+				 return false;
+			 }
+			 else
+			 {
+				 current->addLibFunction (EOpTranspose);
+				 current->addLibFunction (EOpMatrixIndex);
+				 current->addLibFunction (EOpMatrixIndexDynamic);
+				 out << "xll_matrixindexdynamic (";
+				 left->traverse(goit);
+				 out << ", ";
+				 right->traverse(goit);
+				 out << ")";
+				 return false;
+			 }
 		 }
 
          left->traverse(goit);
@@ -509,13 +524,28 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 
 	  if (left && right && left->isMatrix() && !left->isArray())
 	  {
-		  current->addLibFunction (EOpMatrixIndex);
-		  out << "xll_matrixindex (";
-		  left->traverse(goit);
-		  out << ", ";
-		  right->traverse(goit);
-		  out << ")";
-		  return false;
+		  if (right->getAsConstantUnion())
+		  {
+			  current->addLibFunction (EOpMatrixIndex);
+			  out << "xll_matrixindex (";
+			  left->traverse(goit);
+			  out << ", ";
+			  right->traverse(goit);
+			  out << ")";
+			  return false;
+		  }
+		  else
+		  {
+			  current->addLibFunction (EOpTranspose);
+			  current->addLibFunction (EOpMatrixIndex);
+			  current->addLibFunction (EOpMatrixIndexDynamic);
+			  out << "xll_matrixindexdynamic (";
+			  left->traverse(goit);
+			  out << ", ";
+			  right->traverse(goit);
+			  out << ")";
+			  return false;
+		  }
 	  }
 
       if (left)

@@ -370,6 +370,31 @@ void initializeHLSLSupportLibrary()
 		"vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }\n")
 		);
 	
+	// The GLSL ES implementation on NaCl does not support dynamic indexing 
+	// (except when the operand is a uniform in vertex shaders). The GLSL specification 
+	// leaves it open to vendors to support this or not. So, for NaCl we use if statements to 
+	// simulate the indexing.
+	hlslSupportLib->insert( CodeMap::value_type( EOpMatrixIndexDynamic,
+		"#if defined(SHADER_API_GLES) && defined(SHADER_API_DESKTOP)\n"
+		"vec2 xll_matrixindexdynamic (mat2 m, int i) {\n"
+		"	mat2 m2 = xll_transpose(m);\n"
+		"	return i==0?m2[0]:m2[1];\n"
+		"}\n"
+		"vec3 xll_matrixindexdynamic (mat3 m, int i) {\n"
+		"	mat3 m2 = xll_transpose(m);\n"
+		"	return i < 2?(i==0?m2[0]:m2[1]):(m2[2]);\n"
+		"}\n"
+		"vec4 xll_matrixindexdynamic (mat4 m, int i) {\n"
+		"	mat4 m2 = xll_transpose(m);\n"
+		"	return i < 2?(i==0?m2[0]:m2[1]):(i==3?m2[3]:m2[2]);\n"
+		"}\n"
+		"#else\n"
+		"vec2 xll_matrixindexdynamic (mat2 m, int i) { return xll_matrixindex (m, i); }\n"
+		"vec3 xll_matrixindexdynamic (mat3 m, int i) { return xll_matrixindex (m, i); }\n"
+		"vec4 xll_matrixindexdynamic (mat4 m, int i) { return xll_matrixindex (m, i); }\n"
+		"#endif\n")
+		);
+	
    hlslSupportLib->insert( CodeMap::value_type( EOpConstructMat2FromMat,
         "mat2 xll_constructMat2( mat3 m) {\n"
         "  return mat2( vec2( m[0]), vec2( m[1]));\n"

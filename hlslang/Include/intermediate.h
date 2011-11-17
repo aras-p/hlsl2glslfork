@@ -223,6 +223,7 @@ enum TOperator
    EOpConstructMat3FromMat,
 
    EOpMatrixIndex,
+   EOpMatrixIndexDynamic,
 
    //
    // moves

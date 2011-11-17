@@ -15,6 +15,24 @@ mat4 xll_transpose(mat4 m) {
 vec2 xll_matrixindex (mat2 m, int i) { vec2 v; v.x=m[0][i]; v.y=m[1][i]; return v; }
 vec3 xll_matrixindex (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }
 vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }
+#if defined(SHADER_API_GLES) && defined(SHADER_API_DESKTOP)
+vec2 xll_matrixindexdynamic (mat2 m, int i) {
+	mat2 m2 = xll_transpose(m);
+	return i==0?m2[0]:m2[1];
+}
+vec3 xll_matrixindexdynamic (mat3 m, int i) {
+	mat3 m2 = xll_transpose(m);
+	return i < 2?(i==0?m2[0]:m2[1]):(m2[2]);
+}
+vec4 xll_matrixindexdynamic (mat4 m, int i) {
+	mat4 m2 = xll_transpose(m);
+	return i < 2?(i==0?m2[0]:m2[1]):(i==3?m2[3]:m2[2]);
+}
+#else
+vec2 xll_matrixindexdynamic (mat2 m, int i) { return xll_matrixindex (m, i); }
+vec3 xll_matrixindexdynamic (mat3 m, int i) { return xll_matrixindex (m, i); }
+vec4 xll_matrixindexdynamic (mat4 m, int i) { return xll_matrixindex (m, i); }
+#endif
 vec4 xlat_main( in vec4 pos );
 vec4 xlat_main( in vec4 pos ) {
     vec4 v;
@@ -35,7 +53,7 @@ vec4 xlat_main( in vec4 pos ) {
     v.xyz  += xll_matrixindex (m3c, 2);
     v.xyz  += vec3( 7.00000, 8.00000, 9.00000);
     for ( ; (i < 3); ( ++i )) {
-        v.xyz  += xll_matrixindex (m3c, i);
+        v.xyz  += xll_matrixindexdynamic (m3c, i);
         v.x  += m3b[2][i];
         v.x  += m3c[i][2];
     }
