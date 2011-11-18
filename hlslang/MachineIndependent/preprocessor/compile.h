@@ -6,7 +6,6 @@
 #if !defined(__COMPILE_H)
 #define __COMPILE_H 1
 
-int InitCPPStruct(void);
 
 struct CPPStruct_Rec {
     // Scanner data:

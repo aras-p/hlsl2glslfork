@@ -8,30 +8,19 @@
 #include "slglobals.h"
 
 CPPStruct  *cpp      = NULL;
-static int  refCount = 0;
 
 int InitPreprocessor(void);
-int ResetPreprocessor(void);
-int FreeCPPStruct(void);
 int FinalizePreprocessor(void);
 
 
-
-int InitCPPStruct(void)
+static void InitCPPStruct(void)
 {
-    cpp = (CPPStruct *) malloc(sizeof(CPPStruct));
+	if (cpp)
+		free (cpp);
+    cpp = (CPPStruct*)malloc(sizeof(CPPStruct));
     if (cpp == NULL)
-        return 0;
+        return;
 
-    refCount++;
-
-    ResetPreprocessor();
-    return 1;
-} // InitCPPStruct
-
-
-int ResetPreprocessor(void)
-{
 	cpp->pC=0;
     cpp->CompileError=0; 
 	cpp->ifdepth=0;
@@ -39,44 +28,27 @@ int ResetPreprocessor(void)
 		cpp->elsedepth[cpp->elsetracker]=0; 
 	cpp->elsetracker=0;
     cpp->tokensBeforeEOF = 0;
-    return 1;
-}
+} // InitCPPStruct
+
 
 
 int InitPreprocessor(void)
 {
-   #  define CPP_STUFF true
-        #  ifdef CPP_STUFF
-            FreeCPPStruct();
-            InitCPPStruct();
-            if (!InitAtomTable(atable, 0))
-                return 1;
-            if (!InitScanner(cpp))
-	            return 1;
-       #  endif
-  return 0; 
-}
-
-
-int FreeCPPStruct(void)
-{
-    if (refCount)
-    {
-       free(cpp);
-       refCount--;
-    }
-    
-    return 1;
+	InitCPPStruct();
+	if (!InitAtomTable(atable, 0))
+		return 1;
+	if (!InitScanner(cpp))
+		return 1;
+	return 0; 
 }
 
 
 int FinalizePreprocessor(void)
 {
-   #  define CPP_STUFF true
-        #  ifdef CPP_STUFF
-            FreeAtomTable(atable);
-            FreeCPPStruct();
-            FreeScanner();
-       #  endif
-  return 0; 
+	FreeAtomTable(atable);
+	if (cpp)
+		free(cpp);
+	cpp = NULL;    
+	FreeScanner();
+	return 0;
 }
