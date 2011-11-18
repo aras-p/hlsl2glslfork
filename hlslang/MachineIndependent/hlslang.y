@@ -305,7 +305,7 @@ postfix_expression
             $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), $2.line);
         } else if ($1->isArray()) {
             if ($1->getType().getStruct())
-                $$->setType(TType($1->getType().getStruct(), $1->getType().getTypeName(), $1->getLine()));
+                $$->setType(TType($1->getType().getStruct(), $1->getType().getTypeName(), EbpUndefined, $1->getLine()));
             else
                 $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, $1->getNominalSize(), $1->isMatrix()));
                 
@@ -2069,7 +2069,7 @@ type_specifier_nonarray
 
 struct_specifier
     : STRUCT IDENTIFIER LEFT_BRACE struct_declaration_list RIGHT_BRACE {
-        TType* structure = new TType($4, *$2.string, $2.line);
+        TType* structure = new TType($4, *$2.string, EbpUndefined, $2.line);
         TVariable* userTypeDef = new TVariable($2.string, *structure, true);
         if (! parseContext.symbolTable.insert(*userTypeDef)) {
             parseContext.error($2.line, "redefinition", $2.string->c_str(), "struct");
@@ -2079,7 +2079,7 @@ struct_specifier
         $$.userDef = structure;
     }
     | STRUCT LEFT_BRACE struct_declaration_list RIGHT_BRACE {
-        TType* structure = new TType($3, TString(""), $1.line);
+        TType* structure = new TType($3, TString(""), EbpUndefined, $1.line);
         $$.setBasic(EbtStruct, EvqTemporary, $1.line);
         $$.userDef = structure;
     }

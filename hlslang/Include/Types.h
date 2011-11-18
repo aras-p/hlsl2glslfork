@@ -113,7 +113,7 @@ public:
          typeName = NewPoolTString(p.userDef->getTypeName().c_str());
       }
    }
-   explicit TType(TTypeList* userDef, const TString& n, int l, TPrecision p = EbpUndefined) :
+   explicit TType(TTypeList* userDef, const TString& n, TPrecision p = EbpUndefined, int l = 0) :
       type(EbtStruct), precision(p), qualifier(EvqTemporary), size(1), line(l), matrix(false), array(false), arraySize(0),
       structure(userDef), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), semantic(0)
    {
