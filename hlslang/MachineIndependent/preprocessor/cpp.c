@@ -792,10 +792,20 @@ static int macro_scan(MacroInputSrc *in, yystypepp * yylvalpp) {
 		if (right_exp <= 0)
 			right_exp = right_tok;
 
-		assert(left_exp == CPP_IDENTIFIER && right_exp == CPP_IDENTIFIER); // FIXME
+		// FIXME: need more cases?
+		if (left_exp == CPP_IDENTIFIER)
+			left_name  = GetStringOfAtom(atable, yylvalpp->sc_ident);
+		else if (left_exp == CPP_INTCONSTANT)
+			left_name = yylvalpp->symbol_name;
+		else
+			assert(0);
 
-		left_name  = GetStringOfAtom(atable, yylvalpp->sc_ident);
-		right_name = GetStringOfAtom(atable, right_valpp.sc_ident);
+		if (right_exp == CPP_IDENTIFIER)
+			right_name = GetStringOfAtom(atable, right_valpp.sc_ident);
+		else if (right_exp == CPP_INTCONSTANT)
+			right_name = right_valpp.symbol_name;
+		else
+			assert(0);
 
 		strncat(newname, left_name, MAX_SYMBOL_NAME_LEN);
 		strncat(newname, right_name, MAX_SYMBOL_NAME_LEN - strlen(newname));
