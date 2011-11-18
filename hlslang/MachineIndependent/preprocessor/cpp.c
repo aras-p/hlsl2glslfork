@@ -404,6 +404,7 @@ static int CPPelse(yystypepp* yylvalpp)
         CPPErrorToInfoLog("unclosed #if block");
         return 0;
     }
+	return token;
 }
 
 static int CPPif(yystypepp * yylvalpp) {
