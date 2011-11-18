@@ -19,8 +19,6 @@ typedef struct SymbolList_Rec {
 
 struct Scope_Rec {
     Scope *next, *prev;     // doubly-linked list of all scopes
-    Scope *parent;
-    Scope *funScope;        // Points to base scope of enclosing function
     MemoryPool *pool;       // pool used for allocation in this scope
     Symbol *symbols;
     
@@ -48,9 +46,6 @@ extern Scope *GlobalScope;
 extern Scope *ScopeList;
 
 Scope *NewScopeInPool(MemoryPool *);
-#define NewScope()      NewScopeInPool(CurrentScope->pool)
-void PushScope(Scope *fScope);
-Scope *PopScope(void);
 Symbol *NewSymbol(SourceLoc *loc, Scope *fScope, int name);
 Symbol *AddSymbol(SourceLoc *loc, Scope *fScope, int atom);
 Symbol *LookUpLocalSymbol(Scope *fScope, int atom);

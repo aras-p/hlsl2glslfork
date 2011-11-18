@@ -33,8 +33,6 @@ Scope *NewScopeInPool(MemoryPool *pool)
 
     lScope = mem_Alloc(pool, sizeof(Scope));
     lScope->pool = pool;
-    lScope->parent = NULL;
-    lScope->funScope = NULL;
     lScope->symbols = NULL;
     
     lScope->level = 0;
@@ -46,48 +44,11 @@ Scope *NewScopeInPool(MemoryPool *pool)
     ScopeList = lScope;
     mem_AddCleanup(pool, unlinkScope, lScope);
     return lScope;
-} // NewScope
-
-
-void PushScope(Scope *fScope)
-{
-    Scope *lScope;
-
-    if (CurrentScope) {
-        fScope->level = CurrentScope->level + 1;
-        if (fScope->level == 1) {
-            if (!GlobalScope) {
-                /* HACK - CTD -- if GlobalScope==NULL and level==1, we're
-                 * defining a function in the superglobal scope.  Things
-                 * will break if we leave the level as 1, so we arbitrarily
-                 * set it to 2 */
-                fScope->level = 2;
-            }
-        }
-        if (fScope->level >= 2) {
-            lScope = fScope;
-            while (lScope->level > 2)
-                lScope = lScope->next;
-            fScope->funScope = lScope;
-        }
-    } else {
-        fScope->level = 0;
-    }
-    fScope->parent = CurrentScope;
-    CurrentScope = fScope;
-} // PushScope
+} // NewScopeInPool
 
 
 
-Scope *PopScope(void)
-{
-    Scope *lScope;
 
-    lScope = CurrentScope;
-    if (CurrentScope)
-        CurrentScope = CurrentScope->parent;
-    return lScope;
-} // PopScope
 
 
 
@@ -196,14 +157,12 @@ Symbol *LookUpLocalSymbol(Scope *fScope, int atom)
 Symbol *LookUpSymbol(Scope *fScope, int atom)
 {
     Symbol *lSymb;
-
     if (!fScope)
         fScope = CurrentScope;
-    while (fScope) {
+    if (fScope) {
         lSymb = LookUpLocalSymbol(fScope, atom);
         if (lSymb)
             return lSymb;
-        fScope = fScope->parent;
     }
     return NULL;
 } // LookUpSymbol
