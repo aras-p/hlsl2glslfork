@@ -38,8 +38,6 @@ typedef struct {
 # define	CPP_STRCONSTANT	    278
 # define	CPP_TYPEIDENTIFIER	279
 
-# define	FIRST_USER_TOKEN_SY	289
-
 # define	CPP_RIGHT_ASSIGN	    280
 # define	CPP_LEFT_ASSIGN	    281
 # define	CPP_AND_ASSIGN	282
@@ -50,6 +48,8 @@ typedef struct {
 # define	CPP_LEFT_BRACE	287
 # define	CPP_RIGHT_BRACE	288
 
-# define	CPP_TOKENPASTE 	290
+# define	CPP_TOKENPASTE 	289
+
+# define	FIRST_USER_TOKEN_SY	290
 
 #endif /* not BISON_PARSER_H */
