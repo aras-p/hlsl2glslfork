@@ -747,19 +747,66 @@ typedef struct MacroInputSrc {
     TokenStream **args;
 } MacroInputSrc;
 
+
+
+static int expand_macro_param(MacroInputSrc* in, yystypepp* yylvalpp)
+{
+	int i;
+	for (i = in->mac->argc-1; i>=0; i--)
+		if (in->mac->args[i] == yylvalpp->sc_ident) break;
+	if (i >= 0) {
+		ReadFromTokenStream(in->args[i], 0);
+		return cpp->currentInput->scan(cpp->currentInput, yylvalpp);
+	}
+	return -1;
+}
+
+
 /* macro_scan ---
  ** return the next token for a macro expanion, handling macro args
  */
 static int macro_scan(MacroInputSrc *in, yystypepp * yylvalpp) {
     int i;
     int token = ReadToken(in->mac->body, yylvalpp);
+	
+
+	// check if we need to paste token with next
+	yystypepp right_valpp;
+	int right_tok = PeekTokenType(in->mac->body);
+	if (right_tok == CPP_TOKENPASTE)
+	{
+		int left_exp;
+		int right_exp;
+		const char* left_name;
+		const char* right_name;
+		char newname[MAX_SYMBOL_NAME_LEN + 1] = { 0 };
+		ReadToken(in->mac->body, &right_valpp); // dump the CPP_TOKENPASTE token
+		right_tok = ReadToken(in->mac->body, &right_valpp);
+		assert(right_tok > 0);
+
+		left_exp = expand_macro_param(in, yylvalpp);
+		if (left_exp <= 0)
+			left_exp = token;
+
+		right_exp = expand_macro_param(in, &right_valpp);
+		if (right_exp <= 0)
+			right_exp = right_tok;
+
+		assert(left_exp == CPP_IDENTIFIER && right_exp == CPP_IDENTIFIER); // FIXME
+
+		left_name  = GetStringOfAtom(atable, yylvalpp->sc_ident);
+		right_name = GetStringOfAtom(atable, right_valpp.sc_ident);
+
+		strncat(newname, left_name, MAX_SYMBOL_NAME_LEN);
+		strncat(newname, right_name, MAX_SYMBOL_NAME_LEN - strlen(newname));
+		yylvalpp->sc_ident = LookUpAddString(atable, newname);
+		return left_exp;
+	}
+	
     if (token == CPP_IDENTIFIER) {
-        for (i = in->mac->argc-1; i>=0; i--)
-            if (in->mac->args[i] == yylvalpp->sc_ident) break;
-        if (i >= 0) {
-            ReadFromTokenStream(in->args[i], 0);
-            return cpp->currentInput->scan(cpp->currentInput, yylvalpp);
-        }
+		int expanded = expand_macro_param(in, yylvalpp);
+		if (expanded > 0)
+			return expanded;
     }
     if (token > 0) return token;
     in->mac->busy = 0;

@@ -626,6 +626,14 @@ static int byte_scan(InputSrc *in, yystypepp * yylvalpp)
                 CPPErrorToInfoLog("ERROR___CPP_EOL_IN_STRING");
                 return ERROR_SY;
             }
+		case '#':
+			ch = cpp->currentInput->getch(cpp->currentInput);
+			if (ch == '#') {
+				return CPP_TOKENPASTE;
+			} else {
+				cpp->currentInput->ungetch(cpp->currentInput, ch);
+				return '#';
+			}
         }
     }
 } // byte_scan

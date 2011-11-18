@@ -50,6 +50,7 @@ static const struct {
     { CPP_INC_OP,         "++" },
     { CPP_STRCONSTANT,    "<string-const>" },
     { CPP_TYPEIDENTIFIER, "<type-ident>" },
+	{ CPP_TOKENPASTE,     "##" },
 };
 
 

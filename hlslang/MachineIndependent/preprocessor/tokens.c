@@ -93,6 +93,29 @@ static int lReadByte(TokenStream *pTok)
 } // lReadByte
 
 
+/*
+ * lPeekByte() - Peek the next byte from a stream.
+ *
+ */
+static int lPeekByte(TokenStream *pTok)
+{
+	TokenBlockStruct *lBlock;
+	int lval = -1;
+
+	lBlock = pTok->current;
+	if (lBlock) {
+		if (lBlock->current >= lBlock->count) {
+			lBlock = lBlock->next;
+			if (lBlock)
+				lval = lBlock->data[0];
+		}
+		else if (lBlock)
+			lval = lBlock->data[lBlock->current];
+	}
+	return lval;
+} // lPeekByte
+
+
 
 // ------------------------------------------------------------------
 // Global Functions
@@ -181,6 +204,15 @@ void RewindTokenStream(TokenStream *pTok)
     }
 } // RewindTokenStream
 
+
+
+int PeekTokenType(TokenStream *pTok)
+{
+	int ltoken = lPeekByte(pTok);
+	if (ltoken > 127)
+		ltoken += 128;
+	return ltoken;
+}
 
 
 int ReadToken(TokenStream *pTok, yystypepp * yylvalpp)

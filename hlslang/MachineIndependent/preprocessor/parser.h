@@ -50,4 +50,6 @@ typedef struct {
 # define	CPP_LEFT_BRACE	287
 # define	CPP_RIGHT_BRACE	288
 
+# define	CPP_TOKENPASTE 	290
+
 #endif /* not BISON_PARSER_H */

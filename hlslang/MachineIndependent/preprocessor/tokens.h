@@ -33,6 +33,7 @@ TokenStream *NewTokenStream(const char *name, MemoryPool *pool);
 void DeleteTokenStream(TokenStream *pTok); 
 void RecordToken(TokenStream *pTok, int token, yystypepp * yylvalpp);
 void RewindTokenStream(TokenStream *pTok);
+int PeekTokenType(TokenStream *pTok);
 int ReadToken(TokenStream *pTok, yystypepp * yylvalpp);
 int ReadFromTokenStream(TokenStream *pTok, int (*final)(CPPStruct *));
 void UngetToken(int, yystypepp * yylvalpp);
