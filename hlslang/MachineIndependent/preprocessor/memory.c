@@ -31,18 +31,11 @@ struct chunk {
     struct chunk        *next;
 };
 
-struct cleanup {
-    struct cleanup      *next;
-    void                (*fn)(void *);
-    void                *arg;
-};
-
 struct MemoryPool_rec {
     struct chunk        *next;
     uintptr_t           free, end;
     size_t              chunksize;
     uintptr_t           alignmask;
-    struct cleanup      *cleanup;
 };
 
 MemoryPool *mem_CreatePool(size_t chunksize, unsigned int align)
@@ -60,18 +53,13 @@ MemoryPool *mem_CreatePool(size_t chunksize, unsigned int align)
     pool->alignmask = (uintptr_t)(align)-1;  
     pool->free = ((uintptr_t)(pool + 1) + pool->alignmask) & ~pool->alignmask;
     pool->end = (uintptr_t)pool + chunksize;
-    pool->cleanup = 0;
     return pool;
 }
 
 void mem_FreePool(MemoryPool *pool)
 {
-    struct cleanup      *cleanup;
     struct chunk        *p, *next;
 
-    for (cleanup = pool->cleanup; cleanup; cleanup = cleanup->next) {
-        cleanup->fn(cleanup->arg);
-    }
     for (p = (struct chunk *)pool; p; p = next) {
         next = p->next;
         free(p);
@@ -105,17 +93,4 @@ void *mem_Alloc(MemoryPool *pool, size_t size)
         rv = (void *)(((uintptr_t)(ch+1) + pool->alignmask) & ~pool->alignmask);
     }
     return rv;
-}
-
-int mem_AddCleanup(MemoryPool *pool, void (*fn)(void *), void *arg) {
-    struct cleanup *cleanup;
-
-    pool->free = (pool->free + sizeof(void *) - 1) & ~(sizeof(void *)-1);
-    cleanup = mem_Alloc(pool, sizeof(struct cleanup));
-    if (!cleanup) return -1;
-    cleanup->next = pool->cleanup;
-    cleanup->fn = fn;
-    cleanup->arg = arg;
-    pool->cleanup = cleanup;
-    return 0;
 }
