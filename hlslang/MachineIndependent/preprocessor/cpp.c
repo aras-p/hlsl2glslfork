@@ -132,17 +132,17 @@ static int CPPdefine(yystypepp * yylvalpp)
 	
     symb = LookUpSymbol(macros, name);
     if (symb) {
-        if (!symb->details.mac.undef) {
+        if (!symb->mac.undef) {
             // already defined -- need to make sure they are identical
-            if (symb->details.mac.argc != mac.argc) goto error;
+            if (symb->mac.argc != mac.argc) goto error;
             for (argc=0; argc < mac.argc; argc++)
-                if (symb->details.mac.args[argc] != mac.args[argc])
+                if (symb->mac.args[argc] != mac.args[argc])
                     goto error;
-            RewindTokenStream(symb->details.mac.body);
+            RewindTokenStream(symb->mac.body);
             RewindTokenStream(mac.body);
             do {
                 int old_lval, old_token;
-                old_token = ReadToken(symb->details.mac.body, yylvalpp);
+                old_token = ReadToken(symb->mac.body, yylvalpp);
                 old_lval = yylvalpp->sc_int;
                 token = ReadToken(mac.body, yylvalpp);
                 if (token != old_token || yylvalpp->sc_int != old_lval) {
@@ -159,9 +159,9 @@ static int CPPdefine(yystypepp * yylvalpp)
         }
     } else {
         dummyLoc.line = 0;
-        symb = AddSymbol(&dummyLoc, macros, name, MACRO_S);
+        symb = AddSymbol(&dummyLoc, macros, name);
     }
-    symb->details.mac = mac;
+    symb->mac = mac;
     return '\n';
 } // CPPdefine
 
@@ -177,7 +177,7 @@ static int CPPundef(yystypepp * yylvalpp)
 		goto error;
     symb = LookUpSymbol(macros, yylvalpp->sc_ident);
     if (symb) {
-        symb->details.mac.undef = 1;
+        symb->mac.undef = 1;
     }
     token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
     if (token != '\n') {
@@ -309,7 +309,7 @@ static int eval(int token, int prec, int *res, int *err, yystypepp * yylvalpp)
             if (token != CPP_IDENTIFIER)
                 goto error;
             *res = (s = LookUpSymbol(macros, yylvalpp->sc_ident))
-			? !s->details.mac.undef : 0;
+			? !s->mac.undef : 0;
             token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
             if (needclose) {
                 if (token != ')')
@@ -432,7 +432,7 @@ static int CPPifdef(int defined, yystypepp * yylvalpp)
             while (token != '\n')
                 token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
         }
-        if (((s && !s->details.mac.undef) ? 1 : 0) != defined)
+        if (((s && !s->mac.undef) ? 1 : 0) != defined)
         {
             token = CPPelse(yylvalpp);
         }
@@ -794,14 +794,14 @@ int MacroExpand(int atom, yystypepp * yylvalpp)
         UngetToken(CPP_INTCONSTANT, yylvalpp);
         return 1;
     }
-    if (!sym || sym->details.mac.undef) return 0;
-    if (sym->details.mac.busy) return 0;        // no recursive expansions
+    if (!sym || sym->mac.undef) return 0;
+    if (sym->mac.busy) return 0;        // no recursive expansions
     in = malloc(sizeof(*in));
     memset(in, 0, sizeof(*in));
     in->base.scan = (void *)macro_scan;
     in->base.line = cpp->currentInput->line;
-    in->mac = &sym->details.mac;
-    if (sym->details.mac.args) {
+    in->mac = &sym->mac;
+    if (sym->mac.args) {
         token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
         if (token != '(') {
             UngetToken(token, yylvalpp);
@@ -875,8 +875,8 @@ int MacroExpand(int atom, yystypepp * yylvalpp)
 	
     /*retain the input source*/
     in->base.prev = cpp->currentInput;
-    sym->details.mac.busy = 1;
-    RewindTokenStream(sym->details.mac.body);
+    sym->mac.busy = 1;
+    RewindTokenStream(sym->mac.body);
     cpp->currentInput = &in->base;
     return 1;
 } // MacroExpand

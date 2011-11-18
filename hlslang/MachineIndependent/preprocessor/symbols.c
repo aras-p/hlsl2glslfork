@@ -91,7 +91,7 @@ Scope *PopScope(void)
 
 
 
-Symbol *NewSymbol(SourceLoc *loc, Scope *fScope, int name, symbolkind kind)
+Symbol *NewSymbol(SourceLoc *loc, Scope *fScope, int name)
 {
     Symbol *lSymb;
     char *pch;
@@ -103,12 +103,10 @@ Symbol *NewSymbol(SourceLoc *loc, Scope *fScope, int name, symbolkind kind)
     lSymb->next = NULL;
     lSymb->name = name;
     lSymb->loc = *loc;
-    lSymb->kind = kind;
     
-    // Clear union area:
-
-    pch = (char *) &lSymb->details;
-    for (ii = 0; ii < sizeof(lSymb->details); ii++)
+    // Clear macro area
+    pch = (char *) &lSymb->mac;
+    for (ii = 0; ii < sizeof(lSymb->mac); ii++)
         *pch++ = 0;
     return lSymb;
 } // NewSymbol
@@ -156,13 +154,13 @@ static void lAddToTree(Symbol **fSymbols, Symbol *fSymb)
 
 
 // Add a variable, type, or function name to a scope.
-Symbol *AddSymbol(SourceLoc *loc, Scope *fScope, int atom, symbolkind kind)
+Symbol *AddSymbol(SourceLoc *loc, Scope *fScope, int atom)
 {
     Symbol *lSymb;
 
     if (!fScope)
         fScope = CurrentScope;
-    lSymb = NewSymbol(loc, fScope, atom, kind);
+    lSymb = NewSymbol(loc, fScope, atom);
     lAddToTree(&fScope->symbols, lSymb);
     return lSymb;
 } // AddSymbol

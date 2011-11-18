@@ -26,8 +26,6 @@ struct TokenBlock_Rec {
     unsigned char *data;
 };
 
-extern TokenStream stdlib_cpp_stream;
-
 
 TokenStream *NewTokenStream(const char *name, MemoryPool *pool);
 void DeleteTokenStream(TokenStream *pTok); 

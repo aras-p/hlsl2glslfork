@@ -7,10 +7,6 @@
 
 #include "memory.h"
 
-typedef enum symbolkind {
-   MACRO_S
-} symbolkind;
-
 // Typedefs for things defined here in "symbols.h":
 
 typedef struct Scope_Rec Scope;
@@ -44,10 +40,7 @@ struct Symbol_Rec {
     Symbol *next;
     int name;       // Name atom
     SourceLoc loc;
-    symbolkind kind;
-    union {
-        MacroSymbol mac;
-    } details;
+    MacroSymbol mac;
 };
 
 extern Scope *CurrentScope;
@@ -58,8 +51,8 @@ Scope *NewScopeInPool(MemoryPool *);
 #define NewScope()      NewScopeInPool(CurrentScope->pool)
 void PushScope(Scope *fScope);
 Scope *PopScope(void);
-Symbol *NewSymbol(SourceLoc *loc, Scope *fScope, int name, symbolkind kind);
-Symbol *AddSymbol(SourceLoc *loc, Scope *fScope, int atom, symbolkind kind);
+Symbol *NewSymbol(SourceLoc *loc, Scope *fScope, int name);
+Symbol *AddSymbol(SourceLoc *loc, Scope *fScope, int atom);
 Symbol *LookUpLocalSymbol(Scope *fScope, int atom);
 Symbol *LookUpSymbol(Scope *fScope, int atom);
 void CPPErrorToInfoLog(char *);
