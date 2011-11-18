@@ -12,7 +12,6 @@ int InitCPP(void);
 int FinalCPP(void);
 int  readCPPline(yystypepp * yylvalpp);
 int MacroExpand(int atom, yystypepp * yylvalpp);
-int ChkCorrectElseNesting(void);
 
 typedef struct MacroSymbol {
     int argc;
@@ -22,16 +21,13 @@ typedef struct MacroSymbol {
     unsigned undef:1;
 } MacroSymbol;
 
-void FreeMacro(MacroSymbol *);
-int PredefineMacro(char *);
-
 void  CPPShInfoLogMsg(const char*);         // Store cpp Err Msg into Sh.Info.Log
 void  CPPWarningToInfoLog(const char *msg); // Prints warning messages into info log
 void  ResetTString(void);                   // #error Message as TString.
 void  CPPErrorToInfoLog(char*);             // Stick all cpp errors into Sh.Info.log   .
 void  StoreStr(char*);                      // Store the TString in Parse Context.
 void  SetLineNumber(int);                   // Set line number.  
-int   GetLineNumber(void);                  // Get the current String Number. 
+int   GetLineNumber(void);                  // Get the current Line Number. 
 int   GetStringNumber(void);                // Get the current String Number. 
 const char* GetStrfromTStr(void);           // Convert TString to String.  
 int   FreeCPP(void);

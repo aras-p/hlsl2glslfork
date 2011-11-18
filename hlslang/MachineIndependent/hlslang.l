@@ -333,7 +333,6 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
     
     yyrestart(0);
     (&parseContextLocal)->AfterEOF = false;
-    cpp->notAVersionToken = 0;
     lexlineno = 1;
    
     if (sourceLen >= 0) {

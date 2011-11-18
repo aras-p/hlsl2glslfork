@@ -18,9 +18,6 @@ static int CPPif(yystypepp * yylvalpp);
 #undef malloc
 #undef free
 
-static int bindAtom = 0;
-static int constAtom = 0;
-static int defaultAtom = 0;
 static int defineAtom = 0;
 static int definedAtom = 0;
 static int elseAtom = 0;
@@ -32,13 +29,10 @@ static int ifndefAtom = 0;
 static int includeAtom = 0;
 static int lineAtom = 0;
 static int pragmaAtom = 0;
-static int texunitAtom = 0;
 static int undefAtom = 0;
 static int errorAtom = 0;
 static int __LINE__Atom = 0;
 static int __FILE__Atom = 0;
-static int __VERSION__Atom = 0;
-static int versionAtom = 0;
 
 static Scope *macros = 0;
 #define MAX_MACRO_ARGS  64
@@ -49,9 +43,6 @@ static SourceLoc ifloc; /* outermost #if */
 int InitCPP(void)
 {
     // Add various atoms needed by the CPP line scanner:
-    bindAtom = LookUpAddString(atable, "bind");
-    constAtom = LookUpAddString(atable, "const");
-    defaultAtom = LookUpAddString(atable, "default");
     defineAtom = LookUpAddString(atable, "define");
     definedAtom = LookUpAddString(atable, "defined");
     elifAtom = LookUpAddString(atable, "elif");
@@ -63,13 +54,10 @@ int InitCPP(void)
     includeAtom = LookUpAddString(atable, "include");
     lineAtom = LookUpAddString(atable, "line");
     pragmaAtom = LookUpAddString(atable, "pragma");
-    texunitAtom = LookUpAddString(atable, "texunit");
     undefAtom = LookUpAddString(atable, "undef");
     errorAtom = LookUpAddString(atable, "error");
     __LINE__Atom = LookUpAddString(atable, "__LINE__");
     __FILE__Atom = LookUpAddString(atable, "__FILE__");
-    __VERSION__Atom = LookUpAddString(atable, "__VERSION__");
-    versionAtom = LookUpAddString(atable, "version");
     macros = NewScopeInPool(mem_CreatePool(0, 0));
     return 1;
 } // InitCPP
@@ -170,7 +158,6 @@ static int CPPdefine(yystypepp * yylvalpp)
                     break; }
             } while (token > 0);
         }
-        //FreeMacro(&symb->details.mac);
     } else {
         dummyLoc.line = 0;
         symb = AddSymbol(&dummyLoc, macros, name, MACRO_S);
@@ -579,48 +566,11 @@ static int CPPpragma(yystypepp * yylvalpp)
     return token;
 } // CPPpragma
 
-#define GL2_VERSION_NUMBER 110
-
-static int CPPversion(yystypepp * yylvalpp)
-{
-	
-    int token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
-	
-    if (cpp->notAVersionToken == 1)
-        CPPShInfoLogMsg("#version must occur before any other statement in the program");
-	
-    if(token=='\n'){
-        DecLineNumber();
-        CPPErrorToInfoLog("#version");
-        IncLineNumber();
-        return token;
-    }
-    if (token != CPP_INTCONSTANT)
-        CPPErrorToInfoLog("#version");
-	
-    yylvalpp->sc_int=atoi(yylvalpp->symbol_name);
-    //SetVersionNumber(yylvalpp->sc_int);
-	
-    if (yylvalpp->sc_int != GL2_VERSION_NUMBER)
-        CPPShInfoLogMsg("Version number not supported by GL2");
-	
-    token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
-	
-    if (token == '\n'){
-        return token;
-    }
-    else{
-        CPPErrorToInfoLog("#version");
-    }
-    return token;
-} // CPPversion
-
 
 int readCPPline(yystypepp * yylvalpp)
 {
     int token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
     const char *message;
-    int isVersion = 0;
 	
     if (token == CPP_IDENTIFIER) {
         if (yylvalpp->sc_ident == defineAtom) {
@@ -673,9 +623,6 @@ int readCPPline(yystypepp * yylvalpp)
 			token = CPPundef(yylvalpp);
         } else if (yylvalpp->sc_ident == errorAtom) {
 			token = CPPerror(yylvalpp);
-        } else if (yylvalpp->sc_ident == versionAtom) {
-            token = CPPversion(yylvalpp);
-            isVersion = 1;
         } else {
             StoreStr("Invalid Directive");
             StoreStr(GetStringOfAtom(atable,yylvalpp->sc_ident));
@@ -688,14 +635,9 @@ int readCPPline(yystypepp * yylvalpp)
         token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
     }
 	
-    cpp->notAVersionToken = !isVersion;
-	
     return token;
 } // readCPPline
 
-void FreeMacro(MacroSymbol *s) {
-    DeleteTokenStream(s->body);
-}
 
 static int eof_scan(InputSrc *in, yystypepp * yylvalpp) { return -1; }
 static void noop(InputSrc *in, int ch, yystypepp * yylvalpp) { }
@@ -851,12 +793,6 @@ int MacroExpand(int atom, yystypepp * yylvalpp)
     if (atom == __FILE__Atom) {
         yylvalpp->sc_int = GetStringNumber();
         sprintf(yylvalpp->symbol_name,"%d",yylvalpp->sc_int);
-        UngetToken(CPP_INTCONSTANT, yylvalpp);
-        return 1;
-    }
-    if (atom == __VERSION__Atom) {
-        strcpy(yylvalpp->symbol_name,"100");
-        yylvalpp->sc_int = atoi(yylvalpp->symbol_name);
         UngetToken(CPP_INTCONSTANT, yylvalpp);
         return 1;
     }
