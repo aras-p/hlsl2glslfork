@@ -309,7 +309,6 @@ static int scan_token(TokenInputSrc *in, yystypepp * yylvalpp)
 {
     int token = ReadToken(in->tokens, yylvalpp);
     int (*final)(CPPStruct *);
-    cpp->tokenLoc->line = cpp->currentInput->line;
     if (token == '\n') {
         in->base.line++;
         return token;

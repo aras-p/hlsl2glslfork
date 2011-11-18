@@ -9,23 +9,14 @@
 int InitCPPStruct(void);
 
 struct CPPStruct_Rec {
-    // Public members
-    SourceLoc *pLastSourceLoc;  // Set at the start of each statement by the tree walkers
-
-    // Private members
-    SourceLoc lastSourceLoc;
-
     // Scanner data:
 
-    SourceLoc *tokenLoc;        // Source location of most recent token seen by the scanner
-    int mostRecentToken;        // Most recent token seen by the scanner
     InputSrc *currentInput;
     int previous_token;
     
 	void *pC;                   // storing the parseContext of the compile object in cpp.  
      
     // Private members:
-    SourceLoc ltokenLoc;
 	int ifdepth;                //current #if-#else-#endif nesting in the cpp.c file (pre-processor)    
     int elsedepth[64];          //Keep a track of #if depth..Max allowed is 64.   
     int elsetracker;            //#if-#else and #endif constructs...Counter.

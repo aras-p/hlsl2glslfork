@@ -40,11 +40,6 @@ int InitScanner(CPPStruct *cpp)
     if (!InitCPP())
         return 0;
 
-    cpp->mostRecentToken = 0;
-    cpp->tokenLoc = &cpp->ltokenLoc;
-
-    cpp->ltokenLoc.line = 0;
-
     cpp->currentInput = &eof_inputsrc;
     cpp->previous_token = '\n';
 
@@ -253,7 +248,6 @@ static int byte_scan(InputSrc *in, yystypepp * yylvalpp)
             ch = cpp->currentInput->getch(cpp->currentInput);
         }
 		
-        cpp->ltokenLoc.line = cpp->currentInput->line;
         len = 0;
         switch (ch) {
         default:

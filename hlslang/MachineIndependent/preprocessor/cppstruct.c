@@ -25,9 +25,6 @@ int InitCPPStruct(void)
 
     refCount++;
 
-    // Initialize public members:
-    cpp->pLastSourceLoc = &cpp->lastSourceLoc;
-         
     ResetPreprocessor();
     return 1;
 } // InitCPPStruct
@@ -35,9 +32,6 @@ int InitCPPStruct(void)
 
 int ResetPreprocessor(void)
 {
-    // Initialize private members:
-
-    cpp->lastSourceLoc.line = 0;
 	cpp->pC=0;
     cpp->CompileError=0; 
 	cpp->ifdepth=0;

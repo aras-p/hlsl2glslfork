@@ -38,7 +38,6 @@ static Scope *macros = 0;
 #define MAX_MACRO_ARGS  64
 #define MAX_IF_NESTING  64
 
-static SourceLoc ifloc; /* outermost #if */
 
 int InitCPP(void)
 {
@@ -397,8 +396,7 @@ static int CPPelse(yystypepp* yylvalpp)
 static int CPPif(yystypepp * yylvalpp) {
     int token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
     int res = 0, err = 0;
-    if (!cpp->ifdepth++)
-        ifloc = *cpp->tokenLoc;
+    cpp->ifdepth++;
     if(cpp->ifdepth >MAX_IF_NESTING){
         CPPErrorToInfoLog("max #if nesting depth exceeded");
         return 0;
