@@ -10,22 +10,6 @@
 #include "slglobals.h"
 
 
-Scope *ScopeList = NULL;
-Scope *CurrentScope = NULL;
-Scope *GlobalScope = NULL;
-
-static void unlinkScope(void *_scope) {
-    Scope *scope = _scope;
-
-    if (scope->next)
-        scope->next->prev = scope->prev;
-    if (scope->prev)
-        scope->prev->next = scope->next;
-    else
-        ScopeList = scope->next;
-}
-
-
 
 Scope *NewScopeInPool(MemoryPool *pool)
 {
@@ -34,15 +18,6 @@ Scope *NewScopeInPool(MemoryPool *pool)
     lScope = mem_Alloc(pool, sizeof(Scope));
     lScope->pool = pool;
     lScope->symbols = NULL;
-    
-    lScope->level = 0;
-
-    lScope->programs = NULL;
-    if ((lScope->next = ScopeList))
-        ScopeList->prev = lScope;
-    lScope->prev = 0;
-    ScopeList = lScope;
-    mem_AddCleanup(pool, unlinkScope, lScope);
     return lScope;
 } // NewScopeInPool
 
@@ -119,8 +94,6 @@ Symbol *AddSymbol(SourceLoc *loc, Scope *fScope, int atom)
 {
     Symbol *lSymb;
 
-    if (!fScope)
-        fScope = CurrentScope;
     lSymb = NewSymbol(loc, fScope, atom);
     lAddToTree(&fScope->symbols, lSymb);
     return lSymb;
@@ -128,14 +101,12 @@ Symbol *AddSymbol(SourceLoc *loc, Scope *fScope, int atom)
 
 
 
-Symbol *LookUpLocalSymbol(Scope *fScope, int atom)
+Symbol *LookUpSymbol(Scope *fScope, int atom)
 {
     Symbol *lSymb;
     int rname, ratom;
 
     ratom = GetReversedAtom(atable, atom);
-    if (!fScope)
-        fScope = CurrentScope;
     lSymb = fScope->symbols;
     while (lSymb) {
         rname = GetReversedAtom(atable, lSymb->name);
@@ -150,20 +121,4 @@ Symbol *LookUpLocalSymbol(Scope *fScope, int atom)
         }
     }
     return NULL;
-} // LookUpLocalSymbol
-
-
-
-Symbol *LookUpSymbol(Scope *fScope, int atom)
-{
-    Symbol *lSymb;
-    if (!fScope)
-        fScope = CurrentScope;
-    if (fScope) {
-        lSymb = LookUpLocalSymbol(fScope, atom);
-        if (lSymb)
-            return lSymb;
-    }
-    return NULL;
 } // LookUpSymbol
-

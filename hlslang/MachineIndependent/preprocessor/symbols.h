@@ -18,14 +18,8 @@ typedef struct SymbolList_Rec {
 } SymbolList;
 
 struct Scope_Rec {
-    Scope *next, *prev;     // doubly-linked list of all scopes
     MemoryPool *pool;       // pool used for allocation in this scope
     Symbol *symbols;
-    
-	int level;              // 0 = super globals, 1 = globals, etc.
-
-    // Only used at global scope (level 1):
-    SymbolList *programs;   // List of programs for this compilation.
 };
 
 
@@ -41,9 +35,6 @@ struct Symbol_Rec {
     MacroSymbol mac;
 };
 
-extern Scope *CurrentScope;
-extern Scope *GlobalScope;
-extern Scope *ScopeList;
 
 Scope *NewScopeInPool(MemoryPool *);
 Symbol *NewSymbol(SourceLoc *loc, Scope *fScope, int name);
