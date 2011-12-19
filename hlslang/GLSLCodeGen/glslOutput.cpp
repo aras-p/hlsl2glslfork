@@ -68,7 +68,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
             out << c->getIConst();
             break;
          case EbtFloat:
-            out << c->getFConst();
+            GlslSymbol::writeFloat(out, c->getFConst());
             break;
          default:
             assert(0);

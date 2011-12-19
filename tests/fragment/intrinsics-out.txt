@@ -62,19 +62,19 @@ vec4 xlat_main( in vec4 uv );
 vec4 xlat_main( in vec4 uv ) {
     vec4 c;
     vec4 d;
-    c = vec4( 0.00000);
+    c = vec4( 0.0);
     #line 4
-    c.x  += xll_mod( uv.x , 2.00000);
-    c.xy  += xll_mod( uv.xy , vec2( 2.00000));
-    c.xyz  += xll_mod( uv.xyz , vec3( 2.00000));
-    c.xyzw  += xll_mod( uv.xyzw , vec4( 2.00000));
+    c.x  += xll_mod( uv.x , 2.0);
+    c.xy  += xll_mod( uv.xy , vec2( 2.0));
+    c.xyz  += xll_mod( uv.xyz , vec3( 2.0));
+    c.xyzw  += xll_mod( uv.xyzw , vec4( 2.0));
     #line 10
     c.x  += xll_modf( uv.x , d.x );
     c.xy  += xll_modf( uv.xy , d.xy );
     c.xyz  += xll_modf( uv.xyz , d.xyz );
     c.xyzw  += xll_modf( uv.xyzw , d.xyzw );
     #line 15
-    c += xll_lit( c.x , 0.200000, 0.300000);
+    c += xll_lit( c.x , 0.2, 0.3);
     return c;
 }
 varying vec4 xlv_TEXCOORD0;

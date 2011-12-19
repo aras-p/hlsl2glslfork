@@ -12,11 +12,11 @@ void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLi
     float depthAdjust;
     float centerdepth;
     #line 19
-    if ( (shadowUV.z  > 0.00000) ){
+    if ( (shadowUV.z  > 0.0) ){
         diffuse = texture2D( diffuseMap, uv.xy );
-        if ( (diffuse.w  > 0.00100000) ){
+        if ( (diffuse.w  > 0.001) ){
             #line 24
-            oColour = vec4( 0.00000, 0.00000, 0.00000, 0.00000);
+            oColour = vec4( 0.0, 0.0, 0.0, 0.0);
         }
         else{
             #line 29
@@ -26,12 +26,12 @@ void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLi
             #line 33
             depthAdjust = (gradientFactor + (fixedDepthBias * shadowDepths.x ));
             centerdepth = (shadowDepths.x  + depthAdjust);
-            oColour = (( (centerdepth > shadowUV.z ) ) ? ( vec4( vertexLight.xyz , diffuse.w ) ) : ( vec4( 0.00000, 0.00000, 0.00000, diffuse.w ) ));
+            oColour = (( (centerdepth > shadowUV.z ) ) ? ( vec4( vertexLight.xyz , diffuse.w ) ) : ( vec4( 0.0, 0.0, 0.0, diffuse.w ) ));
         }
     }
     else{
         #line 41
-        oColour = vec4( 0.00000, 0.00000, 0.00000, 0.00000);
+        oColour = vec4( 0.0, 0.0, 0.0, 0.0);
     }
 }
 uniform sampler2D xlu_shadowMap;
