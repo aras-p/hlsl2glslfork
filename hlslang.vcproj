@@ -11,6 +11,9 @@
 		<Platform
 			Name="Win32"
 		/>
+		<Platform
+			Name="x64"
+		/>
 	</Platforms>
 	<ToolFiles>
 	</ToolFiles>
@@ -18,7 +21,7 @@
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="lib/win32/$(ConfigurationName)"
-			IntermediateDirectory="build/$(ConfigurationName)"
+			IntermediateDirectory="build/$(PlatformName)/$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -49,7 +52,7 @@
 				ExceptionHandling="0"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=""
-				ProgramDataBaseFileName="$(IntDir)\hlsl2glsl.pdb"
+				ProgramDataBaseFileName="$(OutDir)\hlsl2glsl.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
@@ -91,7 +94,7 @@
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="lib/win32/$(ConfigurationName)"
-			IntermediateDirectory="build/$(ConfigurationName)"
+			IntermediateDirectory="build/$(PlatformName)/$(ConfigurationName)"
 			ConfigurationType="4"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
@@ -128,7 +131,161 @@
 				BufferSecurityCheck="true"
 				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=""
-				ProgramDataBaseFileName="$(IntDir)\hlsl2glsl.pdb"
+				ProgramDataBaseFileName="$(OutDir)\hlsl2glsl.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+				CallingConvention="1"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="2057"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)\hlsl2glsl.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="lib/win64/$(ConfigurationName)"
+			IntermediateDirectory="build/$(PlatformName)/$(ConfigurationName)"
+			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
+				Optimization="0"
+				AdditionalIncludeDirectories="hlslang;hlslang\MachineIndependent;hlslang\OSDependent\Windows;OGLCompilersDLL"
+				PreprocessorDefinitions="_DEBUG;WIN32;_CONSOLE;_LIB;GENERIC_COMPILER;_HAS_ITERATOR_DEBUGGING=0;_CRT_SECURE_NO_DEPRECATE;_HAS_EXCEPTIONS=0;_SECURE_SCL=0"
+				ExceptionHandling="0"
+				RuntimeLibrary="1"
+				PrecompiledHeaderFile=""
+				ProgramDataBaseFileName="$(OutDir)\hlsl2glsl.pdb"
+				WarningLevel="3"
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+				CallingConvention="1"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="2057"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLibrarianTool"
+				OutputFile="$(OutDir)\hlsl2glsl.lib"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release|x64"
+			OutputDirectory="lib/win64/$(ConfigurationName)"
+			IntermediateDirectory="build/$(PlatformName)/$(ConfigurationName)"
+			ConfigurationType="4"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions="/MP"
+				Optimization="1"
+				InlineFunctionExpansion="2"
+				OmitFramePointers="true"
+				AdditionalIncludeDirectories="hlslang;hlslang\MachineIndependent;hlslang\OSDependent\Windows;OGLCompilersDLL"
+				PreprocessorDefinitions="NDEBUG;WIN32;_CONSOLE;_LIB;GENERIC_COMPILER;_COMPILER;_HAS_ITERATOR_DEBUGGING=0;_CRT_SECURE_NO_DEPRECATE;_HAS_EXCEPTIONS=0;_SECURE_SCL=0"
+				StringPooling="true"
+				ExceptionHandling="0"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="0"
+				BufferSecurityCheck="true"
+				EnableFunctionLevelLinking="true"
+				PrecompiledHeaderFile=""
+				ProgramDataBaseFileName="$(OutDir)\hlsl2glsl.pdb"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
@@ -204,6 +361,28 @@
 						Outputs="$(InputDir)Gen_hlslang.cpp"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Executing flex on $(InputPath)"
+						CommandLine="$(InputDir)..\..\tools\flex.exe $(InputPath)&#x0D;&#x0A;if EXIST $(InputDir)gen_hlslang.cpp del $(InputDir)gen_hlslang.cpp&#x0D;&#x0A;move gen_hlslang.cpp $(InputDir)gen_hlslang.cpp&#x0D;&#x0A;cd $(InputDir)&#x0D;&#x0A;rename gen_hlslang.cpp Gen_hlslang.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="hlslang_tab.h"
+						Outputs="$(InputDir)Gen_hlslang.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Executing flex on $(InputPath)"
+						CommandLine="$(InputDir)..\..\tools\flex.exe $(InputPath)&#x0D;&#x0A;if EXIST $(InputDir)gen_hlslang.cpp del $(InputDir)gen_hlslang.cpp&#x0D;&#x0A;move gen_hlslang.cpp $(InputDir)gen_hlslang.cpp&#x0D;&#x0A;"
+						AdditionalDependencies="hlslang_tab.h"
+						Outputs="$(InputDir)Gen_hlslang.cpp"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="hlslang\MachineIndependent\hlslang.y"
@@ -220,6 +399,26 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Executing Bison on $(InputPath)"
+						CommandLine="SET BISON_SIMPLE=$(InputDir)..\..\tools\bison.simple&#x0D;&#x0A;SET BISON_HAIRY=$(InputDir)..\..\tools\bison.simple&#x0D;&#x0A;cd $(InputDir)&#x0D;&#x0A;$(InputDir)..\..\tools\bison.exe -d -t -v $(InputName).y&#x0D;&#x0A;if EXIST $(InputDir)Gen_$(InputName)_tab.cpp del $(InputDir)Gen_$(InputName)_tab.cpp&#x0D;&#x0A;rename $(InputDir)$(InputName)_tab.c Gen_$(InputName)_tab.cpp&#x0D;&#x0A;"
+						Outputs="$(InputDir)Gen_$(InputName)_tab.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Executing Bison on $(InputPath)"
+						CommandLine="SET BISON_SIMPLE=$(InputDir)..\..\tools\bison.simple&#x0D;&#x0A;SET BISON_HAIRY=$(InputDir)..\..\tools\bison.simple&#x0D;&#x0A;cd $(InputDir)&#x0D;&#x0A;$(InputDir)..\..\tools\bison.exe -d -t -v $(InputName).y&#x0D;&#x0A;if EXIST $(InputDir)Gen_$(InputName)_tab.cpp del $(InputDir)Gen_$(InputName)_tab.cpp&#x0D;&#x0A;rename $(InputDir)$(InputName)_tab.c Gen_$(InputName)_tab.cpp&#x0D;&#x0A;"
+						Outputs="$(InputDir)Gen_$(InputName)_tab.cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -562,6 +761,24 @@
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Release|Win32"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug|x64"
+						ExcludedFromBuild="true"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|x64"
 						ExcludedFromBuild="true"
 						>
 						<Tool
