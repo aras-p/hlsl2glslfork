@@ -189,6 +189,8 @@ static int CPPundef(yystypepp * yylvalpp)
     return token;
 } // CPPundef
 
+static int CPPline(yystypepp * yylvalpp);
+
 /*
  * CPPgotoEndOfIfBlock: jump to matching #else, #elif or #endif
  * for the current #if(def). if matchelse if false, ignore #elif
@@ -229,6 +231,8 @@ static int CPPgotoEndOfIfBlock(int matchelse, yystypepp * yylvalpp)
             break;
         else if (matchelse && (atom == elseAtom || atom == elifAtom))
             break;
+        else if (atom == lineAtom)
+			token = CPPline(yylvalpp);
     }
     return token;
 }
