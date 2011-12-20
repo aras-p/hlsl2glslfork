@@ -11,6 +11,7 @@ const bool kDumpShaderAST = false;
 #ifdef _MSC_VER
 #include <windows.h>
 #include <gl/GL.h>
+#include <cstdarg>
 
 extern "C" {
 typedef char GLcharARB;		/* native character */
@@ -32,6 +33,31 @@ static PFNGLGETINFOLOGARBPROC glGetInfoLogARB;
 static PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
 }
 
+// forks stdio to debug console so when you hit a breakpoint you can more easily see what test is running:
+static void logf(const char* format, ...)
+{
+    va_list args = NULL;
+    va_start(args, format);
+    
+    char buffer[4096];
+    const size_t bufferSize = sizeof(buffer) - 1;
+    
+    int rc = _vsnprintf(buffer, bufferSize, format, args);
+    
+    size_t outputLen = static_cast<size_t>(rc);
+
+    if(rc <= 0 || (outputLen == bufferSize))
+    {
+        buffer[outputLen] = '\0';
+    }
+        
+    va_end(args); //lint !e1924: C-style cast
+
+    OutputDebugStringA(buffer);
+    fwrite(buffer, 1, outputLen, stdout);
+}
+
+#define printf logf
 
 #else
 #include <OpenGL/OpenGL.h>
