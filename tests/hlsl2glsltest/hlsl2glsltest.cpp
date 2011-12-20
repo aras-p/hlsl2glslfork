@@ -104,7 +104,7 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 		return false;
 	
 	fseek(file, 0, SEEK_END);
-	int length = ftell(file);
+	size_t length = ftell(file);
 	fseek(file, 0, SEEK_SET);
 	if (length < 0)
 	{
@@ -113,7 +113,7 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 	}
 	
 	output.resize(length);
-	int readLength = fread(&*output.begin(), 1, length, file);
+	size_t readLength = fread(&*output.begin(), 1, length, file);
 	
 	fclose(file);
 	

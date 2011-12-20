@@ -638,14 +638,15 @@ int readCPPline(yystypepp * yylvalpp)
 
 
 static int eof_scan(InputSrc *in, yystypepp * yylvalpp) { return -1; }
-static void noop(InputSrc *in, int ch, yystypepp * yylvalpp) { }
+static int noop_getch(InputSrc *in) { return -1; }
+static void noop_ungetc(InputSrc *in, int ch) { }
 
 static void PushEofSrc() {
     InputSrc *in = malloc(sizeof(InputSrc));
     memset(in, 0, sizeof(InputSrc));
     in->scan = eof_scan;
-    in->getch = eof_scan;
-    in->ungetch = noop;
+    in->getch = noop_getch;
+    in->ungetch = noop_ungetc;
     in->prev = cpp->currentInput;
     cpp->currentInput = in;
 }

@@ -159,7 +159,7 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TV
          }
          fields.offsets[ii/4] =  row * 4 + collumn;
       }
-      fields.num = compString.size()/4;
+      fields.num = static_cast<int>(compString.size())/4;
    }
    else
    {
@@ -191,7 +191,7 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TV
          }
          fields.offsets[ii/3] =  row * 4 + collumn;
       }
-      fields.num = compString.size()/3;
+      fields.num = static_cast<int>(compString.size())/3;
    }
 
    return true;

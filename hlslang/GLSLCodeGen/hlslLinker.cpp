@@ -347,8 +347,8 @@ std::string HlslLinker::stripSemanticModifier( const std::string &semantic, bool
 {
 	std::string newSemantic = semantic;
 
-	int nCentroidLoc = semantic.find ( "_centroid" );
-	if ( nCentroidLoc != -1 )
+	size_t nCentroidLoc = semantic.find ( "_centroid" );
+	if ( nCentroidLoc != std::string::npos )
 	{
 		if ( bWarn )
 		{
