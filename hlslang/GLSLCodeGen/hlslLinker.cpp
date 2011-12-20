@@ -752,6 +752,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 			// -------- IN & OUT parameters
 			case EqtIn:
 			case EqtInOut:
+			case EqtConst:
 				if ( sym->getType() != EgstStruct)
 				{
 					std::string name, ctor;
