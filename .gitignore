@@ -5,6 +5,7 @@
 *.pbxuser
 *.perspectivev3
 *.cmake
+*.wwdb
 .svn/
 .DS_Store
 _ReSharper.*
