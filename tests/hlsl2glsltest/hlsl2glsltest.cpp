@@ -38,23 +38,21 @@ static void logf(const char* format, ...)
 {
     va_list args = NULL;
     va_start(args, format);
+    vprintf(format, args);
+    va_end(args); //lint !e1924: C-style cast
     
     char buffer[4096];
     const size_t bufferSize = sizeof(buffer) - 1;
-    
-    int rc = _vsnprintf(buffer, bufferSize, format, args);
-    
-    size_t outputLen = static_cast<size_t>(rc);
 
-    if(rc <= 0 || (outputLen == bufferSize))
-    {
-        buffer[outputLen] = '\0';
-    }
-        
+    args = NULL;
+    va_start(args, format);
+    int rc = _vsnprintf(buffer, bufferSize, format, args);
     va_end(args); //lint !e1924: C-style cast
+    
+    size_t outputLen = (rc <= 0) ? 0 : static_cast<size_t>(rc);
+    buffer[outputLen] = '\0';
 
     OutputDebugStringA(buffer);
-    fwrite(buffer, 1, outputLen, stdout);
 }
 
 #define printf logf
