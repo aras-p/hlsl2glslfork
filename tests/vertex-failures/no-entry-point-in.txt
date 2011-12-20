@@ -1,0 +1,4 @@
+float4 some_function()
+{
+    return float4(1.f, 1.f, 2.f, 3.f);
+}
