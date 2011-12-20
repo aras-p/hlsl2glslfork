@@ -1,4 +1,4 @@
-
+#line 1 "undefined-type-in.hlsl"
 void main(out float4 overtex : POSITION)
 {
     bloat4 b(1.f, 1.f, 1.f, 1.f);

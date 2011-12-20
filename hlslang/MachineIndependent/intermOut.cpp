@@ -54,7 +54,7 @@ void OutputTreeText(TInfoSink& infoSink, TIntermNode* node, const int depth)
 {
    int i;
 
-   infoSink.debug << FormatSourceLoc(node->getLine());
+   infoSink.debug << node->getLine();
 
    for (i = 0; i < depth; ++i)
       infoSink.debug << "  ";

@@ -544,7 +544,7 @@ function_call
                         //
                         // Treat it like a built-in unary operator.
                         //
-                        $$ = parseContext.intermediate.addUnaryMath(op, $1.intermNode, 0, parseContext.symbolTable);
+                        $$ = parseContext.intermediate.addUnaryMath(op, $1.intermNode, gNullSourceLoc, parseContext.symbolTable);
                         if ($$ == 0)  {
                             parseContext.error($1.intermNode->getLine(), " wrong operand type", "Internal Error", 
                                 "built in unary operator function.  Type: %s",
@@ -2235,10 +2235,10 @@ compound_statement_no_new_scope
 
 statement_list
     : statement {
-        $$ = parseContext.intermediate.makeAggregate($1, 0); 
+        $$ = parseContext.intermediate.makeAggregate($1, gNullSourceLoc); 
     }
     | statement_list statement { 
-        $$ = parseContext.intermediate.growAggregate($1, $2, 0);
+        $$ = parseContext.intermediate.growAggregate($1, $2, gNullSourceLoc);
     }
     ;
 
@@ -2401,7 +2401,7 @@ translation_unit
         parseContext.treeRoot = $$; 
     }
     | translation_unit external_declaration {
-        $$ = parseContext.intermediate.growAggregate($1, $2, 0);
+        $$ = parseContext.intermediate.growAggregate($1, $2, gNullSourceLoc);
         parseContext.treeRoot = $$;
     }
     ;
@@ -2513,7 +2513,7 @@ function_definition
             parseContext.recover();
         }
         parseContext.symbolTable.pop();
-        $$ = parseContext.intermediate.growAggregate($1.intermAggregate, $3, 0);
+        $$ = parseContext.intermediate.growAggregate($1.intermAggregate, $3, gNullSourceLoc);
         parseContext.intermediate.setAggregateOperator($$, EOpFunction, $1.line);
         $$->getAsAggregate()->setName($1.function->getMangledName().c_str());
         $$->getAsAggregate()->setPlainName($1.function->getName().c_str());

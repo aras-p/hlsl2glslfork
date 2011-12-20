@@ -17,7 +17,7 @@
 class GlslFunction 
 {
 public:
-   GlslFunction (const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision precision, const std::string &s, int line);
+   GlslFunction (const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision precision, const std::string &s, const TSourceLoc& line);
    virtual ~GlslFunction();
    
    void addSymbol( GlslSymbol *sym );   
@@ -70,7 +70,7 @@ public:
    void setStruct( GlslStruct *s ) { structPtr = s;}
 
    std::stringstream& getActiveOutput () { return active; }
-	int getLine() const { return line; }
+   const TSourceLoc& getLine() const { return line; }
    
 protected:
 
@@ -80,7 +80,7 @@ protected:
    EGlslSymbolType returnType;
    TPrecision precision;
    std::string semantic;
-   int line;
+   TSourceLoc line;
 
    // Structure return value
    GlslStruct *structPtr;  

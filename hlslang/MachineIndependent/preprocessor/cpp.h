@@ -26,9 +26,8 @@ void  CPPWarningToInfoLog(const char *msg); // Prints warning messages into info
 void  ResetTString(void);                   // #error Message as TString.
 void  CPPErrorToInfoLog(char*);             // Stick all cpp errors into Sh.Info.log   .
 void  StoreStr(char*);                      // Store the TString in Parse Context.
-void  SetLineNumber(int);                   // Set line number.  
-int   GetLineNumber(void);                  // Get the current Line Number. 
-int   GetStringNumber(void);                // Get the current String Number. 
+void  SetLineNumber(TSourceLoc line);// Set line number.  
+const TSourceLoc GetLineNumber(void);// Get the current Line Number. 
 const char* GetStrfromTStr(void);           // Convert TString to String.  
 int   FreeCPP(void);
 

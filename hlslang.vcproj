@@ -560,6 +560,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\hlslang\MachineIndependent\preprocessor\sourceloc.h"
+					>
+				</File>
+				<File
 					RelativePath="hlslang\MachineIndependent\preprocessor\symbols.c"
 					>
 				</File>

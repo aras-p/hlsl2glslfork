@@ -280,12 +280,12 @@ class TIntermNode
 public:
    POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
 
-   TIntermNode() : line(0)
+   TIntermNode() : line(gNullSourceLoc)
    {
    }
 
-   TSourceLoc getLine() const { return line; }
-   void setLine(TSourceLoc l) { line = l; }
+   const TSourceLoc& getLine() const { return line; }
+   void setLine(const TSourceLoc& l) { line = l; }
 
    virtual void traverse(TIntermTraverser*) = 0;
 

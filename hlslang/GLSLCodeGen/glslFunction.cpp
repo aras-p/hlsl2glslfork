@@ -6,7 +6,7 @@
 #include "glslFunction.h"
 
 
-GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision prec, const std::string &s, int l) :
+GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision prec, const std::string &s, const TSourceLoc& l) :
       name(n),
       mangledName(m),
       returnType(type),
