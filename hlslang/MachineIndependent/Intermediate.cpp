@@ -208,7 +208,7 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
    // one and promote it to the right type.
    //
    TIntermBinary* node = new TIntermBinary(op);
-   if (line == 0)
+   if (line.line == 0)
       line = right->getLine();
    node->setLine(line);
 
@@ -255,7 +255,7 @@ TIntermTyped* TIntermediate::addAssign(TOperator op, TIntermTyped* left, TInterm
    // from right to left.
    //
    TIntermBinary* node = new TIntermBinary(op);
-   if (line == 0)
+   if (line.line == 0)
       line = left->getLine();
    node->setLine(line);
 
@@ -281,7 +281,7 @@ TIntermTyped* TIntermediate::addAssign(TOperator op, TIntermTyped* left, TInterm
 TIntermTyped* TIntermediate::addIndex(TOperator op, TIntermTyped* base, TIntermTyped* index, TSourceLoc line)
 {
    TIntermBinary* node = new TIntermBinary(op);
-   if (line == 0)
+   if (line.line == 0)
       line = index->getLine();
    node->setLine(line);
    node->setLeft(base);
@@ -371,7 +371,7 @@ TIntermTyped* TIntermediate::addUnaryMath(TOperator op, TIntermNode* childNode, 
    // Make a new node for the operator.
    //
    node = new TIntermUnary(op);
-   if (line == 0)
+   if (line.line == 0)
       line = child->getLine();
    node->setLine(line);
    node->setOperand(child);
@@ -417,7 +417,7 @@ TIntermAggregate* TIntermediate::setAggregateOperator(TIntermNode* node, TOperat
          //
          aggNode = new TIntermAggregate();
          aggNode->getSequence().push_back(node);
-         if (line == 0)
+         if (line.line == 0)
             line = node->getLine();
       }
    }
@@ -428,7 +428,7 @@ TIntermAggregate* TIntermediate::setAggregateOperator(TIntermNode* node, TOperat
    // Set the operator.
    //
    aggNode->setOperator(op);
-   if (line != 0)
+   if (line.line != 0)
       aggNode->setLine(line);
 
    return aggNode;
@@ -595,7 +595,7 @@ TIntermAggregate* TIntermediate::growAggregate(TIntermNode* left, TIntermNode* r
    if (right)
       aggNode->getSequence().push_back(right);
 
-   if (line != 0)
+   if (line.line != 0)
       aggNode->setLine(line);
 
    return aggNode;
@@ -614,7 +614,7 @@ TIntermAggregate* TIntermediate::makeAggregate(TIntermNode* node, TSourceLoc lin
    TIntermAggregate* aggNode = new TIntermAggregate;
    aggNode->getSequence().push_back(node);
 
-   if (line != 0)
+   if (line.line != 0)
       aggNode->setLine(line);
    else
       aggNode->setLine(node->getLine());

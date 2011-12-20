@@ -9,6 +9,7 @@
 #define MAX_STRING_LEN 512
 
 #include "parser.h"
+#include "sourceloc.h"
 
 // Not really atom table stuff but needed first...
 
@@ -32,7 +33,7 @@ int InitScanner(CPPStruct *cpp);   // Intialise the cpp scanner.
 int ScanFromString(char *);      // Start scanning the input from the string mentioned.
 int check_EOF(int);              // check if we hit a EOF abruptly 
 void CPPErrorToInfoLog(char *);   // sticking the msg,line into the Shader's.Info.log
-void SetLineNumber(int);
+void SetLineNumber(TSourceLoc line);
 void IncLineNumber(void);
 void DecLineNumber(void);
 int FreeScanner(void);                 // Free the cpp scanner

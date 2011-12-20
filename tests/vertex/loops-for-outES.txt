@@ -23,7 +23,7 @@ v2f xlat_main( in appdata v );
 highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal ) {
     highp vec3 viewpos;
     highp vec3 viewN;
-    highp vec3 lightColor = vec3( 0.00000, 0.00000, 0.00000);
+    highp vec3 lightColor = vec3( 0.0, 0.0, 0.0);
     highp int i = 0;
     highp vec3 toLight;
     highp float lengthSq;
@@ -36,19 +36,19 @@ highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal ) {
         toLight = (unity_LightPosition[ i ].xyz  - viewpos.xyz );
         #line 27
         lengthSq = dot( toLight, toLight);
-        atten = (1.00000 / (1.00000 + (lengthSq * unity_LightAtten[ i ].z )));
-        diff = max( 0.00000, dot( viewN, normalize( toLight )));
+        atten = (1.0 / (1.0 + (lengthSq * unity_LightAtten[ i ].z )));
+        diff = max( 0.0, dot( viewN, normalize( toLight )));
         lightColor += (unity_LightColor[ i ].xyz  * (diff * atten));
     }
     #line 32
-    return (lightColor * 2.00000);
+    return (lightColor * 2.0);
 }
 #line 35
 v2f xlat_main( in appdata v ) {
     v2f o;
     #line 38
     o.pos = ( UNITY_MATRIX_MVP * v.vertex );
-    o.color = vec4( ShadeMyVertexLights( v.vertex, v.normal), 1.00000);
+    o.color = vec4( ShadeMyVertexLights( v.vertex, v.normal), 1.0);
     return o;
 }
 varying mediump vec4 xlv_TEXCOORD0;

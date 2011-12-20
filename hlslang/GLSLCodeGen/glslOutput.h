@@ -29,7 +29,7 @@ private:
    static bool traverseLoop(bool preVisit, TIntermLoop*, TIntermTraverser*);
    static bool traverseBranch(bool preVisit, TIntermBranch*,  TIntermTraverser*);
 	
-	void outputLineDirective (int line);
+	void outputLineDirective (const TSourceLoc& line);
 
 public:
    TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision);
@@ -61,7 +61,7 @@ public:
    std::vector<int> indexList;
 
 	bool m_UsePrecision;
-	int m_LastLineOutput;
+	TSourceLoc m_LastLineOutput;
 };
 
 #endif //GLSL_OUTPUT_H

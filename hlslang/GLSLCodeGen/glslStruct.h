@@ -22,11 +22,11 @@ public:
 	  TPrecision precision;
    };
 
-   GlslStruct (const std::string &n, int line) : name(n), m_Line(line) {}
+   GlslStruct (const std::string &n, const TSourceLoc& line) : name(n), m_Line(line) {}
    virtual ~GlslStruct() {}
 
 	const std::string& getName() const { return name; }
-	int getLine() const { return m_Line; }
+	const TSourceLoc& getLine() const { return m_Line; }
 
    void addMember( const member& m ) { memberList.push_back(m); }
    const member& getMember( int which ) const { return memberList[which]; }
@@ -37,7 +37,7 @@ public:
 private:
 	std::vector<member> memberList;
 	std::string name;
-	int m_Line;
+	TSourceLoc m_Line;
 };
 
 #endif //GLSL_STRUCT_H

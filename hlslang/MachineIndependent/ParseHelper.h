@@ -37,40 +37,40 @@ struct TParseContext
 
    void C_DECL error(TSourceLoc, const char *szReason, const char *szToken, 
                      const char *szExtraInfoFormat, ...);
-   bool reservedErrorCheck(int line, const TString& identifier);
+   bool reservedErrorCheck(const TSourceLoc& line, const TString& identifier);
    void recover();
 
    TQualifier getDefaultQualifier() const { return symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary; }
 
-   bool parseVectorFields(const TString&, int vecSize, TVectorFields&, int line);
-   bool parseMatrixFields(const TString&, int matSize, TVectorFields&, int line);
-   void assignError(int line, const char* op, TString left, TString right);
-   void unaryOpError(int line, char* op, TString operand);
-   void binaryOpError(int line, char* op, TString left, TString right);
-   bool lValueErrorCheck(int line, char* op, TIntermTyped*);
+   bool parseVectorFields(const TString&, int vecSize, TVectorFields&, const TSourceLoc& line);
+   bool parseMatrixFields(const TString&, int matSize, TVectorFields&, const TSourceLoc& line);
+   void assignError(const TSourceLoc& line, const char* op, TString left, TString right);
+   void unaryOpError(const TSourceLoc& line, char* op, TString operand);
+   void binaryOpError(const TSourceLoc& line, char* op, TString left, TString right);
+   bool lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTyped*);
    bool constErrorCheck(TIntermTyped* node);
    bool integerErrorCheck(TIntermTyped* node, char* token);
-   bool globalErrorCheck(int line, bool global, char* token);
-   bool constructorErrorCheck(int line, TIntermNode*, TFunction&, TOperator, TType*);
-   bool arraySizeErrorCheck(int line, TIntermTyped* expr, int& size);
-   bool arrayQualifierErrorCheck(int line, TPublicType type);
-   bool arrayTypeErrorCheck(int line, TPublicType type);
-   bool arrayErrorCheck(int line, TString& identifier, TPublicType type, TVariable*& variable);
-   bool arrayErrorCheck(int line, TString& identifier, const TTypeInfo *info, TPublicType type, TVariable*& variable);
+   bool globalErrorCheck(const TSourceLoc& line, bool global, char* token);
+   bool constructorErrorCheck(const TSourceLoc& line, TIntermNode*, TFunction&, TOperator, TType*);
+   bool arraySizeErrorCheck(const TSourceLoc& line, TIntermTyped* expr, int& size);
+   bool arrayQualifierErrorCheck(const TSourceLoc& line, TPublicType type);
+   bool arrayTypeErrorCheck(const TSourceLoc& line, TPublicType type);
+   bool arrayErrorCheck(const TSourceLoc& line, TString& identifier, TPublicType type, TVariable*& variable);
+   bool arrayErrorCheck(const TSourceLoc& line, TString& identifier, const TTypeInfo *info, TPublicType type, TVariable*& variable);
    bool insertBuiltInArrayAtGlobalLevel();
-   bool voidErrorCheck(int, const TString&, const TPublicType&);
-   bool boolErrorCheck(int, const TIntermTyped*);
-   bool boolErrorCheck(int, const TPublicType&);
-   bool boolOrVectorErrorCheck(int line, const TIntermTyped* type);
-   bool samplerErrorCheck(int line, const TPublicType& pType, const char* reason);
-   bool structQualifierErrorCheck(int line, const TPublicType& pType);
-   bool parameterSamplerErrorCheck(int line, TQualifier qualifier, const TType& type);
+   bool voidErrorCheck(const TSourceLoc& line, const TString&, const TPublicType&);
+   bool boolErrorCheck(const TSourceLoc& line, const TIntermTyped*);
+   bool boolErrorCheck(const TSourceLoc& line, const TPublicType&);
+   bool boolOrVectorErrorCheck(const TSourceLoc& line, const TIntermTyped* type);
+   bool samplerErrorCheck(const TSourceLoc& line, const TPublicType& pType, const char* reason);
+   bool structQualifierErrorCheck(const TSourceLoc& line, const TPublicType& pType);
+   bool parameterSamplerErrorCheck(const TSourceLoc& line, TQualifier qualifier, const TType& type);
    bool containsSampler(TType& type);
-   bool nonInitConstErrorCheck(int line, TString& identifier, TPublicType& type);
-   bool nonInitErrorCheck(int line, TString& identifier, const TTypeInfo *info, TPublicType& type);
-   bool nonInitErrorCheck(int line, TString& identifier, TPublicType& type);
-   bool paramErrorCheck(int line, TQualifier qualifier, TQualifier paramQualifier, TType* type);
-   const TFunction* findFunction(int line, TFunction* pfnCall, bool *builtIn = 0);
+   bool nonInitConstErrorCheck(const TSourceLoc& line, TString& identifier, TPublicType& type);
+   bool nonInitErrorCheck(const TSourceLoc& line, TString& identifier, const TTypeInfo *info, TPublicType& type);
+   bool nonInitErrorCheck(const TSourceLoc& line, TString& identifier, TPublicType& type);
+   bool paramErrorCheck(const TSourceLoc& line, TQualifier qualifier, TQualifier paramQualifier, TType* type);
+   const TFunction* findFunction(const TSourceLoc& line, TFunction* pfnCall, bool *builtIn = 0);
    bool executeInitializer(TSourceLoc line, TString& identifier, const TTypeInfo *info, TPublicType& pType, 
                            TIntermTyped* initializer, TIntermNode*& intermNode, TVariable* variable = 0);
    bool executeInitializer(TSourceLoc line, TString& identifier, TPublicType& pType, 
@@ -97,7 +97,7 @@ struct TParseContext
 int PaParseString(char* source, TParseContext&);
 void PaReservedWord();
 int PaIdentOrType(TString& id, TParseContext&, TSymbol*&);
-int PaParseComment(int &lineno, TParseContext&);
+int PaParseComment(TSourceLoc &lineno, TParseContext&);
 void setInitialState();
 
 typedef TParseContext* TParseContextPointer;

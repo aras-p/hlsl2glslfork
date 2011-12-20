@@ -12,6 +12,8 @@
 
 #include "slglobals.h"
 
+const TSourceLoc gNullSourceLoc = { NULL, 0 };
+
 static int CPPif(yystypepp * yylvalpp);
 
 /* Don't use memory.c's replacements, as we clean up properly here */
@@ -450,17 +452,26 @@ static int CPPline(yystypepp * yylvalpp)
         return token;
     }
     else if (token == CPP_INTCONSTANT) {
-        yylvalpp->sc_int=atoi(yylvalpp->symbol_name);
-        SetLineNumber(yylvalpp->sc_int);
+        TSourceLoc line;
+        line.line=atoi(yylvalpp->symbol_name);
+        line.file=NULL;
+        
+        // NOTE: we deliberate deferr calling SetLineNumber until after we've scanned
+        // the rest of the line so that the new line-number is for the "next" line 
+        // parsed (consistent with other preprocessors including GPP).
         token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
 		
 		// Modified for HLSL, which allows #line X "str", whereas GLSL is #line X Y
         if (token == CPP_STRCONSTANT) {
+            line.file = GetStringOfAtom(atable,yylvalpp->sc_ident);
             token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
-            if(token!='\n')
+            if(token=='\n')
+                SetLineNumber(line);
+            else
                 CPPErrorToInfoLog("#line");
         }
         else if (token == '\n'){
+            SetLineNumber(line);
             return token;
         }
         else{
@@ -638,14 +649,15 @@ int readCPPline(yystypepp * yylvalpp)
 
 
 static int eof_scan(InputSrc *in, yystypepp * yylvalpp) { return -1; }
-static void noop(InputSrc *in, int ch, yystypepp * yylvalpp) { }
+static int noop_getch(InputSrc *in) { return -1; }
+static void noop_ungetc(InputSrc *in, int ch) { }
 
 static void PushEofSrc() {
     InputSrc *in = malloc(sizeof(InputSrc));
     memset(in, 0, sizeof(InputSrc));
     in->scan = eof_scan;
-    in->getch = eof_scan;
-    in->ungetch = noop;
+    in->getch = noop_getch;
+    in->ungetch = noop_ungetc;
     in->prev = cpp->currentInput;
     cpp->currentInput = in;
 }
@@ -783,15 +795,16 @@ int MacroExpand(int atom, yystypepp * yylvalpp)
     int i,j, token, depth=0;
     const char *message;
     if (atom == __LINE__Atom) {
-        yylvalpp->sc_int = GetLineNumber();
+        yylvalpp->sc_int = GetLineNumber().line;
         sprintf(yylvalpp->symbol_name,"%d",yylvalpp->sc_int);
         UngetToken(CPP_INTCONSTANT, yylvalpp);
         return 1;
     }
     if (atom == __FILE__Atom) {
-        yylvalpp->sc_int = GetStringNumber();
-        sprintf(yylvalpp->symbol_name,"%d",yylvalpp->sc_int);
-        UngetToken(CPP_INTCONSTANT, yylvalpp);
+        const char* file = GetLineNumber().file;
+        if(!file) file = "";
+        yylvalpp->sc_ident = LookUpAddString(atable, file);
+        UngetToken(CPP_STRCONSTANT, yylvalpp);
         return 1;
     }
     if (!sym || sym->mac.undef) return 0;

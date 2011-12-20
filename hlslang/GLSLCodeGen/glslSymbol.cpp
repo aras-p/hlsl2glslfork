@@ -174,7 +174,7 @@ void GlslSymbol::writeInitializer( std::stringstream &out, int element )
       for (int ii = 0; ii < elementCount; ii++)
       {
          if (ii != 0) out << ", ";
-         out << initializer[ ii + offset];
+         writeFloat(out, initializer[ ii + offset]);
       }
 
       if (elementCount > 1)
@@ -268,6 +268,27 @@ void GlslSymbol::setInitializer( const constUnion *ptr )
    }
 }
 
+// two requirements here:
+// 1) We always need a decimal-point so that the GLSL output is clearly a float
+// 2) We want to have reasonably consistent behaviour between MacOS & Windows (so tests are consistent)
+// historically there was this pattern instead 
+//  active.setf ( std::stringstream::showpoint );
+// 	active.unsetf(std::ios::fixed);
+// 	active.unsetf(std::ios::scientific);
+// 	active.precision (6);
+// but the interpretation of precision was different between platforms
+
+void GlslSymbol::writeFloat(std::stringstream &out, float f)
+{
+   char buffer[64];
+   sprintf(buffer, "%g", f);
+   out << buffer;
+   
+   if(!strchr(buffer, '.'))
+   {
+       out << ".0";
+   }
+}
 
 void GlslSymbol::mangleName() 
 {
