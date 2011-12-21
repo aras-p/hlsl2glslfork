@@ -1182,13 +1182,6 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 
    if (qualifier == EvqConst)
    {
-      if (qualifier != initializer->getType().getQualifier())
-      {
-         error(line, " assigning non-constant to", "=", "'%s'", variable->getType().getCompleteString().c_str());
-         variable->getType().changeQualifier(EvqTemporary);
-         return true;
-      }
-   
       if (type != initializer->getType())
       {
          TBasicType basicType = type.getBasicType();
@@ -1224,6 +1217,15 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
             return true;
          }
       }
+      
+      TQualifier initializerQualifier = initializer->getType().getQualifier();
+
+      if ((initializerQualifier != EvqConst) && (initializerQualifier != EvqStaticConst))
+      {
+         qualifier = EvqTemporary;
+         variable->getType().changeQualifier(qualifier);
+      }
+      
       if (initializer->getAsConstantUnion())
       {
          constUnion* unionArray = variable->getConstPointer();
