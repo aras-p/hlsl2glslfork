@@ -1,0 +1,8 @@
+uniform half4 _Color;
+
+half4 main() : COLOR0
+{
+    const half c1 = max(_Color.r, _Color.g);
+    const half c2 = _Color.b * _Color.a;
+    return half4(c1, c1, c2, c2);
+}
