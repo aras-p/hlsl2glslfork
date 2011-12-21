@@ -222,8 +222,8 @@ void C_DECL TParseContext::error(TSourceLoc nLine, const char *szReason, const c
    _vsnprintf(szExtraInfo, sizeof(szExtraInfo), szExtraInfoFormat, marker);
 
    /* VC++ format: file(linenum) : error #: 'token' : extrainfo */
-   infoSink.info.prefix(EPrefixError);
    infoSink.info.location(nLine);
+   infoSink.info.prefix(EPrefixError);
    infoSink.info << "'" << szToken <<  "' : " << szReason << " " << szExtraInfo << "\n";
 
    va_end(marker);

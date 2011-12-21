@@ -130,8 +130,8 @@ public:
    }
    void message(TPrefixType message, const char* s, TSourceLoc loc)
    {
-      prefix(message);
       location(loc);
+      prefix(message);
       append(s);
       append("\n");
    }
