@@ -1188,12 +1188,41 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
          variable->getType().changeQualifier(EvqTemporary);
          return true;
       }
+   
       if (type != initializer->getType())
       {
-         error(line, " non-matching types for const initializer ", 
-               variable->getType().getQualifierString(), "");
-         variable->getType().changeQualifier(EvqTemporary);
-         return true;
+         TBasicType basicType = type.getBasicType();
+         TBasicType initializerType = initializer->getType().getBasicType();
+
+         // allow type promotion (eg: const float SCALE = 2;)
+         if
+         (
+            (basicType == EbtFloat) && (initializerType == EbtInt) &&
+            (type.getObjectSize() == initializer->getType().getObjectSize())
+         )
+         {
+            TIntermConstantUnion* iUnion = initializer->getAsConstantUnion();
+            
+            if(iUnion)
+            {
+               constUnion* cUnion = iUnion->getUnionArrayPointer();
+               int objectSize = type.getObjectSize();
+            
+               for(int i = 0; i < objectSize; ++i)
+               {
+                  cUnion[i].setFConst(static_cast<float>(cUnion[i].getIConst()));
+               }
+            }
+         
+            initializer->getTypePointer()->setBasicType(basicType);
+         }
+         else
+         { 
+            error(line, " non-matching types for const initializer ", 
+                  variable->getType().getQualifierString(), "");
+            variable->getType().changeQualifier(EvqTemporary);
+            return true;
+         }
       }
       if (initializer->getAsConstantUnion())
       {
