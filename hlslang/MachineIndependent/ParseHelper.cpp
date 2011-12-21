@@ -1247,6 +1247,12 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
          constUnion* constArray = tVar->getConstPointer();
          variable->shareConstPointer(constArray);
       }
+      else if (initializer->getAsBinaryNode())
+      {
+         // Let this fall through to the bottom; we've already validated the type matches
+         qualifier = EvqTemporary;
+         variable->getType().changeQualifier(qualifier);
+      }
       else
       {
          error(line, " cannot assign to", "=", "'%s'", variable->getType().getCompleteString().c_str());
