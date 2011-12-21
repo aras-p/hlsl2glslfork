@@ -4,10 +4,14 @@ vec4 xlat_main(  );
 vec4 xlat_main(  ) {
     float c1;
     float c2;
+    float c3;
+    float c4;
     c1 = max( _Color.x , _Color.y );
     c2 = (_Color.z  * _Color.w );
     #line 7
-    return vec4( c1, c1, c2, c2);
+    c3 = log2( 16.0 );
+    c4 = ( -_Color.x  );
+    return vec4( c1, c2, c3, c4);
 }
 void main() {
     vec4 xl_retval;

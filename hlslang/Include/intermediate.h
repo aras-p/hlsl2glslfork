@@ -268,6 +268,7 @@ class TIntermAggregate;
 class TIntermBinary;
 class TIntermConstantUnion;
 class TIntermSelection;
+class TIntermOperator;
 class TIntermTyped;
 class TIntermSymbol;
 class TInfoSink;
@@ -290,6 +291,7 @@ public:
    virtual void traverse(TIntermTraverser*) = 0;
 
    virtual TIntermTyped*     getAsTyped() { return 0; }
+   virtual TIntermOperator*  getAsOperatorNode() { return 0; }
    virtual TIntermConstantUnion*     getAsConstantUnion() { return 0; }
    virtual TIntermAggregate* getAsAggregate() { return 0; }
    virtual TIntermBinary*    getAsBinaryNode() { return 0; }
@@ -464,6 +466,10 @@ public:
    virtual bool promote(TInfoSink&)
    {
       return true;
+   }
+   virtual TIntermOperator* getAsOperatorNode()
+   {
+      return this;
    }
 protected:
    TIntermOperator(TOperator o) : TIntermTyped(TType(EbtFloat, EbpUndefined)), op(o) {}

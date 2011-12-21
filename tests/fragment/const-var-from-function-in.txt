@@ -4,5 +4,7 @@ half4 main() : COLOR0
 {
     const half c1 = max(_Color.r, _Color.g);
     const half c2 = _Color.b * _Color.a;
-    return half4(c1, c1, c2, c2);
+    const float c3 = log2(4 * 4);
+    const float c4 = -_Color.r;
+    return half4(c1, c2, c3, c4);
 }
