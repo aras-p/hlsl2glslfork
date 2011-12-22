@@ -66,7 +66,20 @@ inline void OutputLineDirective(std::stringstream& s, const TSourceLoc& l)
 	
 	if(l.file)
 	{
-	    s << l.file; // Either already quoted or no quotes needed
+	    s << ' ';
+	    
+	    // GLSL does not permit quoted strings in #line directives
+	    if(l.file[0] == '"')
+	    {
+	        char stripped[256];
+	        strcpy(stripped, l.file + 1);
+	        stripped[strlen(stripped) - 1] = '\0';
+	        s << stripped;
+	    }
+	    else
+	    {
+	        s << l.file;
+	    }
 	}
 	
 	s << '\n';
