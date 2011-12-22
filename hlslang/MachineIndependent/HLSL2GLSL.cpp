@@ -203,13 +203,10 @@ ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage language )
 
 void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle )
 {
-   if(handle)
-   {
-      delete handle;
-   }
-   // note: we cannot dump the preprocessor data until all translation is done
-   // because TSourceLoc may refer to file name strings in the PP's symbol table
-   FinalizePreprocessor();
+   if (handle == 0)
+      return;
+
+   delete handle;
 }
 
 
@@ -290,6 +287,7 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
    while (! symbolTable.atSharedBuiltInLevel())
       symbolTable.pop();
 
+   FinalizePreprocessor();
    //
    // Throw away all the temporary memory used by the compilation process.
    //

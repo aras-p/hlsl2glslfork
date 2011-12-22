@@ -42,7 +42,7 @@ I           [uUlL]
 #endif
 
 int yy_input(char* buf, int max_size);
-static TSourceLoc lexlineno;
+static TSourceLoc lexlineno = { 0, 0 };
 
 #ifdef _WIN32
     extern int yyparse(TParseContext&);
@@ -435,7 +435,7 @@ void CPPErrorToInfoLog(char *msg)
 
 void SetLineNumber(TSourceLoc line)
 {
-    lexlineno.file = line.file;
+    lexlineno.file = line.file ? NewPoolTString(line.file)->c_str() : NULL;
     lexlineno.line = line.line;
 }
 

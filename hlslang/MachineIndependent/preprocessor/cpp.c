@@ -89,6 +89,7 @@ static int CPPdefine(yystypepp * yylvalpp)
     Symbol *symb;
     SourceLoc dummyLoc;
     memset(&mac, 0, sizeof(mac));
+    memset(&dummyLoc, 0, sizeof(dummyLoc));
     token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
     if (token != CPP_IDENTIFIER) {
         CPPErrorToInfoLog("#define");
@@ -160,7 +161,6 @@ static int CPPdefine(yystypepp * yylvalpp)
             } while (token > 0);
         }
     } else {
-        dummyLoc.line = 0;
         symb = AddSymbol(&dummyLoc, macros, name);
     }
     symb->mac = mac;
