@@ -1,16 +1,16 @@
 
-#line 1
+#line 1 in-struct-ret-vals-in.txt
 struct v2f {
     highp vec4 pos;
     highp vec2 uv;
     highp vec4 color;
 };
 mediump vec4 xlat_main( in v2f i );
-#line 7
+#line 7 in-struct-ret-vals-in.txt
 mediump vec4 xlat_main( in v2f i ) {
     mediump vec4 c;
     c = i.color;
-    #line 11
+    #line 11 in-struct-ret-vals-in.txt
     c.xy  += i.uv;
     return c;
 }

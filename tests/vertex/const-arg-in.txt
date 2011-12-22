@@ -1,3 +1,4 @@
+#line 1 "const-arg-in.txt" 
 struct fake4
 {
     float fx;

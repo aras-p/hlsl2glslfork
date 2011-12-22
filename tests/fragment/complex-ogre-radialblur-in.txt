@@ -1,3 +1,4 @@
+#line 1 "complex-ogre-radialblur-in.txt" 
 uniform sampler2D tex: register(s0);
 
 static const float samples[10] =

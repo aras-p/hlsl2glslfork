@@ -1,3 +1,4 @@
+#line 1 "nestedscope-in.txt" 
 float4x4 mvp;
 
 struct a2v {

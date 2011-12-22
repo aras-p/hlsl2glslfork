@@ -58,22 +58,23 @@ vec4 xll_modf( vec4 x, out vec4 ip) {
   return x-ip;
 }
 mediump vec4 xlat_main( in highp vec4 uv );
-#line 1
+#line 1 intrinsics-in.txt
 mediump vec4 xlat_main( in highp vec4 uv ) {
     mediump vec4 c;
     mediump vec4 d;
+    #line 2 intrinsics-in.txt
     c = vec4( 0.0);
-    #line 4
     c.x  += xll_mod( uv.x , 2.0);
     c.xy  += xll_mod( uv.xy , vec2( 2.0));
+    #line 6 intrinsics-in.txt
     c.xyz  += xll_mod( uv.xyz , vec3( 2.0));
     c.xyzw  += xll_mod( uv.xyzw , vec4( 2.0));
-    #line 10
+    #line 10 intrinsics-in.txt
     c.x  += xll_modf( uv.x , d.x );
     c.xy  += xll_modf( uv.xy , d.xy );
     c.xyz  += xll_modf( uv.xyz , d.xyz );
     c.xyzw  += xll_modf( uv.xyzw , d.xyzw );
-    #line 15
+    #line 15 intrinsics-in.txt
     c += xll_lit( c.x , 0.2, 0.3);
     return c;
 }

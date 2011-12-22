@@ -1,6 +1,7 @@
 mediump vec4 xlat_main( in highp float face );
-#line 1
+#line 1 vface-in.txt
 mediump vec4 xlat_main( in highp float face ) {
+    #line 2 vface-in.txt
     return vec4( face);
 }
 void main() {

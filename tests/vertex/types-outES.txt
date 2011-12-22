@@ -1,12 +1,12 @@
 
-#line 16
+#line 16 types-in.txt
 struct v2f {
     highp vec4 pos;
     highp float fog;
     highp vec2 uv;
     highp vec4 color;
 };
-#line 9
+#line 9 types-in.txt
 struct a2v {
     highp vec4 pos;
     highp vec2 uv;
@@ -21,28 +21,28 @@ uniform mediump mat3 hmat3;
 uniform mediump mat4 hmat4;
 uniform highp mat4 mvp;
 v2f xlat_main( in a2v v );
-#line 23
+#line 23 types-in.txt
 v2f xlat_main( in a2v v ) {
     v2f o;
     highp float dx;
     mediump float dy;
     lowp float dz;
     o.pos = ( mvp * v.pos );
-    #line 27
+    #line 27 types-in.txt
     o.pos += ( hmat4 * v.pos );
     o.pos.xyz  += ( hmat3 * v.pos.xyz  );
     o.pos.xy  += ( hmat2 * v.pos.xy  );
     o.pos += ( fmat4 * v.pos );
-    #line 31
+    #line 31 types-in.txt
     o.pos.xyz  += ( fmat3 * v.pos.xyz  );
     o.pos.xy  += ( fmat2 * v.pos.xy  );
     o.color = v.color;
     o.color.xyz  += v.normal;
-    #line 35
+    #line 35 types-in.txt
     o.uv = v.uv;
     dx = v.pos.x ;
     dy = v.pos.y ;
-    #line 39
+    #line 39 types-in.txt
     dz = v.pos.z ;
     return o;
 }

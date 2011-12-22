@@ -1,6 +1,7 @@
 mediump vec4 xlat_main( in highp vec2 pos );
-#line 1
+#line 1 vpos-in.txt
 mediump vec4 xlat_main( in highp vec2 pos ) {
+    #line 2 vpos-in.txt
     return vec4( pos, 0.0, 0.0);
 }
 void main() {

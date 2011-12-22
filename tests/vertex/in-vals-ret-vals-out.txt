@@ -1,10 +1,10 @@
 uniform mat4 mvp;
 void xlat_main( in vec4 pos, in vec2 uv, in vec3 normal, in vec4 color, out vec4 opos, out float ofog, out vec2 ouv, out vec4 ocolor );
-#line 12
+#line 12 in-vals-ret-vals-in.txt
 void xlat_main( in vec4 pos, in vec2 uv, in vec3 normal, in vec4 color, out vec4 opos, out float ofog, out vec2 ouv, out vec4 ocolor ) {
     opos = ( mvp * pos );
     ocolor = color;
-    #line 16
+    #line 16 in-vals-ret-vals-in.txt
     ocolor.xyz  += normal;
     ouv = uv;
 }

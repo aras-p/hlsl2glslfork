@@ -1,5 +1,5 @@
 mediump vec4 xlat_main(  );
-#line 1
+#line 1 array-const-in.txt
 mediump vec4 xlat_main(  ) {
     highp vec2 poisson[8];
     poisson[0] = vec2( 0.0, 0.0);
@@ -12,7 +12,8 @@ mediump vec4 xlat_main(  ) {
     poisson[7] = vec2( 0.574619, 0.685879);
     mediump vec4 c;
     highp int i = 0;
-    #line 12
+    #line 2 array-const-in.txt
+    #line 12 array-const-in.txt
     c = vec4( 0.0);
     for ( ; (i < 8); ( ++i )) {
         c.xy  += poisson[ i ];

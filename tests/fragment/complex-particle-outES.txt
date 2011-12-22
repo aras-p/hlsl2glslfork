@@ -1,5 +1,5 @@
 
-#line 1
+#line 1 complex-particle-in.txt
 struct v2f {
     highp vec4 vertex;
     lowp vec4 color;
@@ -7,7 +7,7 @@ struct v2f {
 };
 uniform sampler2D _MainTex;
 mediump vec4 xlat_main( in v2f i );
-#line 8
+#line 8 complex-particle-in.txt
 mediump vec4 xlat_main( in v2f i ) {
     return (i.color * texture2D( _MainTex, i.texcoord));
 }

@@ -4,33 +4,33 @@ uniform highp float gradientClamp;
 uniform highp float gradientScaleBias;
 uniform sampler2D shadowMap;
 void xlat_main( in highp vec4 position, in highp vec4 shadowUV, in highp vec3 uv, in highp vec4 vertexLight, out highp vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, highp float fixedDepthBias, highp float gradientClamp, highp float gradientScaleBias );
-#line 17
+#line 17 complex-ogre-grass2-in.txt
 void xlat_main( in highp vec4 position, in highp vec4 shadowUV, in highp vec3 uv, in highp vec4 vertexLight, out highp vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, highp float fixedDepthBias, highp float gradientClamp, highp float gradientScaleBias ) {
     highp vec4 diffuse;
     highp vec4 shadowDepths;
     highp float gradientFactor;
     highp float depthAdjust;
     highp float centerdepth;
-    #line 19
+    #line 19 complex-ogre-grass2-in.txt
     if ( (shadowUV.z  > 0.0) ){
         diffuse = texture2D( diffuseMap, uv.xy );
         if ( (diffuse.w  > 0.001) ){
-            #line 24
+            #line 24 complex-ogre-grass2-in.txt
             oColour = vec4( 0.0, 0.0, 0.0, 0.0);
         }
         else{
-            #line 29
+            #line 29 complex-ogre-grass2-in.txt
             shadowUV = (shadowUV / shadowUV.w );
             shadowDepths = texture2D( shadowMap, shadowUV.xy );
             gradientFactor = (gradientClamp * gradientScaleBias);
-            #line 33
+            #line 33 complex-ogre-grass2-in.txt
             depthAdjust = (gradientFactor + (fixedDepthBias * shadowDepths.x ));
             centerdepth = (shadowDepths.x  + depthAdjust);
             oColour = (( (centerdepth > shadowUV.z ) ) ? ( vec4( vertexLight.xyz , diffuse.w ) ) : ( vec4( 0.0, 0.0, 0.0, diffuse.w ) ));
         }
     }
     else{
-        #line 41
+        #line 41 complex-ogre-grass2-in.txt
         oColour = vec4( 0.0, 0.0, 0.0, 0.0);
     }
 }

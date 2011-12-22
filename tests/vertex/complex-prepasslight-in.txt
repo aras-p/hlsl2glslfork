@@ -1,3 +1,4 @@
+#line 1 "complex-prepasslight-in.txt" 
 float4x4 glstate_matrix_mvp ;
 float4x4 glstate_matrix_modelview0 ;
 uniform float4 _ProjectionParams ;

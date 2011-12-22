@@ -284,6 +284,17 @@ static bool TestFile (bool vertex,
 		if (translateOk)
 		{
 			std::string text = Hlsl2Glsl_GetShader (parser);
+			
+			for (size_t i = 0, n = text.size(); i != n; ++i)
+			{
+			   char c = text[i];
+			   
+			   if (!isascii(c))
+			   {
+				   printf ("  contains non-ascii '%c' (0x%02X)\n", c, c);
+				   res = false;
+			   }
+			}
 
 			std::string output;
 			ReadStringFromFile (outputPath.c_str(), output);

@@ -1,14 +1,14 @@
 vec4 xlat_main(  );
-#line 1
+#line 1 loops-empty-in.txt
 vec4 xlat_main(  ) {
     int i = 0;
     int j = 0;
+    #line 2 loops-empty-in.txt
     for ( ; (i < 10); ( ++i )) {
     }
-    #line 4
     while ( (( j++ ) < 10) ) {
     }
-    #line 8
+    #line 8 loops-empty-in.txt
     do {
     }
     while (     (( j-- ) > 0) )

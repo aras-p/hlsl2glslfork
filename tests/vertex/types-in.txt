@@ -1,3 +1,4 @@
+#line 1 "types-in.txt" 
 float4x4 mvp;
 half4x4 hmat4;
 half3x3 hmat3;

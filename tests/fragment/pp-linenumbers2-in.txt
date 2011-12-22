@@ -1,3 +1,4 @@
+#line 1 "pp-linenumbers2-in.txt" 
 #line 101
 inline half4 UnpackNormal ( half4 packednormal )
 {

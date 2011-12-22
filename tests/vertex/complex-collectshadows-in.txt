@@ -1,3 +1,4 @@
+#line 1 "complex-collectshadows-in.txt" 
 float4x4 glstate_matrix_mvp;
 struct appdata {
 	float4 vertex : POSITION;

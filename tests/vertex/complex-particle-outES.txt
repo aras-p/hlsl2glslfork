@@ -1,11 +1,11 @@
 
-#line 7
+#line 7 complex-particle-in.txt
 struct v2f {
     highp vec4 vertex;
     lowp vec4 color;
     mediump vec2 texcoord;
 };
-#line 2
+#line 2 complex-particle-in.txt
 struct appdata_t {
     highp vec4 vertex;
     lowp vec4 color;
@@ -14,11 +14,11 @@ struct appdata_t {
 uniform highp vec4 _MainTex_ST;
 uniform highp mat4 glstate_matrix_mvp;
 v2f xlat_main( in appdata_t v );
-#line 13
+#line 13 complex-particle-in.txt
 v2f xlat_main( in appdata_t v ) {
     v2f o;
     o.vertex = ( glstate_matrix_mvp * v.vertex );
-    #line 17
+    #line 17 complex-particle-in.txt
     o.color = v.color;
     o.texcoord = ((v.texcoord.xy  * _MainTex_ST.xy ) + _MainTex_ST.zw );
     return o;

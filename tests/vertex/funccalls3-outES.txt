@@ -1,28 +1,28 @@
 
-#line 7
+#line 7 funccalls3-in.txt
 struct v2f {
     highp vec4 pos;
     highp vec4 color;
 };
-#line 3
+#line 3 funccalls3-in.txt
 struct a2v {
     highp vec4 pos;
 };
 uniform highp mat4 mvp;
 highp vec4 ComputeColor( in highp vec4 pos );
 v2f xlat_main( in a2v v );
-#line 12
+#line 12 funccalls3-in.txt
 highp vec4 ComputeColor( in highp vec4 pos ) {
     pos *= vec4( 1.0, -1.0, -1.0, 1.0);
     pos.xyz  *= 0.3;
-    #line 16
+    #line 16 funccalls3-in.txt
     return pos;
 }
-#line 19
+#line 19 funccalls3-in.txt
 v2f xlat_main( in a2v v ) {
     highp vec4 pos;
     v2f o;
-    #line 22
+    #line 22 funccalls3-in.txt
     pos = ( mvp * v.pos );
     o.color = ComputeColor( pos);
     o.pos = pos;

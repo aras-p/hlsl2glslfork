@@ -1,10 +1,10 @@
 
-#line 7
+#line 7 funccalls2-in.txt
 struct v2f {
     highp vec4 pos;
     highp vec4 color;
 };
-#line 3
+#line 3 funccalls2-in.txt
 struct a2v {
     highp vec4 pos;
 };
@@ -15,28 +15,28 @@ highp float ComputeShadow( in highp vec3 pos );
 highp float ComputeAtten( in highp vec3 pos, in highp vec3 lightPos );
 highp vec4 ComputeSomeLighting( in highp vec3 pos );
 v2f xlat_main( in a2v v );
-#line 15
+#line 15 funccalls2-in.txt
 highp float ComputeShadow( in highp vec3 pos ) {
     return pow( pos.x , 4.0);
 }
-#line 20
+#line 20 funccalls2-in.txt
 highp float ComputeAtten( in highp vec3 pos, in highp vec3 lightPos ) {
     return (distance( pos, lightPos) * ComputeShadow( pos));
 }
-#line 25
+#line 25 funccalls2-in.txt
 highp vec4 ComputeSomeLighting( in highp vec3 pos ) {
     highp vec4 res;
     res = _LightColor;
-    #line 29
+    #line 29 funccalls2-in.txt
     res *= ComputeAtten( pos, _LightPos);
     return res;
 }
-#line 33
+#line 33 funccalls2-in.txt
 v2f xlat_main( in a2v v ) {
     highp vec4 pos;
     v2f o;
     pos = ( mvp * v.pos );
-    #line 37
+    #line 37 funccalls2-in.txt
     o.pos = pos;
     o.color = ComputeSomeLighting( v.pos.xyz );
     return o;

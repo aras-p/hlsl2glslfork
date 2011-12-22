@@ -1,3 +1,4 @@
+#line 1 "complex-particle-in.txt" 
 float4x4 glstate_matrix_mvp;
 struct appdata_t {
     float4 vertex : POSITION;

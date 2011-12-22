@@ -1,3 +1,4 @@
+#line 1 "non-matching-type-init-in.txt" 
 uniform half4 _Color;
 
 half4 main() : COLOR0

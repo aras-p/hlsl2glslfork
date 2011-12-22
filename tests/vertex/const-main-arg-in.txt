@@ -1,3 +1,4 @@
+#line 1 "const-main-arg-in.txt" 
 struct VertexInput
 {
     float4 pos : POSITION;

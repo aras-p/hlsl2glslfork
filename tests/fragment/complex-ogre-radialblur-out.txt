@@ -23,7 +23,7 @@ uniform float sampleDist;
 uniform float sampleStrength;
 uniform sampler2D tex;
 vec4 xlat_main( in vec4 Pos, in vec2 texCoord, float sampleDist, float sampleStrength );
-#line 21
+#line 21 complex-ogre-radialblur-in.txt
 vec4 xlat_main( in vec4 Pos, in vec2 texCoord, float sampleDist, float sampleStrength ) {
     vec2 dir;
     float dist;
@@ -44,23 +44,23 @@ vec4 xlat_main( in vec4 Pos, in vec2 texCoord, float sampleDist, float sampleStr
     samples[9] = 0.08;
     float t;
     dir = (0.5 - texCoord);
-    #line 28
+    #line 28 complex-ogre-radialblur-in.txt
     dist = sqrt( ((dir.x  * dir.x ) + (dir.y  * dir.y )) );
-    #line 32
+    #line 32 complex-ogre-radialblur-in.txt
     dir = normalize( dir );
     color = texture2D( tex, texCoord);
-    #line 37
+    #line 37 complex-ogre-radialblur-in.txt
     sum = color;
     for ( ; (i < 10); ( i++ )) {
         res = texture2D( tex, (texCoord + ((dir * samples[ i ]) * sampleDist)));
-        #line 41
+        #line 41 complex-ogre-radialblur-in.txt
         sum += res;
     }
     sum /= 11.0;
-    #line 47
+    #line 47 complex-ogre-radialblur-in.txt
     t = (dist * sampleStrength);
     t = xll_saturate( t );
-    #line 51
+    #line 51 complex-ogre-radialblur-in.txt
     return mix( color, sum, vec4( t));
 }
 uniform float xlu_sampleDist;

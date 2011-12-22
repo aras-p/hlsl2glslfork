@@ -1,3 +1,4 @@
+#line 1 "multiple-file-lines-in.txt" 
 #line 1 "multiple-file-lines-in.hlsl"
 #ifdef FREAKY
 #ifdef FREAKY

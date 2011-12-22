@@ -1,12 +1,12 @@
 
-#line 10
+#line 10 funccalls-in.txt
 struct v2f {
     highp vec4 pos;
     highp float fog;
     highp vec2 uv;
     highp vec4 color;
 };
-#line 3
+#line 3 funccalls-in.txt
 struct a2v {
     highp vec4 pos;
     highp vec2 uv;
@@ -17,22 +17,22 @@ uniform highp mat4 mvp;
 highp vec4 DoPosMul( in highp vec4 pos, in highp mat4 mvp );
 highp vec4 DoColor( in highp vec4 color, in highp vec3 normal );
 v2f xlat_main( in a2v v );
-#line 17
+#line 17 funccalls-in.txt
 highp vec4 DoPosMul( in highp vec4 pos, in highp mat4 mvp ) {
     return ( mvp * pos );
 }
-#line 22
+#line 22 funccalls-in.txt
 highp vec4 DoColor( in highp vec4 color, in highp vec3 normal ) {
     highp vec4 c;
     c = color;
     c.xyz  += normal;
-    #line 26
+    #line 26 funccalls-in.txt
     return c;
 }
-#line 29
+#line 29 funccalls-in.txt
 v2f xlat_main( in a2v v ) {
     v2f o;
-    #line 32
+    #line 32 funccalls-in.txt
     o.pos = DoPosMul( v.pos, mvp);
     o.color = DoColor( v.color, v.normal);
     o.uv = v.uv;

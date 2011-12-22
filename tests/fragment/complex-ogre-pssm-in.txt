@@ -1,3 +1,4 @@
+#line 1 "complex-ogre-pssm-in.txt" 
 float shadowPCF(sampler2D shadowMap, float4 shadowMapPos, float2 offset)
 {
 	shadowMapPos = shadowMapPos / shadowMapPos.w;

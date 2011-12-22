@@ -1,12 +1,12 @@
 
-#line 10
+#line 10 in-struct-ret-struct-in.txt
 struct v2f {
     vec4 pos;
     float fog;
     vec2 uv;
     vec4 color;
 };
-#line 3
+#line 3 in-struct-ret-struct-in.txt
 struct a2v {
     vec4 pos;
     vec2 uv;
@@ -15,11 +15,11 @@ struct a2v {
 };
 uniform mat4 mvp;
 v2f xlat_main( in a2v v );
-#line 17
+#line 17 in-struct-ret-struct-in.txt
 v2f xlat_main( in a2v v ) {
     v2f o;
     o.pos = ( mvp * v.pos );
-    #line 21
+    #line 21 in-struct-ret-struct-in.txt
     o.color = v.color;
     o.color.xyz  += v.normal;
     o.uv = v.uv;

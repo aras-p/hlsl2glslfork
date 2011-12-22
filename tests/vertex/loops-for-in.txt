@@ -1,3 +1,4 @@
+#line 1 "loops-for-in.txt" 
 float4 unity_LightColor[4];
 float4 unity_LightPosition[4];
 float4 unity_LightAtten[4];
