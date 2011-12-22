@@ -435,8 +435,29 @@ void CPPErrorToInfoLog(char *msg)
 
 void SetLineNumber(TSourceLoc line)
 {
-    lexlineno.file = line.file ? NewPoolTString(line.file)->c_str() : NULL;
+    lexlineno.file = NULL;
     lexlineno.line = line.line;
+    
+    if(line.file && line.file[0])
+    {
+	    // GLSL does not permit quoted strings in #line directives
+    
+	    if(line.file[0] == '"')
+	    {
+	        TString stripped(line.file + 1);
+	        size_t len = stripped.size();
+	        if(stripped[len - 1] == '"')
+	        {
+	            stripped.resize(len - 1);
+	        }
+	        
+	        lexlineno.file = NewPoolTString(stripped.c_str())->c_str();
+	    }
+	    else
+	    {
+	        lexlineno.file = NewPoolTString(line.file)->c_str();
+	    }
+	}
 }
 
 const TSourceLoc GetLineNumber(void)
