@@ -508,7 +508,8 @@ function_call
                 parseContext.recover();
                 $$ = parseContext.intermediate.setAggregateOperator(0, op, $1.line);
             }
-            $$->setType(type);
+			if ($$ != $1.intermNode)
+				$$->setType(type);
         } else {
             //
             // Not a constructor.  Find it in the symbol table.
@@ -850,7 +851,8 @@ unary_expression
             parseContext.recover();
             $$ = parseContext.intermediate.setAggregateOperator(0, op, $2.line);
         }
-        $$->setType(type2);
+		if ($$ != $4)
+			$$->setType(type2);
     }
     ;
 // Grammar Note:  No traditional style type casts.
