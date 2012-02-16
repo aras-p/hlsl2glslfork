@@ -11,18 +11,24 @@
 
 typedef std::map<TOperator,std::string> CodeMap;
 static CodeMap *hlslSupportLib = 0;
+static CodeMap *hlslSupportLibESOverrides = 0;
 
 typedef std::map< TOperator, std::pair<std::string,std::string> > CodeExtensionMap;
 static CodeExtensionMap *hlslSupportLibExtensions = 0;
+static CodeExtensionMap *hlslSupportLibExtensionsESOverrides = 0;
 
 
 void initializeHLSLSupportLibrary() 
 {
 	assert (hlslSupportLib == 0);
 	assert (hlslSupportLibExtensions == 0);
+	assert (hlslSupportLibESOverrides == 0);
+	assert (hlslSupportLibExtensionsESOverrides == 0);
 
 	hlslSupportLib = new CodeMap();
 	hlslSupportLibExtensions = new CodeExtensionMap();
+	hlslSupportLibESOverrides = new CodeMap();
+	hlslSupportLibExtensionsESOverrides = new CodeExtensionMap();
 
    // Initialize GLSL code for the op codes that require support helper functions
 
@@ -89,6 +95,18 @@ void initializeHLSLSupportLibrary()
       );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpDPdx,
+	  "float xll_dFdx(float f) {\n"
+	  "  return dFdx(f);\n"
+	  "}\n\n"
+	  "vec2 xll_dFdx(vec2 v) {\n"
+	  "  return dFdx(v);\n"
+	  "}\n\n"
+	  "vec3 xll_dFdx(vec3 v) {\n"
+	  "  return dFdx(v);\n"
+	  "}\n\n"
+	  "vec4 xll_dFdx(vec4 v) {\n"
+	  "  return dFdx(v);\n"
+	  "}\n\n"
       "mat2 xll_dFdx(mat2 m) {\n"
       "  return mat2( dFdx(m[0]), dFdx(m[1]));\n"
       "}\n\n"
@@ -99,8 +117,21 @@ void initializeHLSLSupportLibrary()
       "  return mat4( dFdx(m[0]), dFdx(m[1]), dFdx(m[2]), dFdx(m[3]));\n"
       "}\n\n")
       );
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpDPdx, std::make_pair("","#extension GL_OES_standard_derivatives : require\n")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpDPdy,
+	  "float xll_dFdy(float f) {\n"
+	  "  return dFdy(f);\n"
+	  "}\n\n"
+	  "vec2 xll_dFdy(vec2 v) {\n"
+	  "  return dFdy(v);\n"
+	  "}\n\n"
+	  "vec3 xll_dFdy(vec3 v) {\n"
+	  "  return dFdy(v);\n"
+	  "}\n\n"
+	  "vec4 xll_dFdy(vec4 v) {\n"
+	  "  return dFdy(v);\n"
+	  "}\n\n"
       "mat2 xll_dFdy(mat2 m) {\n"
       "  return mat2( dFdy(m[0]), dFdy(m[1]));\n"
       "}\n\n"
@@ -111,6 +142,7 @@ void initializeHLSLSupportLibrary()
       "  return mat4( dFdy(m[0]), dFdy(m[1]), dFdy(m[2]), dFdy(m[3]));\n"
       "}\n\n")
       );
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpDPdy, std::make_pair("","#extension GL_OES_standard_derivatives : require\n")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpExp,
       "mat2 xll_exp(mat2 m) {\n"
@@ -281,6 +313,18 @@ void initializeHLSLSupportLibrary()
       );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpFwidth,
+	  "float xll_fwidth(float f) {\n"
+	  "  return fwidth(f);\n"
+	  "}\n\n"
+	  "vec2 xll_fwidth(vec2 v) {\n"
+	  "  return fwidth(v);\n"
+	  "}\n\n"
+	  "vec3 xll_fwidth(vec3 v) {\n"
+	  "  return fwidth(v);\n"
+	  "}\n\n"
+	  "vec4 xll_fwidth(vec4 v) {\n"
+	  "  return fwidth(v);\n"
+	  "}\n\n"
       "mat2 xll_fwidth(mat2 m) {\n"
       "  return mat2( fwidth(m[0]), fwidth(m[1]));\n"
       "}\n\n"
@@ -291,6 +335,8 @@ void initializeHLSLSupportLibrary()
       "  return mat4( fwidth(m[0]), fwidth(m[1]), fwidth(m[2]), fwidth(m[3]));\n"
       "}\n\n")
       );
+    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpFwidth, std::make_pair("","#extension GL_OES_standard_derivatives : require\n")));
+
    hlslSupportLib->insert( CodeMap::value_type( EOpFclip,
 	   "void xll_clip(float x) {\n"
 	   "  if ( x<0.0 ) discard;\n"
@@ -685,12 +731,27 @@ void initializeHLSLSupportLibrary()
         );
 	hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
 
+   hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTex2DLod,
+		"vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {\n"
+		"   return texture2DLodEXT( s, coord.xy, coord.w);\n"
+		"}\n\n" )
+		);
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DLod, std::make_pair("","#extension GL_EXT_shader_texture_lod : require\n")));
+
    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DGrad,
         "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
         "   return texture2DGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
 	hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+
+   hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTex2DGrad,
+		"vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
+		"   return texture2DGradEXT( s, coord, ddx, ddy);\n"
+		"}\n\n" )
+		);
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DGrad, std::make_pair("#extension GL_EXT_shader_texture_lod : require\n","#extension GL_EXT_shader_texture_lod : require\n")));
+
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DBias,
         "vec4 xll_tex3Dbias(sampler3D s, vec4 coord) {\n"
@@ -759,34 +820,56 @@ void finalizeHLSLSupportLibrary()
 	hlslSupportLib = 0;
 	delete hlslSupportLibExtensions;
 	hlslSupportLibExtensions = 0;
+	delete hlslSupportLibESOverrides;
+	hlslSupportLibESOverrides = 0;
+	delete hlslSupportLibExtensionsESOverrides;
+	hlslSupportLibExtensionsESOverrides = 0;
 }
 
 std::string getHLSLSupportCode (TOperator op, std::string& inoutExtensions, bool vertexShader, bool gles)
 {
 	assert (hlslSupportLibExtensions);
-	CodeExtensionMap::iterator eit = hlslSupportLibExtensions->find(op);
-	if (eit != hlslSupportLibExtensions->end())
+	assert (hlslSupportLibExtensionsESOverrides);
+
+	// if we're using gles, attempt to find the ES version first
+	bool found = false;
+	if (gles)
 	{
-		std::string ext = vertexShader ? eit->second.first : eit->second.second;
-		if (gles)
+		CodeExtensionMap::iterator eit = hlslSupportLibExtensionsESOverrides->find(op);
+		if (eit != hlslSupportLibExtensionsESOverrides->end())
 		{
-			if (ext == "#extension GL_ARB_shader_texture_lod : require\n")
-				ext = "#extension GL_EXT_shader_texture_lod : require\n";
+			std::string ext = vertexShader ? eit->second.first : eit->second.second;
+			if (inoutExtensions.find (ext) == std::string::npos)
+				inoutExtensions += ext;
+			found = true;
 		}
-		if (inoutExtensions.find (ext) == std::string::npos)
-			inoutExtensions += ext;
+	}
+
+	if (!found)
+	{
+		CodeExtensionMap::iterator eit = hlslSupportLibExtensions->find(op);
+		if (eit != hlslSupportLibExtensions->end())
+		{
+			std::string ext = vertexShader ? eit->second.first : eit->second.second;
+			if (inoutExtensions.find (ext) == std::string::npos)
+				inoutExtensions += ext;
+		}
 	}
 	
 	assert (hlslSupportLib);
-	CodeMap::iterator it = hlslSupportLib->find(op);
+	assert (hlslSupportLibESOverrides);
 
+	// same as above, search for a gles version first
+	if (gles)
+	{
+		CodeMap::iterator it = hlslSupportLibESOverrides->find(op);
+		if (it != hlslSupportLibESOverrides->end())
+			return it->second;
+	}
+
+	CodeMap::iterator it = hlslSupportLib->find(op);
 	if (it == hlslSupportLib->end())
 		it = hlslSupportLib->find(EOpNull); // this always exists
 
-	// special hack-around for tex2DLod & GLES
-	if (op == EOpTex2DLod && gles && !vertexShader)
-	{
-		return "#define texture2DLod texture2DLodEXT\n" + it->second;
-	}
 	return it->second;
 }

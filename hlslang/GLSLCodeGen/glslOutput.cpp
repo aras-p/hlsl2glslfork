@@ -871,9 +871,24 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
 
    case EOpLength:         op = "length";  funcStyle = true; prefix = true; break;
    case EOpNormalize:      op = "normalize";  funcStyle = true; prefix = true; break;
-   case EOpDPdx:           setupUnaryBuiltInFuncCall ( "dFdx", node, op, funcStyle, prefix, goit ); break;
-   case EOpDPdy:           setupUnaryBuiltInFuncCall ( "dFdy", node, op, funcStyle, prefix, goit ); break;
-   case EOpFwidth:         setupUnaryBuiltInFuncCall ( "fwidth", node, op, funcStyle, prefix, goit ); break;
+   case EOpDPdx:           
+	   current->addLibFunction(EOpDPdx);
+	   op = "xll_dFdx";
+	   funcStyle = true;
+	   prefix = true;
+	   break;
+   case EOpDPdy:
+	   current->addLibFunction(EOpDPdy);
+	   op = "xll_dFdy";
+	   funcStyle = true;
+	   prefix = true;
+	   break;
+   case EOpFwidth:
+	   current->addLibFunction(EOpFwidth);
+	   op = "xll_fwidth";
+	   funcStyle = true;
+	   prefix = true;
+	   break;
    case EOpFclip:		   
 	  current->addLibFunction(EOpFclip);
       op = "xll_clip";
