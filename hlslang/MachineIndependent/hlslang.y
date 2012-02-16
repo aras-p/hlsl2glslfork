@@ -2373,12 +2373,12 @@ jump_statement
             parseContext.error($1.line, "void function cannot return a value", "return", "");
             parseContext.recover();
         } else if (*(parseContext.currentFunctionType) != $2->getType()) {
-            TOperator op = parseContext.getConstructorOp( *(parseContext.currentFunctionType));
-            if ( op != EOpNull)
-                temp = parseContext.constructBuiltIn( (parseContext.currentFunctionType), op, $2, $1.line, false);
+            TOperator op = parseContext.getConstructorOp(*(parseContext.currentFunctionType));
+            if (op != EOpNull)
+                temp = parseContext.constructBuiltIn((parseContext.currentFunctionType), op, $2, $1.line, false);
             else
                 temp = 0;
-            if ( temp == 0) {
+            if (temp == 0) {
                 parseContext.error($1.line, "function return is not matching type:", "return", "");
                 parseContext.recover();
                 temp = $2;
@@ -2388,9 +2388,11 @@ jump_statement
         parseContext.functionReturnsValue = true;
     }
     | DISCARD SEMICOLON {
-        FRAG_ONLY("discard", $1.line);
+		// Jim: using discard when compiling vertex shaders should not be considered a syntactic error, instead,
+		// we should issue a semantic error only if the code path is actually executed. (Not yet implemented)
+        //FRAG_ONLY("discard", $1.line);
         $$ = parseContext.intermediate.addBranch(EOpKill, $1.line);
-    }        
+    }
     ;
 
 // Grammar Note:  No 'goto'.  Gotos are not supported.
