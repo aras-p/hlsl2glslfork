@@ -259,6 +259,10 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    case EOpConstructMat3:  out.debug << "Construct mat3";  break;
    case EOpConstructMat4:  out.debug << "Construct mat4";  break;
    case EOpConstructStruct:  out.debug << "Construct struc";  break;
+   case EOpConstructMat2FromMat: out.debug << "Construct mat2 from mat"; break;
+   case EOpConstructMat3FromMat: out.debug << "Construct mat3 from mat"; break;
+   case EOpMatrixIndex: out.debug << "Matrix index"; break;
+   case EOpMatrixIndexDynamic: out.debug << "Matrix index dynamic"; break;
 
    case EOpLessThan:         out.debug << "Compare Less Than";             break;
    case EOpGreaterThan:      out.debug << "Compare Greater Than";          break;
