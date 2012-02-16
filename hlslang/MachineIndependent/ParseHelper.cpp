@@ -1656,80 +1656,84 @@ TIntermTyped* TParseContext::addAssign(TOperator op, TIntermTyped* left, TInterm
 //
 TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, TIntermNode* node, TSourceLoc line, bool subset)
 {
-   TIntermTyped* newNode;
-   TOperator basicOp;
+	TIntermTyped* newNode;
+	TOperator basicOp;
+	
+	// Check for no-op constructions such as casting to the same builtin type.
+	if (node->getAsTyped() && *node->getAsTyped()->getTypePointer() == *type) {
+		return node->getAsTyped();
+	}
 
-   //
-   // First, convert types as needed.
-   //
-   switch (op)
-   {
-   case EOpConstructVec2:
-   case EOpConstructVec3:
-   case EOpConstructVec4:
-   case EOpConstructMat2:
-   case EOpConstructMat3:
-   case EOpConstructMat4:
-   case EOpConstructFloat:
-      basicOp = EOpConstructFloat;
-      break;
+	//
+	// First, convert types as needed.
+	//
+	switch (op)
+	{
+	case EOpConstructVec2:
+	case EOpConstructVec3:
+	case EOpConstructVec4:
+	case EOpConstructMat2:
+	case EOpConstructMat3:
+	case EOpConstructMat4:
+	case EOpConstructFloat:
+		basicOp = EOpConstructFloat;
+		break;
 
-   case EOpConstructIVec2:
-   case EOpConstructIVec3:
-   case EOpConstructIVec4:
-   case EOpConstructInt:
-      basicOp = EOpConstructInt;
-      break;
+	case EOpConstructIVec2:
+	case EOpConstructIVec3:
+	case EOpConstructIVec4:
+	case EOpConstructInt:
+		basicOp = EOpConstructInt;
+		break;
 
-   case EOpConstructBVec2:
-   case EOpConstructBVec3:
-   case EOpConstructBVec4:
-   case EOpConstructBool:
-      basicOp = EOpConstructBool;
-      break;
+	case EOpConstructBVec2:
+	case EOpConstructBVec3:
+	case EOpConstructBVec4:
+	case EOpConstructBool:
+		basicOp = EOpConstructBool;
+		break;
 
-   default:
-      error(line, "unsupported construction", "", "");
-      recover();
+	default:
+		error(line, "unsupported construction", "", "");
+		recover();
+		return 0;
+	}
+	newNode = intermediate.addUnaryMath(basicOp, node, node->getLine(), symbolTable);
+	if (newNode == 0)
+	{
+	  error(line, "can't convert", "constructor", "");
+	  return 0;
+	}
 
-      return 0;
-   }
-   newNode = intermediate.addUnaryMath(basicOp, node, node->getLine(), symbolTable);
-   if (newNode == 0)
-   {
-      error(line, "can't convert", "constructor", "");
-      return 0;
-   }
+	//
+	// Now, if there still isn't an operation to do the construction, and we need one, add one.
+	//
 
-   //
-   // Now, if there still isn't an operation to do the construction, and we need one, add one.
-   //
+	// Otherwise, skip out early.
+	if (subset || newNode != node && newNode->getType() == *type)
+	  return newNode;
 
-   // Otherwise, skip out early.
-   if (subset || newNode != node && newNode->getType() == *type)
-      return newNode;
+	//now perform HLSL style matrix conversions
+	if ( newNode->getTypePointer()->isMatrix() && type->isMatrix())
+	{
+	  switch (type->getNominalSize())
+	  {
+	  case 2:
+		 op = EOpConstructMat2FromMat;
+		 break;
+	  case 3:
+		 op = EOpConstructMat3FromMat;
+		 break;
+	  case 4:
+		 //there is no way to down convert to a mat4
+		 assert(0);
+	  }
+	}
 
-   //now perform HLSL style matrix conversions
-   if ( newNode->getTypePointer()->isMatrix() && type->isMatrix())
-   {
-      switch (type->getNominalSize())
-      {
-      case 2:
-         op = EOpConstructMat2FromMat;
-         break;
-      case 3:
-         op = EOpConstructMat3FromMat;
-         break;
-      case 4:
-         //there is no way to down convert to a mat4
-         assert(0);
-      }
-   }
-
-   // setAggregateOperator will insert a new node for the constructor, as needed.
-   newNode = intermediate.setAggregateOperator(newNode, op, line);
-   newNode->setType(*type);
-   return newNode;
+	// setAggregateOperator will insert a new node for the constructor, as needed.
+	newNode = intermediate.setAggregateOperator(newNode, op, line);
+	newNode->setType(*type);
+	return newNode;
 }
 
 // This function tests for the type of the parameters to the structures constructors. Raises
