@@ -1,10 +1,9 @@
 #extension GL_EXT_shader_texture_lod : require
-#define texture2DLod texture2DLodEXT
 vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {
-   return texture2DLod( s, coord.xy, coord.w);
+   return texture2DLodEXT( s, coord.xy, coord.w);
 }
 vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {
-   return texture2DGradARB( s, coord, ddx, ddy);
+   return texture2DGradEXT( s, coord, ddx, ddy);
 }
 uniform sampler2D _MainTex;
 uniform highp vec4 _MainTex_TexelSize;
