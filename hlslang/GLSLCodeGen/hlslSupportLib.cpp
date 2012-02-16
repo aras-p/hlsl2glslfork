@@ -860,7 +860,10 @@ std::string getHLSLSupportCode (TOperator op, std::string& inoutExtensions, bool
 	assert (hlslSupportLibESOverrides);
 
 	// same as above, search for a gles version first
-	if (gles)
+	bool tex2DLodVSHack = false;
+	if (vertexShader && op == EOpTex2DLod)
+		tex2DLodVSHack = true;
+	if (gles && !tex2DLodVSHack)
 	{
 		CodeMap::iterator it = hlslSupportLibESOverrides->find(op);
 		if (it != hlslSupportLibESOverrides->end())
