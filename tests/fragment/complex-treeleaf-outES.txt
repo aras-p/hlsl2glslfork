@@ -130,7 +130,7 @@ mediump vec4 xlat_main( in v2f_surf IN ) {
     xll_clip( (o.Alpha - _Cutoff) );
     #line 89
     lightDir = IN.lightDir;
-    c = LightingTreeLeaf( o, lightDir, normalize( vec3( IN.viewDir) ), (texture2D( _LightTexture0, IN._LightCoord).w  * 1.00000));
+    c = LightingTreeLeaf( o, lightDir, normalize( IN.viewDir ), (texture2D( _LightTexture0, IN._LightCoord).w  * 1.00000));
     c.w  = o.Alpha;
     return c;
 }

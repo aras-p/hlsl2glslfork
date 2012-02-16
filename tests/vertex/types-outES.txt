@@ -37,13 +37,17 @@ v2f xlat_main( in a2v v ) {
     o.pos.xyz  += ( fmat3 * v.pos.xyz  );
     o.pos.xy  += ( fmat2 * v.pos.xy  );
     o.color = v.color;
-    o.color.xyz  += v.normal;
+    o.color = v.color;
     #line 35
+    o.color = v.color;
+    o.color = v.color;
+    o.color.xyz  += v.normal;
     o.uv = v.uv;
+    #line 40
     dx = v.pos.x ;
     dy = v.pos.y ;
-    #line 39
     dz = v.pos.z ;
+    #line 44
     return o;
 }
 varying highp float xlv_FOG;
