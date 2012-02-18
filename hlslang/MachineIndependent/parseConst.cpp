@@ -12,16 +12,14 @@
 class TConstTraverser : public TIntermTraverser
 {
 public:
-   TConstTraverser(constUnion* cUnion, bool singleConstParam, TOperator constructType, TInfoSink& sink, TType& t) : unionArray(cUnion), type(t),
-   constructorType(constructType), singleConstantParam(singleConstParam), infoSink(sink), error(false), isMatrix(false), matrixSize(0)
+   TConstTraverser(constUnion* cUnion, bool singleConstParam, TInfoSink& sink, TType& t) : unionArray(cUnion), type(t),
+   singleConstantParam(singleConstParam), infoSink(sink), error(false), isMatrix(false), matrixSize(0)
    {
-      index = 0; tOp = EOpNull;
+      index = 0;
    }
    int index ;
    constUnion *unionArray;
-   TOperator tOp;
    TType type;
-   TOperator constructorType;
    bool singleConstantParam;
    TInfoSink& infoSink;
    bool error;
@@ -39,7 +37,7 @@ public:
 // return false.
 //
 
-void ParseSymbol(TIntermSymbol* node, TIntermTraverser* it)
+static void ParseSymbol(TIntermSymbol* node, TIntermTraverser* it)
 {
    TConstTraverser* oit = static_cast<TConstTraverser*>(it);
    oit->infoSink.info.message(EPrefixInternalError, "Symbol Node found in constant constructor", node->getLine());
@@ -47,7 +45,7 @@ void ParseSymbol(TIntermSymbol* node, TIntermTraverser* it)
 
 }
 
-bool ParseBinary(bool, /* preVisit */ TIntermBinary* node, TIntermTraverser* it)
+static bool ParseBinary(bool, /* preVisit */ TIntermBinary* node, TIntermTraverser* it)
 {
    TConstTraverser* oit = static_cast<TConstTraverser*>(it);
 
@@ -67,7 +65,7 @@ bool ParseBinary(bool, /* preVisit */ TIntermBinary* node, TIntermTraverser* it)
    return false;
 }
 
-bool ParseUnary(bool, /* preVisit */ TIntermUnary* node, TIntermTraverser* it)
+static bool ParseUnary(bool, /* preVisit */ TIntermUnary* node, TIntermTraverser* it)
 {
    TConstTraverser* oit = static_cast<TConstTraverser*>(it);
 
@@ -78,7 +76,7 @@ bool ParseUnary(bool, /* preVisit */ TIntermUnary* node, TIntermTraverser* it)
    return false;  
 }
 
-bool ParseAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTraverser* it)
+static bool ParseAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTraverser* it)
 {
    TConstTraverser* oit = static_cast<TConstTraverser*>(it);
 
@@ -101,7 +99,6 @@ bool ParseAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTraverse
    if (flag)
    {
       oit->singleConstantParam = true; 
-      oit->constructorType = node->getOp();
       oit->size = node->getType().getObjectSize();
 
       if (node->getType().isMatrix())
@@ -123,7 +120,6 @@ bool ParseAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTraverse
    if (flag)
    {
       oit->singleConstantParam = false;   
-      oit->constructorType = EOpNull;
       oit->size = 0;
       oit->isMatrix = false;
       oit->matrixSize = 0;
@@ -131,7 +127,7 @@ bool ParseAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTraverse
    return false;
 }
 
-bool ParseSelection(bool, /* preVisit */ TIntermSelection* node, TIntermTraverser* it)
+static bool ParseSelection(bool, /* preVisit */ TIntermSelection* node, TIntermTraverser* it)
 {
    TConstTraverser* oit = static_cast<TConstTraverser*>(it);
    oit->infoSink.info.message(EPrefixInternalError, "Selection Node found in constant constructor", node->getLine());
@@ -139,7 +135,7 @@ bool ParseSelection(bool, /* preVisit */ TIntermSelection* node, TIntermTraverse
    return false;
 }
 
-void ParseConstantUnion(TIntermConstantUnion* node, TIntermTraverser* it)
+static void ParseConstantUnion(TIntermConstantUnion* node, TIntermTraverser* it)
 {
    TConstTraverser* oit = static_cast<TConstTraverser*>(it);
    constUnion* leftUnionArray = oit->unionArray;
@@ -209,7 +205,7 @@ void ParseConstantUnion(TIntermConstantUnion* node, TIntermTraverser* it)
    }
 }
 
-bool ParseLoop(bool, /* preVisit */ TIntermLoop* node, TIntermTraverser* it)
+static bool ParseLoop(bool, /* preVisit */ TIntermLoop* node, TIntermTraverser* it)
 {
    TConstTraverser* oit = static_cast<TConstTraverser*>(it);
    oit->infoSink.info.message(EPrefixInternalError, "Loop Node found in constant constructor", node->getLine());
@@ -217,7 +213,7 @@ bool ParseLoop(bool, /* preVisit */ TIntermLoop* node, TIntermTraverser* it)
    return false;
 }
 
-bool ParseBranch(bool, /* previsit*/ TIntermBranch* node, TIntermTraverser* it)
+static bool ParseBranch(bool, /* previsit*/ TIntermBranch* node, TIntermTraverser* it)
 {
    TConstTraverser* oit = static_cast<TConstTraverser*>(it);
    oit->infoSink.info.message(EPrefixInternalError, "Branch Node found in constant constructor", node->getLine());
@@ -230,12 +226,12 @@ bool ParseBranch(bool, /* previsit*/ TIntermBranch* node, TIntermTraverser* it)
 // Individual functions can be initialized to 0 to skip processing of that
 // type of node.  It's children will still be processed.
 //
-bool TIntermediate::parseConstTree(TSourceLoc line, TIntermNode* root, constUnion* unionArray, TOperator constructorType, TType t, bool singleConstantParam)
+bool TIntermediate::parseConstTree(TSourceLoc line, TIntermNode* root, constUnion* unionArray, TType t, bool singleConstantParam)
 {
    if (root == 0)
       return false;
 
-   TConstTraverser it(unionArray, singleConstantParam, constructorType, infoSink, t);
+   TConstTraverser it(unionArray, singleConstantParam, infoSink, t);
 
    it.visitAggregate = ParseAggregate;
    it.visitBinary = ParseBinary;
