@@ -1457,7 +1457,7 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 
 	if (!TransposeMatrixConstructorArgs (type, sequenceVector))
 	{
-		TIntermTyped* transpose = intermediate.addUnaryMath (EOpTranspose, constructor, line, symbolTable);
+		TIntermTyped* transpose = intermediate.addUnaryMath (EOpTranspose, constructor, line);
 		return transpose;
 	}
 
@@ -1698,7 +1698,7 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
 		recover();
 		return 0;
 	}
-	newNode = intermediate.addUnaryMath(basicOp, node, node->getLine(), symbolTable);
+	newNode = intermediate.addUnaryMath(basicOp, node, node->getLine());
 	if (newNode == 0)
 	{
 	  error(line, "can't convert", "constructor", "");

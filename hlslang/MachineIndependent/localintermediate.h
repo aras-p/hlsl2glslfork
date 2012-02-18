@@ -31,10 +31,10 @@ public:
    TIntermSymbol* addSymbol(int Id, const TString&, const TType&, TSourceLoc);
    TIntermSymbol* addSymbol(int id, const TString& name, const TTypeInfo *info, const TType& type, TSourceLoc line);
    TIntermTyped* addConversion(TOperator, const TType&, TIntermTyped*);
-   TIntermTyped* addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc, TSymbolTable&);
+   TIntermTyped* addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
    TIntermTyped* addAssign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
    TIntermTyped* addIndex(TOperator op, TIntermTyped* base, TIntermTyped* index, TSourceLoc);
-   TIntermTyped* addUnaryMath(TOperator op, TIntermNode* child, TSourceLoc, TSymbolTable&);
+   TIntermTyped* addUnaryMath(TOperator op, TIntermNode* child, TSourceLoc);
    TIntermAggregate* growAggregate(TIntermNode* left, TIntermNode* right, TSourceLoc);
    TIntermAggregate* makeAggregate(TIntermNode* node, TSourceLoc);
    TIntermAggregate* setAggregateOperator(TIntermNode*, TOperator, TSourceLoc);
