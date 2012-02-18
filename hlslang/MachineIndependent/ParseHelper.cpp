@@ -1474,11 +1474,11 @@ TIntermTyped* TParseContext::foldConstConstructor(TIntermAggregate* aggrNode, co
       constUnion* unionArray = new constUnion[type.getObjectSize()];
       if (aggrNode->getSequence().size() == 1)
       {
-         returnVal = intermediate.parseConstTree(aggrNode->getLine(), aggrNode, unionArray, aggrNode->getOp(), symbolTable,  type, true);
+         returnVal = intermediate.parseConstTree(aggrNode->getLine(), aggrNode, unionArray, aggrNode->getOp(), type, true);
       }
       else
       {
-         returnVal = intermediate.parseConstTree(aggrNode->getLine(), aggrNode, unionArray, aggrNode->getOp(), symbolTable,  type);
+         returnVal = intermediate.parseConstTree(aggrNode->getLine(), aggrNode, unionArray, aggrNode->getOp(), type);
       }
       if (returnVal)
          return 0;
