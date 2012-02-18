@@ -9,6 +9,8 @@
 class TIntermNode;
 class TInfoSink;
 
+// Iterates over the intermediate tree and sets untyped sampler symbols to have types based on the
+// type of texture operation the samplers are used for
 void PropagateSamplerTypes (TIntermNode* root, TInfoSink &info);
 
 #endif //TYPE_SAMPLERS_H

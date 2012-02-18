@@ -7,8 +7,6 @@
 #include "localintermediate.h"
 #include "glslOutput.h"
 
-/// Iterates over the intermediate tree and sets untyped sampler symbols to have types based on the
-/// type of texture operation the samplers are used for
 struct TSamplerTraverser : public TIntermTraverser 
 {
 	static void traverseSymbol(TIntermSymbol*, TIntermTraverser*);
