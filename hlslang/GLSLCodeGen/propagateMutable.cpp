@@ -2,8 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE.txt file.
 
-
 #include "propagateMutable.h"
+#include <set>
+#include "localintermediate.h"
+#include "glslOutput.h"
+
+
+struct TPropagateMutable : public TIntermTraverser 
+{
+	static void traverseSymbol(TIntermSymbol*, TIntermTraverser*);
+	
+	TInfoSink& infoSink;
+	
+	bool abort;
+	
+	// These are used to go into "propagating mode"
+	bool propagating;
+	int id;
+	
+	std::set<int> fixedIds; // to prevent infinite loops
+	
+	
+	TPropagateMutable(TInfoSink &is) : infoSink(is), abort(false), propagating(false), id(0)
+	{
+		visitSymbol = traverseSymbol;
+	}
+};
 
 
 
@@ -29,22 +53,21 @@ void TPropagateMutable::traverseSymbol( TIntermSymbol *node, TIntermTraverser *i
    }
 }
 
-
-void TPropagateMutable::PropagateMutable( TIntermNode *node, TInfoSink &info )
+void PropagateMutableUniforms (TIntermNode* root, TInfoSink &info)
 {
    TPropagateMutable st(info);
 
    do
    {
       st.abort = false;
-      node->traverse( &st);
+      root->traverse(&st);
 
       // If we aborted, try to type the node we aborted for
       if (st.abort)
       {
          st.propagating = true;
          st.abort = false;
-         node->traverse( &st);
+         root->traverse(&st);
          st.propagating = false;
          st.abort = true;
       }

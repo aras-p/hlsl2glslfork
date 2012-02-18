@@ -4,6 +4,51 @@
 
 
 #include "typeSamplers.h"
+#include "localintermediate.h"
+#include "glslOutput.h"
+
+/// Iterates over the intermediate tree and sets untyped sampler symbols to have types based on the
+/// type of texture operation the samplers are used for
+struct TSamplerTraverser : public TIntermTraverser 
+{
+	static void traverseSymbol(TIntermSymbol*, TIntermTraverser*);
+	static void traverseParameterSymbol(TIntermSymbol *node, TIntermTraverser *it);
+	static bool traverseBinary(bool preVisit, TIntermBinary*, TIntermTraverser*);
+	static bool traverseUnary(bool preVisit, TIntermUnary*, TIntermTraverser*);
+	static bool traverseSelection(bool preVisit, TIntermSelection*, TIntermTraverser*);
+	static bool traverseAggregate(bool preVisit, TIntermAggregate*, TIntermTraverser*);
+	static bool traverseLoop(bool preVisit, TIntermLoop*, TIntermTraverser*);
+	static bool traverseBranch(bool preVisit, TIntermBranch*,  TIntermTraverser*);
+	
+	/// Set the type for the sampler
+	void typeSampler( TIntermTyped *node, TBasicType samp);
+	
+	TInfoSink& infoSink;
+	
+	bool abort;
+	
+	// These are used to go into "typing mode"
+	bool typing;
+	int id;
+	TBasicType sampType;
+	
+	std::map<std::string,TIntermSequence* > functionMap;
+	
+	std::string currentFunction;
+	
+	TSamplerTraverser(TInfoSink &is) : infoSink(is), abort(false), typing(false), id(0), sampType(EbtSamplerGeneric) 
+	{
+		visitSymbol = traverseSymbol;
+		//visitConstantUnion = traverseConstantUnion;
+		visitBinary = traverseBinary;
+		visitUnary = traverseUnary;
+		visitSelection = traverseSelection;
+		visitAggregate = traverseAggregate;
+		visitLoop = traverseLoop;
+		visitBranch = traverseBranch;
+	}
+};
+
 
 
 void TSamplerTraverser::traverseSymbol( TIntermSymbol *node, TIntermTraverser *it )
@@ -358,21 +403,21 @@ void TSamplerTraverser::typeSampler( TIntermTyped *node, TBasicType samp )
 }
 
 
-void TSamplerTraverser::TypeSamplers( TIntermNode *node, TInfoSink &info )
+void PropagateSamplerTypes (TIntermNode* root, TInfoSink &info)
 {
    TSamplerTraverser st(info);
 
    do
    {
       st.abort = false;
-      node->traverse( &st);
+      root->traverse( &st);
 
       // If we aborted, try to type the node we aborted for
       if (st.abort)
       {
          st.typing = true;
          st.abort = false;
-         node->traverse( &st);
+         root->traverse( &st);
          st.typing = false;
          st.abort = true;
       }

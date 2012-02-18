@@ -6,41 +6,12 @@
 #ifndef PROPAGATE_MUTABLE_H
 #define PROPAGATE_MUTABLE_H
 
-#include <set>
-#include "localintermediate.h"
-#include "glslOutput.h"
+class TIntermNode;
+class TInfoSink;
 
-
-/// Iterates over the intermediate tree and propagates mutable uniforms qualifiers as necessary
-/// to the symbols.
-class TPropagateMutable : public TIntermTraverser 
-{
-private:
-
-   /// Propage the mutable uniform qualifier throughout the symbols as needed
-   static void traverseSymbol(TIntermSymbol*, TIntermTraverser*);
-
-   TInfoSink& infoSink;
-
-   bool abort;
-
-   // These are used to go into "propagating mode"
-   bool propagating;
-   int id;
-
-   std::set<int> fixedIds; // to prevent infinite loops
-
-
-public:
-
-   TPropagateMutable( TInfoSink &is) : infoSink(is), abort(false), propagating(false), id(0) 
-   {
-      visitSymbol = traverseSymbol;
-   }
-
-   static void PropagateMutable( TIntermNode *node, TInfoSink &info);
-    
-};
+// Iterates over the intermediate tree and propagates mutable uniform qualifiers as necessary
+// to the symbols.
+void PropagateMutableUniforms (TIntermNode* root, TInfoSink &info);
 
 
 #endif //PROPAGATE_MUTABLE_H

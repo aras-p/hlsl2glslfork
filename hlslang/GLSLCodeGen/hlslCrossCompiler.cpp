@@ -35,9 +35,9 @@ HlslCrossCompiler::~HlslCrossCompiler()
 
 void HlslCrossCompiler::TransformAST (TIntermNode *root)
 {
-   m_ASTTransformed = true;
-   TSamplerTraverser::TypeSamplers (root, infoSink);
-   TPropagateMutable::PropagateMutable (root, infoSink);
+	m_ASTTransformed = true;
+	PropagateSamplerTypes (root, infoSink);
+	PropagateMutableUniforms (root, infoSink);
 }
 
 void HlslCrossCompiler::ProduceGLSL (TIntermNode *root, bool usePrecision)
