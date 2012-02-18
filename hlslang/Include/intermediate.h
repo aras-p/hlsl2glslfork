@@ -178,16 +178,6 @@ enum TOperator
    EOpAny,
    EOpAll,
 
-   EOpItof,         // pack/unpack only
-   EOpFtoi,         // pack/unpack only    
-   EOpSkipPixels,   // pack/unpack only
-   EOpReadInput,    // unpack only
-   EOpWritePixel,   // unpack only
-   EOpBitmapLsb,    // unpack only
-   EOpBitmapMsb,    // unpack only
-   EOpWriteOutput,  // pack only
-   EOpReadPixel,    // pack only
-
    //
    // Branch
    //

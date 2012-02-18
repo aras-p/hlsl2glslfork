@@ -1335,17 +1335,6 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       writeFuncCall( "xll_lit", node, goit);
       break;
 
-   case EOpItof:         
-   case EOpFtoi:         
-   case EOpSkipPixels:   
-   case EOpReadInput:    
-   case EOpWritePixel:   
-   case EOpBitmapLsb:    
-   case EOpBitmapMsb:    
-   case EOpWriteOutput:  
-   case EOpReadPixel:    
-      // These are are all impossible
-
    default: goit->infoSink.info << "Bad aggregation op\n";
    }
 

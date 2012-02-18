@@ -295,16 +295,6 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    case EOpRefract:       out.debug << "refract";                 break;
    case EOpMul:           out.debug << "mul";                     break;
 
-   case EOpItof:          out.debug << "itof";        break;
-   case EOpFtoi:          out.debug << "ftoi";        break;
-   case EOpSkipPixels:    out.debug << "skipPixels";  break;
-   case EOpReadInput:     out.debug << "readInput";   break;
-   case EOpWritePixel:    out.debug << "writePixel";  break;
-   case EOpBitmapLsb:     out.debug << "bitmapLSB";   break;
-   case EOpBitmapMsb:     out.debug << "bitmapMSB";   break;
-   case EOpWriteOutput:   out.debug << "writeOutput"; break;
-   case EOpReadPixel:     out.debug << "readPixel";   break;
-
    case EOpTex1D:		out.debug << "tex1D"; break;
    case EOpTex1DProj:	out.debug << "tex1Dproj"; break;
    case EOpTex1DLod:	out.debug << "tex1Dlod"; break;
