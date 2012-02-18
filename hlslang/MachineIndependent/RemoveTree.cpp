@@ -5,51 +5,43 @@
 
 #include "../Include/intermediate.h"
 #include "RemoveTree.h"
-//
+
 // Code to recursively delete the intermediate tree.
-//
 
-void RemoveSymbol(TIntermSymbol* node, TIntermTraverser* it)
+static void RemoveSymbol(TIntermSymbol* node, TIntermTraverser* it)
 {
    delete node;
 }
 
-bool RemoveBinary(bool  /*preVisit*/ , TIntermBinary* node, TIntermTraverser*)
+static bool RemoveBinary(bool  /*preVisit*/ , TIntermBinary* node, TIntermTraverser*)
 {
    delete node;
-
    return true;
 }
 
-bool RemoveUnary(bool, /*preVisit */ TIntermUnary* node, TIntermTraverser*)
+static bool RemoveUnary(bool, /*preVisit */ TIntermUnary* node, TIntermTraverser*)
 {
    delete node;
-
    return true;
 }
 
-bool RemoveAggregate(bool  /*preVisit*/ , TIntermAggregate* node, TIntermTraverser*)
+static bool RemoveAggregate(bool  /*preVisit*/ , TIntermAggregate* node, TIntermTraverser*)
 {
    delete node;
-
    return true;
 }
 
-bool RemoveSelection(bool  /*preVisit*/ , TIntermSelection* node, TIntermTraverser*)
+static bool RemoveSelection(bool  /*preVisit*/ , TIntermSelection* node, TIntermTraverser*)
 {
    delete node;
-
    return true;
 }
 
-void RemoveConstantUnion(TIntermConstantUnion* node, TIntermTraverser*)
+static void RemoveConstantUnion(TIntermConstantUnion* node, TIntermTraverser*)
 {
    delete node;
 }
 
-//
-// Entry point.
-//
 void RemoveAllTreeNodes(TIntermNode* root)
 {
    TIntermTraverser it;
@@ -66,5 +58,3 @@ void RemoveAllTreeNodes(TIntermNode* root)
 
    root->traverse(&it);
 }
-
-
