@@ -514,16 +514,15 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
             assert( goit->indexList.size() == 1);
             assert( goit->indexList[0] < 4);
             out << "." << swiz[goit->indexList[0]];
-            out << " ";
             goit->indexList.clear();
             goit->visitConstantUnion = TGlslOutputTraverser::traverseConstantUnion;
             goit->generatingCode = true;
          }
          else
          {
-            out << "[ ";
+            out << "[";
             right->traverse(goit);
-            out << " ]";
+            out << "]";
          }
          return false;
       }
@@ -564,10 +563,10 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 
       if (left)
          left->traverse(goit);
-      out << "[ ";
+      out << "[";
       if (right)
          right->traverse(goit);
-      out << " ]";
+      out << "]";
       return false;
 	  }
 
@@ -608,7 +607,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
       {
          node->getRight()->traverse(goit);
          assert( goit->indexList.size() <= 4);
-         out << ".";
+         out << '.';
          const char fields[] = "xyzw";
          for (int ii = 0; ii < (int)goit->indexList.size(); ii++)
          {
@@ -618,7 +617,6 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
             out << fields[val];
          }
       }
-      out << " ";
       goit->indexList.clear();
       goit->visitConstantUnion = TGlslOutputTraverser::traverseConstantUnion;
       goit->generatingCode = true;
@@ -739,16 +737,16 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    if (infix)
    {
       if (needsParens)
-         out << "(";
+         out << '(';
 
       if (node->getLeft())
          node->getLeft()->traverse(goit);
-      out << " " << op << " ";
+      out << ' ' << op << ' ';
       if (node->getRight())
          node->getRight()->traverse(goit);
 
       if (needsParens)
-         out << ")";
+         out << ')';
    }
    else
    {
@@ -759,7 +757,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          if (node->getLeft())
             node->getLeft()->traverse(goit);
 
-         out << " = " << op << "( ";
+         out << " = " << op << '(';
 
          if (node->getLeft())
             node->getLeft()->traverse(goit);
@@ -767,11 +765,11 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          if (node->getRight())
             node->getRight()->traverse(goit);
 
-         out << ")";
+         out << ')';
       }
       else
       {
-         out << op << "( ";
+         out << op << '(';
 
          if (node->getLeft())
             node->getLeft()->traverse(goit);
@@ -779,7 +777,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          if (node->getRight())
             node->getRight()->traverse(goit);
 
-         out << ")";
+         out << ')';
       }
    }
 
@@ -940,10 +938,10 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    }
 
    if (funcStyle)
-      out << op << "( ";
+      out << op << '(';
    else
    {
-      out << "( ";
+      out << '(';
       if (prefix)
          out << op;
    }
@@ -953,7 +951,7 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    if (! funcStyle && !prefix)
       out << op;
 
-   out << " )";
+   out << ')';
 
    return false;
 }
@@ -970,9 +968,9 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 	if (node->getBasicType() == EbtVoid)
 	{
 		// if/else selection
-		out << "if ( ";
+		out << "if (";
 		node->getCondition()->traverse(goit);
-		out << " )";
+		out << ')';
 		current->beginBlock();
 		node->getTrueBlock()->traverse(goit);
 		current->endBlock();
@@ -1182,11 +1180,11 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
          assert(node->getSequence().size() == 2);
          current->beginStatement();                     
 
-         out << "( ";
+         out << '(';
          node->getSequence()[0]->traverse(goit);
          out << " * ";
          node->getSequence()[1]->traverse(goit);
-         out << " )";
+         out << ')';
 
          return false;
       }
