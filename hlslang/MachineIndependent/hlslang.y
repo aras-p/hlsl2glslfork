@@ -2439,22 +2439,6 @@ function_definition
         prevDec->setDefined();
         
         //
-        // Raise error message if main function takes any parameters or return anything other than void
-        //
-        /* TODO: this is unneeded for HLSL, but it might need to name mangle 
-        if (function.getName() == "main") {
-            if (function.getParamCount() > 0) {
-                parseContext.error($1.line, "function cannot take any parameter(s)", function.getName().c_str(), "");
-                parseContext.recover();
-            }
-            if (function.getReturnType().getBasicType() != EbtVoid) {
-                parseContext.error($1.line, "", function.getReturnType().getBasicString(), "main function cannot return a value");
-                parseContext.recover();
-            }            
-        }
-        */
-   
-        //
         // New symbol table scope for body of function plus its arguments
         //
         parseContext.symbolTable.push();

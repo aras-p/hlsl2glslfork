@@ -27,8 +27,6 @@ public:
 
    /// Get mangled name
    const std::string &getName( bool local = true ) const { return ( (local ) ? mutableMangledName : mangledName ); }
-   /// Get original name
-   const std::string &getOrgName() const { return name; }
    
    bool hasSemantic() const { return (semantic.size() > 0); }
    const std::string &getSemantic() const { return semantic; }
