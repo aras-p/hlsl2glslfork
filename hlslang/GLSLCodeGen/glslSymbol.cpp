@@ -141,7 +141,7 @@ void GlslSymbol::writeInitializer( std::stringstream &out, int element )
    if (baseType == EgstBool)
    {
       if (elementCount > 1)
-         out << getTypeString(type) << "( ";
+         out << getTypeString(type) << '(';
 
       for (int ii = 0; ii < elementCount; ii++)
       {
@@ -150,12 +150,12 @@ void GlslSymbol::writeInitializer( std::stringstream &out, int element )
       }
 
       if (elementCount > 1)
-         out << ")";
+         out << ')';
    }
    else if (baseType == EgstInt)
    {
       if (elementCount > 1)
-         out << getTypeString(type) << "( ";
+         out << getTypeString(type) << '(';
 
       for (int ii = 0; ii < elementCount; ii++)
       {
@@ -164,12 +164,12 @@ void GlslSymbol::writeInitializer( std::stringstream &out, int element )
       }
 
       if (elementCount > 1)
-         out << ")";
+         out << ')';
    }
    else if (baseType == EgstFloat)
    {
       if (elementCount > 1)
-         out << getTypeString(type) << "( ";
+         out << getTypeString(type) << '(';
 
       for (int ii = 0; ii < elementCount; ii++)
       {
@@ -178,7 +178,7 @@ void GlslSymbol::writeInitializer( std::stringstream &out, int element )
       }
 
       if (elementCount > 1)
-         out << ")";
+         out << ')';
    }
    else
    {
