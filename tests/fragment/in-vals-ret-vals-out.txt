@@ -4,7 +4,7 @@ vec4 xlat_main( in vec2 uv, in vec4 color ) {
     vec4 c;
     #line 7
     c = color;
-    c.xy  += uv;
+    c.xy += uv;
     return c;
 }
 varying vec2 xlv_TEXCOORD0;

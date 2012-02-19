@@ -18,7 +18,7 @@ mediump vec4 xlat_main( in highp vec4 uv ) {
     a += xll_vecTSel (greaterThan( uv, vec4( 0.500000 )), vec4( 1.00000, 1.00000, 1.00000, 1.00000), vec4( 2.00000, 2.00000, 2.00000, 2.00000));
     a += xll_vecTSel (greaterThan( uv, vec4( 0.500000 )), vec4( 1), vec4( 2));
     #line 7
-    a += xll_vecTSel (bvec4( fract( uv ) ), vec4( 1.00000, 1.00000, 1.00000, 1.00000), vec4( 2.00000, 2.00000, 2.00000, 2.00000));
+    a += xll_vecTSel (bvec4(fract(uv)), vec4( 1.00000, 1.00000, 1.00000, 1.00000), vec4( 2.00000, 2.00000, 2.00000, 2.00000));
     return a;
 }
 varying highp vec4 xlv_TEXCOORD0;

@@ -26,10 +26,10 @@ uniform highp mat4 glstate_matrix_mvp;
 void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, out highp vec2 otexcoord );
 #line 270
 void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, out highp vec2 otexcoord ) {
-    overtex = ( glstate_matrix_mvp * v.vertex );
+    overtex = (glstate_matrix_mvp * v.vertex);
     ocolor = v.color;
     #line 274
-    otexcoord = ((v.texcoord.xy  * _FlareTexture_ST.xy ) + _FlareTexture_ST.zw );
+    otexcoord = ((v.texcoord.xy * _FlareTexture_ST.xy) + _FlareTexture_ST.zw);
 }
 varying highp vec4 xlv_COLOR;
 varying highp vec2 xlv_TEXCOORD0;

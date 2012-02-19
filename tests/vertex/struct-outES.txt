@@ -16,7 +16,7 @@ highp vec4 xlat_main(  ) {
     test.inner.member1 = 1.00000;
     #line 17
     test.inner.member2 = ivec3( 0);
-    return vec4( vec3( test.inner.member2 ), test.inner.member1);
+    return vec4( vec3(test.inner.member2), test.inner.member1);
 }
 void main() {
     highp vec4 xl_retval;

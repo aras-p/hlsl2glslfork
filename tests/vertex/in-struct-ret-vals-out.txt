@@ -10,10 +10,10 @@ uniform mat4 mvp;
 void xlat_main( in a2v v, out vec4 opos, out float ofog, out vec2 ouv, out vec4 ocolor );
 #line 15
 void xlat_main( in a2v v, out vec4 opos, out float ofog, out vec2 ouv, out vec4 ocolor ) {
-    opos = ( mvp * v.pos );
+    opos = (mvp * v.pos);
     ocolor = v.color;
     #line 19
-    ocolor.xyz  += v.normal;
+    ocolor.xyz += v.normal;
     ouv = v.uv;
 }
 varying float xlv_FOG;

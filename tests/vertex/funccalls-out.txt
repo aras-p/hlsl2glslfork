@@ -19,13 +19,13 @@ vec4 DoColor( in vec4 color, in vec3 normal );
 v2f xlat_main( in a2v v );
 #line 17
 vec4 DoPosMul( in vec4 pos, in mat4 mvp ) {
-    return ( mvp * pos );
+    return (mvp * pos);
 }
 #line 22
 vec4 DoColor( in vec4 color, in vec3 normal ) {
     vec4 c;
     c = color;
-    c.xyz  += normal;
+    c.xyz += normal;
     #line 26
     return c;
 }

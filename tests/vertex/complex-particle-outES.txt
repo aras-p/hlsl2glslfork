@@ -17,10 +17,10 @@ v2f xlat_main( in appdata_t v );
 #line 13
 v2f xlat_main( in appdata_t v ) {
     v2f o;
-    o.vertex = ( glstate_matrix_mvp * v.vertex );
+    o.vertex = (glstate_matrix_mvp * v.vertex);
     #line 17
     o.color = v.color;
-    o.texcoord = ((v.texcoord.xy  * _MainTex_ST.xy ) + _MainTex_ST.zw );
+    o.texcoord = ((v.texcoord.xy * _MainTex_ST.xy) + _MainTex_ST.zw);
     return o;
 }
 varying lowp vec4 xlv_COLOR;

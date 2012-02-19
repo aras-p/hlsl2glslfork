@@ -9,19 +9,19 @@ void xlat_main( in vec4 position, in vec3 normal, in vec2 uv, out vec4 oPosition
 void xlat_main( in vec4 position, in vec3 normal, in vec2 uv, out vec4 oPosition, out vec3 oUv, out vec3 oLightDir, out vec3 oHalfAngle, out vec4 oLightPosition0, out vec4 oLightPosition1, out vec4 oLightPosition2, out vec3 oNormal, vec4 lightPosition, vec3 eyePosition, mat4 worldViewProjMatrix, mat4 texWorldViewProjMatrix0, mat4 texWorldViewProjMatrix1, mat4 texWorldViewProjMatrix2 ) {
     vec3 eyeDir;
     #line 23
-    oPosition = ( worldViewProjMatrix * position );
-    oUv.xy  = uv;
+    oPosition = (worldViewProjMatrix * position);
+    oUv.xy = uv;
     #line 27
-    oUv.z  = oPosition.z ;
+    oUv.z = oPosition.z;
     #line 31
-    oLightDir = normalize( (lightPosition.xyz  - (position * lightPosition.w ).xyz ) );
-    eyeDir = normalize( (eyePosition - position.xyz ) );
+    oLightDir = normalize((lightPosition.xyz - (position * lightPosition.w).xyz));
+    eyeDir = normalize((eyePosition - position.xyz));
     #line 35
-    oHalfAngle = normalize( (eyeDir + oLightDir) );
-    oLightPosition0 = ( texWorldViewProjMatrix0 * position );
+    oHalfAngle = normalize((eyeDir + oLightDir));
+    oLightPosition0 = (texWorldViewProjMatrix0 * position);
     #line 39
-    oLightPosition1 = ( texWorldViewProjMatrix1 * position );
-    oLightPosition2 = ( texWorldViewProjMatrix2 * position );
+    oLightPosition1 = (texWorldViewProjMatrix1 * position);
+    oLightPosition2 = (texWorldViewProjMatrix2 * position);
     oNormal = normal;
 }
 uniform vec4 xlu_lightPosition;

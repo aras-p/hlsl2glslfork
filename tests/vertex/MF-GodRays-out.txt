@@ -77,8 +77,8 @@ float CalcDistScale( in float dist );
 v2f xlat_main( in appdata_full v );
 #line 35
 void CalcOrthonormalBasis( in vec3 dir, out vec3 right, out vec3 up ) {
-    up = (( (abs( dir.y  ) > 0.999000) ) ? ( vec3( 0.00000, 0.00000, 1.00000) ) : ( vec3( 0.00000, 1.00000, 0.00000) ));
-    right = normalize( cross( up, dir) );
+    up = (( (abs(dir.y) > 0.999000) ) ? ( vec3( 0.00000, 0.00000, 1.00000) ) : ( vec3( 0.00000, 1.00000, 0.00000) ));
+    right = normalize(cross( up, dir));
     #line 39
     up = cross( dir, right);
 }
@@ -87,8 +87,8 @@ float CalcFadeOutFactor( in float dist ) {
     float nfadeout;
     float ffadeout;
     #line 44
-    nfadeout = xll_saturate( (dist / _FadeOutDistNear) );
-    ffadeout = (1.00000 - xll_saturate( (max( (dist - _FadeOutDistFar), 0.00000) * 0.200000) ));
+    nfadeout = xll_saturate((dist / _FadeOutDistNear));
+    ffadeout = (1.00000 - xll_saturate((max( (dist - _FadeOutDistFar), 0.00000) * 0.200000)));
     ffadeout *= ffadeout;
     #line 49
     nfadeout *= nfadeout;
@@ -123,33 +123,33 @@ v2f xlat_main( in appdata_full v ) {
     float noise;
     float noiseWave;
     v2f o;
-    centerOffs = (vec3( (vec2( 0.500000) - v.color.xy ), 0.00000) * v.texcoord1.xyy );
+    centerOffs = (vec3( (vec2( 0.500000) - v.color.xy), 0.00000) * v.texcoord1.xyy);
     #line 68
-    centerLocal = (v.vertex.xyz  + centerOffs.xyz );
-    viewerLocal = vec3( ( _World2Object * vec4( _WorldSpaceCameraPos, 1.00000) ));
+    centerLocal = (v.vertex.xyz + centerOffs.xyz);
+    viewerLocal = vec3( (_World2Object * vec4( _WorldSpaceCameraPos, 1.00000)));
     localDir = (viewerLocal - centerLocal);
     #line 72
-    localDir.y  = mix( 0.00000, localDir.y , _VerticalBillboarding);
-    localDirLength = length( localDir );
+    localDir.y = mix( 0.00000, localDir.y, _VerticalBillboarding);
+    localDirLength = length(localDir);
     #line 78
     CalcOrthonormalBasis( (localDir / localDirLength), rightLocal, upLocal);
-    distScale = (CalcDistScale( localDirLength) * v.color.w );
-    BBNormal = ((rightLocal * v.normal.x ) + (upLocal * v.normal.y ));
+    distScale = (CalcDistScale( localDirLength) * v.color.w);
+    BBNormal = ((rightLocal * v.normal.x) + (upLocal * v.normal.y));
     #line 82
-    BBLocalPos = ((centerLocal - ((rightLocal * centerOffs.x ) + (upLocal * centerOffs.y ))) + (BBNormal * distScale));
-    time = (_Time.y  + (_BlinkingTimeOffsScale * v.color.z ));
+    BBLocalPos = ((centerLocal - ((rightLocal * centerOffs.x) + (upLocal * centerOffs.y))) + (BBNormal * distScale));
+    time = (_Time.y + (_BlinkingTimeOffsScale * v.color.z));
     fracTime = xll_mod( time, (_TimeOnDuration + _TimeOffDuration));
     #line 86
     wave = (smoothstep( 0.00000, (_TimeOnDuration * 0.250000), fracTime) * (1.00000 - smoothstep( (_TimeOnDuration * 0.750000), _TimeOnDuration, fracTime)));
     noiseTime = (time * (6.28319 / _TimeOnDuration));
-    noise = (sin( noiseTime ) * ((0.500000 * cos( ((noiseTime * 0.636600) + 56.7272) )) + 0.500000));
+    noise = (sin(noiseTime) * ((0.500000 * cos(((noiseTime * 0.636600) + 56.7272))) + 0.500000));
     noiseWave = ((_NoiseAmount * noise) + (1.00000 - _NoiseAmount));
     #line 91
     wave = (( (_NoiseAmount < 0.0100000) ) ? ( wave ) : ( noiseWave ));
     wave += _Bias;
-    o.uv = v.texcoord.xy ;
+    o.uv = v.texcoord.xy;
     #line 95
-    o.pos = ( glstate_matrix_mvp * vec4( BBLocalPos, 1.00000) );
+    o.pos = (glstate_matrix_mvp * vec4( BBLocalPos, 1.00000));
     o.color = (((CalcFadeOutFactor( localDirLength) * _Color) * _Multiplier) * wave);
     return o;
 }

@@ -45,10 +45,10 @@ vec4 xlat_main( in vec4 uv );
 vec4 xlat_main( in vec4 uv ) {
     vec4 res;
     #line 3
-    res.x  = xll_dFdx( uv.x  );
-    res.y  = xll_dFdx( uv.y  );
-    res.z  = xll_fwidth( uv.z  );
-    res.w  = 1.00000;
+    res.x = xll_dFdx(uv.x);
+    res.y = xll_dFdx(uv.y);
+    res.z = xll_fwidth(uv.z);
+    res.w = 1.00000;
     #line 7
     return res;
 }

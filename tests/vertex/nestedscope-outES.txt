@@ -20,10 +20,10 @@ v2f xlat_main( in a2v v ) {
     highp vec4 vec;
     highp vec4 vec_1;
     v2f o;
-    vec = ( v.pos * mvp );
+    vec = (v.pos * mvp);
     #line 22
     vec_1 = v.color;
-    vec_1.xyz  += v.normal;
+    vec_1.xyz += v.normal;
     o.color = vec_1;
     #line 26
     o.pos = vec;

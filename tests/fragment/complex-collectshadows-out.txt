@@ -31,34 +31,34 @@ float unitySampleShadow( in vec4 eyePos ) {
     vec4 weights;
     vec4 coord;
     float shadow;
-    sc0 = ( _View2Shadow * eyePos ).xyz ;
-    sc1 = ( _View2Shadow1 * eyePos ).xyz ;
+    sc0 = (_View2Shadow * eyePos).xyz;
+    sc1 = (_View2Shadow1 * eyePos).xyz;
     #line 41
-    sc2 = ( _View2Shadow2 * eyePos ).xyz ;
-    sc3 = ( _View2Shadow3 * eyePos ).xyz ;
-    z = eyePos.z ;
+    sc2 = (_View2Shadow2 * eyePos).xyz;
+    sc3 = (_View2Shadow3 * eyePos).xyz;
+    z = eyePos.z;
     #line 46
-    near = vec4( greaterThanEqual( vec4( z ), _LightSplitsNear) );
-    far = vec4( lessThan( vec4( z ), _LightSplitsFar) );
+    near = vec4(greaterThanEqual( vec4( z ), _LightSplitsNear));
+    far = vec4(lessThan( vec4( z ), _LightSplitsFar));
     weights = (near * far);
-    coord = vec4( ((((sc0 * weights.x ) + (sc1 * weights.y )) + (sc2 * weights.z )) + (sc3 * weights.w )), 1.00000);
+    coord = vec4( ((((sc0 * weights.x) + (sc1 * weights.y)) + (sc2 * weights.z)) + (sc3 * weights.w)), 1.00000);
     #line 50
-    shadow = (( (texture2D( _ShadowMapTexture, coord.xy ).x  < coord.z ) ) ? ( _LightShadowData.x  ) : ( 1.00000 ));
+    shadow = (( (texture2D( _ShadowMapTexture, coord.xy).x < coord.z) ) ? ( _LightShadowData.x ) : ( 1.00000 ));
     return shadow;
 }
 #line 22
 float Linear01Depth( in float z ) {
-    return (1.00000 / ((_ZBufferParams.x  * z) + _ZBufferParams.y ));
+    return (1.00000 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
 }
 #line 27
 vec2 EncodeFloatRG( in float v ) {
-    vec2 kEncodeMul = vec2( 1.00000, 255.000);
+    vec2 kEncodeMul = vec2(1.00000, 255.000);
     float kEncodeBit = 0.00392157;
     vec2 enc;
     #line 31
     enc = (kEncodeMul * v);
-    enc = fract( enc );
-    enc.x  -= (enc.y  * kEncodeBit);
+    enc = fract(enc);
+    enc.x -= (enc.y * kEncodeBit);
     return enc;
 }
 #line 54
@@ -67,15 +67,15 @@ vec4 xlat_main( in v2f i ) {
     vec4 vpos;
     float shadow;
     vec4 res;
-    depth = texture2D( _CameraDepthTexture, i.uv).x ;
+    depth = texture2D( _CameraDepthTexture, i.uv).x;
     depth = Linear01Depth( depth);
     #line 58
     vpos = vec4( (i.ray * depth), 1.00000);
     shadow = unitySampleShadow( vpos);
-    res.x  = shadow;
+    res.x = shadow;
     #line 62
-    res.y  = 1.00000;
-    res.zw  = EncodeFloatRG( (1.00000 - depth));
+    res.y = 1.00000;
+    res.zw = EncodeFloatRG( (1.00000 - depth));
     return res;
 }
 varying vec2 xlv_TEXCOORD0;

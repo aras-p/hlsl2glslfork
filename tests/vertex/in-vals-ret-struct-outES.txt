@@ -11,10 +11,10 @@ v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in hig
 #line 15
 v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in highp vec4 color ) {
     v2f o;
-    o.pos = ( mvp * pos );
+    o.pos = (mvp * pos);
     #line 19
     o.color = color;
-    o.color.xyz  += normal;
+    o.color.xyz += normal;
     o.uv = uv;
     return o;
 }

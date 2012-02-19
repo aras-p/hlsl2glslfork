@@ -12,14 +12,14 @@ void xlat_main( in vec4 position, in vec3 normal, in vec2 uv, out vec4 oPosition
     float diffuseFactor;
     #line 15
     mypos = position;
-    factor = (vec4( 1.00000, 1.00000, 1.00000, 1.00000) - uv.yyyy );
+    factor = (vec4( 1.00000, 1.00000, 1.00000, 1.00000) - uv.yyyy);
     mypos = (mypos + (offset * factor));
     #line 19
-    oPosition = ( worldViewProj * mypos );
+    oPosition = (worldViewProj * mypos);
     oUv = uv;
     #line 24
-    light = normalize( (objSpaceLight.xyz  - (mypos.xyz  * objSpaceLight.w )) );
-    diffuseFactor = abs( dot( normal.xyz , light) );
+    light = normalize((objSpaceLight.xyz - (mypos.xyz * objSpaceLight.w)));
+    diffuseFactor = abs(dot( normal.xyz, light));
     #line 28
     oColour = (ambient + (diffuseFactor * lightColour));
 }

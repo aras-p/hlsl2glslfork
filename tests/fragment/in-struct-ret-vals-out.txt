@@ -11,7 +11,7 @@ vec4 xlat_main( in v2f i ) {
     vec4 c;
     c = i.color;
     #line 11
-    c.xy  += i.uv;
+    c.xy += i.uv;
     return c;
 }
 varying vec2 xlv_TEXCOORD0;
