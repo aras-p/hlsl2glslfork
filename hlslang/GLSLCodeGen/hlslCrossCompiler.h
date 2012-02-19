@@ -37,9 +37,9 @@ private:
 
 public:
 	HlslLinker* linker;
-   TInfoSink infoSink;
-   std::vector<GlslFunction*> functionList;
-   std::vector<GlslStruct*> structList;
+	TInfoSink infoSink;
+	std::vector<GlslFunction*> functionList;
+	std::vector<GlslStruct*> structList;
 };
 
 #endif //HLSL_CROSS_COMPILER_H

@@ -503,7 +503,6 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	FunctionSet calledFunctions;
 	std::set<TOperator> libFunctions;
 	std::map<std::string,GlslSymbol*> globalSymMap;
-	std::map<std::string,GlslStruct*> structMap;
 
 	if (!compiler)
 	{
@@ -608,7 +607,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	shader << shaderLibFunctions;
 
 	//
-	// Structure addition hack
+	// Write structs
 	// Presently, structures are not tracked per function, just dump them all
 	// This could be improved by building a complete list of structures for the
 	// shaders based on the variables in each function
