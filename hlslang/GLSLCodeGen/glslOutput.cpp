@@ -5,6 +5,9 @@
 
 #include "glslOutput.h"
 
+#ifdef _WIN32
+	#define snprintf _snprintf
+#endif
 
 int getElements( EGlslSymbolType t )
 {
@@ -744,7 +747,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    if (infix)
    {
 	   // special case for swizzled matrix assignment
-	   if (node->getLeft() && node->getRight()) {
+	   if (node->getOp() == EOpAssign && node->getLeft() && node->getRight()) {
 		   TIntermBinary* lval = node->getLeft()->getAsBinaryNode();
 		   
 		   if (lval && lval->getOp() == EOpMatrixSwizzle) {
