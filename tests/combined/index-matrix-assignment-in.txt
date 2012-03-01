@@ -1,0 +1,33 @@
+float4x4 world;
+float4x4 view;
+float4x4 proj;
+
+sampler2D diffuse_map;
+
+struct VS_INPUT {
+	float4 position : POSITION;
+	float2 uv : TEXCOORD0;
+};
+
+struct PS_INPUT {
+	float4 position : POSITION;
+	float2 uv : TEXCOORD0;
+};
+
+PS_INPUT vs_main(VS_INPUT input) {
+	PS_INPUT o;
+	float4 wp = mul(input.position, world);
+
+	view._m30_m31_m32 = world._m30_m31_m32;
+
+	o.position = mul(mul(wp, view), proj);
+	o.uv = input.uv;
+
+	return o;
+}
+
+half4 ps_main(PS_INPUT input) : COLOR0 {
+	half4 c = half4(1, 1, 1, 1);
+	c = tex2D(diffuse_map, input.uv);
+	return c;
+}

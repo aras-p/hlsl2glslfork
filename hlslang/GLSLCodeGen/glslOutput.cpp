@@ -239,11 +239,13 @@ void TGlslOutputTraverser::outputLineDirective (int line)
 
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision)
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision, bool transposeMatrixSwizzles)
 : infoSink(i)
 , generatingCode(true)
 , functionList(funcList)
 , structList(sList)
+, transposeMatrixSwizzles(transposeMatrixSwizzles)
+, swizzleAssignTempCounter(0)
 , m_UsePrecision(usePrecision)
 , m_LastLineOutput(-1)
 {
@@ -622,7 +624,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
       goit->generatingCode = true;
       return false;
 
-   case EOpMatrixSwizzle:
+	case EOpMatrixSwizzle:		   
       current->beginStatement();
       // This presently only works for swizzles as rhs operators
       goit->visitConstantUnion = TGlslOutputTraverser::traverseImmediateConstant;
@@ -636,8 +638,13 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          for (int ii = 0; ii < (int)goit->indexList.size(); ii++)
          {
             int val = goit->indexList[ii];
-            collumn[ii] = val/4;
-            row[ii] = val%4;
+			 if (goit->transposeMatrixSwizzles) {
+				 collumn[ii] = val%4;
+				 row[ii] = val/4;
+			 } else {
+				 collumn[ii] = val/4;
+				 row[ii] = val%4;
+			 }
          }
          bool sameCollumn = true;
          for (int ii = 1; ii < (int)goit->indexList.size(); ii++)
@@ -662,7 +669,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 
             // Might need to account for different types here 
             assert( (int)goit->indexList.size() != 1); //should have hit same collumn case
-            out << "vec" << (int)goit->indexList.size() << "( ";
+            out << "vec" << (int)goit->indexList.size() << "(";
             const char fields[] = "xyzw";
             if (node->getLeft())
                node->getLeft()->traverse(goit);
@@ -736,6 +743,50 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 
    if (infix)
    {
+	   // special case for swizzled matrix assignment
+	   if (node->getLeft() && node->getRight()) {
+		   TIntermBinary* lval = node->getLeft()->getAsBinaryNode();
+		   
+		   if (lval && lval->getOp() == EOpMatrixSwizzle) {
+			   static const char* vec_swizzles = "xyzw";
+			   TIntermTyped* rval = node->getRight();
+			   TIntermTyped* lexp = lval->getLeft();
+			   
+			   goit->visitConstantUnion = TGlslOutputTraverser::traverseImmediateConstant;
+			   goit->generatingCode = false;
+			   
+			   lval->getRight()->traverse(goit);
+			   
+			   goit->visitConstantUnion = TGlslOutputTraverser::traverseConstantUnion;
+			   goit->generatingCode = true;
+			   
+			   std::vector<int> swizzles = goit->indexList;
+			   goit->indexList.clear();
+			   
+			   char temp_rval[128];
+			   snprintf(temp_rval, 128, "xlat_swiztemp%d", goit->swizzleAssignTempCounter++);
+			   unsigned n_swizzles = swizzles.size();
+			   current->beginStatement();
+			   out << "vec" << n_swizzles << " " << temp_rval << " = ";
+			   
+			   rval->traverse(goit);			   
+			   current->endStatement();
+			   
+			   for (unsigned i = 0; i != n_swizzles; ++i) {
+				   unsigned a = swizzles[i] / 4, b = swizzles[i] % 4;
+				   unsigned col = goit->transposeMatrixSwizzles ? a : b;
+				   unsigned row = goit->transposeMatrixSwizzles ? b : a;
+				   
+				   current->beginStatement();
+				   lexp->traverse(goit);
+				   out << "[" << row << "][" << col << "] = " << temp_rval << "." << vec_swizzles[i];
+				   current->endStatement();
+			   }
+
+			   return false;
+		   }
+	   }
+
       if (needsParens)
          out << '(';
 
@@ -751,7 +802,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    else
    {
       if (assign)
-      {
+      {		  
          // Need to traverse the left child twice to allow for the assign and the op
          // This is OK, because we know it is an lvalue
          if (node->getLeft())

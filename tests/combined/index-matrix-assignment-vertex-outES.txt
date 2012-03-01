@@ -1,0 +1,42 @@
+
+#line 12
+struct PS_INPUT {
+    highp vec4 position;
+    highp vec2 uv;
+};
+#line 7
+struct VS_INPUT {
+    highp vec4 position;
+    highp vec2 uv;
+};
+uniform highp mat4 proj;
+uniform highp mat4 world;
+uniform highp mat4 view;
+highp mat4 xlat_mutable_view;
+PS_INPUT vs_main( in VS_INPUT xlat_var_input );
+#line 17
+PS_INPUT vs_main( in VS_INPUT xlat_var_input ) {
+    highp vec4 wp;
+    PS_INPUT o;
+    wp = (xlat_var_input.position * world);
+    #line 21
+    vec3 xlat_swiztemp0 = world[3].xyz;
+    xlat_mutable_view[3][0] = xlat_swiztemp0.x;
+    xlat_mutable_view[3][1] = xlat_swiztemp0.y;
+    xlat_mutable_view[3][2] = xlat_swiztemp0.z;
+    o.position = ((wp * xlat_mutable_view) * proj);
+    o.uv = xlat_var_input.uv;
+    #line 26
+    return o;
+}
+varying highp vec2 xlv_TEXCOORD0;
+void main() {
+    PS_INPUT xl_retval;
+    xlat_mutable_view = view;
+    VS_INPUT xlt_xlat_var_input;
+    xlt_xlat_var_input.position = vec4( gl_Vertex);
+    xlt_xlat_var_input.uv = vec2( gl_MultiTexCoord0);
+    xl_retval = vs_main( xlt_xlat_var_input);
+    gl_Position = vec4( xl_retval.position);
+    xlv_TEXCOORD0 = vec2( xl_retval.uv);
+}

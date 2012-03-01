@@ -212,11 +212,13 @@ static bool CheckGLSL (bool vertex, const char* source)
 	return res;
 }
 
-static bool TestFile (bool vertex,
-	const std::string& inputPath,
-	const std::string& outputPath,
-	bool usePrecision,
-	bool doCheckGLSL)
+enum TestRun { VERTEX, FRAGMENT, BOTH, NUM_RUN_TYPES };
+static bool TestFile (TestRun type,
+					  const std::string& inputPath,
+					  const std::string& outputPath,
+					  const char* entryPoint,
+					  bool usePrecision,
+					  bool doCheckGLSL)
 {
 	std::string input;
 	if (!ReadStringFromFile (inputPath.c_str(), input))
@@ -224,8 +226,9 @@ static bool TestFile (bool vertex,
 		printf ("  failed to read input file\n");
 		return false;
 	}
-
-	ShHandle parser = Hlsl2Glsl_ConstructCompiler (vertex ? EShLangVertex : EShLangFragment);
+	
+	static const EShLanguage langs[] = {EShLangVertex, EShLangFragment};
+	ShHandle parser = Hlsl2Glsl_ConstructCompiler (langs[type]);
 
 	const char* sourceStr = input.c_str();
 
@@ -255,12 +258,13 @@ static bool TestFile (bool vertex,
 		};
 		Hlsl2Glsl_SetUserAttributeNames (parser, kAttribSemantic, kAttribString, 1);
 		Hlsl2Glsl_UseUserVaryings (parser, true);
-		int translateOk = Hlsl2Glsl_Translate (parser, "main", options);
+		
+		int translateOk = Hlsl2Glsl_Translate (parser, entryPoint, options);
 		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 		if (translateOk)
 		{
 			std::string text = Hlsl2Glsl_GetShader (parser);
-
+			
 			std::string output;
 			ReadStringFromFile (outputPath.c_str(), output);
 
@@ -273,7 +277,7 @@ static bool TestFile (bool vertex,
 				printf ("  does not match expected output\n");
 				res = false;
 			}
-			if (doCheckGLSL && !CheckGLSL (vertex, text.c_str()))
+			if (doCheckGLSL && !CheckGLSL (type == VERTEX, text.c_str()))
 			{
 				res = false;
 			}
@@ -295,6 +299,39 @@ static bool TestFile (bool vertex,
 	return res;
 }
 
+static bool TestCombinedFile(const std::string& inputPath,
+							 bool usePrecision,
+							 bool checkGL)
+{
+	std::string outname = inputPath.substr (0,inputPath.size()-7);
+	std::string frag_out, vert_out;
+	
+	if (usePrecision) {
+		vert_out = outname + "-vertex-outES.txt";
+		frag_out = outname + "-fragment-outES.txt";
+	} else {
+		vert_out = outname + "-vertex-out.txt";
+		frag_out = outname + "-fragment-out.txt";
+	}
+	
+	bool res = TestFile(VERTEX, inputPath, vert_out, "vs_main", usePrecision, !usePrecision && checkGL);
+	return res & TestFile(FRAGMENT, inputPath, frag_out, "ps_main", usePrecision, !usePrecision && checkGL);
+}
+
+static bool TestFile (TestRun type,
+					  const std::string& inputPath,
+					  bool usePrecision,
+					  bool checkGL)
+{
+	std::string outname = inputPath.substr (0,inputPath.size()-7);
+	
+	if (usePrecision) {
+		return TestFile(type, inputPath, outname + "-outES.txt", "main", true, false);
+	} else {
+		return TestFile(type, inputPath, outname + "-out.txt", "main", false, checkGL);
+	}
+}
+
 
 int main (int argc, const char** argv)
 {
@@ -312,10 +349,10 @@ int main (int argc, const char** argv)
 
 	std::string baseFolder = argv[1];
 
-	static const char* kTypeName[2] = { "vertex", "fragment" };
+	static const char* kTypeName[NUM_RUN_TYPES] = { "vertex", "fragment", "combined" };
 	size_t tests = 0;
 	size_t errors = 0;
-	for (int type = 0; type < 2; ++type)
+	for (int type = 0; type < NUM_RUN_TYPES; ++type)
 	{
 		printf ("testing %s...\n", kTypeName[type]);
 		std::string testFolder = baseFolder + "/" + kTypeName[type];
@@ -326,26 +363,22 @@ int main (int argc, const char** argv)
 		for (size_t i = 0; i < n; ++i)
 		{
 			std::string inname = inputFiles[i];
+			bool ok = true;
+			
 			printf ("test %s\n", inname.c_str());
-			std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
-			std::string outnameES = inname.substr (0,inname.size()-7) + "-outES.txt";
-			bool ok = TestFile (type==0,
-				testFolder + "/" + inname,
-				testFolder + "/" + outname,
-				false,
-				hasOpenGL);
-			if (ok)
-			{
-				ok = TestFile (type==0,
-					testFolder + "/" + inname,
-					testFolder + "/" + outnameES,
-					true,
-					false);
+			
+			if (type == BOTH) {
+				ok = TestCombinedFile(testFolder + "/" + inname, false, hasOpenGL);
+				if (ok)
+					ok = TestCombinedFile(testFolder + "/" + inname, true, false);
+			} else {
+				ok = TestFile(TestRun(type), testFolder + "/" + inname, false, hasOpenGL);
+				if (ok)
+					ok = TestFile(TestRun(type), testFolder + "/" + inname, true, false);
 			}
+			
 			if (!ok)
-			{
 				++errors;
-			}
 		}
 	}
 	clock_t time1 = clock();
