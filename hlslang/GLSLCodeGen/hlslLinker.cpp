@@ -655,18 +655,22 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	//
 	for (std::map<std::string, GlslSymbol*>::iterator it = globalSymMap.begin(); it != globalSymMap.end(); it++)
 	{
-		if (it->second->getQualifier() != EqtUniform)
+		if (it->second->getQualifier() != EqtUniform && it->second->getQualifier() != EqtMutableUniform)
 			continue;
-
+		
 		ShUniformInfo infoStruct;
-		infoStruct.name = new char[it->first.size()+1];
-		strcpy( infoStruct.name, it->first.c_str());
+		
+		const std::string& name = it->second->getName(false);
+		infoStruct.name = new char[name.size()+1];
+		strcpy(infoStruct.name, name.c_str());
+		
 		if (it->second->getSemantic() != "")
 		{
 			infoStruct.semantic = new char[it->second->getSemantic().size()+1];
 			strcpy( infoStruct.semantic, it->second->getSemantic().c_str());
 		}
 		else
+			
 			infoStruct.semantic = 0;
 
 		//gigantic hack, the enumerations are kept in alignment
