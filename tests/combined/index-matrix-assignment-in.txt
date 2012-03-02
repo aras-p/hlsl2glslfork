@@ -25,6 +25,10 @@ PS_INPUT vs_main(VS_INPUT input) {
 
 	stupid[2]._m30_m31_m32 = dummy._m21_m00_m00;
 
+	dummy[2][0] = 0;
+	dummy._m20_m02 = float2(0, 0);
+	dummy._m22 = 1;
+
 	o.position = mul(mul(wp, stupid[2]), proj);
 	o.uv = input.uv;
 

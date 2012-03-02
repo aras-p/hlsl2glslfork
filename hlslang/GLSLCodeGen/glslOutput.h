@@ -32,7 +32,7 @@ private:
 	void outputLineDirective (int line);
 
 public:
-   TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision, bool transposeMatrixSwizzles);
+   TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision);
    GlslStruct *createStructFromType( TType *type );
    bool parseInitializer( TIntermBinary *node );
 
@@ -60,7 +60,6 @@ public:
    // Persistent data for collecting indices
    std::vector<int> indexList;
 	
-	bool transposeMatrixSwizzles;
 	unsigned swizzleAssignTempCounter;
 	bool m_UsePrecision;
 	int m_LastLineOutput;

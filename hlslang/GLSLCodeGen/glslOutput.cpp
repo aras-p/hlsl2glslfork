@@ -242,12 +242,11 @@ void TGlslOutputTraverser::outputLineDirective (int line)
 
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision, bool transposeMatrixSwizzles)
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision)
 : infoSink(i)
 , generatingCode(true)
 , functionList(funcList)
 , structList(sList)
-, transposeMatrixSwizzles(transposeMatrixSwizzles)
 , swizzleAssignTempCounter(0)
 , m_UsePrecision(usePrecision)
 , m_LastLineOutput(-1)
@@ -643,7 +642,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 			goit->indexList.clear();
 			
 			if (elements.size() > 4 || elements.size() < 1) {
-				goit->infoSink.info << "Matrix swizzle operations can must contain between 1 and 4 element selectors.";
+				goit->infoSink.info << "Matrix swizzle operations can must contain at least 1 and at most 4 element selectors.";
 				return true;
 			}
 
@@ -651,13 +650,8 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 			for (unsigned i = 0; i != elements.size(); ++i)
 			{
 				unsigned val = elements[i];
-				if (goit->transposeMatrixSwizzles) {
-					 column[i] = val%4;
-					 row[i] = val/4;
-				} else {
-					 column[i] = val/4;
-					 row[i] = val%4;
-				}
+				column[i] = val % 4;
+				row[i] = val / 4;
 			}
 
 			bool sameColumn = true;
@@ -774,22 +768,29 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 			   goit->indexList.clear();
 			   
 			   char temp_rval[128];
-			   snprintf(temp_rval, 128, "xlat_swiztemp%d", goit->swizzleAssignTempCounter++);
 			   unsigned n_swizzles = swizzles.size();
-			   current->beginStatement();
-			   out << "vec" << n_swizzles << " " << temp_rval << " = ";
 			   
-			   rval->traverse(goit);			   
-			   current->endStatement();
+			   if (n_swizzles > 1) {
+				   snprintf(temp_rval, 128, "xlat_swiztemp%d", goit->swizzleAssignTempCounter++);
+				   
+				   current->beginStatement();
+				   out << "vec" << n_swizzles << " " << temp_rval << " = ";
+				   rval->traverse(goit);			   
+				   current->endStatement();
+			   }
 			   
 			   for (unsigned i = 0; i != n_swizzles; ++i) {
-				   unsigned a = swizzles[i] / 4, b = swizzles[i] % 4;
-				   unsigned col = goit->transposeMatrixSwizzles ? a : b;
-				   unsigned row = goit->transposeMatrixSwizzles ? b : a;
+				   unsigned col = swizzles[i] / 4;
+				   unsigned row = swizzles[i] % 4;
 				   
 				   current->beginStatement();
 				   lexp->traverse(goit);
-				   out << "[" << row << "][" << col << "] = " << temp_rval << "." << vec_swizzles[i];
+				   out << "[" << row << "][" << col << "] = ";
+				   if (n_swizzles > 1)
+					   out << temp_rval << "." << vec_swizzles[i];
+				   else
+					   rval->traverse(goit);
+				   
 				   current->endStatement();
 			   }
 

@@ -120,8 +120,7 @@ enum TTranslateOptions
 {
    ETranslateOpNone = 0,
    ETranslateOpIntermediate = (1<<0),
-   ETranslateOpUsePrecision = (1<<1),
-   ETranslateOpTransposeMatrixSwizzles = (1<<2),
+   ETranslateOpUsePrecision = (1<<1)
 };
 
 
