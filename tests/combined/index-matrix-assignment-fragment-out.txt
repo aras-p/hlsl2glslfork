@@ -1,20 +1,19 @@
 
-#line 12
+#line 13
 struct PS_INPUT {
     vec4 position;
     vec2 uv;
 };
-#line 7
+#line 8
 struct VS_INPUT {
     vec4 position;
     vec2 uv;
 };
 uniform sampler2D diffuse_map;
 vec4 ps_main( in PS_INPUT xlat_var_input );
-#line 29
+#line 34
 vec4 ps_main( in PS_INPUT xlat_var_input ) {
     vec4 c = vec4(1.00000, 1.00000, 1.00000, 1.00000);
-    #line 30
     c = texture2D( diffuse_map, xlat_var_input.uv);
     return c;
 }

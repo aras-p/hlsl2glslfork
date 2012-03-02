@@ -1,38 +1,50 @@
 
-#line 12
+#line 13
 struct PS_INPUT {
     vec4 position;
     vec2 uv;
 };
-#line 7
+#line 8
 struct VS_INPUT {
     vec4 position;
     vec2 uv;
 };
 uniform mat4 proj;
-uniform mat4 world;
 uniform mat4 view;
-mat4 xlat_mutable_view;
+uniform mat4 world;
+uniform mat4 stupid[10];
+mat4 xlat_mutable_stupid[10];
 PS_INPUT vs_main( in VS_INPUT xlat_var_input );
-#line 17
+#line 18
 PS_INPUT vs_main( in VS_INPUT xlat_var_input ) {
+    mat3 dummy = mat3(0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000);
     vec4 wp;
     PS_INPUT o;
+    #line 23
     wp = (xlat_var_input.position * world);
-    #line 21
-    vec3 xlat_swiztemp0 = world[3].xyz;
-    xlat_mutable_view[3][0] = xlat_swiztemp0.x;
-    xlat_mutable_view[3][1] = xlat_swiztemp0.y;
-    xlat_mutable_view[3][2] = xlat_swiztemp0.z;
-    o.position = ((wp * xlat_mutable_view) * proj);
+    xlat_mutable_stupid[2] = view;
+    vec3 xlat_swiztemp0 = vec3(dummy[2].y, dummy[0].x, dummy[0].x);
+    xlat_mutable_stupid[2][3][0] = xlat_swiztemp0.x;
+    xlat_mutable_stupid[2][3][1] = xlat_swiztemp0.y;
+    xlat_mutable_stupid[2][3][2] = xlat_swiztemp0.z;
+    #line 28
+    o.position = ((wp * xlat_mutable_stupid[2]) * proj);
     o.uv = xlat_var_input.uv;
-    #line 26
     return o;
 }
 varying vec2 xlv_TEXCOORD0;
 void main() {
     PS_INPUT xl_retval;
-    xlat_mutable_view = view;
+    xlat_mutable_stupid[0] = stupid[0];
+    xlat_mutable_stupid[1] = stupid[1];
+    xlat_mutable_stupid[2] = stupid[2];
+    xlat_mutable_stupid[3] = stupid[3];
+    xlat_mutable_stupid[4] = stupid[4];
+    xlat_mutable_stupid[5] = stupid[5];
+    xlat_mutable_stupid[6] = stupid[6];
+    xlat_mutable_stupid[7] = stupid[7];
+    xlat_mutable_stupid[8] = stupid[8];
+    xlat_mutable_stupid[9] = stupid[9];
     VS_INPUT xlt_xlat_var_input;
     xlt_xlat_var_input.position = vec4( gl_Vertex);
     xlt_xlat_var_input.uv = vec2( gl_MultiTexCoord0);

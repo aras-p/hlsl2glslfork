@@ -1,6 +1,7 @@
 float4x4 world;
 float4x4 view;
 float4x4 proj;
+float4x4 stupid[10];
 
 sampler2D diffuse_map;
 
@@ -16,11 +17,15 @@ struct PS_INPUT {
 
 PS_INPUT vs_main(VS_INPUT input) {
 	PS_INPUT o;
+
+	float3x3 dummy = float3x3(float3(0), float3(0), float3(0));
+
 	float4 wp = mul(input.position, world);
+	stupid[2] = view;
 
-	view._m30_m31_m32 = world._m30_m31_m32;
+	stupid[2]._m30_m31_m32 = dummy._m21_m00_m00;
 
-	o.position = mul(mul(wp, view), proj);
+	o.position = mul(mul(wp, stupid[2]), proj);
 	o.uv = input.uv;
 
 	return o;

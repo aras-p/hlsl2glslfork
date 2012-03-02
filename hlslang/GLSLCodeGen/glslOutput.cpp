@@ -628,71 +628,78 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
       return false;
 
 	case EOpMatrixSwizzle:		   
-      current->beginStatement();
-      // This presently only works for swizzles as rhs operators
-      goit->visitConstantUnion = TGlslOutputTraverser::traverseImmediateConstant;
-      goit->generatingCode = false;
-      if (node->getRight())
-      {
-         node->getRight()->traverse(goit);
-         assert( goit->indexList.size() <= 4);
-         assert( goit->indexList.size() > 0);
-         int collumn[4], row[4];
-         for (int ii = 0; ii < (int)goit->indexList.size(); ii++)
-         {
-            int val = goit->indexList[ii];
-			 if (goit->transposeMatrixSwizzles) {
-				 collumn[ii] = val%4;
-				 row[ii] = val/4;
-			 } else {
-				 collumn[ii] = val/4;
-				 row[ii] = val%4;
-			 }
-         }
-         bool sameCollumn = true;
-         for (int ii = 1; ii < (int)goit->indexList.size(); ii++)
-         {
-            sameCollumn &= collumn[ii] == collumn[ii-1];
-         }
-         if (sameCollumn)
-         {
-            //select column, then swizzle row
-            if (node->getLeft())
-               node->getLeft()->traverse(goit);
-            out << "[" << collumn[0] << "].";
-            const char fields[] = "xyzw";
-            for (int ii = 0; ii < (int)goit->indexList.size(); ii++)
-            {
-               out << fields[row[ii]];
-            }
-         }
-         else
-         {
-            // Insert constructor, and dereference individually
+		// This presently only works for swizzles as rhs operators
+		if (node->getRight())
+		{
+			goit->visitConstantUnion = TGlslOutputTraverser::traverseImmediateConstant;
+			goit->generatingCode = false;
 
-            // Might need to account for different types here 
-            assert( (int)goit->indexList.size() != 1); //should have hit same collumn case
-            out << "vec" << (int)goit->indexList.size() << "(";
-            const char fields[] = "xyzw";
-            if (node->getLeft())
-               node->getLeft()->traverse(goit);
-            out << "[" << collumn[0] << "].";
-            out << fields[row[0]];
-            for (int ii = 1; ii < (int)goit->indexList.size(); ii++)
-            {
-               out << ", ";
-               if (node->getLeft())
-                  node->getLeft()->traverse(goit);
-               out << "[" << collumn[ii] << "].";
-               out << fields[row[ii]];
-            }
-            out << ")";
-         }
-      }
-      goit->indexList.clear();
-      goit->visitConstantUnion = TGlslOutputTraverser::traverseConstantUnion;
-      goit->generatingCode = true;
-      return false;
+			node->getRight()->traverse(goit);
+
+			goit->visitConstantUnion = TGlslOutputTraverser::traverseConstantUnion;
+			goit->generatingCode = true;
+
+			std::vector<int> elements = goit->indexList;
+			goit->indexList.clear();
+			
+			if (elements.size() > 4 || elements.size() < 1) {
+				goit->infoSink.info << "Matrix swizzle operations can must contain between 1 and 4 element selectors.";
+				return true;
+			}
+
+			unsigned column[4] = {0}, row[4] = {0};
+			for (unsigned i = 0; i != elements.size(); ++i)
+			{
+				unsigned val = elements[i];
+				if (goit->transposeMatrixSwizzles) {
+					 column[i] = val%4;
+					 row[i] = val/4;
+				} else {
+					 column[i] = val/4;
+					 row[i] = val%4;
+				}
+			}
+
+			bool sameColumn = true;
+			for (unsigned i = 1; i != elements.size(); ++i)
+				sameColumn &= column[i] == column[i-1];
+
+			static const char* fields = "xyzw";
+			
+			if (sameColumn)
+			{				
+				//select column, then swizzle row
+				if (node->getLeft())
+					node->getLeft()->traverse(goit);
+				out << "[" << column[0] << "].";
+				
+				for (unsigned i = 0; i < elements.size(); ++i)
+					out << fields[row[i]];
+			}
+			else
+			{
+				// Insert constructor, and dereference individually
+
+				// Might need to account for different types here 
+				assert( elements.size() != 1); //should have hit same collumn case
+				out << "vec" << elements.size() << "(";
+				if (node->getLeft())
+					node->getLeft()->traverse(goit);
+				out << "[" << column[0] << "].";
+				out << fields[row[0]];
+				
+				for (unsigned i = 1; i < elements.size(); ++i)
+				{
+					out << ", ";
+					if (node->getLeft())
+						node->getLeft()->traverse(goit);
+					out << "[" << column[i] << "].";
+					out << fields[row[i]];
+				}
+				out << ")";
+			}
+		}
+		return false;
 
    case EOpAdd:    op = "+"; infix = true; break;
    case EOpSub:    op = "-"; infix = true; break;
