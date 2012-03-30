@@ -130,15 +130,14 @@ enum TTranslateOptions
 class HlslCrossCompiler;
 typedef HlslCrossCompiler* ShHandle;
 	
-typedef void*(*GlobalAllocateFunction)(unsigned);
-typedef void(*GlobalFreeFunction)(void*);
-
+typedef void*(*GlobalAllocateFunction)(unsigned, void*);
+typedef void(*GlobalFreeFunction)(void*, void*);
 
 /// Initialize the HLSL2GLSL translator.  This function must be called once prior to calling any other
 /// HLSL2GLSL translator functions
 /// \return
 ///   1 on success, 0 on failure
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction free);
+SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction free, void* user);
 
 
 /// Finalize the HLSL2GLSL translator.  This function should be called to de-initialize the HLSL2GLSL 
