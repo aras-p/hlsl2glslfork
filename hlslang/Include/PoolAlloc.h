@@ -29,6 +29,12 @@
 #include <stddef.h>
 #include <vector>
 
+
+// Set the allocation functions used to initialize our global allocators.
+typedef void*(*GlobalAllocateFunction)(unsigned);
+typedef void(*GlobalFreeFunction)(void*);
+void SetGlobalAllocationAllocator(GlobalAllocateFunction alloc, GlobalFreeFunction free);
+
 class TAllocation 
 {
 public:

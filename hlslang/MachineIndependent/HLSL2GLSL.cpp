@@ -131,11 +131,13 @@ bool GenerateBuiltInSymbolTable(TInfoSink& infoSink, TSymbolTable* symbolTables,
 
 
 
-int C_DECL Hlsl2Glsl_Initialize()
+int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction free)
 {
    TInfoSink infoSink;
    bool ret = true;
 
+   SetGlobalAllocationAllocator(alloc, free);
+	
    if (!InitProcess())
       return 0;
 

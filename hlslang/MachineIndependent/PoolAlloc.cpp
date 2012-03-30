@@ -11,15 +11,25 @@
 
 OS_TLSIndex PoolIndex;
 
+GlobalFreeFunction _delete;
+GlobalAllocateFunction _allocate;
+
+void SetGlobalAllocationAllocator(GlobalAllocateFunction alloc, GlobalFreeFunction free) {
+	_allocate = alloc;
+	_delete = free;
+}
+
 void InitializeGlobalPools()
 {
    TThreadGlobalPools* globalPools= static_cast<TThreadGlobalPools*>(OS_GetTLSValue(PoolIndex));    
    if (globalPools)
       return;
 
-   TPoolAllocator *globalPoolAllocator = new TPoolAllocator(true);
-
-   TThreadGlobalPools* threadData = new TThreadGlobalPools();
+   void* poolMem = _allocate(sizeof(TPoolAllocator));
+   void* threadPoolMem = _allocate(sizeof(TThreadGlobalPools));
+	
+   TPoolAllocator *globalPoolAllocator = new (poolMem) TPoolAllocator(true);
+   TThreadGlobalPools* threadData = new (threadPoolMem) TThreadGlobalPools();
 
    threadData->globalPoolAllocator = globalPoolAllocator;
 
@@ -35,8 +45,8 @@ void FreeGlobalPools()
       return;
 
    GlobalPoolAllocator.popAll();
-   delete &GlobalPoolAllocator;       
-   delete globalPools;
+   _delete(&GlobalPoolAllocator);
+   _delete(globalPools);
 }
 
 bool InitializePoolIndex()

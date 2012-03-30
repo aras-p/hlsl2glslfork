@@ -345,7 +345,7 @@ int main (int argc, const char** argv)
 	
 	clock_t time0 = clock();
 	
-	Hlsl2Glsl_Initialize ();
+	Hlsl2Glsl_Initialize ((GlobalAllocateFunction)malloc, (GlobalFreeFunction)free);
 
 	std::string baseFolder = argv[1];
 

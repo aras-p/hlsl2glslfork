@@ -6,7 +6,6 @@
 #ifndef __INITIALIZEDLL_H
 #define __INITIALIZEDLL_H
 
-
 bool InitProcess();
 bool InitThread();
 bool DetachThread();
