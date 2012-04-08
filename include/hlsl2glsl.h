@@ -146,6 +146,8 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, G
 ///   1 on success, 0 on failure
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Finalize();
 
+/// 
+SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Shutdown();
 
 /// Construct a compiler for the given language (one per shader)
 SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage language );  

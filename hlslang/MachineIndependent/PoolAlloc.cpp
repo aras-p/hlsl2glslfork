@@ -27,16 +27,24 @@ void InitializeGlobalPools()
    if (globalPools)
       return;
 
-   void* poolMem = _allocate(sizeof(TPoolAllocator), _user_data);
-   void* threadPoolMem = _allocate(sizeof(TThreadGlobalPools), _user_data);
+	void* poolMem, *threadPoolMem;
+	TPoolAllocator *globalPoolAllocator;
+	TThreadGlobalPools* threadData;
 	
-   TPoolAllocator *globalPoolAllocator = new (poolMem) TPoolAllocator(true);
-   TThreadGlobalPools* threadData = new (threadPoolMem) TThreadGlobalPools();
+	if (_allocate) {
+		poolMem = _allocate(sizeof(TPoolAllocator), _user_data);
+		threadPoolMem = _allocate(sizeof(TThreadGlobalPools), _user_data);
+		globalPoolAllocator = new (poolMem) TPoolAllocator(true);
+		threadData = new (threadPoolMem) TThreadGlobalPools();
+	} else {
+		globalPoolAllocator = new TPoolAllocator(true);
+		threadData = new TThreadGlobalPools();
+	}
 
-   threadData->globalPoolAllocator = globalPoolAllocator;
+	threadData->globalPoolAllocator = globalPoolAllocator;
 
-   OS_SetTLSValue(PoolIndex, threadData);     
-   globalPoolAllocator->push();
+	OS_SetTLSValue(PoolIndex, threadData);     
+	globalPoolAllocator->push();
 }
 
 void FreeGlobalPools()
@@ -46,9 +54,14 @@ void FreeGlobalPools()
    if (!globalPools)
       return;
 
-   GlobalPoolAllocator.popAll();
-   _delete(&GlobalPoolAllocator, _user_data);
-   _delete(globalPools, _user_data);
+	GlobalPoolAllocator.popAll();
+	if (_delete) {
+	   _delete(&GlobalPoolAllocator, _user_data);
+	   _delete(globalPools, _user_data);
+	} else {
+		delete &GlobalPoolAllocator;
+		delete globalPools;
+	}
 }
 
 bool InitializePoolIndex()

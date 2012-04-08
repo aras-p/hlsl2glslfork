@@ -194,16 +194,7 @@ public:
    TSymbolTableLevel() { }
    ~TSymbolTableLevel();
     
-   bool insert(TSymbol& symbol) 
-   {
-      //
-      // returning true means symbol was added to the table
-      //
-      tInsertResult result;
-      result = level.insert(tLevelPair(symbol.getMangledName(), &symbol));
-
-      return result.second;
-   }
+	bool insert(TSymbol& symbol);
 
    TSymbol* find(const TString& name) const
    {

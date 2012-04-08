@@ -4,6 +4,7 @@ float4x4 proj;
 float4x4 stupid[10];
 
 sampler2D diffuse_map;
+sampler2DShadow shadow_map;
 
 struct VS_INPUT {
 	float4 position : POSITION;
@@ -38,5 +39,7 @@ PS_INPUT vs_main(VS_INPUT input) {
 half4 ps_main(PS_INPUT input) : COLOR0 {
 	half4 c = half4(1, 1, 1, 1);
 	c = tex2D(diffuse_map, input.uv);
+	float depth = 1;
+	c *= tex2D(shadow_map, float3(input.uv, depth)).r;
 	return c;
 }

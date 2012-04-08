@@ -7,6 +7,16 @@
 
 TString* TParameter::NullSemantic = 0;
 
+bool TSymbolTableLevel::insert(TSymbol& symbol) 
+{
+	//
+	// returning true means symbol was added to the table
+	//
+	tInsertResult result;
+	result = level.insert(tLevelPair(symbol.getMangledName(), &symbol));
+	
+	return result.second;
+}
 
 // Recursively generate mangled names.
 void TType::buildMangledName(TString& mangledName) const
