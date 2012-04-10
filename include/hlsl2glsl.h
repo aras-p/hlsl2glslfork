@@ -63,9 +63,13 @@ typedef enum
    EShTypeMat4,
    EShTypeSampler,
    EShTypeSampler1D,
+   EShTypeSampler1DShadow,
    EShTypeSampler2D,
+   EShTypeSampler2DShadow,
    EShTypeSampler3D,
    EShTypeSamplerCube,
+   EShTypeSamplerRect,
+   EShTypeSamplerRectShadow,
    EShTypeStruct
 } EShType;
 
