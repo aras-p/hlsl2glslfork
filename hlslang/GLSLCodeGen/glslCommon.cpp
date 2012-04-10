@@ -8,29 +8,32 @@
 /// Table to convert GLSL variable types to strings
 const char typeString[EgstTypeCount][32] = 
 {
-   "void",
-   "bool",
-   "bvec2",
-   "bvec3",
-   "bvec4",
-   "int",
-   "ivec2",
-   "ivec3",
-   "ivec4",
-   "float",
-   "vec2",
-   "vec3",
-   "vec4",
-   "mat2",
-   "mat3",
-   "mat4",
-   "sampler",
-   "sampler1D",
-   "sampler2D",
-   "sampler3D",
-   "samplerCube",
-   "sampler2DRect",
-   "struct"
+	"void",
+	"bool",
+	"bvec2",
+	"bvec3",
+	"bvec4",
+	"int",
+	"ivec2",
+	"ivec3",
+	"ivec4",
+	"float",
+	"vec2",
+	"vec3",
+	"vec4",
+	"mat2",
+	"mat3",
+	"mat4",
+	"sampler",
+	"sampler1D",
+	"sampler1DShadow",
+	"sampler2D",
+	"sampler2DShadow",
+	"sampler3D",
+	"samplerCube",
+	"sampler2DRect",
+	"sampler2DRectShadow",
+	"struct"
 };
 
 const char* getGLSLPrecisiontring (TPrecision p)
@@ -76,10 +79,13 @@ void writeType (std::stringstream &out, EGlslSymbolType type, GlslStruct *s, TPr
    case EgstFloat4x4:
    case EgstSamplerGeneric: 
    case EgstSampler1D:
+   case EgstSampler1DShadow:
    case EgstSampler2D:
+   case EgstSampler2DShadow:
    case EgstSampler3D:
    case EgstSamplerCube:
    case EgstSamplerRect:
+   case EgstSamplerRectShadow:
       out << typeString[type];
       break;
    case EgstStruct:
@@ -126,14 +132,20 @@ EGlslSymbolType translateType( const TType *type )
          return EgstSamplerGeneric;
       case EbtSampler1D:
          return EgstSampler1D;
+	  case EbtSampler1DShadow:
+		  return EgstSampler1DShadow;
       case EbtSampler2D:
          return EgstSampler2D;
+	  case EbtSampler2DShadow:
+		  return EgstSampler2DShadow;
       case EbtSampler3D:
          return EgstSampler3D;
       case EbtSamplerCube:
          return EgstSamplerCube;
 	  case EbtSamplerRect:
 		  return EgstSamplerRect;
+	  case EbtSamplerRectShadow:
+		  return EgstSamplerRectShadow;
       case EbtStruct:
          return EgstStruct;
       }

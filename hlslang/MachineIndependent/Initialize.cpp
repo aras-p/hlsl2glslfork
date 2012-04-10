@@ -403,6 +403,7 @@ void TBuiltIns::initialize()
 
       //DX HLSL texture functions
       s.append(TString("float4 tex1D(sampler1D s, float coord);"));
+      s.append(TString("float4 tex1D(sampler1DShadow s, float2 coord);"));
       s.append(TString("float4 tex1D(sampler1D s, float coord, float ddx, float ddy);"));
       s.append(TString("float4 tex1Dproj(sampler1D s, float4 coord);"));
       s.append(TString("float4 tex1Dbias(sampler1D s, float4 coord);"));
@@ -410,6 +411,7 @@ void TBuiltIns::initialize()
       s.append(TString("float4 tex1Dgrad(sampler1D s, float coord, float ddx, float ddy);"));
 
       s.append(TString("float4 tex2D(sampler2D s, float2 coord);"));
+      s.append(TString("float4 tex2D(sampler2DShadow s, float3 coord);"));
       s.append(TString("float4 tex2D(sampler2D s, float2 coord, float2 ddx, float2 ddy);"));
       s.append(TString("float4 tex2Dproj(sampler2D s, float4 coord);"));
       s.append(TString("float4 tex2Dbias(sampler2D s, float4 coord);"));
@@ -430,9 +432,10 @@ void TBuiltIns::initialize()
       s.append(TString("float4 texCUBElod(samplerCUBE s, float4 coord);"));
       s.append(TString("float4 texCUBEgrad(samplerCUBE s, float3 coord, float3 ddx, float3 ddy);"));
 	   
-		s.append(TString("float4 texRECT(samplerRECT s, float2 coord);"));
-		s.append(TString("float4 texRECTproj(samplerRECT s, float4 coord);"));
-		s.append(TString("float4 texRECTproj(samplerRECT s, float3 coord);"));
+      s.append(TString("float4 texRECT(samplerRECT s, float2 coord);"));
+      s.append(TString("float4 texRECT(samplerRECTShadow s, float3 coord);"));
+      s.append(TString("float4 texRECTproj(samplerRECT s, float4 coord);"));
+      s.append(TString("float4 texRECTproj(samplerRECT s, float3 coord);"));
 	   
       s.append(TString("float4 tex1D(sampler s, float coord);"));
       s.append(TString("float4 tex1D(sampler s, float coord, float ddx, float ddy);"));

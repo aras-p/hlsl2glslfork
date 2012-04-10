@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1F8BB3C61531B1FC00FD1224 /* libhlsl2glsl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BDE316C1158FB3600CCC6A3 /* libhlsl2glsl.a */; };
 		2B924B77120018E8003868C9 /* hlsl2glsltest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B924B76120018E8003868C9 /* hlsl2glsltest.cpp */; };
-		2BDE31851158FE3300CCC6A3 /* libhlsl2glsl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BDE316C1158FB3600CCC6A3 /* libhlsl2glsl.a */; };
 		2BDE326F1159221E00CCC6A3 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BDE326E1159221E00CCC6A3 /* AGL.framework */; };
 		2BDE328D1159241000CCC6A3 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BDE328C1159241000CCC6A3 /* OpenGL.framework */; };
 /* End PBXBuildFile section */
@@ -55,7 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2BDE31851158FE3300CCC6A3 /* libhlsl2glsl.a in Frameworks */,
+				1F8BB3C61531B1FC00FD1224 /* libhlsl2glsl.a in Frameworks */,
 				2BDE326F1159221E00CCC6A3 /* AGL.framework in Frameworks */,
 				2BDE328D1159241000CCC6A3 /* OpenGL.framework in Frameworks */,
 			);
@@ -220,12 +220,12 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_VERSION = 4.0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.4;
+				SDKROOT = macosx10.6;
 			};
 			name = Debug;
 		};
@@ -238,11 +238,11 @@
 				GCC_ENABLE_CPP_EXCEPTIONS = NO;
 				GCC_ENABLE_CPP_RTTI = NO;
 				GCC_OPTIMIZATION_LEVEL = 3;
-				GCC_VERSION = 4.0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = macosx10.4;
+				SDKROOT = macosx10.6;
 			};
 			name = Release;
 		};

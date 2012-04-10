@@ -9,6 +9,17 @@
 	#define snprintf _snprintf
 #endif
 
+bool isShadowSampler(TBasicType t) {
+	switch (t) {
+		case EbtSampler1DShadow:
+		case EbtSampler2DShadow:
+		case EbtSamplerRectShadow:
+			return true;
+		default:
+			return false;
+	}
+}
+
 int getElements( EGlslSymbolType t )
 {
    switch (t)
@@ -221,9 +232,33 @@ void setupUnaryBuiltInFuncCall( const TString &name, TIntermUnary *node, TString
 }
 
 
+
 void writeTex( const TString &name, TIntermAggregate *node, TGlslOutputTraverser* goit )
 {
-   writeFuncCall( name, node, goit);
+	TIntermSequence &sequence = node->getSequence(); 
+	TBasicType sampler_type = (*sequence.begin())->getAsTyped()->getBasicType();
+	TString new_name;
+	
+	if (isShadowSampler(sampler_type)) {
+		if (name == "texture2D")
+			new_name = "shadow2D";
+		else if (name == "texture2DProj")
+			new_name = "shadow2DProj";
+		else if (name == "texture1D")
+			new_name = "shadow1D";
+		else if (name == "texture1DProj")
+			new_name = "shadow1DProj";
+		else if (name == "texture2DRect")
+			new_name = "shadow2DRect";
+		else if (name == "texture2DRectProj")
+			new_name = "shadow2DRectProj";
+		else
+			new_name = name;
+	} else {
+		new_name = name;
+	}
+	
+	writeFuncCall(new_name, node, goit);
 }
 
 
@@ -1292,7 +1327,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       return false;
 
    case EOpTex2DProj:     
-      writeTex( "texture2DProj", node, goit); 
+      writeTex( "texture2DProj", node, goit);
       return false;
 
    case EOpTex2DLod:      

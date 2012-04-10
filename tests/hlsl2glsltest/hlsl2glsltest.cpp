@@ -271,9 +271,9 @@ static bool TestFile (TestRun type,
 			if (text != output)
 			{
 				// write output
-				FILE* f = fopen (outputPath.c_str(), "wb");
-				fwrite (text.c_str(), 1, text.size(), f);
-				fclose (f);
+				//FILE* f = fopen (outputPath.c_str(), "wb");
+				//fwrite (text.c_str(), 1, text.size(), f);
+				//fclose (f);
 				printf ("  does not match expected output\n");
 				res = false;
 			}
