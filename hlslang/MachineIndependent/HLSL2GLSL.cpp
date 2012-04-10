@@ -178,7 +178,7 @@ int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction
 
 int C_DECL Hlsl2Glsl_Shudown()
 {
-   DetachProcess();
+   return DetachProcess();
 }
 
 int C_DECL Hlsl2Glsl_Finalize()
