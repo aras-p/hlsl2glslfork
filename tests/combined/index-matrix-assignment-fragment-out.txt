@@ -16,9 +16,11 @@ vec4 ps_main( in PS_INPUT xlat_var_input );
 vec4 ps_main( in PS_INPUT xlat_var_input ) {
     vec4 c = vec4(1.00000, 1.00000, 1.00000, 1.00000);
     float depth = 1.00000;
+    vec4 shadow;
     c = texture2D( diffuse_map, xlat_var_input.uv);
     #line 43
-    c *= shadow2D( shadow_map, vec3( xlat_var_input.uv, depth)).x;
+    shadow = vec4( xlat_var_input.uv, depth, 1.00000);
+    c *= shadow2DProj( shadow_map, shadow).x;
     return c;
 }
 varying vec2 xlv_TEXCOORD0;

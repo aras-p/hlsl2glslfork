@@ -40,6 +40,7 @@ half4 ps_main(PS_INPUT input) : COLOR0 {
 	half4 c = half4(1, 1, 1, 1);
 	c = tex2D(diffuse_map, input.uv);
 	float depth = 1;
-	c *= tex2D(shadow_map, float3(input.uv, depth)).r;
+	float4 shadow = float4(input.uv, depth, 1);
+	c *= tex2Dproj(shadow_map, shadow).r;
 	return c;
 }
