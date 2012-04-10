@@ -39,7 +39,6 @@
 		2B951CBD1135197300DBAF46 /* SymbolTable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E310AF106F40045E29C /* SymbolTable.cpp */; };
 		2B951CBE1135197300DBAF46 /* tokens.c in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10EAD0AF109530045E29C /* tokens.c */; };
 		2B951CBF1135197300DBAF46 /* typeSamplers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E070AF103660045E29C /* typeSamplers.cpp */; };
-		7661870014FF565B007558B6 /* InitializeDll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 766186FE14FF565B007558B6 /* InitializeDll.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -118,8 +117,6 @@
 		3AC10EAB0AF109530045E29C /* scanner.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = scanner.c; path = hlslang/MachineIndependent/preprocessor/scanner.c; sourceTree = "<group>"; };
 		3AC10EAC0AF109530045E29C /* symbols.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = symbols.c; path = hlslang/MachineIndependent/preprocessor/symbols.c; sourceTree = "<group>"; };
 		3AC10EAD0AF109530045E29C /* tokens.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = tokens.c; path = hlslang/MachineIndependent/preprocessor/tokens.c; sourceTree = "<group>"; };
-		766186FE14FF565B007558B6 /* InitializeDll.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InitializeDll.cpp; sourceTree = "<group>"; };
-		766186FF14FF565B007558B6 /* InitializeDll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InitializeDll.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -134,7 +131,6 @@
 		0867D691FE84028FC02AAC07 /* glslang */ = {
 			isa = PBXGroup;
 			children = (
-				766186FD14FF565B007558B6 /* OGLCompilersDLL */,
 				08FB77ACFE841707C02AAC07 /* hlslang */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				034768DDFF38A45A11DB9C8B /* Products */,
@@ -326,15 +322,6 @@
 			name = Headers;
 			sourceTree = "<group>";
 		};
-		766186FD14FF565B007558B6 /* OGLCompilersDLL */ = {
-			isa = PBXGroup;
-			children = (
-				766186FE14FF565B007558B6 /* InitializeDll.cpp */,
-				766186FF14FF565B007558B6 /* InitializeDll.h */,
-			);
-			path = OGLCompilersDLL;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -438,7 +425,6 @@
 				2B951CBD1135197300DBAF46 /* SymbolTable.cpp in Sources */,
 				2B951CBE1135197300DBAF46 /* tokens.c in Sources */,
 				2B951CBF1135197300DBAF46 /* typeSamplers.cpp in Sources */,
-				7661870014FF565B007558B6 /* InitializeDll.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -486,11 +472,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
 				GCC_MODEL_TUNING = G5;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = hlsl2glsl;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Debug;
 		};
@@ -500,11 +484,9 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
 				GCC_MODEL_TUNING = G5;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = hlsl2glsl;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Release;
 		};
