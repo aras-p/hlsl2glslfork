@@ -9,6 +9,8 @@ sampler2DShadow shadow_map;
 struct VS_INPUT {
 	float4 position : POSITION;
 	float2 uv : TEXCOORD0;
+	int vertex_id : SV_VertexID;
+	int instance_id : SV_InstanceID;
 };
 
 struct PS_INPUT {
@@ -28,7 +30,7 @@ PS_INPUT vs_main(VS_INPUT input) {
 
 	dummy[2][0] = 0;
 	dummy._m20_m02 = float2(0, 0);
-	dummy._m22 = 1;
+	dummy._m22 = dummy[input.instance_id * 2 + input.vertex_id];
 
 	o.position = mul(mul(wp, stupid[2]), proj);
 	o.uv = input.uv;
@@ -36,8 +38,8 @@ PS_INPUT vs_main(VS_INPUT input) {
 	return o;
 }
 
-half4 ps_main(PS_INPUT input) : COLOR0 {
-	half4 c = half4(1, 1, 1, 1);
+half4 ps_main(PS_INPUT input, int primitive_id : SV_PrimitiveID) : COLOR0 {
+	half4 c = half4(1, 1, 1, (float)primitive_id);
 	c = tex2D(diffuse_map, input.uv);
 	float depth = 1;
 	float4 shadow = float4(input.uv, depth, 1);
