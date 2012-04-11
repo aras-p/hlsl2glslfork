@@ -10,6 +10,9 @@ For an opposite tool (GLSL ES to HLSL translator), look at [Google's ANGLE](http
 Changes from original HLSL2GLSL 0.9
 --------
 
+* Support DX10 SV_VertexID, SV_PrimitiveID and SV_InstanceID semantics.
+* Support for shadow sampler types (samplerRECTShadow/sampler2DShadow etc.) which generate appropriate shadow2DRect/shadow2D etc. calls.
+* Fixed matrix swizzle access & assignments (view._m01_m02_m33 = value)
 * Made it build with VS2008 on Windows and XCode 3.2 on Mac. Build as static library.
 * Feature to produce OpenGL ES-like precision specifiers (fixed/half/float -> lowp/mediump/highp)
 * Fixes to ternary vector selection (float4 ? float4 : float4)
@@ -35,6 +38,8 @@ Notes
 
 Status
 --------
+
+The library is used in the bitsquid engine and seems to work quite well. Support for more DX10/11 features might be added in the future.
 
 Seems to work quite well for Unity's shaders. When/if we bump into any issues; we'll just fix them.
 
