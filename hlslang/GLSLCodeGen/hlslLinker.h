@@ -32,6 +32,9 @@ enum EClassifier
 class HlslLinker
 {
 private:
+	// GLSL string for additional extension prepropressor directives.
+	// This is used for extensions that expose built-in variables.
+	std::stringstream additionalExtensions;
 
 	// GLSL string for generated shader
 	std::stringstream shader;
@@ -84,6 +87,9 @@ protected:
 
    bool getArgumentData( GlslSymbol* sym, EClassifier c, std::string &outName,
                   std::string &ctor, int &pad);
+	
+	typedef std::set<const char*> ExtensionSet;
+	void addRequiredExtensions(EAttribSemantic sem, ExtensionSet& extensions);
 };
 
 #endif //HLSL_LINKER_H

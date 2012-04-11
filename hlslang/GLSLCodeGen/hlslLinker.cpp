@@ -12,6 +12,7 @@
 #include "osinclude.h"
 #include <algorithm>
 #include <string.h>
+#include <set>
 
 // String table that maps attribute semantics to built-in GLSL attributes
 static const char attribString[EAttrSemCount][32] = {
@@ -40,6 +41,9 @@ static const char attribString[EAttrSemCount][32] = {
 	"xlat_attrib_blendindices",
 	"",
 	"",
+	"gl_VertexID",
+	"gl_InstanceID",
+	""
 };
 
 // String table that maps attribute semantics to built-in GLSL output varyings
@@ -69,6 +73,9 @@ static const char varOutString[EAttrSemCount][32] = {
 	"",
 	"",
 	"",
+	"",
+	"",
+	""
 };
 
 // String table that maps attribute semantics to built-in GLSL input varyings
@@ -98,6 +105,9 @@ static const char varInString[EAttrSemCount][32] = {
 	"",
 	"",
 	"",
+	"",
+	"",
+	"gl_PrimitiveID"
 };
 
 // String table that maps attribute semantics to built-in GLSL fragment shader outputs
@@ -241,7 +251,7 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 
 		case EClassVarOut:
 			// If using user varyings, create a user varying name
-			if ( (bUserVaryings && sem != EAttrSemPosition) || varOutString[sem][0] == 0 )
+			if ( (bUserVaryings && sem != EAttrSemPosition && sem != EAttrSemPrimitiveID) || varOutString[sem][0] == 0 )
 			{
 				outName = kUserVaryingPrefix;
 				outName += semantic;
@@ -261,7 +271,7 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 
 		case EClassVarIn:
 			// If using user varyings, create a user varying name
-			if ( (bUserVaryings && sem != EAttrSemVPos && sem != EAttrSemVFace) || varInString[sem][0] == 0 )
+			if ( (bUserVaryings && sem != EAttrSemVPos && sem != EAttrSemVFace && sem != EAttrSemPrimitiveID) || varInString[sem][0] == 0 )
 			{
 				outName = kUserVaryingPrefix;
 				outName += stripSemanticModifier ( semantic, false );
@@ -398,6 +408,9 @@ static AttrSemanticMapping kAttributeSemantic[] = {
 	{ "texcoord8", EAttrSemTex8 },
 	{ "texcoord9", EAttrSemTex9 },
 	{ "depth", EAttrSemDepth },
+	{ "sv_vertexid", EAttrSemVertexID },
+	{ "sv_primitiveid", EAttrSemPrimitiveID },
+	{ "sv_instanceid", EAttrSemInstanceID }
 };
 
 // Determine the GLSL attribute semantic for a given HLSL semantic
@@ -492,7 +505,13 @@ static const char* GetEntryName (const char* entryFunc)
 
 static const char* kShaderTypeNames[2] = { "Vertex", "Fragment" };
 
-
+void HlslLinker::addRequiredExtensions(EAttribSemantic sem, ExtensionSet &extensions)
+{
+	if (sem == EAttrSemPrimitiveID || sem == EAttrSemVertexID)
+		extensions.insert("GL_EXT_gpu_shader4");
+	else if (sem == EAttrSemInstanceID && extensions.find("GL_EXT_gpu_shader4") == extensions.end())
+		extensions.insert("GL_ARB_draw_instanced");
+}
 
 bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool usePrecision)
 {
@@ -694,7 +713,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	//
 	// Generate the main function
 	//
-
+		ExtensionSet extensions;
 		std::stringstream attrib;
 		std::stringstream uniform;
 		std::stringstream preamble;
@@ -746,6 +765,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 		{
 			GlslSymbol *sym = funcMain->getParameter(ii);
 			EAttribSemantic attrSem = parseAttributeSemantic( sym->getSemantic());
+			
+			addRequiredExtensions(attrSem, extensions);
 
 			switch (sym->getQualifier())
 			{
@@ -845,6 +866,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 						int pad;
 						int numArrayElements = 1;
 						bool bIsArray = false;
+						
+						addRequiredExtensions(memberSem, extensions);
 
 						// If it is an array, loop over each member
 						if ( current.arraySize > 0 )
@@ -1141,6 +1164,11 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 		}
 
 		postamble << "}\n\n";
+	
+		std::set<const char*>::iterator it = extensions.begin(), end = extensions.end();
+	
+		for (; it != end; ++it)
+			additionalExtensions << "#extension " << *it << " : require" << std::endl;
 
 		EmitIfNotEmpty (shader, uniform);
 		EmitIfNotEmpty (shader, attrib);
@@ -1154,11 +1182,11 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 }
 
 
-static std::string CleanupShaderText (const std::string& str)
+static std::string CleanupShaderText (const std::string& prefix, const std::string& str)
 {
-	std::string res;
+	std::string res = prefix;
 	size_t n = str.size();
-	res.reserve (n);
+	res.reserve (n + prefix.size());
 	for (size_t i = 0; i < n; ++i)
 	{
 		char c = str[i];
@@ -1173,6 +1201,6 @@ static std::string CleanupShaderText (const std::string& str)
 
 const char* HlslLinker::getShaderText() const 
 {
-	bs = CleanupShaderText (shader.str());
+	bs = CleanupShaderText (additionalExtensions.str(), shader.str());
 	return bs.c_str();
 }

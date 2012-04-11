@@ -103,6 +103,9 @@ enum EAttribSemantic
    EAttrSemBlendIndices,
    EAttrSemDepth,
    EAttrSemUnknown,
+   EAttrSemVertexID,
+   EAttrSemInstanceID,
+   EAttrSemPrimitiveID,
    EAttrSemCount
 };
 
