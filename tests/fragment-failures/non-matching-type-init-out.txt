@@ -1,3 +1,0 @@
-uniform(5): ERROR: 'const' :  non-matching types for const initializer  
-ERROR: 1 compilation errors.  No code generated.
-
