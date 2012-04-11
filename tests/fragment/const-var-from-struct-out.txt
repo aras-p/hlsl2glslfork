@@ -6,11 +6,11 @@ vec4 xlat_main(  ) {
     float g;
     float b;
     float a;
-    r = _Color.x ;
-    g = _Color.y ;
+    r = _Color.x;
+    g = _Color.y;
     #line 7
-    b = _Color.z ;
-    a = _Color.w ;
+    b = _Color.z;
+    a = _Color.w;
     return vec4( r, g, b, a);
 }
 void main() {

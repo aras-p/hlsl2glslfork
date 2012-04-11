@@ -41,18 +41,18 @@ mediump float unitySampleShadow( in highp vec4 eyePos ) {
     near = vec4(greaterThanEqual( vec4( z ), _LightSplitsNear));
     far = vec4(lessThan( vec4( z ), _LightSplitsFar));
     weights = (near * far);
-    coord = vec4( ((((sc0 * weights.x) + (sc1 * weights.y)) + (sc2 * weights.z)) + (sc3 * weights.w)), 1.00000);
+    coord = vec4( ((((sc0 * weights.x) + (sc1 * weights.y)) + (sc2 * weights.z)) + (sc3 * weights.w)), 1.0);
     #line 50
-    shadow = (( (texture2D( _ShadowMapTexture, coord.xy).x < coord.z) ) ? ( _LightShadowData.x ) : ( 1.00000 ));
+    shadow = (( (texture2D( _ShadowMapTexture, coord.xy).x < coord.z) ) ? ( _LightShadowData.x ) : ( 1.0 ));
     return shadow;
 }
 #line 22
 highp float Linear01Depth( in highp float z ) {
-    return (1.00000 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
+    return (1.0 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
 }
 #line 27
 highp vec2 EncodeFloatRG( in highp float v ) {
-    highp vec2 kEncodeMul = vec2(1.00000, 255.000);
+    highp vec2 kEncodeMul = vec2(1.0, 255.0);
     highp float kEncodeBit = 0.00392157;
     highp vec2 enc;
     #line 31
@@ -70,12 +70,12 @@ mediump vec4 xlat_main( in v2f i ) {
     depth = texture2D( _CameraDepthTexture, i.uv).x;
     depth = Linear01Depth( depth);
     #line 58
-    vpos = vec4( (i.ray * depth), 1.00000);
+    vpos = vec4( (i.ray * depth), 1.0);
     shadow = unitySampleShadow( vpos);
     res.x = shadow;
     #line 62
-    res.y = 1.00000;
-    res.zw = EncodeFloatRG( (1.00000 - depth));
+    res.y = 1.0;
+    res.zw = EncodeFloatRG( (1.0 - depth));
     return res;
 }
 varying highp vec2 xlv_TEXCOORD0;

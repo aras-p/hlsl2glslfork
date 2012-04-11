@@ -18,7 +18,7 @@ void xlat_main( in vec4 position, in vec4 normal, in vec2 uv, out vec4 oPosition
     float diffuseFactor;
     #line 24
     mypos = position;
-    factor = (vec4( 1.00000, 1.00000, 1.00000, 1.00000) - uv.yyyy);
+    factor = (vec4( 1.0, 1.0, 1.0, 1.0) - uv.yyyy);
     mypos = (mypos + (offset * factor));
     oPosition = (worldViewProj * mypos);
     #line 28
@@ -29,15 +29,15 @@ void xlat_main( in vec4 position, in vec4 normal, in vec2 uv, out vec4 oPosition
     EyeVec = (camObjPos - mypos);
     #line 38
     alignedEye = dot( normal, EyeVec);
-    if ((alignedEye < 0.00000)){
+    if ((alignedEye < 0.0)){
         normal = (-normal);
     }
     #line 45
     lightVec = normalize((objSpaceLight.xyz - (mypos.xyz * objSpaceLight.w)));
     alignedLight = dot( normal.xyz, lightVec);
     #line 50
-    oUv.z = float((( (alignedLight < 0.00000) ) ? ( 0 ) : ( 1 )));
-    diffuseFactor = max( alignedLight, 0.00000);
+    oUv.z = float((( (alignedLight < 0.0) ) ? ( 0 ) : ( 1 )));
+    diffuseFactor = max( alignedLight, 0.0);
     #line 54
     oColour = lightColour;
 }

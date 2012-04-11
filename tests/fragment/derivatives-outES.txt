@@ -49,7 +49,7 @@ mediump vec4 xlat_main( in highp vec4 uv ) {
     res.x = xll_dFdx(uv.x);
     res.y = xll_dFdx(uv.y);
     res.z = xll_fwidth(uv.z);
-    res.w = 1.00000;
+    res.w = 1.0;
     #line 7
     return res;
 }

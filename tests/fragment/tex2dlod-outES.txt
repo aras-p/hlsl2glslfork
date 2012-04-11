@@ -6,7 +6,7 @@ uniform sampler2D tex;
 mediump vec4 xlat_main( in highp vec4 uv );
 #line 3
 mediump vec4 xlat_main( in highp vec4 uv ) {
-    return xll_tex2Dlod( tex, vec4( uv.xy, 0.00000, 0.00000));
+    return xll_tex2Dlod( tex, vec4( uv.xy, 0.0, 0.0));
 }
 varying highp vec4 xlv_TEXCOORD0;
 void main() {

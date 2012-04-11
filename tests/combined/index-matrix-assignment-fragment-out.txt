@@ -18,12 +18,12 @@ vec4 ps_main( in PS_INPUT xlat_var_input, in int primitive_id );
 #line 41
 vec4 ps_main( in PS_INPUT xlat_var_input, in int primitive_id ) {
     vec4 c;
-    float depth = 1.00000;
+    float depth = 1.0;
     vec4 shadow;
-    c = vec4( 1.00000, 1.00000, 1.00000, float(primitive_id));
+    c = vec4( 1.0, 1.0, 1.0, float(primitive_id));
     c = texture2D( diffuse_map, xlat_var_input.uv);
     #line 45
-    shadow = vec4( xlat_var_input.uv, depth, 1.00000);
+    shadow = vec4( xlat_var_input.uv, depth, 1.0);
     c *= shadow2DProj( shadow_map, shadow).x;
     return c;
 }

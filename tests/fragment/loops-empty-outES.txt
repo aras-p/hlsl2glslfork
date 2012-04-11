@@ -13,7 +13,7 @@ mediump vec4 xlat_main(  ) {
     }
     while (     ((j--) > 0) )
 ;
-    return vec4( 1.00000);
+    return vec4( 1.0);
 }
 void main() {
     mediump vec4 xl_retval;

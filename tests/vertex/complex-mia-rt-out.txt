@@ -90,7 +90,7 @@ v2f_surf xlat_main( in appdata_full v );
 #line 41
 vec3 ObjSpaceViewDir( in vec4 v ) {
     vec3 objSpaceCameraPos;
-    objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.00000)).xyz * unity_Scale.w);
+    objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.0)).xyz * unity_Scale.w);
     return (objSpaceCameraPos - v.xyz);
 }
 #line 32
@@ -132,7 +132,7 @@ v2f_surf xlat_main( in appdata_full v ) {
     viewDirForLight = (rotation * ObjSpaceViewDir( v.vertex));
     #line 434
     o.viewDir = viewDirForLight;
-    o.vlight = vec3( 0.00000);
+    o.vlight = vec3( 0.0);
     o._LightCoord = (_LightMatrix0 * (_Object2World * v.vertex)).xy;
     #line 438
     return o;

@@ -6,11 +6,11 @@ mediump vec4 xlat_main(  ) {
     mediump float c2;
     highp float c3;
     highp float c4;
-    c1 = max( _Color.x , _Color.y );
-    c2 = (_Color.z  * _Color.w );
+    c1 = max( _Color.x, _Color.y);
+    c2 = (_Color.z * _Color.w);
     #line 7
-    c3 = log2( 16.0 );
-    c4 = ( -_Color.x  );
+    c3 = log2(16.0);
+    c4 = (-_Color.x);
     return vec4( c1, c2, c3, c4);
 }
 void main() {

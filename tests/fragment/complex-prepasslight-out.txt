@@ -58,15 +58,15 @@ float ComputeShadow( in vec3 vec, in float z, in vec2 uv );
 vec4 xlat_main( in v2f i );
 #line 4
 float Luminance( in vec3 c ) {
-    return dot( c, vec3( 0.220000, 0.707000, 0.0710000));
+    return dot( c, vec3( 0.22, 0.707, 0.071));
 }
 #line 14
 float Linear01Depth( in float z ) {
-    return (1.00000 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
+    return (1.0 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
 }
 #line 8
 float DecodeFloatRGBA( in vec4 enc ) {
-    vec4 kDecodeDot = vec4(1.00000, 0.00392157, 1.53787e-05, 6.22737e-09);
+    vec4 kDecodeDot = vec4(1.0, 0.00392157, 1.53787e-05, 6.22737e-09);
     return dot( enc, kDecodeDot);
 }
 #line 39
@@ -77,7 +77,7 @@ float SampleCubeDistance( in vec3 vec ) {
 }
 #line 44
 float unitySampleShadow( in vec3 vec, in float mydist ) {
-    float z = 0.00781250;
+    float z = 0.0078125;
     vec4 shadowVals;
     vec4 shadows;
     #line 48
@@ -86,8 +86,8 @@ float unitySampleShadow( in vec3 vec, in float mydist ) {
     shadowVals.z = SampleCubeDistance( (vec + vec3( (-z), z, (-z))));
     shadowVals.w = SampleCubeDistance( (vec + vec3( z, (-z), (-z))));
     #line 52
-    shadows = xll_vecTSel (lessThan( shadowVals, vec4( mydist)), vec4( _LightShadowData.xxxx), vec4( 1.00000));
-    return dot( shadows, vec4( 0.250000));
+    shadows = xll_vecTSel (lessThan( shadowVals, vec4( mydist)), vec4( _LightShadowData.xxxx), vec4( 1.0));
+    return dot( shadows, vec4( 0.25));
 }
 #line 55
 float ComputeShadow( in vec3 vec, in float z, in vec2 uv ) {
@@ -97,10 +97,10 @@ float ComputeShadow( in vec3 vec, in float z, in vec2 uv ) {
     fade = ((z * _LightShadowData.z) + _LightShadowData.w);
     fade = xll_saturate(fade);
     mydist = (length(vec) * _LightPositionRange.w);
-    mydist *= 0.970000;
+    mydist *= 0.97;
     #line 61
     return unitySampleShadow( vec, mydist);
-    return 1.00000;
+    return 1.0;
 }
 #line 64
 vec4 xlat_main( in v2f i ) {
@@ -123,12 +123,12 @@ vec4 xlat_main( in v2f i ) {
     i.ray = (i.ray * (_ProjectionParams.z / i.ray.z));
     uv = (i.uv.xy / i.uv.w);
     nspec = texture2D( _CameraNormalsTexture, uv);
-    normal = ((nspec.xyz * 2.00000) - 1.00000);
+    normal = ((nspec.xyz * 2.0) - 1.0);
     #line 70
     normal = normalize(normal);
     depth = texture2D( _CameraDepthTexture, uv).x;
     depth = Linear01Depth( depth);
-    vpos = vec4( (i.ray * depth), 1.00000);
+    vpos = vec4( (i.ray * depth), 1.0);
     #line 74
     wpos = (_CameraToWorld * vpos).xyz;
     tolight = (wpos - _LightPos.xyz);
@@ -137,17 +137,17 @@ vec4 xlat_main( in v2f i ) {
     #line 78
     atten = texture2D( _LightTextureB0, vec2( att)).w;
     atten *= ComputeShadow( tolight, vpos.z, uv);
-    atten *= textureCube( _LightTexture0, (_LightMatrix0 * vec4( wpos, 1.00000)).xyz).w;
-    diff = max( 0.00000, dot( lightDir, normal));
+    atten *= textureCube( _LightTexture0, (_LightMatrix0 * vec4( wpos, 1.0)).xyz).w;
+    diff = max( 0.0, dot( lightDir, normal));
     #line 82
     h = normalize((lightDir - normalize((wpos - _WorldSpaceCameraPos))));
-    spec = pow( max( 0.00000, dot( h, normal)), (nspec.w * 128.000));
+    spec = pow( max( 0.0, dot( h, normal)), (nspec.w * 128.0));
     spec *= xll_saturate(atten);
     #line 86
     res.xyz = (_LightColor.xyz * (diff * atten));
     res.w = (spec * Luminance( _LightColor.xyz));
     fade = ((vpos.z * unity_LightmapFade.z) + unity_LightmapFade.w);
-    res *= xll_saturate((1.00000 - fade));
+    res *= xll_saturate((1.0 - fade));
     #line 90
     return exp2((-res));
 }

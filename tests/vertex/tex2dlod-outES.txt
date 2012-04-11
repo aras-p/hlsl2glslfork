@@ -6,7 +6,7 @@ highp vec4 xlat_main( in highp vec4 pos, in highp vec2 uv );
 #line 3
 highp vec4 xlat_main( in highp vec4 pos, in highp vec2 uv ) {
     highp vec4 c;
-    c = xll_tex2Dlod( tex, vec4( uv, 0.00000, 0.00000));
+    c = xll_tex2Dlod( tex, vec4( uv, 0.0, 0.0));
     return (pos + c);
 }
 void main() {

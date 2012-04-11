@@ -1,7 +1,7 @@
 vec4 xlat_main(  );
 #line 1
 vec4 xlat_main(  ) {
-    return vec4( 1.00000);
+    return vec4( 1.0);
 }
 void main() {
     vec4 xl_retval;

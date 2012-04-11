@@ -50,7 +50,7 @@ vec4 Squash( in vec4 pos ) {
     planeNormal = _SquashPlaneNormal.xyz;
     projectedVertex = (pos.xyz - ((dot( planeNormal, vec3( pos)) + _SquashPlaneNormal.w) * planeNormal));
     #line 49
-    pos = vec4( mix( projectedVertex, pos.xyz, vec3( _SquashAmount)), 1.00000);
+    pos = vec4( mix( projectedVertex, pos.xyz, vec3( _SquashAmount)), 1.0);
     return pos;
 }
 #line 53
@@ -58,21 +58,21 @@ void ExpandBillboard( in mat4 mat, inout vec4 pos, inout vec3 normal, inout vec4
     float isBillboard;
     vec3 norb;
     vec3 tanb;
-    isBillboard = (1.00000 - abs(tangent.w));
-    norb = vec3( normalize((vec4( normal, 0.00000) * mat)));
+    isBillboard = (1.0 - abs(tangent.w));
+    norb = vec3( normalize((vec4( normal, 0.0) * mat)));
     #line 57
-    tanb = vec3( normalize((vec4( tangent.xyz, 0.00000) * mat)));
-    pos += ((vec4( normal.xy, 0.00000, 0.00000) * mat) * isBillboard);
+    tanb = vec3( normalize((vec4( tangent.xyz, 0.0) * mat)));
+    pos += ((vec4( normal.xy, 0.0, 0.0) * mat) * isBillboard);
     normal = mix( normal, norb, vec3( isBillboard));
-    tangent = mix( tangent, vec4( tanb, -1.00000), vec4( isBillboard));
+    tangent = mix( tangent, vec4( tanb, -1.0), vec4( isBillboard));
 }
 #line 66
 vec4 TriangleWave( in vec4 x ) {
-    return abs(((fract((x + 0.500000)) * 2.00000) - 1.00000));
+    return abs(((fract((x + 0.5)) * 2.0) - 1.0));
 }
 #line 62
 vec4 SmoothCurve( in vec4 x ) {
-    return ((x * x) * (3.00000 - (2.00000 * x)));
+    return ((x * x) * (3.0 - (2.0 * x)));
 }
 #line 70
 vec4 SmoothTriangleWave( in vec4 x ) {
@@ -80,8 +80,8 @@ vec4 SmoothTriangleWave( in vec4 x ) {
 }
 #line 74
 vec4 AnimateVertex( in vec4 pos, in vec3 normal, in vec4 animParams ) {
-    float fDetailAmp = 0.100000;
-    float fBranchAmp = 0.300000;
+    float fDetailAmp = 0.1;
+    float fBranchAmp = 0.3;
     float fObjPhase;
     float fBranchPhase;
     float fVtxPhase;
@@ -90,12 +90,12 @@ vec4 AnimateVertex( in vec4 pos, in vec3 normal, in vec4 animParams ) {
     vec2 vWavesSum;
     vec3 bend;
     #line 78
-    fObjPhase = dot( xll_matrixindex (_Object2World, 3).xyz, vec3( 1.00000));
+    fObjPhase = dot( xll_matrixindex (_Object2World, 3).xyz, vec3( 1.0));
     fBranchPhase = (fObjPhase + animParams.x);
     fVtxPhase = dot( pos.xyz, vec3( (animParams.y + fBranchPhase)));
     vWavesIn = (_Time.yy + vec2( fVtxPhase, fBranchPhase));
     #line 82
-    vWaves = ((fract((vWavesIn.xxyy * vec4( 1.97500, 0.793000, 0.375000, 0.193000))) * 2.00000) - 1.00000);
+    vWaves = ((fract((vWavesIn.xxyy * vec4( 1.975, 0.793, 0.375, 0.193))) * 2.0) - 1.0);
     vWaves = SmoothTriangleWave( vWaves);
     vWavesSum = (vWaves.xz + vWaves.yw);
     bend = ((animParams.y * fDetailAmp) * normal.xyz);
@@ -112,7 +112,7 @@ void TreeVertLeaf( inout appdata_full v ) {
     #line 95
     v.vertex = AnimateVertex( v.vertex, v.normal, vec4( v.color.xy, v.texcoord1.xy));
     v.vertex = Squash( v.vertex);
-    v.color = vec4( 1.00000, 1.00000, 1.00000, v.color.w);
+    v.color = vec4( 1.0, 1.0, 1.0, v.color.w);
     v.normal = normalize(v.normal);
     #line 99
     v.tangent.xyz = normalize(v.tangent.xyz);
@@ -120,7 +120,7 @@ void TreeVertLeaf( inout appdata_full v ) {
 #line 25
 vec3 ObjSpaceViewDir( in vec4 v ) {
     vec3 objSpaceCameraPos;
-    objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.00000)).xyz * unity_Scale.w);
+    objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.0)).xyz * unity_Scale.w);
     return (objSpaceCameraPos - v.xyz);
 }
 #line 20

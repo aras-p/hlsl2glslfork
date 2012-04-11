@@ -91,7 +91,7 @@ v2f_surf xlat_main( in appdata_full v );
 #line 41
 highp vec3 ObjSpaceViewDir( in highp vec4 v ) {
     highp vec3 objSpaceCameraPos;
-    objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.00000)).xyz * unity_Scale.w);
+    objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.0)).xyz * unity_Scale.w);
     return (objSpaceCameraPos - v.xyz);
 }
 #line 32
@@ -128,9 +128,9 @@ v2f_surf xlat_main( in appdata_full v ) {
     o.TtoW2 = (vec4( (rotation * xll_matrixindex (_Object2World, 2).xyz), worldRefl.z) * unity_Scale.w);
     #line 440
     o.lmap.xy = ((v.texcoord1.xy * unity_LightmapST.xy) + unity_LightmapST.zw);
-    o.lmap.zw = vec2( 0.00000, 0.00000);
+    o.lmap.zw = vec2( 0.0, 0.0);
     o.lmap.z = (length(((_Object2World * v.vertex).xyz - unity_ShadowFadeCenterAndType.xyz)) * unity_ShadowFadeCenterAndType.w);
-    o.lmap.w = ((-(glstate_matrix_modelview0 * v.vertex).z) * (1.00000 - unity_ShadowFadeCenterAndType.w));
+    o.lmap.w = ((-(glstate_matrix_modelview0 * v.vertex).z) * (1.0 - unity_ShadowFadeCenterAndType.w));
     #line 444
     worldN = (xll_constructMat3( _Object2World) * (v.normal * unity_Scale.w));
     lightDir = (rotation * ObjSpaceLightDir( v.vertex));

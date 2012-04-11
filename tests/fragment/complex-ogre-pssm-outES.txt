@@ -24,18 +24,18 @@ highp float shadowPCF( in sampler2D shadowMap, in highp vec4 shadowMapPos, in hi
     #line 3
     shadowMapPos = (shadowMapPos / shadowMapPos.w);
     uv = shadowMapPos.xy;
-    o = (vec3( offset, (-offset.x)) * 0.300000);
+    o = (vec3( offset, (-offset.x)) * 0.3);
     #line 8
     c = float((( (shadowMapPos.z <= texture2D( shadowMap, (uv.xy - o.xy)).x) ) ? ( 1 ) : ( 0 )));
     c += float((( (shadowMapPos.z <= texture2D( shadowMap, (uv.xy + o.xy)).x) ) ? ( 1 ) : ( 0 )));
     c += float((( (shadowMapPos.z <= texture2D( shadowMap, (uv.xy + o.zy)).x) ) ? ( 1 ) : ( 0 )));
     c += float((( (shadowMapPos.z <= texture2D( shadowMap, (uv.xy - o.zy)).x) ) ? ( 1 ) : ( 0 )));
     #line 16
-    return (c / 4.00000);
+    return (c / 4.0);
 }
 #line 44
 void xlat_main( in highp vec3 uv, in highp vec3 OSlightDir, in highp vec3 OShalfAngle, in highp vec4 LightPosition0, in highp vec4 LightPosition1, in highp vec4 LightPosition2, in highp vec3 normal, out highp vec4 oColour, highp vec4 invShadowMapSize0, highp vec4 invShadowMapSize1, highp vec4 invShadowMapSize2, highp vec4 pssmSplitPoints, sampler2D diffuse, sampler2D specular, sampler2D normalMap, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, highp vec4 lightDiffuse, highp vec4 lightSpecular, highp vec4 ambient ) {
-    highp float shadowing = 1.00000;
+    highp float shadowing = 1.0;
     highp vec4 splitColour;
     highp vec3 lightVec;
     highp vec3 halfAngle;
@@ -45,18 +45,18 @@ void xlat_main( in highp vec3 uv, in highp vec3 OSlightDir, in highp vec3 OShalf
     highp vec4 lighting;
     #line 49
     if ((uv.z <= pssmSplitPoints.y)){
-        splitColour = vec4( 0.100000, 0.00000, 0.00000, 1.00000);
+        splitColour = vec4( 0.1, 0.0, 0.0, 1.0);
         shadowing = shadowPCF( shadowMap0, LightPosition0, invShadowMapSize0.xy);
     }
     else{
         if ((uv.z <= pssmSplitPoints.z)){
             #line 56
-            splitColour = vec4( 0.00000, 0.100000, 0.00000, 1.00000);
+            splitColour = vec4( 0.0, 0.1, 0.0, 1.0);
             shadowing = shadowPCF( shadowMap1, LightPosition1, invShadowMapSize1.xy);
         }
         else{
             #line 61
-            splitColour = vec4( 0.100000, 0.100000, 0.00000, 1.00000);
+            splitColour = vec4( 0.1, 0.1, 0.0, 1.0);
             shadowing = shadowPCF( shadowMap2, LightPosition2, invShadowMapSize2.xy);
         }
     }
@@ -68,10 +68,10 @@ void xlat_main( in highp vec3 uv, in highp vec3 OSlightDir, in highp vec3 OShalf
     specularColour = texture2D( specular, uv.xy);
     #line 76
     shininess = specularColour.w;
-    specularColour.w = 1.00000;
+    specularColour.w = 1.0;
     #line 80
-    lighting = (xll_lit( dot( normal, lightVec), dot( normal, halfAngle), (shininess * 128.000)) * shadowing);
-    oColour = ((diffuseColour * clamp( (ambient + (lightDiffuse * lighting.y)), vec4( 0.00000), vec4( 1.00000))) + ((lightSpecular * specularColour) * lighting.z));
+    lighting = (xll_lit( dot( normal, lightVec), dot( normal, halfAngle), (shininess * 128.0)) * shadowing);
+    oColour = ((diffuseColour * clamp( (ambient + (lightDiffuse * lighting.y)), vec4( 0.0), vec4( 1.0))) + ((lightSpecular * specularColour) * lighting.z));
     #line 84
     oColour.w = diffuseColour.w;
 }

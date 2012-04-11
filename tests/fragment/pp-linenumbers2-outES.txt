@@ -64,9 +64,9 @@ mediump vec4 xlat_main( in v2f_surf IN );
 #line 102
 mediump vec4 UnpackNormal( in mediump vec4 packednormal ) {
     mediump vec4 normal;
-    normal.xy = ((packednormal.wy * 2.00000) - 1.00000);
+    normal.xy = ((packednormal.wy * 2.0) - 1.0);
     #line 106
-    normal.z = sqrt(((1.00000 - (normal.x * normal.x)) - (normal.y * normal.y)));
+    normal.z = sqrt(((1.0 - (normal.x * normal.x)) - (normal.y * normal.y)));
     return normal;
 }
 #line 10058
@@ -99,17 +99,17 @@ mediump vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in mediump vec3 lightDir,
     h = normalize((lightDir + viewDir));
     nl = dot( s.Normal, lightDir);
     #line 1035
-    nh = max( 0.00000, dot( s.Normal, h));
-    spec = (pow( nh, (s.Specular * 128.000)) * s.Gloss);
+    nh = max( 0.0, dot( s.Normal, h));
+    spec = (pow( nh, (s.Specular * 128.0)) * s.Gloss);
     backContrib = xll_saturate(dot( viewDir, (-lightDir)));
     backContrib = mix( xll_saturate((-nl)), backContrib, _TranslucencyViewDependency);
     #line 1039
     translucencyColor = ((backContrib * s.Translucency) * _TranslucencyColor);
-    nl = max( 0.00000, ((nl * 0.600000) + 0.400000));
-    c.xyz = (s.Albedo * ((translucencyColor * 2.00000) + nl));
+    nl = max( 0.0, ((nl * 0.6) + 0.4));
+    c.xyz = (s.Albedo * ((translucencyColor * 2.0) + nl));
     #line 1043
     c.xyz = ((c.xyz * _LightColor0.xyz) + spec);
-    c.xyz *= mix( 2.00000, (atten * 2.00000), _ShadowStrength);
+    c.xyz *= mix( 2.0, (atten * 2.0), _ShadowStrength);
     return c;
 }
 #line 10082
@@ -121,16 +121,16 @@ mediump vec4 xlat_main( in v2f_surf IN ) {
     surfIN.uv_MainTex = IN.hip_pack0.xy;
     #line 10086
     surfIN.color = IN.lop_color;
-    o.Albedo = vec3( 0.00000);
-    o.Emission = vec3( 0.00000);
+    o.Albedo = vec3( 0.0);
+    o.Emission = vec3( 0.0);
     #line 10090
-    o.Specular = 0.00000;
-    o.Alpha = 0.00000;
+    o.Specular = 0.0;
+    o.Alpha = 0.0;
     surf( surfIN, o);
     xll_clip((o.Alpha - _Cutoff));
     #line 10094
     lightDir = IN.lightDir;
-    c = LightingTreeLeaf( o, lightDir, normalize(IN.viewDir), (texture2D( _LightTexture0, IN._LightCoord).w * 1.00000));
+    c = LightingTreeLeaf( o, lightDir, normalize(IN.viewDir), (texture2D( _LightTexture0, IN._LightCoord).w * 1.0));
     c.w = o.Alpha;
     return c;
 }

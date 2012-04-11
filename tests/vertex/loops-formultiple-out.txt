@@ -19,12 +19,12 @@ v2f xlat_main( in appdata v ) {
     int i_1 = 0;
     o.pos = (UNITY_MATRIX_MVP * v.vertex);
     #line 19
-    o.color = vec4( 0.00000);
+    o.color = vec4( 0.0);
     for ( ; (i < 4); (++i)) {
-        o.color += max( 0.00000, float( unity_LightColor[i]));
+        o.color += max( 0.0, float( unity_LightColor[i]));
     }
     for ( ; (i_1 < 4); (++i_1)) {
-        o.color *= min( 1.00000, float( unity_LightColor[i_1]));
+        o.color *= min( 1.0, float( unity_LightColor[i_1]));
     }
     #line 24
     return o;

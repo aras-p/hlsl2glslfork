@@ -17,7 +17,7 @@ vec4 ComputeSomeLighting( in vec3 pos );
 v2f xlat_main( in a2v v );
 #line 15
 float ComputeShadow( in vec3 pos ) {
-    return pow( pos.x, 4.00000);
+    return pow( pos.x, 4.0);
 }
 #line 20
 float ComputeAtten( in vec3 pos, in vec3 lightPos ) {
