@@ -72,16 +72,29 @@ protected:
 //
 class TVariable : public TSymbol {
 public:
-   TVariable(const TString *name, const TType& t, bool uT = false ) : TSymbol(name), type(t), userType(uT), unionArray(0), arrayInformationType(0) { }
-   TVariable(const TString *name, const TTypeInfo* info, const TType& t, bool uT = false ) : TSymbol(name, info), type(t), userType(uT), unionArray(0), arrayInformationType(0) { }
+   TVariable(const TString *name, const TType& t, bool uT = false ) : TSymbol(name), type(t), userType(uT), unionArray(0), arrayInformationType(0)
+	{
+		changeQualifier(type.getQualifier());
+	}
+   TVariable(const TString *name, const TTypeInfo* info, const TType& t, bool uT = false ) : TSymbol(name, info), type(t), userType(uT), unionArray(0), arrayInformationType(0)
+	{
+		changeQualifier(type.getQualifier());
+	}
    virtual ~TVariable() { }
    virtual bool isVariable() const { return true; }    
    TType& getType() { return type; }    
    const TType& getType() const { return type; }
    bool isUserType() const { return userType; }
-   void changeQualifier(TQualifier qualifier) { type.changeQualifier(qualifier); }
+   void changeQualifier(TQualifier qualifier)
+	{
+		foldable = qualifier == EvqConst || qualifier == EvqStaticConst;
+		type.changeQualifier(qualifier);
+	}
    void updateArrayInformationType(TType *t) { arrayInformationType = t; }
    TType* getArrayInformationType() { return arrayInformationType; }
+	bool isFoldable() const { return foldable; }
+	void setIsFoldable(bool foldable) { this->foldable = foldable; }
+	
 
    virtual void dump(TInfoSink &infoSink) const;
 
@@ -104,6 +117,7 @@ public:
    virtual TVariable* clone(TStructureMap& remapper);
       
 protected:
+   bool foldable;
    TType type;
    bool userType;
    // we are assuming that Pool Allocator will free the memory allocated to unionArray

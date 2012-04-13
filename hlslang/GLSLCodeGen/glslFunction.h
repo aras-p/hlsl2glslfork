@@ -35,7 +35,7 @@ public:
                                                  std::vector<GlslFunction*>::iterator funcEnd );
 
    /// Returns the active scope
-   std::string getCode() { return active.str(); }
+   std::string getCode() { return active->str(); }
 
    int getParameterCount() { return (int)parameters.size();}   
    GlslSymbol* getParameter( int i ) { return parameters[i];}
@@ -48,17 +48,20 @@ public:
    
    const std::vector<GlslSymbol*>& getSymbols() { return symbols; }
 
-   void increaseDepth() { depth++; }   
-   void decreaseDepth() { depth = depth ? depth-1 : depth; }
+   void increaseDepth() { depth.back()++; }   
+   void decreaseDepth() { depth.back() = depth.back() ? depth.back()-1 : depth.back(); }
+	
+   void pushDepth(int depth);
+   void popDepth();
 
-   void indent( std::stringstream &s ) { for (int ii = 0; ii < depth; ii++) s << "    "; }
-   void indent() { indent(active); }
+   void indent( std::stringstream &s ) { for (int ii = 0; ii < depth.back(); ii++) s << "    "; }
+   void indent() { indent(*active); }
    
-   void beginBlock( bool brace = true) { if (brace) active << "{\n"; increaseDepth(); inStatement = false; }
-   void endBlock() { endStatement(); decreaseDepth(); indent(); active << "}\n";  }
+   void beginBlock( bool brace = true) { if (brace) *active << "{\n"; increaseDepth(); inStatement = false; }
+   void endBlock() { endStatement(); decreaseDepth(); indent(); *active << "}\n";  }
    
    void beginStatement() { if (!inStatement) { indent(); inStatement = true;}}
-   void endStatement() { if (inStatement) { active << ";\n"; inStatement = false;}}
+   void endStatement() { if (inStatement) { *active << ";\n"; inStatement = false;}}
 
    const std::string &getName() { return name; }
    const std::string &getMangledName() { return mangledName; }
@@ -68,9 +71,9 @@ public:
    const std::string& getSemantic() const { return semantic; }    
    GlslStruct* getStruct() { return structPtr; }   
    void setStruct( GlslStruct *s ) { structPtr = s;}
-
-   std::stringstream& getActiveOutput () { return active; }
-	int getLine() const { return line; }
+   void setActiveOutput(std::stringstream* output) { active = output; }
+   std::stringstream& getActiveOutput () { return *active; }
+   int getLine() const { return line; }
    
 protected:
 
@@ -86,7 +89,7 @@ protected:
    GlslStruct *structPtr;  
 
    // Present indent depth
-   int depth; 
+   std::vector<int> depth; 
 
    // These are the symbols referenced
    std::vector<GlslSymbol*> symbols;
@@ -101,7 +104,7 @@ protected:
    std::set<TOperator> libFunctions;
 
    // Stores the active output of the function
-   std::stringstream active;
+   std::stringstream* active;
 
    bool inStatement;    
 

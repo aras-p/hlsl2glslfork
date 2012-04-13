@@ -42,8 +42,7 @@ GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGls
 
 GlslSymbol::~GlslSymbol() 
 {
-}
-   
+}  
 
 bool GlslSymbol::isReservedGlslKeyword ( const std::string &name ) const
 {
@@ -95,6 +94,12 @@ void GlslSymbol::writeDecl (std::stringstream &out, bool local, bool skipUniform
 
 void GlslSymbol::writeInitializer( std::stringstream &out, int element )
 {
+	if (unFoldableInitializer.size() > 0)
+	{
+		out << unFoldableInitializer;
+		return;
+	}
+	
    int elementCount = 0;
    EGlslSymbolType baseType = EgstVoid;
 

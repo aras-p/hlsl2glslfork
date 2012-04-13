@@ -17,15 +17,19 @@ GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSym
       depth(0),
       inStatement(false)
 { 
-	active.setf ( std::stringstream::showpoint );
-	active.unsetf(std::ios::fixed);
-	active.unsetf(std::ios::scientific);
-	active.precision (6);
+	active = new std::stringstream();
+	active->setf ( std::stringstream::showpoint );
+	active->unsetf(std::ios::fixed);
+	active->unsetf(std::ios::scientific);
+	active->precision (6);
+	pushDepth(0);
 }
 
 
 GlslFunction::~GlslFunction()
 {
+   popDepth();
+   delete active;
    for (std::vector<GlslSymbol*>::iterator it = symbols.begin(); it < symbols.end(); it++)
    {
       (*it)->releaseRef ();
@@ -36,6 +40,8 @@ GlslFunction::~GlslFunction()
    }
 }
 
+void GlslFunction::pushDepth(int depth) { this->depth.push_back(depth); }
+void GlslFunction::popDepth() { depth.pop_back(); }
 
 bool GlslFunction::hasSymbol( int id )
 {
@@ -122,8 +128,6 @@ std::string GlslFunction::getPrototype()
 std::string GlslFunction::getLocalDecls( int indentLevel )
 {
    std::stringstream out;
-   int oldDepth;
-
    // Make sure that decimal points are printed to the output string.  Otherwise, the following:
    //  float fTemp = 1.0;
    // will come out:
@@ -135,9 +139,7 @@ std::string GlslFunction::getLocalDecls( int indentLevel )
 	out.precision (6);
 
    //save off the old depth, to restore later, this is probably unnecessary
-   oldDepth = depth;
-   depth = indentLevel;
-
+   pushDepth(indentLevel);
    for (std::vector<GlslSymbol*>::iterator it = symbols.begin(); it < symbols.end(); it++)
    {
       if ( (!(*it)->getIsParameter() && !(*it)->getIsGlobal() && !(*it)->getIsMutable()) )
@@ -171,8 +173,8 @@ std::string GlslFunction::getLocalDecls( int indentLevel )
          out << ";\n";
       }
    }
-
-   depth = oldDepth;
+	
+   popDepth();
 
    return out.str();
 }
@@ -182,7 +184,6 @@ std::string GlslFunction::getMutableDecls( int indentLevel, std::vector<GlslFunc
                                            std::vector<GlslFunction*>::iterator funcEnd  )
 {
    std::stringstream out;
-   int oldDepth;
 
    // Make sure that decimal points are printed to the output string.  Otherwise, the following:
    //  float fTemp = 1.0;
@@ -193,8 +194,7 @@ std::string GlslFunction::getMutableDecls( int indentLevel, std::vector<GlslFunc
 	out.precision (6);
 
    //save off the old depth, to restore later, this is probably unnecessary
-   oldDepth = depth;
-   depth = indentLevel;
+   pushDepth(indentLevel);
 
    for (std::vector<GlslSymbol*>::iterator it = symbols.begin(); it < symbols.end(); it++)
    {
@@ -247,7 +247,7 @@ std::string GlslFunction::getMutableDecls( int indentLevel, std::vector<GlslFunc
       }
    }
 
-   depth = oldDepth;
+   popDepth();
 
    return out.str();
 }

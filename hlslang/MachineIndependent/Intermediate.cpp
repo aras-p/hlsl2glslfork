@@ -1757,7 +1757,7 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, TIntermTyped* constantNod
          tempNode = new TIntermConstantUnion(tempConstArray, TType(EbtBool, EbpUndefined, EvqConst));
          tempNode->setLine(getLine());
 
-         return tempNode;         
+         return tempNode;
 
       case EOpNotEqual: 
          if (getType().getBasicType() == EbtStruct)

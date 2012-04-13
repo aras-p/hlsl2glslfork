@@ -205,7 +205,7 @@ variable_identifier
         // don't delete $1.string, it's used by error recovery, and the pool
         // pop will reclaim the memory
 
-        if (variable->getType().getQualifier() == EvqConst ) {
+        if (variable->isFoldable() && variable->getType().getQualifier() == EvqConst) {
             constUnion* constArray = variable->getConstPointer();
             TType t(variable->getType());
             $$ = parseContext.intermediate.addConstantUnion(constArray, t, $1.line);        
@@ -1817,8 +1817,6 @@ type_qualifier
         $$.setBasic(EbtVoid, EvqStatic, $1.line);
     }
     | STATIC_QUAL CONST_QUAL {
-        if (parseContext.globalErrorCheck($1.line, parseContext.symbolTable.atGlobalLevel(), "static const"))
-            parseContext.recover();
         $$.setBasic(EbtVoid, EvqStaticConst, $1.line);
     }
     | ATTRIBUTE { 

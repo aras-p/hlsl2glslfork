@@ -1589,14 +1589,11 @@ bool TGlslOutputTraverser::parseInitializer( TIntermBinary *node )
    left = node->getLeft();
    right = node->getRight();
 
-   if (! left->getAsSymbolNode())
+   if (!left->getAsSymbolNode())
       return false; //Something is likely seriously wrong
 
-   if (! right->getAsConstantUnion())
-      return false; //only constant initializers
-
    TIntermSymbol *symNode = left->getAsSymbolNode();
-   TIntermConstantUnion *cUnion = right->getAsConstantUnion();
+   
 
    if (symNode->getBasicType() == EbtStruct)
       return false;
@@ -1619,8 +1616,23 @@ bool TGlslOutputTraverser::parseInitializer( TIntermBinary *node )
    else
       return false; //can't init already declared variable
 
-
-   sym->setInitializer ( cUnion->getUnionArrayPointer() );
+	if (right->getAsConstantUnion())
+	{
+		TIntermConstantUnion *cUnion = right->getAsConstantUnion();
+		sym->setInitializer ( cUnion->getUnionArrayPointer() );
+	}
+	else if (right->getAsTyped())
+	{
+		std::stringstream ss;
+		std::stringstream* oldOut = &current->getActiveOutput();
+		current->pushDepth(0);
+		current->setActiveOutput(&ss);
+		right->getAsTyped()->traverse(this);
+		current->setActiveOutput(oldOut);
+		current->popDepth();
+		
+		sym->setInitializerString(ss.str());
+	}
 
    return true;
 }

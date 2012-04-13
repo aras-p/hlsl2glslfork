@@ -10,6 +10,181 @@
 
 
 // ------------------------------------------------------------------
+
+namespace {
+	union Nodes {
+		TIntermAggregate* a;
+		TIntermBinary* b;
+		TIntermConstantUnion* c;
+		TIntermOperator* op;
+		TIntermSelection* sel;
+		TIntermTyped* t;
+	};
+	
+	inline bool isConst(TQualifier q)
+	{
+		return q == EvqConst || q == EvqStaticConst;
+	}
+	
+	inline bool isFoldable(TQualifier q)
+	{
+		return q == EvqConst || q == EvqStaticConst;
+	}
+	
+	inline bool isFoldable(TOperator op)
+	{
+		switch (op) {
+			case EOpAdd:
+			case EOpSub:
+			case EOpMul:
+			case EOpVectorTimesScalar:
+			case EOpMatrixTimesScalar:
+			case EOpMatrixTimesMatrix:
+			case EOpDiv:
+			case EOpMatrixTimesVector:
+			case EOpVectorTimesMatrix:
+			case EOpMod:
+			case EOpRightShift:
+			case EOpLeftShift:
+			case EOpAnd:
+			case EOpInclusiveOr:
+			case EOpExclusiveOr:
+			case EOpLogicalAnd:
+			case EOpLogicalOr:
+			case EOpLogicalXor:
+			case EOpLessThan:
+			case EOpGreaterThan:
+			case EOpLessThanEqual:
+			case EOpGreaterThanEqual:
+			case EOpEqual:
+			case EOpNotEqual:
+			case EOpNegative:
+			case EOpLogicalNot:
+				return true;
+			default:
+				return false;
+		}
+	}
+	
+	inline bool isConst(TOperator op)
+	{
+		switch (op) {
+			case EOpPostIncrement:
+			case EOpPostDecrement:
+			case EOpPreIncrement:
+			case EOpPreDecrement:
+			case EOpLit:
+			case EOpDPdx:
+			case EOpDPdy:
+			case EOpFwidth:
+			case EOpFclip:
+			case EOpTex1D:
+			case EOpTex1DProj:
+			case EOpTex1DLod:
+			case EOpTex1DBias:
+			case EOpTex1DGrad:
+			case EOpTex2D:
+			case EOpTex2DProj:
+			case EOpTex2DLod:
+			case EOpTex2DBias:
+			case EOpTex2DGrad:
+			case EOpTex3D:
+			case EOpTex3DProj:
+			case EOpTex3DLod:
+			case EOpTex3DBias:
+			case EOpTex3DGrad:
+			case EOpTexCube:
+			case EOpTexCubeProj:
+			case EOpTexCubeLod:
+			case EOpTexCubeBias:
+			case EOpTexCubeGrad:
+			case EOpTexRect:
+			case EOpTexRectProj:
+			case EOpAssign:
+			case EOpInitialize:
+			case EOpAddAssign:
+			case EOpSubAssign:
+			case EOpMulAssign:
+			case EOpVectorTimesMatrixAssign:
+			case EOpVectorTimesScalarAssign:
+			case EOpMatrixTimesScalarAssign:
+			case EOpMatrixTimesMatrixAssign:
+			case EOpDivAssign:
+			case EOpModAssign:
+			case EOpAndAssign:
+			case EOpInclusiveOrAssign:
+			case EOpExclusiveOrAssign:
+			case EOpLeftShiftAssign:
+			case EOpRightShiftAssign:
+				return false;
+			default:
+				return true;
+		}
+	}
+	
+	bool isBranchConstant(TIntermNode* node);
+	bool isBranchFoldable(TIntermNode* node);
+	
+	bool isBranchConstant(TIntermSequence& seq)
+	{
+		TIntermSequence::iterator it = seq.begin(), end = seq.end();
+		for (; it != end; ++it) {
+			if (!isBranchConstant(*it))
+				return false;
+		}
+		return true;
+	}
+	
+	bool isBranchFoldable(TIntermSequence& seq)
+	{
+		TIntermSequence::iterator it = seq.begin(), end = seq.end();
+		for (; it != end; ++it) {
+			if (!isBranchFoldable(*it))
+				return false;
+		}
+		return true;
+	}
+	
+	bool isBranchFoldable(TIntermNode* node)
+	{
+		Nodes n;
+		if ((n.a = node->getAsAggregate()))
+			return isFoldable(n.a->getOp()) && isBranchConstant(n.a->getSequence());			
+		else if ((n.b = node->getAsBinaryNode()))
+			return isBranchFoldable(n.b->getLeft()) && isBranchFoldable(n.b->getRight());
+		else if ((n.c = node->getAsConstantUnion()))
+			return true;
+		else if ((n.op = node->getAsOperatorNode()))
+			return isFoldable(n.op->getOp());
+		else if ((n.sel = node->getAsSelectionNode()))
+			return isBranchFoldable(n.sel->getCondition()) && isBranchFoldable(n.sel->getTrueBlock()) && isBranchFoldable(n.sel->getFalseBlock());
+		else if ((n.t = node->getAsTyped()))
+			return isFoldable(n.t->getQualifier());
+		else
+			return false;
+	}
+	
+	bool isBranchConstant(TIntermNode* node)
+	{
+		Nodes n;
+		if ((n.a = node->getAsAggregate()))
+			return isConst(n.a->getOp()) && isBranchConstant(n.a->getSequence());			
+		else if ((n.b = node->getAsBinaryNode()))
+			return isBranchConstant(n.b->getLeft()) && isBranchConstant(n.b->getRight());
+		else if ((n.c = node->getAsConstantUnion()))
+			return true;
+		else if ((n.op = node->getAsOperatorNode()))
+			return isConst(n.op->getOp());
+		else if ((n.sel = node->getAsSelectionNode()))
+			return isBranchConstant(n.sel->getCondition()) && isBranchConstant(n.sel->getTrueBlock()) && isBranchConstant(n.sel->getFalseBlock());
+		else if ((n.t = node->getAsTyped()))
+			return isConst(n.t->getQualifier());
+		else
+			return false;
+	}
+}
+
+
 // Sub- vector and matrix fields
 
 
@@ -1166,6 +1341,10 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
       }
    }
 
+   bool isConst = isBranchConstant(initializer);
+   bool isFoldable = isBranchFoldable(initializer);
+   variable->setIsFoldable(isFoldable);
+
    //
    // identifier must be of type constant, a global, or a temporary
    //
@@ -1217,14 +1396,12 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
             return true;
          }
       }
-      
-      TQualifier initializerQualifier = initializer->getType().getQualifier();
-
-      if ((initializerQualifier != EvqConst) && (initializerQualifier != EvqStaticConst))
-      {
-         qualifier = EvqTemporary;
-         variable->getType().changeQualifier(qualifier);
-      }
+	   
+	   if (!isConst)
+	   {
+		   qualifier = EvqTemporary;
+		   variable->getType().changeQualifier(qualifier);
+	   }
       
       if (initializer->getAsConstantUnion())
       {
@@ -1239,39 +1416,23 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
             variable->shareConstPointer(initializer->getAsConstantUnion()->getUnionArrayPointer());
          }
       }
-      else if (initializer->getAsSymbolNode())
+      else if (isFoldable && initializer->getAsSymbolNode())
       {
          const TSymbol* symbol = symbolTable.find(initializer->getAsSymbolNode()->getSymbol());
          const TVariable* tVar = static_cast<const TVariable*>(symbol);
-
-         constUnion* constArray = tVar->getConstPointer();
-         variable->shareConstPointer(constArray);
-      }
-      else if (initializer->getAsOperatorNode())
-      {
-         // Let this fall through to the bottom; we've already validated the type matches
-         qualifier = EvqTemporary;
-         variable->getType().changeQualifier(qualifier);
-      }
-      else
-      {
-         error(line, " cannot assign to", "=", "'%s'", variable->getType().getCompleteString().c_str());
-         variable->getType().changeQualifier(EvqTemporary);
-         return true;
+		
+		 constUnion* constArray = tVar->getConstPointer();
+		 variable->shareConstPointer(constArray);
       }
    }
 
    if (qualifier == EvqUniform )
    {
-      if ( initializer->getType().getQualifier() != EvqConst)
+      if (!isFoldable)
       {
          error(line, " Attempting to initialize uniform with non-constant", "", "");
          variable->getType().changeQualifier(EvqTemporary);
          return true;
-      }
-      if (type != initializer->getType())
-      {
-         //TODO: might need type promotion here
       }
       if (! initializer->getAsConstantUnion())
       {
@@ -1280,22 +1441,16 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
          return true;
       }
    }
-
-   //TODO: need to complicate this some...
-   if (qualifier != EvqConst)
-   {
-      TIntermSymbol* intermSymbol = intermediate.addSymbol(variable->getUniqueId(), variable->getName(), variable->getInfo(), variable->getType(), line);
-      intermNode = intermediate.addAssign(EOpInitialize, intermSymbol, initializer, line);
-      if (intermNode == 0)
-      {
-         assignError(line, "=", intermSymbol->getCompleteString(), initializer->getCompleteString());
-         return true;
-      }
-   }
-   else
-      intermNode = 0;
-
-   return false;
+	
+	TIntermSymbol* intermSymbol = intermediate.addSymbol(variable->getUniqueId(), variable->getName(), variable->getInfo(), variable->getType(), line);
+	intermNode = intermediate.addAssign(EOpInitialize, intermSymbol, initializer, line);
+	if (intermNode == 0)
+	{
+		assignError(line, "=", intermSymbol->getCompleteString(), initializer->getCompleteString());
+		return true;
+	}
+	
+	return false;
 }
 
 bool TParseContext::areAllChildConst(TIntermAggregate* aggrNode)
@@ -1503,7 +1658,7 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 
 TIntermTyped* TParseContext::foldConstConstructor(TIntermAggregate* aggrNode, const TType& type)
 {
-   bool canBeFolded = areAllChildConst(aggrNode);
+   bool canBeFolded = isBranchFoldable(aggrNode);
    aggrNode->setType(type);
    if (canBeFolded)
    {

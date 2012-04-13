@@ -46,15 +46,17 @@ public:
    GlslStruct* getStruct() { return structPtr; }
    void setStruct( GlslStruct *s ) { structPtr = s; }
 
-   bool hasInitializer() const { return initializer.size() != 0; }
+   bool hasInitializer() const { return initializer.size() != 0 || unFoldableInitializer.size() != 0; }
    const float* getInitializer() const { return &initializer[0]; }
    int initializerSize() const { return (int)initializer.size(); }
-
+	
+   void setInitializerString(const std::string& str) {	unFoldableInitializer = str; }
+   const std::string& initializerString() const { return unFoldableInitializer; }
+	
    void writeDecl( std::stringstream &out, bool local, bool skipUniform );
    void writeInitializer( std::stringstream &out, int element = 0);
 
    void setInitializer( const constUnion *ptr );
-
 
    /// Set the mangled name for the symbol
    void mangleName();    
@@ -73,6 +75,7 @@ private:
    std::string mangledName;
    std::string mutableMangledName;
    std::string semantic;
+   std::string unFoldableInitializer;
    int identifier;
    EGlslSymbolType type;
    EGlslQualifier qual;
