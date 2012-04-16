@@ -278,7 +278,6 @@ void GlslSymbol::setInitializer( const constUnion *ptr )
 // 	active.precision (6);
 // but the interpretation of precision was different between platforms
 
-// IMHO, no loss of precision should be of outmost importance here, rather than unified output (though both is achievable in most cases) /Jim
 void GlslSymbol::writeFloat(std::stringstream &out, float f)
 {
 	static char buffer[64];
