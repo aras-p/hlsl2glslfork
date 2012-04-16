@@ -278,16 +278,17 @@ void GlslSymbol::setInitializer( const constUnion *ptr )
 // 	active.precision (6);
 // but the interpretation of precision was different between platforms
 
+// IMHO, no loss of precision should be of outmost importance here, rather than unified output (though both is achievable in most cases) /Jim
 void GlslSymbol::writeFloat(std::stringstream &out, float f)
 {
-   char buffer[64];
-   sprintf(buffer, "%g", f);
-   out << buffer;
-   
-   if(!strchr(buffer, '.'))
-   {
-       out << ".0";
-   }
+	static char buffer[64];
+	
+	if (fractionalPart(f) == 0.f)
+		sprintf(buffer, "%.1f", f);
+	else
+		sprintf(buffer, "%.*g", FLT_DIG, f);
+
+	out << buffer;
 }
 
 void GlslSymbol::mangleName() 
