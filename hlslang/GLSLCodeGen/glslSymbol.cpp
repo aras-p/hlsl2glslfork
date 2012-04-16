@@ -280,14 +280,12 @@ void GlslSymbol::setInitializer( const constUnion *ptr )
 
 void GlslSymbol::writeFloat(std::stringstream &out, float f)
 {
-   char buffer[64];
-   sprintf(buffer, "%g", f);
-   out << buffer;
-   
-   if(!strchr(buffer, '.'))
-   {
-       out << ".0";
-   }
+	char buffer[64];
+	sprintf(buffer, "%g", f);
+	out << buffer;
+	
+	if (fractionalPart(f) == 0.f)
+		out << ".0";
 }
 
 void GlslSymbol::mangleName() 
