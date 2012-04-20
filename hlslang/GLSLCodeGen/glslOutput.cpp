@@ -5,6 +5,8 @@
 
 #include "glslOutput.h"
 
+#include <cstdlib>
+
 
 int getElements( EGlslSymbolType t )
 {
@@ -228,7 +230,7 @@ void TGlslOutputTraverser::outputLineDirective (int line)
 {
 	if (line <= 0 || !current)
 		return;
-	if (abs(line - m_LastLineOutput) < 4) // don't sprinkle too many #line directives ;)
+	if (std::abs(line - m_LastLineOutput) < 4) // don't sprinkle too many #line directives ;)
 		return;
 	std::stringstream& out = current->getActiveOutput();
 	out << '\n';
