@@ -5,6 +5,7 @@
 
 #include "glslSymbol.h"
 
+#include <float.h>
 
 static void writeBool( std::stringstream &out, bool b )
 {
