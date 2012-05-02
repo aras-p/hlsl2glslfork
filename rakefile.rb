@@ -5,12 +5,14 @@ require 'albacore'
 require 'net/sftp'
 require 'uri'
 
-# Check for confusing build error while running under a Visual Studio command prompt.
+include Rake::DSL
+
+# Fix for confusing build error while running under a Visual Studio command prompt.
 # See http://devlicio.us/blogs/derik_whittaker/archive/2008/02/29/nasty-msbuild-error-msb4126-quot-debug-hpd-quot-issue.aspx
-raise "Platform environment variable is set. This will confuse MSbuild." unless ENV["PLATFORM"].nil?
+ENV["PLATFORM"] = nil
 
 # The default task prints all possible tasks.
-task :default do sh %{rake --tasks} end
+task :default do sh %{rake --describe} end
 
 # Zip files will be placed below this directory.
 RedistDirName = "redist"
