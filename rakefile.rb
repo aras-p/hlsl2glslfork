@@ -30,12 +30,12 @@ def configure_msbuild(msbuild, solution, configuration, platform)
 end
 
 # Configures the supplied Albacore Output task.
-def configure_redist_dir(output, lib_dir_name, zip_file_name)
+def configure_redist_dir(output, zip_file_name)
 	working_dir = File.join(RedistDirName, zip_file_name)
 	makedirs working_dir
 
 	output.from "."
-	output.to File.join(working_dir, lib_dir_name)
+	output.to File.join(working_dir, zip_file_name)
 	
 	Configurations.each do |configuration|
 		output.file "lib/win32/#{configuration}/hlsl2glsl.lib"
@@ -71,6 +71,17 @@ end
 
 
 # --------------------------------------------------
+# Define common rake tasks.
+# --------------------------------------------------
+
+namespace "just" do
+	desc "Just erase any existing redist dir"
+	task :delete_redist_dir do |task|
+		rm_rf RedistDirName
+	end
+end
+
+# --------------------------------------------------
 # Define rake task permutations.
 # --------------------------------------------------
 
@@ -79,7 +90,6 @@ Configurations = %w{ Debug Release }
 Settings = {
 	:pc => {
 		:name => "PC",
-		:lib_dir => "hlsl2glsl",
 		:vs_versions => {
 			:vc9 => {
 				:compiler => MSBuild2008,
@@ -95,7 +105,6 @@ Settings = {
 
 Settings.each do |platform, platform_settings|
 	platform_name = platform_settings[:name]      # => "PC"
-	lib_dir = platform_settings[:lib_dir]         # => "hlsl2glsl"
 	vs_versions = platform_settings[:vs_versions] # => [:vc9, :vc10]
 	
 
@@ -125,13 +134,13 @@ Settings.each do |platform, platform_settings|
 		namespace "just:make_redist_dir" do
 			desc "Just prepare #{platform_name} package for #{vs_version_name}"
 			output rake_task_name do |output|
-				configure_redist_dir(output, lib_dir, zip_file)
+				configure_redist_dir(output, zip_file)
 			end
 		end
 
 		namespace "make_redist_dir" do
 			desc "Prepare #{platform_name} package for #{vs_version_name}"
-			task rake_task_name => %w{ just:build just:make_redist_dir }.map { |ns| ns + ":" + rake_task_name }
+			task rake_task_name => ["just:delete_redist_dir", "just:build:#{rake_task_name}", "just:make_redist_dir:#{rake_task_name}"]
 		end
 
 		namespace "just:make_zip" do
