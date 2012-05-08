@@ -1155,12 +1155,16 @@ static std::string CleanupShaderText (const std::string& str)
 	std::string res;
 	size_t n = str.size();
 	res.reserve (n);
+	char cc = 0;
 	for (size_t i = 0; i < n; ++i)
 	{
 		char c = str[i];
-		if (c == '\n' && i!=0 && str[i-1] == '\n')
-			continue;
-		res.push_back (c);
+		// Next line used to have str[i-1] instead of cc, but that produces some bug on OSX Lion
+		// with Xcode 4.3 (i686-apple-darwin11-llvm-gcc-4.2 (GCC) 4.2.1) in release config; str[i-1]
+		// always returns zero.
+		if (c != '\n' || i==0 || cc != '\n')
+			res.push_back(c);
+		cc = c;
 	}
 	return res;
 }
