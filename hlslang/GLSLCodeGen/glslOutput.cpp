@@ -1351,14 +1351,28 @@ bool TGlslOutputTraverser::traverseLoop( bool preVisit, TIntermLoop *node, TInte
 
    current->beginStatement();
 
-   if ( node->getTerminal())
+   TLoopType loopType = node->getType();
+   if (loopType == ELoopFor)
    {
       // Process for loop, initial statement was promoted outside the loop
       out << "for ( ; ";
-      node->getTest()->traverse(goit);
+      if (node->getCondition())
+         node->getCondition()->traverse(goit);
       out << "; ";
-      node->getTerminal()->traverse(goit);
+      if (node->getExpression())
+         node->getExpression()->traverse(goit);
       out << ") ";
+      current->beginBlock();
+      if (node->getBody())
+         node->getBody()->traverse(goit);
+      current->endBlock();
+   }
+   else if (loopType == ELoopWhile)
+   {
+      // Process while loop
+      out << "while ( ";
+      node->getCondition()->traverse(goit);
+      out << " ) ";
       current->beginBlock();
       if (node->getBody())
          node->getBody()->traverse(goit);
@@ -1366,30 +1380,17 @@ bool TGlslOutputTraverser::traverseLoop( bool preVisit, TIntermLoop *node, TInte
    }
    else
    {
-      if ( node->testFirst())
-      {
-         // Process while loop
-         out << "while ( ";
-         node->getTest()->traverse(goit);
-         out << " ) ";
-         current->beginBlock();
-         if (node->getBody())
-            node->getBody()->traverse(goit);
-         current->endBlock();
-      }
-      else
-      {
-         // Process do loop
-         out << "do ";
-         current->beginBlock();
-         if (node->getBody())
-            node->getBody()->traverse(goit);
-         current->endBlock();
-         current->indent();
-         out << "while ( ";
-         node->getTest()->traverse(goit);
-         out << " )\n";
-      }
+      assert(loopType == ELoopDoWhile);
+      // Process do loop
+      out << "do ";
+      current->beginBlock();
+      if (node->getBody())
+         node->getBody()->traverse(goit);
+      current->endBlock();
+      current->indent();
+      out << "while ( ";
+      node->getCondition()->traverse(goit);
+      out << " )\n";
    }
    return false;
 }

@@ -50,7 +50,7 @@ v2f xlat_main( in appdata v ) {
         o.color += l_1;
     }
     #line 65
-    while ( (k < 3) ) {
+    for ( ; (k < 3); ) {
         o.color += unity_LightColor[k].x;
         #line 69
         z = (k + 1);

@@ -139,9 +139,7 @@ void TIntermSelection::traverse(TIntermTraverser* it)
       it->visitSelection(false, this, it);
 }
 
-//
 // Traverse a loop node.  Same comments in binary node apply here.
-//
 void TIntermLoop::traverse(TIntermTraverser* it)
 {
    bool visit = true;
@@ -152,12 +150,12 @@ void TIntermLoop::traverse(TIntermTraverser* it)
    if (visit)
    {
       ++it->depth;
-      if (test)
-         test->traverse(it);
+      if (cond)
+         cond->traverse(it);
       if (body)
          body->traverse(it);
-      if (terminal)
-         terminal->traverse(it);
+      if (expr)
+         expr->traverse(it);
       --it->depth;
    }
 

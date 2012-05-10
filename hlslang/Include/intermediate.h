@@ -335,29 +335,37 @@ protected:
    TType type;
 };
 
-//
+
+enum TLoopType
+{
+	ELoopFor,
+	ELoopWhile,
+	ELoopDoWhile,
+};
+
 // Handle for, do-while, and while loops.
-//
 class TIntermLoop : public TIntermNode
 {
 public:
-   TIntermLoop(TIntermNode* aBody, TIntermTyped* aTest, TIntermTyped* aTerminal, bool testFirst) : 
-   body(aBody),
-   test(aTest),
-   terminal(aTerminal),
-   first(testFirst)
-   {
-   }
-   virtual void traverse(TIntermTraverser*);
-   TIntermNode*  getBody() { return body; }
-   TIntermTyped* getTest() { return test; }
-   TIntermTyped* getTerminal() { return terminal; }
-   bool testFirst() { return first; }
+	TIntermLoop(TLoopType aType, TIntermTyped* aCond, TIntermTyped* aExpr, TIntermNode* aBody) : 
+	type(aType),
+	cond(aCond),
+	expr(aExpr),
+	body(aBody)
+	{
+	}
+	virtual void traverse(TIntermTraverser*);
+	
+	TLoopType getType() const { return type; }
+	TIntermTyped* getCondition() { return cond; }
+	TIntermTyped* getExpression() { return expr; }
+	TIntermNode*  getBody() { return body; }
+	
 protected:
-   TIntermNode* body;       // code to loop over
-   TIntermTyped* test;      // exit condition associated with loop, could be 0 for 'for' loops
-   TIntermTyped* terminal;  // exists for for-loops
-   bool first;              // true for while and for, not for do-while
+	TLoopType	type;
+	TIntermTyped* cond;  // loop exit condition, could be 0 for for-loops
+	TIntermTyped* expr;  // for-loop expression
+	TIntermNode* body;   // loop body
 };
 
 //

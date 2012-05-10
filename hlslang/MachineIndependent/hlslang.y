@@ -2296,14 +2296,14 @@ condition
 iteration_statement
     : WHILE LEFT_PAREN { parseContext.symbolTable.push(); ++parseContext.loopNestingLevel; } condition RIGHT_PAREN statement_no_new_scope { 
         parseContext.symbolTable.pop();
-        $$ = parseContext.intermediate.addLoop($6, $4, 0, true, $1.line);
+        $$ = parseContext.intermediate.addLoop(ELoopWhile, $4, 0, $6, $1.line);
         --parseContext.loopNestingLevel;
     }
     | DO { ++parseContext.loopNestingLevel; } statement WHILE LEFT_PAREN expression RIGHT_PAREN SEMICOLON {
         if (parseContext.boolErrorCheck($8.line, $6))
             parseContext.recover();
                     
-        $$ = parseContext.intermediate.addLoop($3, $6, 0, false, $4.line);
+        $$ = parseContext.intermediate.addLoop(ELoopDoWhile, $6, 0, $3, $4.line);
         --parseContext.loopNestingLevel;
     }
     | FOR LEFT_PAREN { parseContext.symbolTable.push(); ++parseContext.loopNestingLevel; } for_init_statement for_rest_statement RIGHT_PAREN statement_no_new_scope {
@@ -2311,7 +2311,7 @@ iteration_statement
         $$ = parseContext.intermediate.makeAggregate($4, $2.line);
         $$ = parseContext.intermediate.growAggregate(
                 $$,
-                parseContext.intermediate.addLoop($7, reinterpret_cast<TIntermTyped*>($5.node1), reinterpret_cast<TIntermTyped*>($5.node2), true, $1.line),
+                parseContext.intermediate.addLoop(ELoopFor, reinterpret_cast<TIntermTyped*>($5.node1), reinterpret_cast<TIntermTyped*>($5.node2), $7, $1.line),
                 $1.line);
         $$->getAsAggregate()->setOperator(EOpSequence);
         --parseContext.loopNestingLevel;

@@ -419,17 +419,17 @@ bool OutputLoop(bool, /* preVisit */ TIntermLoop* node, TIntermTraverser* it)
    OutputTreeText(out, node, oit->depth);
 
    out.debug << "Loop with condition ";
-   if (! node->testFirst())
+   if (node->getType() == ELoopDoWhile)
       out.debug << "not ";
    out.debug << "tested first\n";
 
    ++oit->depth;
 
    OutputTreeText(oit->infoSink, node, oit->depth);
-   if (node->getTest())
+   if (node->getCondition())
    {
       out.debug << "Loop Condition\n";
-      node->getTest()->traverse(it);
+      node->getCondition()->traverse(it);
    }
    else
       out.debug << "No loop condition\n";
@@ -443,11 +443,11 @@ bool OutputLoop(bool, /* preVisit */ TIntermLoop* node, TIntermTraverser* it)
    else
       out.debug << "No loop body\n";
 
-   if (node->getTerminal())
+   if (node->getExpression())
    {
       OutputTreeText(oit->infoSink, node, oit->depth);
       out.debug << "Loop Terminal Expression\n";
-      node->getTerminal()->traverse(it);
+      node->getExpression()->traverse(it);
    }
 
    --oit->depth;
