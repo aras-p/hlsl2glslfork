@@ -45,12 +45,12 @@ struct TParseContext
    bool parseVectorFields(const TString&, int vecSize, TVectorFields&, int line);
    bool parseMatrixFields(const TString&, int matSize, TVectorFields&, int line);
    void assignError(int line, const char* op, TString left, TString right);
-   void unaryOpError(int line, char* op, TString operand);
-   void binaryOpError(int line, char* op, TString left, TString right);
-   bool lValueErrorCheck(int line, char* op, TIntermTyped*);
+   void unaryOpError(int line, const char* op, TString operand);
+   void binaryOpError(int line, const char* op, TString left, TString right);
+   bool lValueErrorCheck(int line, const char* op, TIntermTyped*);
    bool constErrorCheck(TIntermTyped* node);
-   bool integerErrorCheck(TIntermTyped* node, char* token);
-   bool globalErrorCheck(int line, bool global, char* token);
+   bool integerErrorCheck(TIntermTyped* node, const char* token);
+   bool globalErrorCheck(int line, bool global, const char* token);
    bool constructorErrorCheck(int line, TIntermNode*, TFunction&, TOperator, TType*);
    bool arraySizeErrorCheck(int line, TIntermTyped* expr, int& size);
    bool arrayQualifierErrorCheck(int line, TPublicType type);

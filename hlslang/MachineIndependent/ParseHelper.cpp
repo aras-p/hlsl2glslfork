@@ -243,7 +243,7 @@ void TParseContext::assignError(int line, const char* op, TString left, TString 
 //
 // Same error message for all places unary operations don't work.
 //
-void TParseContext::unaryOpError(int line, char* op, TString operand)
+void TParseContext::unaryOpError(int line, const char* op, TString operand)
 {
    error(line, " wrong operand type", op, 
          "no operation '%s' exists that takes an operand of type %s (or there is no acceptable conversion)",
@@ -253,7 +253,7 @@ void TParseContext::unaryOpError(int line, char* op, TString operand)
 //
 // Same error message for all binary operations don't work.
 //
-void TParseContext::binaryOpError(int line, char* op, TString left, TString right)
+void TParseContext::binaryOpError(int line, const char* op, TString left, TString right)
 {
    error(line, " wrong operand types ", op, 
          "no operation '%s' exists that takes a left-hand operand of type '%s' and "
@@ -267,7 +267,7 @@ void TParseContext::binaryOpError(int line, char* op, TString left, TString righ
 //
 // Returns true if the was an error.
 //
-bool TParseContext::lValueErrorCheck(int line, char* op, TIntermTyped* node)
+bool TParseContext::lValueErrorCheck(int line, const char* op, TIntermTyped* node)
 {
    TIntermSymbol* symNode = node->getAsSymbolNode();
    TIntermBinary* binaryNode = node->getAsBinaryNode();
@@ -428,7 +428,7 @@ bool TParseContext::constErrorCheck(TIntermTyped* node)
 //
 // Returns true if the was an error.
 //
-bool TParseContext::integerErrorCheck(TIntermTyped* node, char* token)
+bool TParseContext::integerErrorCheck(TIntermTyped* node, const char* token)
 {
    if (node->getBasicType() == EbtInt && node->getNominalSize() == 1)
       return false;
@@ -444,7 +444,7 @@ bool TParseContext::integerErrorCheck(TIntermTyped* node, char* token)
 //
 // Returns true if the was an error.
 //
-bool TParseContext::globalErrorCheck(int line, bool global, char* token)
+bool TParseContext::globalErrorCheck(int line, bool global, const char* token)
 {
    if (global)
       return false;
