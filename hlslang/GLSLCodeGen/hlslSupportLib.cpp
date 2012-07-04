@@ -564,7 +564,33 @@ void initializeHLSLSupportLibrary()
 		"}\n\n"
 		)
         );
-
+	
+	hlslSupportLib->insert (CodeMap::value_type(EOpRound,
+		"float xll_round (float x) { return floor (x+0.5); }\n"
+		"vec2 xll_round (vec2 x) { return floor (x+vec2(0.5)); }\n"
+		"vec3 xll_round (vec3 x) { return floor (x+vec3(0.5)); }\n"
+		"vec4 xll_round (vec4 x) { return floor (x+vec4(0.5)); }\n"
+	));
+	
+	hlslSupportLib->insert (CodeMap::value_type(EOpTrunc,
+		"float xll_trunc (float x) { return x < 0.0 ? -floor(-x) : floor(x); }\n"
+		"vec2 xll_trunc (vec2 v) { return vec2(\n"
+		"  v.x < 0.0 ? -floor(-v.x) : floor(v.x),\n"
+		"  v.y < 0.0 ? -floor(-v.y) : floor(v.y)\n"
+		"); }\n"
+		"vec3 xll_trunc (vec3 v) { return vec3(\n"
+		"  v.x < 0.0 ? -floor(-v.x) : floor(v.x),\n"
+		"  v.y < 0.0 ? -floor(-v.y) : floor(v.y),\n"
+		"  v.z < 0.0 ? -floor(-v.z) : floor(v.z)\n"
+		"); }\n"
+		"vec4 xll_trunc (vec4 v) { return vec4(\n"
+		"  v.x < 0.0 ? -floor(-v.x) : floor(v.x),\n"
+		"  v.y < 0.0 ? -floor(-v.y) : floor(v.y),\n"
+		"  v.z < 0.0 ? -floor(-v.z) : floor(v.z),\n"
+		"  v.w < 0.0 ? -floor(-v.w) : floor(v.w)\n"
+		"); }\n"
+	));
+	
    hlslSupportLib->insert( CodeMap::value_type( EOpLdexp,
         "float xll_ldexp( float x, float expon) {\n"
         "  return x * exp2 ( expon );\n"

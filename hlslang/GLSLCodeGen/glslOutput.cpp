@@ -896,6 +896,19 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
       prefix = true;
       break;    
 
+	case EOpRound:
+		current->addLibFunction(EOpRound);
+		op = "xll_round";
+		funcStyle = true;
+		prefix = true;
+		break;
+	case EOpTrunc:
+	   current->addLibFunction(EOpTrunc);
+	   op = "xll_trunc";
+	   funcStyle = true;
+	   prefix = true;
+	   break;
+		   
    case EOpAny:            op = "any";  funcStyle = true; prefix = true; break;
    case EOpAll:            op = "all";  funcStyle = true; prefix = true; break;
 

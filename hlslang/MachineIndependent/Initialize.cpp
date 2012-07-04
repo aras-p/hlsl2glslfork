@@ -268,7 +268,19 @@ void TBuiltIns::initialize()
 	  s.append(TString("float3 modf(float3 x, out float3 ip);"));
 	  s.append(TString("float4 modf(float4 x, out int4 ip);"));
 	  s.append(TString("float4 modf(float4 x, out float4 ip);"));
-
+	   
+	   // HLSL round
+	   s.append(TString("float round(float x);"));
+	   s.append(TString("float2 round(float2 x);"));
+	   s.append(TString("float3 round(float3 x);"));
+	   s.append(TString("float4 round(float4 x);"));	   
+	   
+	   // HLSL trunc
+	   s.append(TString("float trunc(float x);"));
+	   s.append(TString("float2 trunc(float2 x);"));
+	   s.append(TString("float3 trunc(float3 x);"));
+	   s.append(TString("float4 trunc(float4 x);"));	   
+	   
       // HLSL ldexp
       s.append(TString("float ldexp(float x, float expon);"));
       s.append(TString("float2 ldexp(float2 x, float2 expon);"));
@@ -602,6 +614,8 @@ void IdentifyBuiltIns(EShLanguage language, TSymbolTable& symbolTable)
    symbolTable.relateToOperator("saturate",     EOpSaturate);
    symbolTable.relateToOperator("modf",         EOpModf);
    symbolTable.relateToOperator("ldexp",        EOpLdexp);
+	symbolTable.relateToOperator("round", EOpRound);
+	symbolTable.relateToOperator("trunc", EOpTrunc);
 
    symbolTable.relateToOperator("lit",          EOpLit);
 

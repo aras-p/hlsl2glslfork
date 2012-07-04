@@ -172,6 +172,8 @@ enum TOperator
    EOpSaturate,
    EOpModf,
    EOpLdexp,
+   EOpRound,
+   EOpTrunc,
 
    EOpMatrixTimesMatrix,
 

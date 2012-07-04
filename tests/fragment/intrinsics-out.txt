@@ -57,6 +57,26 @@ vec4 xll_modf( vec4 x, out vec4 ip) {
   ip = vec4(i);
   return x-ip;
 }
+float xll_round (float x) { return floor (x+0.5); }
+vec2 xll_round (vec2 x) { return floor (x+vec2(0.5)); }
+vec3 xll_round (vec3 x) { return floor (x+vec3(0.5)); }
+vec4 xll_round (vec4 x) { return floor (x+vec4(0.5)); }
+float xll_trunc (float x) { return x < 0.0 ? -floor(-x) : floor(x); }
+vec2 xll_trunc (vec2 v) { return vec2(
+  v.x < 0.0 ? -floor(-v.x) : floor(v.x),
+  v.y < 0.0 ? -floor(-v.y) : floor(v.y)
+); }
+vec3 xll_trunc (vec3 v) { return vec3(
+  v.x < 0.0 ? -floor(-v.x) : floor(v.x),
+  v.y < 0.0 ? -floor(-v.y) : floor(v.y),
+  v.z < 0.0 ? -floor(-v.z) : floor(v.z)
+); }
+vec4 xll_trunc (vec4 v) { return vec4(
+  v.x < 0.0 ? -floor(-v.x) : floor(v.x),
+  v.y < 0.0 ? -floor(-v.y) : floor(v.y),
+  v.z < 0.0 ? -floor(-v.z) : floor(v.z),
+  v.w < 0.0 ? -floor(-v.w) : floor(v.w)
+); }
 vec4 xlat_main( in vec4 uv );
 #line 1
 vec4 xlat_main( in vec4 uv ) {
@@ -75,6 +95,11 @@ vec4 xlat_main( in vec4 uv ) {
     c.xyzw += xll_modf( uv.xyzw, d.xyzw);
     #line 15
     c += xll_lit( c.x, 0.200000, 0.300000);
+    c.x += xll_round(2.50000);
+    c.xy += xll_round(vec2( 2.50000, 3.50000));
+    #line 20
+    c.x += xll_trunc(2.50000);
+    c.xy += xll_trunc(vec2( 2.50000, 3.50000));
     return c;
 }
 varying vec4 xlv_TEXCOORD0;
