@@ -17,7 +17,6 @@
 
 #include "../Include/Common.h"
 #include "../Include/Types.h"
-#include "../Include/ConstantUnion.h"
 
 //
 // Operators used by the high-level (parse tree) representation.
@@ -256,7 +255,7 @@ enum TOperator
 class TIntermTraverser;
 class TIntermAggregate;
 class TIntermBinary;
-class TIntermConstantUnion;
+class TIntermConstant;
 class TIntermSelection;
 class TIntermOperator;
 class TIntermTyped;
@@ -282,7 +281,7 @@ public:
 
    virtual TIntermTyped*     getAsTyped() { return 0; }
    virtual TIntermOperator*  getAsOperatorNode() { return 0; }
-   virtual TIntermConstantUnion*     getAsConstantUnion() { return 0; }
+   virtual TIntermConstant*     getAsConstant() { return 0; }
    virtual TIntermAggregate* getAsAggregate() { return 0; }
    virtual TIntermBinary*    getAsBinaryNode() { return 0; }
    virtual TIntermSelection* getAsSelectionNode() { return 0; }
@@ -420,28 +419,57 @@ protected:
    const TTypeInfo *info;
 };
 
-class TIntermConstantUnion : public TIntermTyped
+class TIntermConstant : public TIntermTyped
 {
 public:
-   TIntermConstantUnion(constUnion *unionPointer, const TType& t) : TIntermTyped(t), unionArrayPointer(unionPointer)
-   {
-   }
-   constUnion* getUnionArrayPointer() const
-   {
-      return unionArrayPointer;
-   }
-   void setUnionArrayPointer(constUnion *c)
-   {
-      unionArrayPointer = c;
-   }
-   virtual TIntermConstantUnion* getAsConstantUnion()
-   {
-      return this;
-   }
-   virtual void traverse(TIntermTraverser* );
-   virtual TIntermTyped* fold(TOperator, TIntermTyped*, TInfoSink&);
+	TIntermConstant(const TType& t) : TIntermTyped(t)
+	{
+		grow(t.getObjectSize());
+	}
+
+	virtual TIntermConstant* getAsConstant()
+	{
+		return this;
+	}
+
+	
+	struct Value {
+		union {
+			int as_int;
+			float as_float;
+			bool as_bool;
+		};
+		TBasicType type;
+		Value() : type(TBasicType(0)), as_int(0) { }
+	};
+	
+	void setValue(unsigned val) { values[0].as_int = val; }
+	void setValue(int val) { values[0].as_int = val; }
+	void setValue(float val) { values[0].as_float = val; }
+	void setValue(bool val) { values[0].as_bool = val; }
+	
+	void setValue(unsigned i, int val) { grow(i); values[i].as_int = val; }
+	void setValue(unsigned i, float val) { grow(i); values[i].as_float = val; }
+	void setValue(unsigned i, bool val) { grow(i); values[i].as_bool = val; }
+
+	int toInt(unsigned i = 0) { return values[i].as_int; }
+	float toFloat(unsigned i = 0) { return values[i].as_float; }
+	bool toBool(unsigned i = 0) { return values[i].as_bool; }
+	
+	const Value& getValue(unsigned i = 0) const { return values[i]; }
+	Value& getValue(unsigned i = 0) { return values[i]; }
+	
+	unsigned getCount() { return values.size(); }
+
+	virtual void traverse(TIntermTraverser* );
 protected:
-   constUnion *unionArrayPointer;
+	inline void grow(unsigned ix) {
+		if (values.size() <= ix)
+			values.resize(ix + 1);
+	}
+	
+	typedef std::vector<Value> Values;
+	Values values;
 };
 
 //
@@ -609,7 +637,7 @@ public:
    }
 
    void (*visitSymbol)(TIntermSymbol*, TIntermTraverser*);
-   void (*visitConstantUnion)(TIntermConstantUnion*, TIntermTraverser*);
+   void (*visitConstantUnion)(TIntermConstant*, TIntermTraverser*);
    bool (*visitBinary)(bool preVisit, TIntermBinary*, TIntermTraverser*);
    bool (*visitUnary)(bool preVisit, TIntermUnary*, TIntermTraverser*);
    bool (*visitSelection)(bool preVisit, TIntermSelection*, TIntermTraverser*);

@@ -77,14 +77,13 @@ struct TParseContext
                            TIntermTyped* initializer, TIntermNode*& intermNode, TVariable* variable = 0);
    bool areAllChildConst(TIntermAggregate* aggrNode);
    TIntermTyped* addConstructor(TIntermNode*, const TType*, TOperator, TFunction*, TSourceLoc);
-   TIntermTyped* foldConstConstructor(TIntermAggregate* aggrNode, const TType& type);
    TIntermTyped* constructArray(TIntermAggregate*, const TType*, TOperator, TSourceLoc);
    TIntermTyped* constructStruct(TIntermNode*, TType*, int, TSourceLoc, bool subset);
    TIntermTyped* constructBuiltIn(const TType*, TOperator, TIntermNode*, TSourceLoc, bool subset);
-   TIntermTyped* addConstVectorNode(TVectorFields&, TIntermTyped*, TSourceLoc);
+   /*TIntermTyped* addConstVectorNode(TVectorFields&, TIntermTyped*, TSourceLoc);
    TIntermTyped* addConstMatrixNode(int , TIntermTyped*, TSourceLoc);
    TIntermTyped* addConstArrayNode(int index, TIntermTyped* node, TSourceLoc line);
-   TIntermTyped* addConstStruct(TString& , TIntermTyped*, TSourceLoc);
+   TIntermTyped* addConstStruct(TString& , TIntermTyped*, TSourceLoc);*/
    TIntermTyped* addAssign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
    TIntermAggregate* mergeAggregates( TIntermAggregate *left, TIntermAggregate *right);
    bool arraySetMaxSize(TIntermSymbol*, TType*, int, bool, TSourceLoc);

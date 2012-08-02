@@ -204,13 +204,7 @@ variable_identifier
 
         // don't delete $1.string, it's used by error recovery, and the pool
         // pop will reclaim the memory
-
-        if (variable->isFoldable() && variable->getType().getQualifier() == EvqConst) {
-            constUnion* constArray = variable->getConstPointer();
-            TType t(variable->getType());
-            $$ = parseContext.intermediate.addConstantUnion(constArray, t, $1.line);        
-        } else
-            $$ = parseContext.intermediate.addSymbol(variable->getUniqueId(), 
+		$$ = parseContext.intermediate.addSymbol(variable->getUniqueId(), 
                                                      variable->getName(),
                                                      variable->getInfo(), 
                                                      variable->getType(), $1.line);
@@ -221,20 +215,20 @@ primary_expression
     : variable_identifier {
         $$ = $1;
     }
-    | INTCONSTANT {        
-        constUnion *unionArray = new constUnion[1];
-        unionArray->setIConst($1.i);
-        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $1.line);
+    | INTCONSTANT {
+        TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $1.line);
+		constant->setValue($1.i);
+		$$ = constant;
     }
     | FLOATCONSTANT {
-        constUnion *unionArray = new constUnion[1];
-        unionArray->setFConst($1.f);
-        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
+        TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
+		constant->setValue($1.f);
+		$$ = constant;
     }
     | BOOLCONSTANT {
-        constUnion *unionArray = new constUnion[1];
-        unionArray->setBConst($1.b);
-        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $1.line);
+        TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $1.line);
+		constant->setValue($1.b);
+		$$ = constant;
     }
     | LEFT_PAREN expression RIGHT_PAREN {
         $$ = $2;
@@ -257,52 +251,39 @@ postfix_expression
                 parseContext.error($2.line, " left of '[' is not of type array, matrix, or vector ", "expression", "");
             parseContext.recover();
         }
-        if ($1->getType().getQualifier() == EvqConst && $3->getQualifier() == EvqConst) {
-            if ($1->isArray()) { // constant folding for arrays
-                $$ = parseContext.addConstArrayNode($3->getAsConstantUnion()->getUnionArrayPointer()->getIConst(), $1, $2.line);
-            } else if ($1->isVector()) {  // constant folding for vectors
-                TVectorFields fields;                
-                fields.num = 1;
-                fields.offsets[0] = $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst(); // need to do it this way because v.xy sends fields integer array
-                $$ = parseContext.addConstVectorNode(fields, $1, $2.line);
-            } else if ($1->isMatrix()) { // constant folding for matrices
-                $$ = parseContext.addConstMatrixNode($3->getAsConstantUnion()->getUnionArrayPointer()->getIConst(), $1, $2.line);
-            } 
-        } else {
-            if ($3->getQualifier() == EvqConst) {
-                if (($1->isVector() || $1->isMatrix()) && $1->getType().getNominalSize() <= $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst() && !$1->isArray() ) {
-                    parseContext.error($2.line, "", "[", "field selection out of range '%d'", $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst());
-                    parseContext.recover();
-                } else {
-                    if ($1->isArray()) {
-                        if ($1->getType().getArraySize() == 0) {
-                            if ($1->getType().getMaxArraySize() <= $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst()) {
-                                if (parseContext.arraySetMaxSize($1->getAsSymbolNode(), $1->getTypePointer(), $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst(), true, $2.line))
-                                    parseContext.recover(); 
-                            } else {
-                                if (parseContext.arraySetMaxSize($1->getAsSymbolNode(), $1->getTypePointer(), 0, false, $2.line))
-                                    parseContext.recover(); 
-                            }
-                        } else if ( $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst() >= $1->getType().getArraySize()) {
-                            parseContext.error($2.line, "", "[", "array index out of range '%d'", $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst());
-                            parseContext.recover();
-                        }
-                    }
-                    $$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, $3, $2.line);
-                }
-            } else {
-                if ($1->isArray() && $1->getType().getArraySize() == 0) {
-                    parseContext.error($2.line, "", "[", "array must be redeclared with a size before being indexed with a variable");
-                    parseContext.recover();
-                }
-                
-                $$ = parseContext.intermediate.addIndex(EOpIndexIndirect, $1, $3, $2.line);
-            }
-        } 
+		if ($3->getQualifier() == EvqConst) {
+			if (($1->isVector() || $1->isMatrix()) && $1->getType().getNominalSize() <= $3->getAsConstant()->toInt() && !$1->isArray() ) {
+				parseContext.error($2.line, "", "[", "field selection out of range '%d'", $3->getAsConstant()->toInt());
+				parseContext.recover();
+			} else {
+				if ($1->isArray()) {
+					if ($1->getType().getArraySize() == 0) {
+						if ($1->getType().getMaxArraySize() <= $3->getAsConstant()->toInt()) {
+							if (parseContext.arraySetMaxSize($1->getAsSymbolNode(), $1->getTypePointer(), $3->getAsConstant()->toInt(), true, $2.line))
+								parseContext.recover(); 
+						} else {
+							if (parseContext.arraySetMaxSize($1->getAsSymbolNode(), $1->getTypePointer(), 0, false, $2.line))
+								parseContext.recover(); 
+						}
+					} else if ( $3->getAsConstant()->toInt() >= $1->getType().getArraySize()) {
+						parseContext.error($2.line, "", "[", "array index out of range '%d'", $3->getAsConstant()->toInt());
+						parseContext.recover();
+					}
+				}
+				$$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, $3, $2.line);
+			}
+		} else {
+			if ($1->isArray() && $1->getType().getArraySize() == 0) {
+				parseContext.error($2.line, "", "[", "array must be redeclared with a size before being indexed with a variable");
+				parseContext.recover();
+			}
+			
+			$$ = parseContext.intermediate.addIndex(EOpIndexIndirect, $1, $3, $2.line);
+		}
         if ($$ == 0) {
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setFConst(0.0f);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(0.f);
+			$$ = constant;
         } else if ($1->isArray()) {
             if ($1->getType().getStruct())
                 $$->setType(TType($1->getType().getStruct(), $1->getType().getTypeName(), EbpUndefined, $1->getLine()));
@@ -343,28 +324,17 @@ postfix_expression
                 parseContext.recover();
             }
 
-            if ($1->getType().getQualifier() == EvqConst) { // constant folding for vector fields
-                $$ = parseContext.addConstVectorNode(fields, $1, $3.line);
-                if ($$ == 0) {
-                    parseContext.recover();
-                    $$ = $1;
-                }
-                else
-                    $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqConst, (int) (*$3.string).size()));
-            } else {
-                if (fields.num == 1) {
-                    constUnion *unionArray = new constUnion[1];
-                    unionArray->setIConst(fields.offsets[0]);
-                    TIntermTyped* index = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $3.line);
-                    $$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, index, $2.line);
-                    $$->setType(TType($1->getBasicType(), $1->getPrecision()));
-                } else {
-                    TString vectorString = *$3.string;
-                    TIntermTyped* index = parseContext.intermediate.addSwizzle(fields, $3.line);                
-                    $$ = parseContext.intermediate.addIndex(EOpVectorSwizzle, $1, index, $2.line);
-                    $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, (int) vectorString.size()));  
-                }
-            }
+			if (fields.num == 1) {
+				TIntermConstant* index = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
+				index->setValue(fields.offsets[0]);
+				$$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, index, $2.line);
+				$$->setType(TType($1->getBasicType(), $1->getPrecision()));
+			} else {
+				TString vectorString = *$3.string;
+				TIntermTyped* index = parseContext.intermediate.addSwizzle(fields, $3.line);                
+				$$ = parseContext.intermediate.addIndex(EOpVectorSwizzle, $1, index, $2.line);
+				$$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, (int) vectorString.size()));  
+			}
         } else if ($1->isMatrix()) {
             TVectorFields fields;
             if (! parseContext.parseMatrixFields(*$3.string, $1->getNominalSize(), fields, $3.line)) {
@@ -394,25 +364,10 @@ postfix_expression
                     }                
                 }
                 if (fieldFound) {
-                    if ($1->getType().getQualifier() == EvqConst) {
-                        $$ = parseContext.addConstStruct(*$3.string, $1, $2.line);
-                        if ($$ == 0) {
-                            parseContext.recover();
-                            $$ = $1;
-                        }
-                        else {
-                            $$->setType(*(*fields)[i].type);
-                            // change the qualifier of the return type, not of the structure field
-                            // as the structure definition is shared between various structures.
-                            $$->getTypePointer()->changeQualifier(EvqConst);
-                        }
-                    } else {
-                        constUnion *unionArray = new constUnion[1];
-                        unionArray->setIConst(i);
-                        TIntermTyped* index = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $3.line);
-                        $$ = parseContext.intermediate.addIndex(EOpIndexDirectStruct, $1, index, $2.line);                
-                        $$->setType(*(*fields)[i].type);
-                    }
+					TIntermConstant* index = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
+					index->setValue(i);
+					$$ = parseContext.intermediate.addIndex(EOpIndexDirectStruct, $1, index, $2.line);                
+					$$->setType(*(*fields)[i].type);
                 } else {
                     parseContext.error($2.line, " no such field in structure", $3.string->c_str(), "");
                     parseContext.recover();
@@ -485,9 +440,9 @@ function_call
                 parseContext.recover();
             }
 
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setIConst($1.intermNode->getAsTyped()->getType().getArraySize());
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $1.line);
+			TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $1.line);
+			constant->setValue($1.intermNode->getAsTyped()->getType().getArraySize());
+            $$ = constant;
         } else if (op != EOpNull) {
             //
             // Then this should be a constructor.
@@ -579,9 +534,10 @@ function_call
             } else {
                 // error message was put out by PaFindFunction()
                 // Put on a dummy node for error recovery
-                constUnion *unionArray = new constUnion[1];
-                unionArray->setFConst(0.0f);
-                $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
+                
+				TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
+				constant->setValue(0.f);
+				$$ = constant;
                 parseContext.recover();
             }
         }
@@ -945,9 +901,9 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "<", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     | relational_expression RIGHT_ANGLE shift_expression  { 
@@ -955,9 +911,9 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, ">", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     | relational_expression LE_OP shift_expression  { 
@@ -965,9 +921,9 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "<=", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     | relational_expression GE_OP shift_expression  { 
@@ -975,9 +931,9 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, ">=", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     ;
@@ -989,9 +945,9 @@ equality_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "==", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         } else if (($1->isArray() || $3->isArray()))
             parseContext.recover();
     }
@@ -1000,9 +956,9 @@ equality_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "!=", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         } else if (($1->isArray() || $3->isArray()))
             parseContext.recover();
     }
@@ -1054,9 +1010,9 @@ logical_and_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "&&", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     ;
@@ -1068,9 +1024,9 @@ logical_xor_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "^^", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     ;
@@ -1082,9 +1038,9 @@ logical_or_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "||", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     ;
@@ -2649,9 +2605,9 @@ type_info
 
 sampler_initializer
 : SAMPLERSTATE LEFT_BRACE sampler_init_list RIGHT_BRACE {
-    constUnion *cUnion = new constUnion[1];
-    cUnion[0].setFConst(0.0f);
-    $$ = parseContext.intermediate.addConstantUnion( cUnion, TType(EbtFloat, EbpUndefined, EvqConst, 1), $1.line);
+	TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst, 1), $1.line);
+	constant->setValue(0.f);
+	$$ = constant;
 }
 | SAMPLERSTATE LEFT_BRACE RIGHT_BRACE {
 }

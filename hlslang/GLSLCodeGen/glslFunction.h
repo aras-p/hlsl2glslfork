@@ -27,12 +27,6 @@ public:
    GlslSymbol& getSymbol( int id );
    
    std::string getPrototype();
-   std::string getLocalDecls( int indentLevel );
-
-   /// Returns, as a string, the mutable declarations in the function.  Takes a set of other functions to
-   /// check whether the mutable has already been declared.
-   std::string getMutableDecls( int indentLevel, std::vector<GlslFunction*>::iterator funcBegin, 
-                                                 std::vector<GlslFunction*>::iterator funcEnd );
 
    /// Returns the active scope
    std::string getCode() { return active->str(); }

@@ -15,7 +15,7 @@ namespace {
 	union Nodes {
 		TIntermAggregate* a;
 		TIntermBinary* b;
-		TIntermConstantUnion* c;
+		TIntermConstant* c;
 		TIntermOperator* op;
 		TIntermSelection* sel;
 		TIntermTyped* t;
@@ -152,7 +152,7 @@ namespace {
 			return isFoldable(n.a->getOp()) && isBranchConstant(n.a->getSequence());			
 		else if ((n.b = node->getAsBinaryNode()))
 			return isBranchFoldable(n.b->getLeft()) && isBranchFoldable(n.b->getRight());
-		else if ((n.c = node->getAsConstantUnion()))
+		else if ((n.c = node->getAsConstant()))
 			return true;
 		else if ((n.op = node->getAsOperatorNode()))
 			return isFoldable(n.op->getOp());
@@ -171,7 +171,7 @@ namespace {
 			return isConst(n.a->getOp()) && isBranchConstant(n.a->getSequence());			
 		else if ((n.b = node->getAsBinaryNode()))
 			return isBranchConstant(n.b->getLeft()) && isBranchConstant(n.b->getRight());
-		else if ((n.c = node->getAsConstantUnion()))
+		else if ((n.c = node->getAsConstant()))
 			return true;
 		else if ((n.op = node->getAsOperatorNode()))
 			return isConst(n.op->getOp());
@@ -469,7 +469,7 @@ bool TParseContext::lValueErrorCheck(int line, char* op, TIntermTyped* node)
             for (TIntermSequence::iterator p = aggrNode->getSequence().begin(); 
                 p != aggrNode->getSequence().end(); p++)
             {
-               int value = (*p)->getAsTyped()->getAsConstantUnion()->getUnionArrayPointer()->getIConst();
+               int value = (*p)->getAsTyped()->getAsConstant()->toInt();
                offset[value]++;     
                if (offset[value] > 1)
                {
@@ -491,7 +491,7 @@ bool TParseContext::lValueErrorCheck(int line, char* op, TIntermTyped* node)
             for (TIntermSequence::iterator p = aggrNode->getSequence().begin(); 
                 p != aggrNode->getSequence().end(); p++)
             {
-               int value = (*p)->getAsTyped()->getAsConstantUnion()->getUnionArrayPointer()->getIConst();
+               int value = (*p)->getAsTyped()->getAsConstant()->toInt();
                offset[value]++;     
                if (offset[value] > 1)
                {
@@ -928,14 +928,14 @@ bool TParseContext::insertBuiltInArrayAtGlobalLevel()
 //
 bool TParseContext::arraySizeErrorCheck(int line, TIntermTyped* expr, int& size)
 {
-   TIntermConstantUnion* constant = expr->getAsConstantUnion();
+   TIntermConstant* constant = expr->getAsConstant();
    if (constant == 0 || constant->getBasicType() != EbtInt)
    {
       error(line, "array size must be a constant integer expression", "", "");
       return true;
    }
 
-   size = constant->getUnionArrayPointer()->getIConst();
+   size = constant->toInt();
 
    if (size <= 0)
    {
@@ -1099,25 +1099,6 @@ bool TParseContext::arraySetMaxSize(TIntermSymbol *node, TType* type, int size, 
 
    type->setArrayInformationType(variable->getArrayInformationType());
    variable->updateArrayInformationType(type);
-
-   // special casing to test index value of gl_TexCoord. If the accessed index is >= gl_MaxTextureCoords
-   // its an error
-   if (node->getSymbol() == "gl_TexCoord")
-   {
-      TSymbol* texCoord = symbolTable.find("gl_MaxTextureCoords", &builtIn);
-      if (texCoord == 0)
-      {
-         infoSink.info.message(EPrefixInternalError, "gl_MaxTextureCoords not defined", line);
-         return true;
-      }
-
-      int texCoordValue = static_cast<TVariable*>(texCoord)->getConstPointer()[0].getIConst();
-      if (texCoordValue <= size)
-      {
-         error(line, "", "[", "gl_TexCoord can only have a max array size of up to gl_MaxTextureCoords", "");
-         return true;
-      }
-   }
 
    // we dont want to update the maxArraySize when this flag is not set, we just want to include this 
    // node type in the chain of node types so that its updated when a higher maxArraySize comes in.
@@ -1342,8 +1323,6 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
    }
 
    bool isConst = isBranchConstant(initializer);
-   bool isFoldable = isBranchFoldable(initializer);
-   variable->setIsFoldable(isFoldable);
 
    //
    // identifier must be of type constant, a global, or a temporary
@@ -1362,58 +1341,33 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
    if (qualifier == EvqConst)
    {
       if (type != initializer->getType())
-      {
-         TBasicType basicType = type.getBasicType();
-         TBasicType initializerType = initializer->getType().getBasicType();
-
-         // allow type promotion (eg: const float SCALE = 2;)
-         if
-         (
-            (basicType == EbtFloat) && (initializerType == EbtInt) &&
-            (type.getObjectSize() == initializer->getType().getObjectSize())
-         )
-         {
-            TIntermConstantUnion* iUnion = initializer->getAsConstantUnion();
-            
-            if(iUnion)
-            {
-               constUnion* cUnion = iUnion->getUnionArrayPointer();
-               int objectSize = type.getObjectSize();
-            
-               for(int i = 0; i < objectSize; ++i)
-               {
-                  cUnion[i].setFConst(static_cast<float>(cUnion[i].getIConst()));
-               }
-            }
-         
-            initializer->getTypePointer()->setBasicType(basicType);
-         }
-         else
-         { 
-            error(line, " non-matching types for const initializer ", 
-                  variable->getType().getQualifierString(), "");
-            variable->getType().changeQualifier(EvqTemporary);
-            return true;
-         }
+      { 
+		error(line, " non-matching types for const initializer ", 
+			  variable->getType().getQualifierString(), "");
+		variable->getType().changeQualifier(EvqTemporary);
+		return true;
       }
 	   
 	   if (!isConst)
 	   {
-		   qualifier = EvqTemporary;
-		   variable->getType().changeQualifier(qualifier);
+		   error(line, " Attempting to initialize a const variable with a non-constant initializer", "", "");
+		   variable->getType().changeQualifier(EvqTemporary);
+		   return true;
 	   }
+	   
+	   assert(false && "Fix this shait");
       
-      if (initializer->getAsConstantUnion())
+      /*if (initializer->getAsConstant())
       {
          constUnion* unionArray = variable->getConstPointer();
 
          if (type.getObjectSize() == 1 && type.getBasicType() != EbtStruct)
          {
-            *unionArray = (initializer->getAsConstantUnion()->getUnionArrayPointer())[0];
+            *unionArray = (initializer->getAsConstant()->getUnionArrayPointer())[0];
          }
          else
          {
-            variable->shareConstPointer(initializer->getAsConstantUnion()->getUnionArrayPointer());
+            variable->shareConstPointer(initializer->getAsConstant()->getUnionArrayPointer());
          }
       }
       else if (isFoldable && initializer->getAsSymbolNode())
@@ -1423,18 +1377,18 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 		
 		 constUnion* constArray = tVar->getConstPointer();
 		 variable->shareConstPointer(constArray);
-      }
+      }*/
    }
 
    if (qualifier == EvqUniform )
    {
-      if (!isFoldable)
+      if (!isConst)
       {
          error(line, " Attempting to initialize uniform with non-constant", "", "");
          variable->getType().changeQualifier(EvqTemporary);
          return true;
       }
-      if (! initializer->getAsConstantUnion())
+      if (! initializer->getAsConstant())
       {
          error(line, " Uniform intializers must be literal constants", "", "");
          variable->getType().changeQualifier(EvqTemporary);
@@ -1468,7 +1422,7 @@ bool TParseContext::areAllChildConst(TIntermAggregate* aggrNode)
       for (TIntermSequence::iterator p = childSequenceVector.begin(); 
           p != childSequenceVector.end(); p++)
       {
-         if (!(*p)->getAsTyped()->getAsConstantUnion())
+         if (!(*p)->getAsTyped()->getAsConstant())
             return false;
       }
    }
@@ -1499,6 +1453,8 @@ static bool TransposeMatrixConstructorArgs (const TType* type, TIntermSequence& 
 	return true;
 }
 
+// TODO: Hmm
+/*
 static void TransposeMatrixConstructorConstUnion (const TType* type, constUnion* args)
 {
 	if (!type->isMatrix())
@@ -1516,7 +1472,7 @@ static void TransposeMatrixConstructorConstUnion (const TType* type, constUnion*
 		}
 	}
 }
-
+*/
 
 // This function is used to test for the correctness of the parameters passed to various constructor functions
 // and also convert them to the right datatype if it is allowed and required. 
@@ -1549,9 +1505,9 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
    else
       singleArg = true;
 
-   if ( singleArg && op == EOpConstructStruct && node->getAsConstantUnion())
+   if ( singleArg && op == EOpConstructStruct && node->getAsConstant())
    {
-      TIntermConstantUnion *cNode = node->getAsConstantUnion();
+      TIntermConstant *cNode = node->getAsConstant();
 
       if (cNode->getSize() == 1)
       {
@@ -1563,8 +1519,6 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
          {
             TOperator top = getConstructorOp( *(*sTypes).type);
             TIntermTyped *tNode = constructBuiltIn( (*sTypes).type, top, cNode, cNode->getLine(), false);
-            if (tNode->getAsAggregate())
-               tNode = foldConstConstructor(tNode->getAsAggregate(), *(*sTypes).type);
             tempAgg = intermediate.growAggregate( tempAgg, tNode, cNode->getLine());
          }
 
@@ -1598,13 +1552,6 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
          newNode = constructStruct(node, (*memberTypes).type, 1, node->getLine(), false);
       else
          newNode = constructBuiltIn(type, op, node, node->getLine(), false);
-
-      if (newNode && newNode->getAsAggregate())
-      {
-         TIntermTyped* constConstructor = foldConstConstructor(newNode->getAsAggregate(), *type);
-         if (constConstructor)
-            return constConstructor;
-      }
 
       return newNode;
    }
@@ -1643,9 +1590,6 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 
 
    TIntermTyped* constructor = intermediate.setAggregateOperator(aggrNode, op, line);
-   TIntermTyped* constConstructor = foldConstConstructor(constructor->getAsAggregate(), *type);
-   if (constConstructor)
-      return constConstructor;
 
 	if (!TransposeMatrixConstructorArgs (type, sequenceVector))
 	{
@@ -1654,33 +1598,6 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 	}
 
    return constructor;
-}
-
-TIntermTyped* TParseContext::foldConstConstructor(TIntermAggregate* aggrNode, const TType& type)
-{
-   bool canBeFolded = isBranchFoldable(aggrNode);
-   aggrNode->setType(type);
-   if (canBeFolded)
-   {
-      bool returnVal = false;
-      constUnion* unionArray = new constUnion[type.getObjectSize()];
-      if (aggrNode->getSequence().size() == 1)
-      {
-         returnVal = intermediate.parseConstTree(aggrNode->getLine(), aggrNode, unionArray, type, true);
-      }
-      else
-      {
-         returnVal = intermediate.parseConstTree(aggrNode->getLine(), aggrNode, unionArray, type);
-      }
-      if (returnVal)
-         return 0;
-
-	  TransposeMatrixConstructorConstUnion (&type, unionArray);
-
-      return intermediate.addConstantUnion(unionArray, type, aggrNode->getLine());
-   }
-
-   return 0;
 }
 
 // Function for determining which basic constructor op to use
@@ -1774,27 +1691,23 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
             if ( tNode->getNominalSize() < (*func)[paramNum].type->getNominalSize() &&
                  tNode->isVector() && (*func)[paramNum].type->isVector() )
             {
-               TIntermAggregate *tempAgg = 0;
+				TIntermAggregate *tempAgg = 0;
 
-               // Add the vector being uprward promoted
-               tempAgg = intermediate.growAggregate ( tempAgg, tNode, node->getLine() );                   
+				// Add the vector being uprward promoted
+				tempAgg = intermediate.growAggregate ( tempAgg, tNode, node->getLine() );                   
 
-               // Determine the number of trailing 0's required
-               int nNumZerosToPad = (*func)[paramNum].type->getNominalSize() - tNode->getNominalSize();
-               for ( int nPad = 0; nPad < nNumZerosToPad; nPad++ )
-               {
-                  // Create a new constant with value 0.0
-                  constUnion *unionArray = new constUnion[1];
-                  unionArray->setFConst(0.0f);
+				// Determine the number of trailing 0's required
+				int nNumZerosToPad = (*func)[paramNum].type->getNominalSize() - tNode->getNominalSize();
+				for ( int nPad = 0; nPad < nNumZerosToPad; nPad++ )
+				{
+					// Create a new constant with value 0.0 and add the constant to the aggregrate node
+					TIntermConstant *constant = intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());
+					constant->setValue(0.f);
+					tempAgg = intermediate.growAggregate (tempAgg, constant, tNode->getLine()); 
+				}
 
-                  // Add the constant to the aggregrate node
-                  TIntermConstantUnion *cUnion = intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());                      
-                  tempAgg = intermediate.growAggregate ( tempAgg, cUnion, tNode->getLine()); 
-               }
-
-               // Construct the built-in with padding
-               tNode = constructBuiltIn ( (*func)[paramNum].type, op, tempAgg, node->getLine(), false);
-
+				// Construct the built-in with padding
+				tNode = constructBuiltIn ( (*func)[paramNum].type, op, tempAgg, node->getLine(), false);
             }
             else
             {
@@ -2015,7 +1928,7 @@ TIntermTyped* TParseContext::constructArray(TIntermAggregate* aggNode, const TTy
    return addConstructor( newAgg, type, op, 0, line);
 
 }
-
+/*
 //
 // This function returns the tree representation for the vector field(s) being accessed from contant vector.
 // If only one component of vector is accessed (v.x or v[0] where v is a contant vector), then a contant node is
@@ -2025,46 +1938,21 @@ TIntermTyped* TParseContext::constructArray(TIntermAggregate* aggNode, const TTy
 //
 TIntermTyped* TParseContext::addConstVectorNode(TVectorFields& fields, TIntermTyped* node, TSourceLoc line)
 {
-   TIntermTyped* typedNode;
-   TIntermConstantUnion* tempConstantNode = node->getAsConstantUnion();
+	if (!node->getAsConstant())
+		return 0;
 
-   constUnion *unionArray;
-   if (tempConstantNode)
-   {
-      unionArray = tempConstantNode->getUnionArrayPointer();
-
-      if (!unionArray)
-      {  // this error message should never be raised
-         infoSink.info.message(EPrefixInternalError, "constUnion not initialized in addConstVectorNode function", line);
-         recover();
-
-         return node;
-      }
-   }
-   else
-   { // The node has to be either a symbol node or an aggregate node or a tempConstant node, else, its an error
-      error(line, "Cannot offset into the vector", "Error", "");
-      recover();
-
-      return 0;
-   }
-
-   constUnion* constArray = new constUnion[fields.num];
-
-   for (int i = 0; i < fields.num; i++)
-   {
-      if (fields.offsets[i] >= node->getType().getObjectSize())
-      {
-         error(line, "", "[", "vector field selection out of range '%d'", fields.offsets[i]);
-         recover();
-         fields.offsets[i] = 0;
-      }
-
-      constArray[i] = unionArray[fields.offsets[i]];
-
-   } 
-   typedNode = intermediate.addConstantUnion(constArray, node->getType(), line);
-   return typedNode;
+	TIntermConstant* result = intermediate.addConstant(node->getType(), line);
+	
+	for (int i = 0; i < fields.num; i++) {
+		if (fields.offsets[i] >= node->getType().getObjectSize()) {
+			error(line, "", "[", "vector field selection out of range '%d'", fields.offsets[i]);
+			recover();
+			fields.offsets[i] = 0;
+		}
+		
+		result->setValue(i, fields.offsets[i]);
+	} 
+	return result;
 }
 
 
@@ -2075,7 +1963,7 @@ TIntermTyped* TParseContext::addConstVectorNode(TVectorFields& fields, TIntermTy
 TIntermTyped* TParseContext::addConstMatrixNode(int index, TIntermTyped* node, TSourceLoc line)
 {
    TIntermTyped* typedNode;
-   TIntermConstantUnion* tempConstantNode = node->getAsConstantUnion();
+   TIntermConstant* tempConstantNode = node->getAsConstant();
 
    if (index >= node->getType().getNominalSize())
    {
@@ -2115,7 +2003,7 @@ TIntermTyped* TParseContext::addConstMatrixNode(int index, TIntermTyped* node, T
 TIntermTyped* TParseContext::addConstArrayNode(int index, TIntermTyped* node, TSourceLoc line)
 {
    TIntermTyped* typedNode;
-   TIntermConstantUnion* tempConstantNode = node->getAsConstantUnion();
+   TIntermConstant* tempConstantNode = node->getAsConstant();
    TType arrayElementType = node->getType();
    arrayElementType.clearArrayness();
 
@@ -2156,7 +2044,7 @@ TIntermTyped* TParseContext::addConstStruct(TString& identifier, TIntermTyped* n
    TIntermTyped *typedNode;
    int instanceSize = 0;
    unsigned int index = 0;
-   TIntermConstantUnion *tempConstantNode = node->getAsConstantUnion();
+   TIntermConstant *tempConstantNode = node->getAsConstant();
 
    for ( index = 0; index < fields->size(); ++index)
    {
@@ -2185,7 +2073,7 @@ TIntermTyped* TParseContext::addConstStruct(TString& identifier, TIntermTyped* n
    }
 
    return typedNode;
-}
+}*/
 
 //
 // This function takes two aggragates, and merges them into a single one

@@ -28,7 +28,7 @@ void TIntermSymbol::traverse(TIntermTraverser* it)
       it->visitSymbol(this, it);
 }
 
-void TIntermConstantUnion::traverse(TIntermTraverser* it)
+void TIntermConstant::traverse(TIntermTraverser* it)
 {
    if (it->visitConstantUnion)
       it->visitConstantUnion(this, it);

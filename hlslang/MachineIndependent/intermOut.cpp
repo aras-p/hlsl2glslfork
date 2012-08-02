@@ -366,20 +366,20 @@ bool OutputSelection(bool, /* preVisit */ TIntermSelection* node, TIntermTravers
    return false;
 }
 
-void OutputConstantUnion(TIntermConstantUnion* node, TIntermTraverser* it)
+void OutputConstantUnion(TIntermConstant* node, TIntermTraverser* it)
 {
    TOutputTraverser* oit = static_cast<TOutputTraverser*>(it);
    TInfoSink& out = oit->infoSink;
 
-   int size = node->getType().getObjectSize();
+   int size = node->getCount();
 
    for (int i = 0; i < size; i++)
    {
       OutputTreeText(out, node, oit->depth);
-      switch (node->getUnionArrayPointer()[i].getType())
+      switch (node->getValue(i).type)
       {
       case EbtBool:
-         if (node->getUnionArrayPointer()[i].getBConst())
+         if (node->toBool(i))
             out.debug << "true";
          else
             out.debug << "false";
@@ -391,15 +391,15 @@ void OutputConstantUnion(TIntermConstantUnion* node, TIntermTraverser* it)
       case EbtFloat:
          {
             char buf[300];
-            sprintf(buf, "%f (%s)", node->getUnionArrayPointer()[i].getFConst(), "const float");
+            sprintf(buf, "%f (%s)", node->toFloat(i), "const float");
 
-            out.debug << buf << "\n";           
+            out.debug << buf << "\n";
          }
          break;
       case EbtInt:
          {
             char buf[300];
-            sprintf(buf, "%d (%s)", node->getUnionArrayPointer()[i].getIConst(), "const int");
+            sprintf(buf, "%d (%s)", node->toInt(i), "const int");
 
             out.debug << buf << "\n";
             break;
