@@ -139,7 +139,6 @@ bool OutputBinary(bool, /* preVisit */ TIntermBinary* node, TIntermTraverser* it
    case EOpLogicalOr:  out.debug << "||";   break;
    case EOpLogicalXor: out.debug << "^^"; break;
    case EOpLogicalAnd: out.debug << "&&"; break;
-   case EOpInitialize: out.debug << "init"; break;
    default: out.debug << "<unknown op>";
    }
 

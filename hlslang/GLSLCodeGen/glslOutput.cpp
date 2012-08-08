@@ -51,6 +51,15 @@ int getElements( EGlslSymbolType t )
    return 0;
 }
 
+TString buildArrayConstructorString(const TType& type) {
+	EGlslSymbolType glslt = translateType(&type);
+	TString constructor = getTypeString(glslt);
+	constructor += '[';
+	constructor += '0' + type.getArraySize();
+	constructor += ']';
+	return constructor;
+}
+
 
 void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPrecision prec, TIntermConstant *c, GlslStruct *str = 0 )
 {
@@ -200,7 +209,7 @@ void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTrav
       }
    }      
 
-   out << name << "( ";
+   out << name << "(";
 
 	for (sit = sequence.begin(); sit != sequence.end(); ++sit)
 	{
@@ -277,26 +286,58 @@ void TGlslOutputTraverser::outputLineDirective (int line)
 
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision)
-: infoSink(i)
-, generatingCode(true)
-, functionList(funcList)
-, structList(sList)
-, swizzleAssignTempCounter(0)
-, m_UsePrecision(usePrecision)
-, m_LastLineOutput(-1)
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision) :
+	infoSink(i)
+	, generatingCode(true)
+	, functionList(funcList)
+	, structList(sList)
+	, swizzleAssignTempCounter(0)
+	, m_UsePrecision(usePrecision)
+	, m_LastLineOutput(-1)
 {
-   visitSymbol = traverseSymbol;
-   visitConstantUnion = traverseConstantUnion;
-   visitBinary = traverseBinary;
-   visitUnary = traverseUnary;
-   visitSelection = traverseSelection;
-   visitAggregate = traverseAggregate;
-   visitLoop = traverseLoop;
-   visitBranch = traverseBranch;
-   global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "", 1);
-   functionList.push_back(global);
-   current = global;
+	visitSymbol = traverseSymbol;
+	visitConstantUnion = traverseConstantUnion;
+	visitBinary = traverseBinary;
+	visitUnary = traverseUnary;
+	visitSelection = traverseSelection;
+	visitAggregate = traverseAggregate;
+	visitLoop = traverseLoop;
+	visitBranch = traverseBranch;
+	visitDeclaration = traverseDeclaration;
+	
+	global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "", 1);
+	functionList.push_back(global);
+	current = global;
+}
+
+
+bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration* decl, TIntermTraverser* it) {
+	TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
+	GlslFunction *current = goit->current;
+	std::stringstream& out = current->getActiveOutput();
+	EGlslSymbolType symbol_type = translateType(decl->getTypePointer());
+	TType& type = *decl->getTypePointer();
+	
+	current->beginStatement();
+	
+	if (type.getQualifier() != EvqTemporary)
+		out << type.getQualifierString() << " ";
+	
+	if (type.getBasicType() == EbtStruct)
+		out << type.getTypeName();
+	else
+		writeType(out, symbol_type, NULL, goit->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
+	
+	if (type.isArray())
+		out << "[" << type.getArraySize() << "]";
+	
+	out << " ";
+	
+	decl->getDeclaration()->traverse(goit);
+	
+	current->endStatement();
+	
+	return true;
 }
 
 
@@ -443,49 +484,6 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    switch (node->getOp())
    {
    case EOpAssign:                   op = "=";   infix = true; needsParens = false; break;
-
-   case EOpInitialize:
-      if (goit->parseInitializer(node))
-         return false;
-
-      // Check to see if we have an array initializer list
-      if ( node->getLeft() && node->getRight() )
-      {
-         TIntermSymbol *symNode = node->getLeft()->getAsSymbolNode();
-         TIntermAggregate *aggNode = node->getRight()->getAsAggregate();
-
-         // Left hand size is a symbol, right hand side is an aggregate.  This
-         // is an initializer sequence for an array.
-         if ( symNode && symNode->isArray() && aggNode )
-         {
-            // Get the number of elements in the array.  TParseContext::constructArray should
-            // have already made sure that the correct number of elements are present in
-            // the initializer sequence
-            int nElements = symNode->getTypePointer()->getArraySize();
-
-            // Loop over all elements
-            for ( int i = 0; i < nElements; i++ )
-            {
-               // Initialize each element
-               node->getLeft()->traverse(goit);
-               out << "[" << i << "] = ";
-               aggNode->getSequence()[i]->traverse(goit);                      
-
-               current->endStatement();
-               if ( i != nElements - 1 )
-                  current->beginStatement();
-            }
-            return false;
-         }
-      }
-
-      // Fallthrough and process as a normal assignment
-      current->beginStatement();
-      op = "=";
-      infix = true;
-      needsParens = false;
-      break;
-
    case EOpAddAssign:                op = "+=";  infix = true; needsParens = false; break;
    case EOpSubAssign:                op = "-=";  infix = true; needsParens = false; break;
    case EOpMulAssign:                op = "*=";  infix = true; needsParens = false; break;
@@ -1208,7 +1206,8 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpConstructMat2:  writeFuncCall( "mat2", node, goit); return false;
    case EOpConstructMat3:  writeFuncCall( "mat3", node, goit); return false;
    case EOpConstructMat4:  writeFuncCall( "mat4", node, goit); return false;
-   case EOpConstructStruct:  writeFuncCall( "struct", node, goit); return false;
+   case EOpConstructStruct:  writeFuncCall( node->getTypePointer()->getTypeName(), node, goit); return false;
+   case EOpConstructArray:  writeFuncCall( buildArrayConstructorString(*node->getTypePointer()), node, goit); return false;
 
 
    case EOpConstructMat2FromMat:

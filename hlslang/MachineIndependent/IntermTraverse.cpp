@@ -28,6 +28,18 @@ void TIntermSymbol::traverse(TIntermTraverser* it)
       it->visitSymbol(this, it);
 }
 
+void TIntermDeclaration::traverse(TIntermTraverser* it)
+{
+	if (!it->visitDeclaration)
+		return;
+	
+	if (it->preVisit && !it->visitDeclaration(true, this, it))
+		return;
+	
+	if (it->postVisit)
+		it->visitDeclaration(false, this, it);
+}
+
 void TIntermConstant::traverse(TIntermTraverser* it)
 {
    if (it->visitConstantUnion)

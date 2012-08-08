@@ -93,6 +93,7 @@ Jutta Degener, 1995
             TIntermNodePair nodePair;
             TIntermTyped* intermTypedNode;
             TIntermAggregate* intermAggregate;
+			TIntermDeclaration* intermDeclaration;
         };
         union {
             TPublicType type;
@@ -155,11 +156,12 @@ Jutta Degener, 1995
 %type <interm.intermNode> statement simple_statement
 %type <interm.intermAggregate>  statement_list compound_statement 
 %type <interm.intermNode> declaration_statement selection_statement expression_statement
-%type <interm.intermNode> declaration external_declaration
+%type <interm.intermNode> external_declaration
+%type <interm.intermDeclaration> declaration
 %type <interm.intermNode> for_init_statement compound_statement_no_new_scope
 %type <interm.nodePair> selection_rest_statement for_rest_statement
 %type <interm.intermNode> iteration_statement jump_statement statement_no_new_scope
-%type <interm> single_declaration init_declarator_list
+%type <interm.intermDeclaration> single_declaration init_declarator_list
 
 %type <interm> parameter_declaration parameter_declarator parameter_type_specifier
 %type <interm.qualifier> parameter_qualifier
@@ -462,9 +464,8 @@ function_call
             if ($$ == 0) {        
                 parseContext.recover();
                 $$ = parseContext.intermediate.setAggregateOperator(0, op, $1.line);
-            }
-			if ($$ != $1.intermNode)
 				$$->setType(type);
+            }
         } else {
             //
             // Not a constructor.  Find it in the symbol table.
@@ -509,6 +510,7 @@ function_call
                         }
                     } else {
                         $$ = parseContext.intermediate.setAggregateOperator($1.intermAggregate, op, $1.line);
+						$$->setType(fnCandidate->getReturnType());
                     }
                 } else {
                     // This is a real function call
@@ -806,10 +808,10 @@ unary_expression
         if ($$ == 0) {        
             parseContext.recover();
             $$ = parseContext.intermediate.setAggregateOperator(0, op, $2.line);
-        }
-		if ($$ != $4)
+        } else {
 			$$->setType(type2);
-    }
+		}
+	}
     ;
 // Grammar Note:  No traditional style type casts.
 
@@ -1114,11 +1116,7 @@ constant_expression
 
 declaration
     : function_prototype SEMICOLON   { $$ = 0; }
-    | init_declarator_list SEMICOLON { 
-        if ($1.intermAggregate)
-            $1.intermAggregate->setOperator(EOpSequence); 
-        $$ = $1.intermAggregate; 
-    }
+    | init_declarator_list SEMICOLON { $$ = $1; }
     ;
 
 function_prototype 
@@ -1407,183 +1405,200 @@ init_declarator_list
         $$ = $1;
     } 
     | init_declarator_list COMMA IDENTIFIER type_info {
-        $$ = $1;
-        if (parseContext.structQualifierErrorCheck($3.line, $$.type))
+		TPublicType type = $1->getPublicType();
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
         
-        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, $$.type))
+        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, type))
             parseContext.recover();
 
-        if (parseContext.nonInitErrorCheck($3.line, *$3.string, $4, $$.type))
+        if (parseContext.nonInitErrorCheck($3.line, *$3.string, $4, type))
             parseContext.recover();
+		
+		TSymbol* sym = parseContext.symbolTable.find(*$3.string);
+		if (!sym)
+			$$ = $1;
+		else
+			$$ = parseContext.intermediate.growDeclaration($1, sym, NULL);
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info {
-        if (parseContext.structQualifierErrorCheck($3.line, $1.type))
+		TPublicType type = $1->getPublicType();
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
             
-        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, $1.type))
+        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, type))
             parseContext.recover();
-
-        $$ = $1;
         
-        if (parseContext.arrayTypeErrorCheck($4.line, $1.type) || parseContext.arrayQualifierErrorCheck($4.line, $1.type))
+        if (parseContext.arrayTypeErrorCheck($4.line, type) || parseContext.arrayQualifierErrorCheck($4.line, type))
             parseContext.recover();
         else {
-            $1.type.setArray(true);
             TVariable* variable;
-            if (parseContext.arrayErrorCheck($4.line, *$3.string, $6, $1.type, variable))
+            if (parseContext.arrayErrorCheck($4.line, *$3.string, $6, type, variable))
                 parseContext.recover();
+		
+			if (!variable)
+				$$ = $1;
+			else {
+				variable->getType().setArray(true);
+				$$ = parseContext.intermediate.growDeclaration($1, variable, NULL);
+			}
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info {
-        if (parseContext.structQualifierErrorCheck($3.line, $1.type))
+		TPublicType type = $1->getPublicType();
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
             
-        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, $1.type))
+        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, type))
             parseContext.recover();
-        
-        $$ = $1;
 
-        if (parseContext.arrayTypeErrorCheck($4.line, $1.type) || parseContext.arrayQualifierErrorCheck($4.line, $1.type))
+        if (parseContext.arrayTypeErrorCheck($4.line, type) || parseContext.arrayQualifierErrorCheck($4.line, type))
             parseContext.recover();
         else {
             int size;
             if (parseContext.arraySizeErrorCheck($4.line, $5, size))
                 parseContext.recover();
-            $1.type.setArray(true, size);        
+			
             TVariable* variable;
-            if (parseContext.arrayErrorCheck($4.line, *$3.string, $7, $1.type, variable))
+            if (parseContext.arrayErrorCheck($4.line, *$3.string, $7, type, variable))
                 parseContext.recover();
+			
+			if (!variable)
+				$$ = $1;
+			else {
+				variable->getType().setArray(true);
+				variable->getType().setArraySize(size);
+				$$ = parseContext.intermediate.growDeclaration($1, variable, NULL);
+			}
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info EQUAL initializer {
-        if (parseContext.structQualifierErrorCheck($3.line, $1.type))
+		TPublicType type = $1->getPublicType();
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
-            
-        $$ = $1;
             
         TVariable* variable = 0;
-        if (parseContext.arrayTypeErrorCheck($4.line, $1.type) || parseContext.arrayQualifierErrorCheck($4.line, $1.type))
+        if (parseContext.arrayTypeErrorCheck($4.line, type) || parseContext.arrayQualifierErrorCheck($4.line, type))
             parseContext.recover();
-        else {
-			$1.type.setArray(true, $8->getType().getArraySize());
-            if (parseContext.arrayErrorCheck($4.line, *$3.string, $1.type, variable))
-                parseContext.recover();
-        }
-
+        else if (parseContext.arrayErrorCheck($4.line, *$3.string, type, variable))
+			parseContext.recover();
+		
         {
-            TIntermNode* intermNode;
-            if (!parseContext.executeInitializer($3.line, *$3.string, $6, $1.type, $8, intermNode, variable)) {
-                //
-                // build the intermediate representation
-                //
-                if (intermNode)
-                    $$.intermAggregate = parseContext.intermediate.growAggregate($1.intermNode, intermNode, $7.line);
-                else
-                    $$.intermAggregate = $1.intermAggregate;
+            TIntermSymbol* symbol;
+            if (!parseContext.executeInitializer($3.line, *$3.string, $6, type, $8, symbol, variable)) {
+                if (!variable)
+					$$ = $1;
+				else {
+					variable->getType().setArray(true);
+					variable->getType().setArraySize($8->getType().getArraySize());
+					$$ = parseContext.intermediate.growDeclaration($1, variable, $8);
+				}
             } else {
                 parseContext.recover();
-                $$.intermAggregate = 0;
+                $$ = 0;
             }
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info EQUAL initializer {
-        if (parseContext.structQualifierErrorCheck($3.line, $1.type))
+		TPublicType type = $1->getPublicType();
+		int array_size;
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
-            
-        $$ = $1;
             
         TVariable* variable = 0;
-        if (parseContext.arrayTypeErrorCheck($4.line, $1.type) || parseContext.arrayQualifierErrorCheck($4.line, $1.type))
+        if (parseContext.arrayTypeErrorCheck($4.line, type) || parseContext.arrayQualifierErrorCheck($4.line, type))
             parseContext.recover();
         else {
-            int size;
-            if (parseContext.arraySizeErrorCheck($4.line, $5, size))
+            if (parseContext.arraySizeErrorCheck($4.line, $5, array_size))
                 parseContext.recover();
-            $1.type.setArray(true, size);
-            if (parseContext.arrayErrorCheck($4.line, *$3.string, $7, $1.type, variable))
+			
+            if (parseContext.arrayErrorCheck($4.line, *$3.string, $7, type, variable))
                 parseContext.recover();
         }
 
         {
-            TIntermNode* intermNode;
-            if (!parseContext.executeInitializer($3.line, *$3.string, $7, $1.type, $9, intermNode, variable)) {
-                //
-                // build the intermediate representation
-                //
-                if (intermNode)
-                    $$.intermAggregate = parseContext.intermediate.growAggregate($1.intermNode, intermNode, $8.line);
-                else
-                    $$.intermAggregate = $1.intermAggregate;
+            TIntermSymbol* symbol;
+            if (!parseContext.executeInitializer($3.line, *$3.string, $7, type, $9, symbol, variable)) {
+				if (!variable)
+					$$ = $1;
+				else {
+					variable->getType().setArray(true);
+					variable->getType().setArraySize(array_size);
+					
+					$$ = parseContext.intermediate.growDeclaration($1, variable, $9);
+				}
             } else {
                 parseContext.recover();
-                $$.intermAggregate = 0;
+                $$ = 0;
             }
         }
     }
     | init_declarator_list COMMA IDENTIFIER type_info EQUAL initializer {
-        if (parseContext.structQualifierErrorCheck($3.line, $1.type))
+		TPublicType type = $1->getPublicType();
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
-        
-        $$ = $1;
-        
-        TIntermNode* intermNode;
-	if ( !IsSampler($1.type.type)) {
-	    if (!parseContext.executeInitializer($3.line, *$3.string, $4, $1.type, $6, intermNode)) {
-		//
-		// build the intermediate representation
-		//
-		if (intermNode)
-		    $$.intermAggregate = parseContext.intermediate.growAggregate($1.intermNode, intermNode, $5.line);
-		else
-		    $$.intermAggregate = $1.intermAggregate;
-	    } else {
-		parseContext.recover();
-		$$.intermAggregate = 0;
-	    }
+			
+        TIntermSymbol* symbol;
+		if ( !IsSampler(type.type)) {
+			if (!parseContext.executeInitializer($3.line, *$3.string, $4, type, $6, symbol)) {
+				TSymbol* variable = parseContext.symbolTable.find(*$3.string);
+				if (!variable)
+					$$ = $1;
+				else 				
+					$$ = parseContext.intermediate.growDeclaration($1, variable, $6);
+			} else {
+				parseContext.recover();
+				$$ = 0;
+			}
+		} else {
+			//Special code to skip initializers for samplers
+			$$ = $1;
+			if (parseContext.structQualifierErrorCheck($3.line, type))
+				parseContext.recover();
+			
+			if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, type))
+				parseContext.recover();
+			
+			if (parseContext.nonInitErrorCheck($3.line, *$3.string, $4, type))
+				parseContext.recover();
+		}
 	}
-	else {
-	    //Special code to skip initializers for samplers
-	    $$ = $1;
-	    if (parseContext.structQualifierErrorCheck($3.line, $$.type))
-		parseContext.recover();
-	    
-	    if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, $$.type))
-		parseContext.recover();
-	    
-	    if (parseContext.nonInitErrorCheck($3.line, *$3.string, $4, $$.type))
-		parseContext.recover();
-	}
-    }
     ;
 
 single_declaration 
     : fully_specified_type {
-        $$.type = $1;
-        $$.intermAggregate = 0;
+		$$ = 0;
     }    
-    | fully_specified_type IDENTIFIER type_info {
-        $$.intermAggregate = 0;
-        $$.type = $1;
-
-        if (parseContext.structQualifierErrorCheck($2.line, $$.type))
+    | fully_specified_type IDENTIFIER type_info {				
+		bool error = false;
+        if (error &= parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
         
-        if (parseContext.nonInitConstErrorCheck($2.line, *$2.string, $$.type))
+        if (error &= parseContext.nonInitConstErrorCheck($2.line, *$2.string, $1))
             parseContext.recover();
 
-        if (parseContext.nonInitErrorCheck($2.line, *$2.string, $3, $$.type))
+        if (error &= parseContext.nonInitErrorCheck($2.line, *$2.string, $3, $1))
             parseContext.recover();
+		
+		TSymbol* symbol = parseContext.symbolTable.find(*$2.string);
+		if (!error && symbol) {
+			$$ = parseContext.intermediate.addDeclaration(symbol, NULL, $2.line);
+		} else {
+			$$ = 0;
+		}
     }
     | fully_specified_type IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info {
-        $$.intermAggregate = 0;
         if (parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
 
         if (parseContext.nonInitConstErrorCheck($2.line, *$2.string, $1))
             parseContext.recover();
-
-        $$.type = $1;
 
         if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
             parseContext.recover();
@@ -1593,17 +1608,22 @@ single_declaration
             if (parseContext.arrayErrorCheck($3.line, *$2.string, $5, $1, variable))
                 parseContext.recover();
         }
+		
+		TSymbol* symbol = parseContext.symbolTable.find(*$2.string);
+		if (symbol) {
+			$$ = parseContext.intermediate.addDeclaration(symbol, NULL, $2.line);
+		} else {
+			$$ = 0;
+		}
     }
     | fully_specified_type IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info {
-        $$.intermAggregate = 0;
         if (parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
 
         if (parseContext.nonInitConstErrorCheck($2.line, *$2.string, $1))
-            parseContext.recover();
-            
-        $$.type = $1;
-
+			parseContext.recover();
+		
+		TVariable* variable;
         if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
             parseContext.recover();
         else {
@@ -1612,52 +1632,45 @@ single_declaration
                 parseContext.recover();
             
             $1.setArray(true, size);
-            TVariable* variable;
             if (parseContext.arrayErrorCheck($3.line, *$2.string, $6, $1, variable))
                 parseContext.recover();
+			
+			if (variable) {
+				$$ = parseContext.intermediate.addDeclaration(variable, NULL, $2.line);
+			} else {
+				$$ = 0;
+			}
         }
-    }
+	}
     | fully_specified_type IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info EQUAL initializer {
-        $$.intermAggregate = 0;
+		if (parseContext.structQualifierErrorCheck($2.line, $1))
+			parseContext.recover();
 
-        if (parseContext.structQualifierErrorCheck($2.line, $1))
-            parseContext.recover();
+		TVariable* variable = 0;
+		if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
+			parseContext.recover();
+		else {
+			$1.setArray(true, $7->getType().getArraySize());
+			if (parseContext.arrayErrorCheck($3.line, *$2.string, $5, $1, variable))
+				parseContext.recover();
+		}
 
-        $$.type = $1;
-
-        TVariable* variable = 0;
-        if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
-            parseContext.recover();
-        else {
-            $1.setArray(true, $7->getType().getArraySize());
-            if (parseContext.arrayErrorCheck($3.line, *$2.string, $5, $1, variable))
-                parseContext.recover();
-        }
-
-        
-	     {        
-            TIntermNode* intermNode;
-            if (!parseContext.executeInitializer($2.line, *$2.string, $5, $1, $7, intermNode, variable)) {
-                //
-                // Build intermediate representation
-                //
-                if (intermNode)
-                    $$.intermAggregate = parseContext.intermediate.makeAggregate(intermNode, $6.line);
-                else
-                    $$.intermAggregate = 0;
-            } else {
-                parseContext.recover();
-                $$.intermAggregate = 0;
-            }
-        }
+		{        
+			TIntermSymbol* symbol;
+			if (!parseContext.executeInitializer($2.line, *$2.string, $5, $1, $7, symbol, variable)) {
+				if (variable)
+					$$ = parseContext.intermediate.addDeclaration(symbol, $7, $6.line);
+				else
+					$$ = 0;
+			} else {
+				parseContext.recover();
+				$$ = 0;
+			}
+		}
     }
     | fully_specified_type IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info EQUAL initializer {
-        $$.intermAggregate = 0;
-
         if (parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
-
-        $$.type = $1;
 
         TVariable* variable = 0;
         if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
@@ -1672,58 +1685,48 @@ single_declaration
                 parseContext.recover();
         }
         
-        {        
-            TIntermNode* intermNode;
-            if (!parseContext.executeInitializer($2.line, *$2.string, $6, $1, $8, intermNode, variable)) {
-                //
-                // Build intermediate representation
-                //
-                if (intermNode)
-                    $$.intermAggregate = parseContext.intermediate.makeAggregate(intermNode, $7.line);
-                else
-                    $$.intermAggregate = 0;
-            } else {
-                parseContext.recover();
-                $$.intermAggregate = 0;
-            }
-        }        
+		{        
+			TIntermSymbol* symbol;
+			if (!parseContext.executeInitializer($2.line, *$2.string, $6, $1, $8, symbol, variable)) {
+				if (variable)
+					$$ = parseContext.intermediate.addDeclaration(symbol, $8, $7.line);
+				else
+					$$ = 0;
+			} else {
+				parseContext.recover();
+				$$ = 0;
+			}
+		}       
     }
     | fully_specified_type IDENTIFIER type_info EQUAL initializer {
-        if (parseContext.structQualifierErrorCheck($2.line, $1))
-            parseContext.recover();
+		if (parseContext.structQualifierErrorCheck($2.line, $1))
+			parseContext.recover();
+		
+		if (!IsSampler($1.type)) {
+			TIntermSymbol* symbol;
+			if (!parseContext.executeInitializer($2.line, *$2.string, $3, $1, $5, symbol)) {
+				if (symbol)
+					$$ = parseContext.intermediate.addDeclaration(symbol, $5, $4.line);
+				else
+					$$ = 0;
+			} else {
+				parseContext.recover();
+				$$ = 0;
+			}
+		} else {
+			//Skip sampler initializers for now
+			$$ = 0;
 
-        $$.type = $1;
+			if (parseContext.structQualifierErrorCheck($2.line, $1))
+				parseContext.recover();
 
-        TIntermNode* intermNode;
-	if ( !IsSampler($1.type)) {
-	    if (!parseContext.executeInitializer($2.line, *$2.string, $3, $1, $5, intermNode)) {
-		//
-		// Build intermediate representation
-		//
-		if (intermNode)
-		    $$.intermAggregate = parseContext.intermediate.makeAggregate(intermNode, $4.line);
-		else
-		    $$.intermAggregate = 0;
-	    } else {
-		parseContext.recover();
-		$$.intermAggregate = 0;
-	    }
-	}
-	else {
-	    //Skip sampler initializers for now
-	    $$.intermAggregate = 0;
+			if (parseContext.nonInitConstErrorCheck($2.line, *$2.string, $1))
+				parseContext.recover();
 
-	    if (parseContext.structQualifierErrorCheck($2.line, $$.type))
-		parseContext.recover();
-	    
-	    if (parseContext.nonInitConstErrorCheck($2.line, *$2.string, $$.type))
-		parseContext.recover();
-	    
-	    if (parseContext.nonInitErrorCheck($2.line, *$2.string, $3, $$.type))
-		parseContext.recover();
-	}
+			if (parseContext.nonInitErrorCheck($2.line, *$2.string, $3, $1))
+				parseContext.recover();
+		}
     }
-    
     ;
 
 // Grammar Note:  No 'enum', or 'typedef'.
@@ -2236,15 +2239,15 @@ condition
             parseContext.recover();          
     }
     | fully_specified_type IDENTIFIER EQUAL initializer {
-        TIntermNode* intermNode;
+        TIntermSymbol* symbol;
         if (parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
         if (parseContext.boolErrorCheck($2.line, $1))
             parseContext.recover();
         
-        if (!parseContext.executeInitializer($2.line, *$2.string, $1, $4, intermNode))
-            $$ = $4;
-        else {
+        if (!parseContext.executeInitializer($2.line, *$2.string, $1, $4, symbol)) {
+			$$ = parseContext.intermediate.addDeclaration(symbol, $4, $2.line);
+        } else {
             parseContext.recover();
             $$ = 0;
         }
@@ -2472,10 +2475,10 @@ function_definition
    
 initialization_list
     : LEFT_BRACE initializer_list RIGHT_BRACE {
-       $$ = $2;
+		$$ = $2;
     }
     | LEFT_BRACE initializer_list COMMA RIGHT_BRACE {
-       $$ = $2;
+		$$ = $2;
     }
     ;
 
@@ -2512,11 +2515,11 @@ annotation
 annotation_list
     : annotation_item {
         $$ = new TAnnotation;
-	$$->addKey( *$1.string);
+		$$->addKey( *$1.string);
     }
     | annotation_list annotation_item {
         $1->addKey( *$2.string);
-	$$ = $1;
+		$$ = $1;
     }
     ;
 
@@ -2551,36 +2554,36 @@ ann_type
     ;
 
 ann_literal
-: ann_numerical_constant {}
-| STRINGCONSTANT {}
-| ann_literal_constructor {}
-| ann_literal_init_list {}
-;
+	: ann_numerical_constant {}
+	| STRINGCONSTANT {}
+	| ann_literal_constructor {}
+	| ann_literal_init_list {}
+	;
 
 ann_numerical_constant
-: INTCONSTANT {
-    $$.f = (float)$1.i;
-}
-| BOOLCONSTANT {
-    $$.f = ($1.b) ? 1.0f : 0.0f;
-}
-| FLOATCONSTANT {
-    $$ = $1;
-}
-;
+	: INTCONSTANT {
+		$$.f = (float)$1.i;
+	}
+	| BOOLCONSTANT {
+		$$.f = ($1.b) ? 1.0f : 0.0f;
+	}
+	| FLOATCONSTANT {
+		$$.f = $1.f;
+	}
+	;
 
 ann_literal_constructor
-: ann_type LEFT_PAREN ann_value_list RIGHT_PAREN {}
-;
+	: ann_type LEFT_PAREN ann_value_list RIGHT_PAREN {}
+	;
 
 ann_value_list
-: ann_numerical_constant {}
-| ann_value_list COMMA ann_numerical_constant {}
-;
+	: ann_numerical_constant {}
+	| ann_value_list COMMA ann_numerical_constant {}
+	;
 
 ann_literal_init_list
-: LEFT_BRACE ann_value_list RIGHT_BRACE {}
-;
+	: LEFT_BRACE ann_value_list RIGHT_BRACE {}
+	;
 
 register_specifier
     : COLON REGISTER LEFT_PAREN IDENTIFIER RIGHT_PAREN {
@@ -2589,44 +2592,42 @@ register_specifier
     ;
 
 semantic
-: COLON IDENTIFIER { $$.string = $2.string;}
-;
+	: COLON IDENTIFIER { $$.string = $2.string;}
+	;
 
 type_info
-: { $$ = 0;}
-| semantic { $$ = new TTypeInfo( *$1.string, 0); }
-| register_specifier { $$ = 0; }
-| annotation { $$ = new TTypeInfo( "", $1); }
-| semantic annotation { $$ = new TTypeInfo( *$1.string, $2); }
-| semantic register_specifier { $$ = new TTypeInfo( *$1.string, 0); }
-| register_specifier annotation { $$ = new TTypeInfo( "", $2); }
-| semantic register_specifier annotation { $$ = new TTypeInfo( *$1.string, $3); }
-;
+	: { $$ = 0;}
+	| semantic { $$ = new TTypeInfo( *$1.string, 0); }
+	| register_specifier { $$ = 0; }
+	| annotation { $$ = new TTypeInfo( "", $1); }
+	| semantic annotation { $$ = new TTypeInfo( *$1.string, $2); }
+	| semantic register_specifier { $$ = new TTypeInfo( *$1.string, 0); }
+	| register_specifier annotation { $$ = new TTypeInfo( "", $2); }
+	| semantic register_specifier annotation { $$ = new TTypeInfo( *$1.string, $3); }
+	;
 
 sampler_initializer
-: SAMPLERSTATE LEFT_BRACE sampler_init_list RIGHT_BRACE {
-	TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst, 1), $1.line);
-	constant->setValue(0.f);
-	$$ = constant;
-}
-| SAMPLERSTATE LEFT_BRACE RIGHT_BRACE {
-}
-;
+	: SAMPLERSTATE LEFT_BRACE sampler_init_list RIGHT_BRACE {
+		TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst, 1), $1.line);
+		constant->setValue(0.f);
+		$$ = constant;
+	}
+	| SAMPLERSTATE LEFT_BRACE RIGHT_BRACE {
+	}
+	;
 
 sampler_init_list
-: sampler_init_item {
-}
-| sampler_init_list sampler_init_item {
-}
-;
+	: sampler_init_item { }
+	| sampler_init_list sampler_init_item { }
+	;
 
 sampler_init_item
-: IDENTIFIER EQUAL IDENTIFIER SEMICOLON {}
-| IDENTIFIER EQUAL LEFT_ANGLE IDENTIFIER RIGHT_ANGLE SEMICOLON {}
-| IDENTIFIER EQUAL LEFT_PAREN IDENTIFIER RIGHT_PAREN SEMICOLON {}
-| TEXTURE EQUAL IDENTIFIER SEMICOLON {}
-| TEXTURE EQUAL LEFT_ANGLE IDENTIFIER RIGHT_ANGLE SEMICOLON {}
-| TEXTURE EQUAL LEFT_PAREN IDENTIFIER RIGHT_PAREN SEMICOLON {}
-;
+	: IDENTIFIER EQUAL IDENTIFIER SEMICOLON {}
+	| IDENTIFIER EQUAL LEFT_ANGLE IDENTIFIER RIGHT_ANGLE SEMICOLON {}
+	| IDENTIFIER EQUAL LEFT_PAREN IDENTIFIER RIGHT_PAREN SEMICOLON {}
+	| TEXTURE EQUAL IDENTIFIER SEMICOLON {}
+	| TEXTURE EQUAL LEFT_ANGLE IDENTIFIER RIGHT_ANGLE SEMICOLON {}
+	| TEXTURE EQUAL LEFT_PAREN IDENTIFIER RIGHT_PAREN SEMICOLON {}
+	;
 
 %%

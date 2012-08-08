@@ -538,6 +538,50 @@ TIntermTyped* TIntermediate::addConversion(TOperator op, const TType& type, TInt
    }
 }
 
+TIntermDeclaration* TIntermediate::addDeclaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line) {
+	TIntermDeclaration* decl = new TIntermDeclaration(symbol->getType());
+	decl->setLine(line);
+	if (!initializer)
+		decl->getDeclaration() = symbol;
+	else
+		decl->getDeclaration() = addAssign(EOpAssign, symbol, initializer, line);
+	
+	return decl;
+}
+
+TIntermDeclaration* TIntermediate::addDeclaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line) {
+	TVariable* var = static_cast<TVariable*>(symbol);
+	TIntermSymbol* sym = addSymbol(var->getUniqueId(), var->getName(), var->getType(), line);
+
+	return addDeclaration(sym, initializer, line);
+}
+
+TIntermDeclaration* TIntermediate::growDeclaration(TIntermDeclaration* declaration, TSymbol* symbol, TIntermTyped* initializer) {
+	TVariable* var = static_cast<TVariable*>(symbol);
+	TIntermSymbol* sym = addSymbol(var->getUniqueId(), var->getName(), var->getType(), var->getType().getLine());
+	
+	return growDeclaration(declaration, sym, initializer);
+}
+
+TIntermDeclaration* TIntermediate::growDeclaration(TIntermDeclaration* declaration, TIntermSymbol *symbol, TIntermTyped *initializer) {
+	TIntermTyped* added_decl = symbol;
+	if (initializer)
+		added_decl = addAssign(EOpAssign, symbol, initializer, symbol->getLine());
+	
+	if (declaration->isSingleDeclaration()) {
+		TIntermTyped* current = declaration->getDeclaration();
+		TIntermAggregate* aggregate = makeAggregate(current, current->getLine());
+		aggregate->setOperator(EOpComma);
+		declaration->getDeclaration() = aggregate;
+	}
+		
+	TIntermAggregate* aggregate = growAggregate(declaration->getDeclaration(), added_decl, added_decl->getLine());
+	aggregate->setOperator(EOpComma);
+	declaration->getDeclaration() = aggregate;
+	
+	return declaration;
+}
+
 //
 // Safe way to combine two nodes into an aggregate.  Works with null pointers, 
 // a node that's not a aggregate yet, etc.
@@ -576,18 +620,21 @@ TIntermAggregate* TIntermediate::growAggregate(TIntermNode* left, TIntermNode* r
 //
 TIntermAggregate* TIntermediate::makeAggregate(TIntermNode* node, TSourceLoc line)
 {
-   if (node == 0)
-      return 0;
+	if (node == 0)
+		return 0;
 
-   TIntermAggregate* aggNode = new TIntermAggregate;
-   aggNode->getSequence().push_back(node);
+	TIntermAggregate* aggNode = new TIntermAggregate;
+	if (node->getAsTyped())
+		aggNode->setType(*node->getAsTyped()->getTypePointer());
+	
+	aggNode->getSequence().push_back(node);
 
-   if (line != 0)
-      aggNode->setLine(line);
-   else
-      aggNode->setLine(node->getLine());
+	if (line != 0)
+		aggNode->setLine(line);
+	else
+		aggNode->setLine(node->getLine());
 
-   return aggNode;
+	return aggNode;
 }
 
 //
@@ -957,7 +1004,6 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          // Set array information.
          //
       case EOpAssign:
-      case EOpInitialize:
          getType().setArraySize(left->getType().getArraySize());
          getType().setArrayInformationType(left->getType().getArrayInformationType());
          break;
@@ -1214,7 +1260,6 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
       break;
 
    case EOpAssign:
-   case EOpInitialize:
       if (left->getNominalSize() != right->getNominalSize())
       {
          //right needs to be forced to match left
@@ -1356,25 +1401,30 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 	return true;
 }
 
+void wtf(TFunction* asd) {
+	int a = 0;
+}
+
 TIntermTyped* TIntermediate::promoteConstant(TBasicType promoteTo, TIntermConstant* right) 
 {
 	unsigned size = right->getCount();
 	const TType& t = right->getType();
 	TIntermConstant* left = addConstant(TType(promoteTo, t.getPrecision(), t.getQualifier(), t.getNominalSize(), t.isMatrix(), t.isArray()), right->getLine());
-
 	for (unsigned i = 0; i != size; ++i) {
+		TIntermConstant::Value& value = right->getValue(i);
+		
 		switch (promoteTo)
 		{
 		case EbtFloat:
-			switch (right->getType().getBasicType()) {
+			switch (value.type) {
 			case EbtInt:
-				left->setValue(i, (float)right->toInt(i));
+				left->setValue(i, (float)value.asInt);
 				break;
 			case EbtBool:
-				left->setValue(i, (float)right->toBool(i));
+				left->setValue(i, (float)value.asBool);
 				break;
 			case EbtFloat:
-				left->setValue(i, right->toFloat(i));
+				left->setValue(i, value.asFloat);
 				break;
 			default: 
 				infoSink.info.message(EPrefixInternalError, "Cannot promote", right->getLine());
@@ -1382,15 +1432,15 @@ TIntermTyped* TIntermediate::promoteConstant(TBasicType promoteTo, TIntermConsta
 			}                
 			break;
 		case EbtInt:
-			switch (right->getType().getBasicType()) {
+			switch (value.type) {
 			case EbtInt:
-				left->setValue(i, right->toInt(i));
+				left->setValue(i, value.asInt);
 				break;
 			case EbtBool:
-				left->setValue(i, (int)right->toBool(i));
+				left->setValue(i, (int)value.asBool);
 				break;
 			case EbtFloat:
-				left->setValue(i, (int)right->toBool(i));
+				left->setValue(i, (int)value.asFloat);
 				break;
 			default: 
 				infoSink.info.message(EPrefixInternalError, "Cannot promote", right->getLine());
@@ -1398,15 +1448,15 @@ TIntermTyped* TIntermediate::promoteConstant(TBasicType promoteTo, TIntermConsta
 			}                
 			break;
 		case EbtBool:
-			switch (right->getType().getBasicType()) {
+			switch (value.type) {
 			case EbtInt:
-				left->setValue(i, right->toInt(i) != 0);
+				left->setValue(i, value.asInt != 0);
 				break;
 			case EbtBool:
-				left->setValue(i, right->toBool(i));
+				left->setValue(i, value.asBool);
 				break;
 			case EbtFloat:
-				left->setValue(i, right->toFloat(i) != 0.0f);
+				left->setValue(i, value.asFloat != 0.0f);
 				break;
 			default: 
 				infoSink.info.message(EPrefixInternalError, "Cannot promote", right->getLine());

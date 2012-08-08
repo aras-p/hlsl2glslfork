@@ -72,12 +72,12 @@ protected:
 //
 class TVariable : public TSymbol {
 public:
-	TVariable(const TString *name, const TType& t, bool uT = false ) : TSymbol(name), type(t), userType(uT), arrayInformationType(0)
+	TVariable(const TString *name, const TType& t, bool uT = false ) : TSymbol(name), type(t), userType(uT), arrayInformationType(0), initializer(0)
 	{
 		changeQualifier(type.getQualifier());
 	}
 	
-	TVariable(const TString *name, const TTypeInfo* info, const TType& t, bool uT = false ) : TSymbol(name, info), type(t), userType(uT), arrayInformationType(0)
+	TVariable(const TString *name, const TTypeInfo* info, const TType& t, bool uT = false ) : TSymbol(name, info), type(t), userType(uT), arrayInformationType(0), initializer(0)
 	{
 		changeQualifier(type.getQualifier());
 	}
