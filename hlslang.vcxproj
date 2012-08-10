@@ -116,7 +116,6 @@
     <ClCompile Include="hlslang\MachineIndependent\Intermediate.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\intermOut.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\IntermTraverse.cpp" />
-    <ClCompile Include="hlslang\MachineIndependent\parseConst.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\ParseHelper.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\PoolAlloc.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\RemoveTree.cpp" />
