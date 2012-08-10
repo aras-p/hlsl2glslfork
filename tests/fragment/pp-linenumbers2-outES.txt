@@ -71,67 +71,57 @@ mediump vec4 UnpackNormal( in mediump vec4 packednormal ) {
 }
 #line 10058
 void surf( in Input IN, inout LeafSurfaceOutput o ) {
-    mediump vec4 c;
-    mediump vec4 trngls;
-    mediump vec4 norspc;
-    c = texture2D( _MainTex, IN.uv_MainTex);
+    mediump vec4 c = texture2D(_MainTex, IN.uv_MainTex);
     o.Albedo = ((c.xyz * _Color.xyz) * IN.color.w);
     #line 10062
-    trngls = texture2D( _TranslucencyMap, IN.uv_MainTex);
+    mediump vec4 trngls = texture2D(_TranslucencyMap, IN.uv_MainTex);
     o.Translucency = trngls.z;
     o.Gloss = (trngls.w * _Color.x);
     o.Alpha = c.w;
     #line 10066
-    norspc = texture2D( _BumpSpecMap, IN.uv_MainTex);
+    mediump vec4 norspc = texture2D(_BumpSpecMap, IN.uv_MainTex);
     o.Specular = norspc.x;
     o.ShadowOffset = norspc.z;
-    o.Normal = vec3( UnpackNormal( norspc));
+    o.Normal = vec3(UnpackNormal(norspc));
 }
 #line 1031
 mediump vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in mediump vec3 lightDir, in mediump vec3 viewDir, in mediump float atten ) {
-    mediump vec3 h;
-    mediump float nl;
-    mediump float nh;
-    mediump float spec;
-    mediump float backContrib;
-    mediump vec3 translucencyColor;
-    mediump vec4 c;
-    h = normalize((lightDir + viewDir));
-    nl = dot( s.Normal, lightDir);
+    mediump vec3 h = normalize((lightDir + viewDir));
+    mediump float nl = dot(s.Normal, lightDir);
     #line 1035
-    nh = max( 0.0, dot( s.Normal, h));
-    spec = (pow( nh, (s.Specular * 128.0)) * s.Gloss);
-    backContrib = xll_saturate(dot( viewDir, (-lightDir)));
-    backContrib = mix( xll_saturate((-nl)), backContrib, _TranslucencyViewDependency);
+    mediump float nh = max(0.0, dot(s.Normal, h));
+    mediump float spec = (pow(nh, (s.Specular * 128.0)) * s.Gloss);
+    mediump float backContrib = xll_saturate(dot(viewDir, (-lightDir)));
+    backContrib = mix(xll_saturate((-nl)), backContrib, _TranslucencyViewDependency);
     #line 1039
-    translucencyColor = ((backContrib * s.Translucency) * _TranslucencyColor);
-    nl = max( 0.0, ((nl * 0.6) + 0.4));
+    mediump vec3 translucencyColor = ((backContrib * s.Translucency) * _TranslucencyColor);
+    nl = max(0.0, ((nl * 0.6) + 0.4));
+    mediump vec4 c;
     c.xyz = (s.Albedo * ((translucencyColor * 2.0) + nl));
     #line 1043
     c.xyz = ((c.xyz * _LightColor0.xyz) + spec);
-    c.xyz *= mix( 2.0, (atten * 2.0), _ShadowStrength);
+    c.xyz *= mix(2.0, (atten * 2.0), _ShadowStrength);
     return c;
 }
 #line 10082
 mediump vec4 xlat_main( in v2f_surf IN ) {
     Input surfIN;
-    LeafSurfaceOutput o;
-    mediump vec3 lightDir;
-    mediump vec4 c;
+    #line 10085
     surfIN.uv_MainTex = IN.hip_pack0.xy;
-    #line 10086
     surfIN.color = IN.lop_color;
-    o.Albedo = vec3( 0.0);
-    o.Emission = vec3( 0.0);
-    #line 10090
+    LeafSurfaceOutput o;
+    o.Albedo = vec3(0.0);
+    #line 10089
+    o.Emission = vec3(0.0);
     o.Specular = 0.0;
     o.Alpha = 0.0;
-    surf( surfIN, o);
+    surf(surfIN, o);
+    #line 10093
     xll_clip((o.Alpha - _Cutoff));
-    #line 10094
-    lightDir = IN.lightDir;
-    c = LightingTreeLeaf( o, lightDir, normalize(IN.viewDir), (texture2D( _LightTexture0, IN._LightCoord).w * 1.0));
+    mediump vec3 lightDir = IN.lightDir;
+    mediump vec4 c = LightingTreeLeaf(o, lightDir, normalize(IN.viewDir), (texture2D(_LightTexture0, IN._LightCoord).w * 1.0));
     c.w = o.Alpha;
+    #line 10097
     return c;
 }
 varying highp vec2 xlv_TEXCOORD0;

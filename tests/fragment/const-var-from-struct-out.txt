@@ -2,16 +2,12 @@ uniform vec4 _Color;
 vec4 xlat_main(  );
 #line 3
 vec4 xlat_main(  ) {
-    float r;
-    float g;
-    float b;
-    float a;
-    r = _Color.x;
-    g = _Color.y;
+    const float r = _Color.x;
+    const float g = _Color.y;
     #line 7
-    b = _Color.z;
-    a = _Color.w;
-    return vec4( r, g, b, a);
+    const float b = _Color.z;
+    const float a = _Color.w;
+    return vec4(r, g, b, a);
 }
 void main() {
     vec4 xl_retval;

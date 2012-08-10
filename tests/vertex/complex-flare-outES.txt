@@ -27,8 +27,8 @@ void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, o
 #line 270
 void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, out highp vec2 otexcoord ) {
     overtex = (glstate_matrix_mvp * v.vertex);
+    #line 273
     ocolor = v.color;
-    #line 274
     otexcoord = ((v.texcoord.xy * _FlareTexture_ST.xy) + _FlareTexture_ST.zw);
 }
 varying highp vec4 xlv_COLOR;

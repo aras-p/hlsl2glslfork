@@ -17,28 +17,29 @@ vec4 ComputeSomeLighting( in vec3 pos );
 v2f xlat_main( in a2v v );
 #line 15
 float ComputeShadow( in vec3 pos ) {
-    return pow( pos.x, 4.0);
+    #line 17
+    return pow(pos.x, 4.0);
 }
 #line 20
 float ComputeAtten( in vec3 pos, in vec3 lightPos ) {
-    return (distance( pos, lightPos) * ComputeShadow( pos));
+    #line 22
+    return (distance(pos, lightPos) * ComputeShadow(pos));
 }
 #line 25
 vec4 ComputeSomeLighting( in vec3 pos ) {
+    #line 27
     vec4 res;
     res = _LightColor;
-    #line 29
-    res *= ComputeAtten( pos, _LightPos);
+    res *= ComputeAtten(pos, _LightPos);
     return res;
 }
 #line 33
 v2f xlat_main( in a2v v ) {
-    vec4 pos;
     v2f o;
-    pos = (mvp * v.pos);
+    vec4 pos = (mvp * v.pos);
     #line 37
     o.pos = pos;
-    o.color = ComputeSomeLighting( v.pos.xyz);
+    o.color = ComputeSomeLighting(v.pos.xyz);
     return o;
 }
 varying vec4 xlv_COLOR;

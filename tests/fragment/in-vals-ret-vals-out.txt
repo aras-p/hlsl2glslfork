@@ -1,8 +1,8 @@
 vec4 xlat_main( in vec2 uv, in vec4 color );
 #line 4
 vec4 xlat_main( in vec2 uv, in vec4 color ) {
+    #line 6
     vec4 c;
-    #line 7
     c = color;
     c.xy += uv;
     return c;

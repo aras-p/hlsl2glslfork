@@ -19,7 +19,7 @@ uniform sampler2D _FlareTexture;
 vec4 xlat_main( in vec4 color, in vec2 texcoord );
 #line 270
 vec4 xlat_main( in vec4 color, in vec2 texcoord ) {
-    return (texture2D( _FlareTexture, texcoord) * color);
+    return (texture2D(_FlareTexture, texcoord) * color);
 }
 varying vec4 xlv_COLOR;
 varying vec2 xlv_TEXCOORD0;

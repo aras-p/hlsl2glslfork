@@ -23,19 +23,19 @@ vec4 DoPosMul( in vec4 pos, in mat4 mvp ) {
 }
 #line 22
 vec4 DoColor( in vec4 color, in vec3 normal ) {
-    vec4 c;
-    c = color;
+    vec4 c = color;
     c.xyz += normal;
     #line 26
     return c;
 }
 #line 29
 v2f xlat_main( in a2v v ) {
+    #line 31
     v2f o;
-    #line 32
-    o.pos = DoPosMul( v.pos, mvp);
-    o.color = DoColor( v.color, v.normal);
+    o.pos = DoPosMul(v.pos, mvp);
+    o.color = DoColor(v.color, v.normal);
     o.uv = v.uv;
+    #line 35
     return o;
 }
 varying float xlv_FOG;

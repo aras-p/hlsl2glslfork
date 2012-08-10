@@ -21,61 +21,49 @@ highp vec2 EncodeFloatRG( in highp float v );
 mediump vec4 xlat_main( in v2f i );
 #line 37
 mediump float unitySampleShadow( in highp vec4 eyePos ) {
-    highp vec3 sc0;
-    highp vec3 sc1;
-    highp vec3 sc2;
-    highp vec3 sc3;
-    highp float z;
-    highp vec4 near;
-    highp vec4 far;
-    highp vec4 weights;
-    highp vec4 coord;
-    mediump float shadow;
-    sc0 = (_View2Shadow * eyePos).xyz;
-    sc1 = (_View2Shadow1 * eyePos).xyz;
+    highp vec3 sc0 = (_View2Shadow * eyePos).xyz;
+    highp vec3 sc1 = (_View2Shadow1 * eyePos).xyz;
     #line 41
-    sc2 = (_View2Shadow2 * eyePos).xyz;
-    sc3 = (_View2Shadow3 * eyePos).xyz;
-    z = eyePos.z;
+    highp vec3 sc2 = (_View2Shadow2 * eyePos).xyz;
+    highp vec3 sc3 = (_View2Shadow3 * eyePos).xyz;
+    highp float z = eyePos.z;
     #line 46
-    near = vec4(greaterThanEqual( vec4( z ), _LightSplitsNear));
-    far = vec4(lessThan( vec4( z ), _LightSplitsFar));
-    weights = (near * far);
-    coord = vec4( ((((sc0 * weights.x) + (sc1 * weights.y)) + (sc2 * weights.z)) + (sc3 * weights.w)), 1.0);
+    highp vec4 near = greaterThanEqual( vec4( z ), _LightSplitsNear);
+    highp vec4 far = lessThan( vec4( z ), _LightSplitsFar);
+    highp vec4 weights = (near * far);
+    highp vec4 coord = vec4(((((sc0 * weights.x) + (sc1 * weights.y)) + (sc2 * weights.z)) + (sc3 * weights.w)), 1.0);
     #line 50
-    shadow = (( (texture2D( _ShadowMapTexture, coord.xy).x < coord.z) ) ? ( _LightShadowData.x ) : ( 1.0 ));
+    mediump float shadow = (( (texture2D(_ShadowMapTexture, coord.xy).x < coord.z) ) ? ( _LightShadowData.x ) : ( 1.0 ));
     return shadow;
 }
 #line 22
 highp float Linear01Depth( in highp float z ) {
+    #line 24
     return (1.0 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
 }
 #line 27
 highp vec2 EncodeFloatRG( in highp float v ) {
+    #line 29
     highp vec2 kEncodeMul = vec2(1.0, 255.0);
-    highp float kEncodeBit = 0.00392157;
-    highp vec2 enc;
-    #line 31
-    enc = (kEncodeMul * v);
+    highp float kEncodeBit = (1.0 / 255.0);
+    highp vec2 enc = (kEncodeMul * v);
     enc = fract(enc);
+    #line 33
     enc.x -= (enc.y * kEncodeBit);
     return enc;
 }
 #line 54
 mediump vec4 xlat_main( in v2f i ) {
-    highp float depth;
-    highp vec4 vpos;
-    mediump float shadow;
-    highp vec4 res;
-    depth = texture2D( _CameraDepthTexture, i.uv).x;
-    depth = Linear01Depth( depth);
+    highp float depth = texture2D(_CameraDepthTexture, i.uv).x;
+    depth = Linear01Depth(depth);
     #line 58
-    vpos = vec4( (i.ray * depth), 1.0);
-    shadow = unitySampleShadow( vpos);
+    highp vec4 vpos = vec4((i.ray * depth), 1.0);
+    mediump float shadow = unitySampleShadow(vpos);
+    highp vec4 res;
     res.x = shadow;
     #line 62
     res.y = 1.0;
-    res.zw = EncodeFloatRG( (1.0 - depth));
+    res.zw = EncodeFloatRG((1.0 - depth));
     return res;
 }
 varying highp vec2 xlv_TEXCOORD0;

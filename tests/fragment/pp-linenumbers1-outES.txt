@@ -9,7 +9,8 @@ uniform sampler2D _MainTex;
 mediump vec4 xlat_main( in v2f i );
 #line 19
 mediump vec4 xlat_main( in v2f i ) {
-    return (i.color * texture2D( _MainTex, i.texcoord));
+    #line 21
+    return (i.color * texture2D(_MainTex, i.texcoord));
 }
 varying lowp vec4 xlv_COLOR;
 varying mediump vec2 xlv_TEXCOORD0;

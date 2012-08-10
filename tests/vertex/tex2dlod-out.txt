@@ -5,8 +5,7 @@ uniform sampler2D tex;
 vec4 xlat_main( in vec4 pos, in vec2 uv );
 #line 3
 vec4 xlat_main( in vec4 pos, in vec2 uv ) {
-    vec4 c;
-    c = xll_tex2Dlod( tex, vec4( uv, 0.0, 0.0));
+    vec4 c = xll_tex2Dlod(tex, vec4(uv, 0.0, 0.0));
     return (pos + c);
 }
 void main() {

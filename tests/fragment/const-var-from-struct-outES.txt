@@ -2,16 +2,12 @@ uniform mediump vec4 _Color;
 mediump vec4 xlat_main(  );
 #line 3
 mediump vec4 xlat_main(  ) {
-    mediump float r;
-    mediump float g;
-    mediump float b;
-    mediump float a;
-    r = _Color.x;
-    g = _Color.y;
+    const mediump float r = _Color.x;
+    const mediump float g = _Color.y;
     #line 7
-    b = _Color.z;
-    a = _Color.w;
-    return vec4( r, g, b, a);
+    const mediump float b = _Color.z;
+    const mediump float a = _Color.w;
+    return vec4(r, g, b, a);
 }
 void main() {
     mediump vec4 xl_retval;

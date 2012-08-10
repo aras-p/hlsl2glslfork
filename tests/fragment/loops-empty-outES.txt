@@ -2,10 +2,10 @@ mediump vec4 xlat_main(  );
 #line 1
 mediump vec4 xlat_main(  ) {
     highp int i = 0;
-    highp int j = 0;
     for ( ; (i < 10); (++i)) {
     }
     #line 4
+    highp int j = 0;
     while ( ((j++) < 10) ) {
     }
     #line 8
@@ -13,7 +13,7 @@ mediump vec4 xlat_main(  ) {
     }
     while (     ((j--) > 0) )
 ;
-    return vec4( 1.0);
+    return vec4(1.0);
 }
 void main() {
     mediump vec4 xl_retval;

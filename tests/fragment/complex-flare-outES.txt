@@ -19,7 +19,7 @@ uniform sampler2D _FlareTexture;
 mediump vec4 xlat_main( in highp vec4 color, in highp vec2 texcoord );
 #line 270
 mediump vec4 xlat_main( in highp vec4 color, in highp vec2 texcoord ) {
-    return (texture2D( _FlareTexture, texcoord) * color);
+    return (texture2D(_FlareTexture, texcoord) * color);
 }
 varying highp vec4 xlv_COLOR;
 varying highp vec2 xlv_TEXCOORD0;

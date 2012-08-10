@@ -1,7 +1,7 @@
 mediump vec4 xlat_main( in highp vec2 pos );
 #line 1
 mediump vec4 xlat_main( in highp vec2 pos ) {
-    return vec4( pos, 0.0, 0.0);
+    return vec4(pos, 0.0, 0.0);
 }
 void main() {
     mediump vec4 xl_retval;
