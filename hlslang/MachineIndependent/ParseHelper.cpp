@@ -1056,7 +1056,7 @@ bool TParseContext::nonInitConstErrorCheck(int line, TString& identifier, TPubli
    //
    // Make the qualifier make sense.
    //
-   if (type.qualifier == EvqConst)
+   if (type.qualifier == EvqConst || type.qualifier == EvqStaticConst)
    {
       type.qualifier = EvqTemporary;
       error(line, "variables with qualifier 'const' must be initialized", identifier.c_str(), "");
@@ -1242,10 +1242,6 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 	TIntermTyped* converted = intermediate.addConversion(EOpAssign, type, initializer);
 	if (converted)
 		initializer = converted;
-	
-	bool isConst = isBranchConstant(initializer);
-	if (isConst)
-		initializer->getTypePointer()->changeQualifier(EvqConst);
 
 	//
 	// identifier must be of type constant, a global, or a temporary
@@ -1256,6 +1252,10 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 		error(line, " cannot initialize this type of qualifier ", variable->getType().getQualifierString(), "");
 		return true;
 	}
+	
+	bool isConst = isBranchConstant(initializer);
+	if (isConst)
+		initializer->getTypePointer()->changeQualifier(EvqConst);
 
 	//
 	// test for and propagate constant
@@ -1289,6 +1289,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 	}
 
 	TIntermSymbol* intermSymbol = intermediate.addSymbol(variable->getUniqueId(), variable->getName(), variable->getInfo(), variable->getType(), line);
+	intermSymbol->setGlobal(variable->isGlobal());
 	intermNode = intermSymbol;
 	return false;
 }

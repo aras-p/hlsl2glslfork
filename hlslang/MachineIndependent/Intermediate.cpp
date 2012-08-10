@@ -541,6 +541,7 @@ TIntermTyped* TIntermediate::addConversion(TOperator op, const TType& type, TInt
 TIntermDeclaration* TIntermediate::addDeclaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line) {
 	TIntermDeclaration* decl = new TIntermDeclaration(symbol->getType());
 	decl->setLine(line);
+	
 	if (!initializer)
 		decl->getDeclaration() = symbol;
 	else
@@ -552,6 +553,7 @@ TIntermDeclaration* TIntermediate::addDeclaration(TIntermSymbol* symbol, TInterm
 TIntermDeclaration* TIntermediate::addDeclaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line) {
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = addSymbol(var->getUniqueId(), var->getName(), var->getType(), line);
+	sym->setGlobal(symbol->isGlobal());
 
 	return addDeclaration(sym, initializer, line);
 }
@@ -559,6 +561,7 @@ TIntermDeclaration* TIntermediate::addDeclaration(TSymbol* symbol, TIntermTyped*
 TIntermDeclaration* TIntermediate::growDeclaration(TIntermDeclaration* declaration, TSymbol* symbol, TIntermTyped* initializer) {
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = addSymbol(var->getUniqueId(), var->getName(), var->getType(), var->getType().getLine());
+	sym->setGlobal(symbol->isGlobal());
 	
 	return growDeclaration(declaration, sym, initializer);
 }
@@ -1400,6 +1403,7 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 	
 	return true;
 }
+
 
 void wtf(TIntermTyped* asd) {
 	int a = 0;

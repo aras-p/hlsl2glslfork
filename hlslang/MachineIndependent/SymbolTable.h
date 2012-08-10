@@ -38,26 +38,29 @@
 //
 class TSymbol {    
 public:
-   POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
-   TSymbol(const TString *n) :  name(n), info(0) { }
-   TSymbol(const TString *n, const TTypeInfo *i) :  name(n), info(i) { }
-   virtual ~TSymbol() { /* don't delete name, it's from the pool */ }
-   const TString& getName() const { return *name; }
-   const TTypeInfo* getInfo() const { return info; }
-   void setInfo( const TTypeInfo *i) {  info = i; }
-   virtual const TString& getMangledName() const { return getName(); }
-   virtual bool isFunction() const { return false; }
-   virtual bool isVariable() const { return false; }
-   void setUniqueId(int id) { uniqueId = id; }
-   int getUniqueId() const { return uniqueId; }
-   virtual void dump(TInfoSink &infoSink) const = 0;	
-   TSymbol(const TSymbol&);
-   virtual TSymbol* clone(TStructureMap& remapper) = 0;
+	POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
+	TSymbol(const TString *n) :  name(n), info(0), global(false) { }
+	TSymbol(const TString *n, const TTypeInfo *i) :  name(n), info(i), global(false) { }
+	virtual ~TSymbol() { /* don't delete name, it's from the pool */ }
+	const TString& getName() const { return *name; }
+	const TTypeInfo* getInfo() const { return info; }
+	void setInfo( const TTypeInfo *i) {  info = i; }
+	virtual const TString& getMangledName() const { return getName(); }
+	virtual bool isFunction() const { return false; }
+	virtual bool isVariable() const { return false; }
+	void setUniqueId(int id) { uniqueId = id; }
+	int getUniqueId() const { return uniqueId; }
+	bool isGlobal() const { return global; }
+	void setGlobal(bool g) { global = g; }
+	virtual void dump(TInfoSink &infoSink) const = 0;	
+	TSymbol(const TSymbol&);
+	virtual TSymbol* clone(TStructureMap& remapper) = 0;
 
 protected:
-   const TString *name;
-   const TTypeInfo *info;
-   unsigned int uniqueId;      // For real comparing during code generation
+	bool global;
+	const TString *name;
+	const TTypeInfo *info;
+	unsigned int uniqueId;      // For real comparing during code generation
 };
 
 //
@@ -72,12 +75,12 @@ protected:
 //
 class TVariable : public TSymbol {
 public:
-	TVariable(const TString *name, const TType& t, bool uT = false ) : TSymbol(name), type(t), userType(uT), arrayInformationType(0), initializer(0)
+	TVariable(const TString *name, const TType& t, bool uT = false ) : TSymbol(name), type(t), userType(uT), arrayInformationType(0)
 	{
 		changeQualifier(type.getQualifier());
 	}
 	
-	TVariable(const TString *name, const TTypeInfo* info, const TType& t, bool uT = false ) : TSymbol(name, info), type(t), userType(uT), arrayInformationType(0), initializer(0)
+	TVariable(const TString *name, const TTypeInfo* info, const TType& t, bool uT = false ) : TSymbol(name, info), type(t), userType(uT), arrayInformationType(0)
 	{
 		changeQualifier(type.getQualifier());
 	}
@@ -98,14 +101,10 @@ public:
 	TVariable(const TVariable&, TStructureMap& remapper); // copy constructor
 	virtual TVariable* clone(TStructureMap& remapper);
 
-	TIntermTyped* getInitializer() { return initializer; }
-	void setInitializer(TIntermTyped* node) { initializer = node; }
-
 protected:
 	bool foldable;
 	TType type;
 	bool userType;
-	TIntermTyped* initializer;
 	TType *arrayInformationType;  // this is used for updating maxArraySize in all the references to a given symbol
 };
 
@@ -219,101 +218,102 @@ protected:
 
 class TSymbolTable {
 public:
-   TSymbolTable() : uniqueId(0)
-   {
-      //
-      // The symbol table cannot be used until push() is called, but
-      // the lack of an initial call to push() can be used to detect
-      // that the symbol table has not been preloaded with built-ins.
-      //
-   }
+	TSymbolTable() : uniqueId(0)
+	{
+		//
+		// The symbol table cannot be used until push() is called, but
+		// the lack of an initial call to push() can be used to detect
+		// that the symbol table has not been preloaded with built-ins.
+		//
+	}
 
-   TSymbolTable(TSymbolTable& symTable)
-   {
-      table.push_back(symTable.table[0]);
-      uniqueId = symTable.uniqueId;
-   }
+	TSymbolTable(TSymbolTable& symTable)
+	{
+		table.push_back(symTable.table[0]);
+		uniqueId = symTable.uniqueId;
+	}
 
-   ~TSymbolTable()
-   {
-      // level 0 is always built In symbols, so we never pop that out
-      while (table.size() > 1)
-         pop();
-   }
+	~TSymbolTable()
+	{
+		// level 0 is always built In symbols, so we never pop that out
+		while (table.size() > 1)
+		pop();
+	}
 
-   //
-   // When the symbol table is initialized with the built-ins, there should
-   // 'push' calls, so that built-ins are at level 0 and the shader
-   // globals are at level 1.
-   //
-   bool isEmpty() const { return table.size() == 0; }
-   bool atBuiltInLevel() const { return atSharedBuiltInLevel() || atDynamicBuiltInLevel(); }
-   bool atSharedBuiltInLevel() const { return table.size() == 1; }	
-   bool atGlobalLevel() const { return table.size() <= 3; }
-   void push() 
-   { 
-      table.push_back(new TSymbolTableLevel);
-   }
+	//
+	// When the symbol table is initialized with the built-ins, there should
+	// 'push' calls, so that built-ins are at level 0 and the shader
+	// globals are at level 1.
+	//
+	bool isEmpty() const { return table.size() == 0; }
+	bool atBuiltInLevel() const { return atSharedBuiltInLevel() || atDynamicBuiltInLevel(); }
+	bool atSharedBuiltInLevel() const { return table.size() == 1; }	
+	bool atGlobalLevel() const { return table.size() <= 3; }
+	void push() 
+	{ 
+		table.push_back(new TSymbolTableLevel);
+	}
 
-   void pop() 
-   { 
-      delete table[currentLevel()]; 
-      table.pop_back(); 
-   }
+	void pop() 
+	{ 
+		delete table[currentLevel()]; 
+		table.pop_back(); 
+	}
 
-   bool insert(TSymbol& symbol)
-   {
-      symbol.setUniqueId(++uniqueId);
-      return table[currentLevel()]->insert(symbol);
-   }
-    
-   TSymbol* find(const TString& name, bool* builtIn = 0, bool *sameScope = 0) 
-   {
-      int level = currentLevel();
-      TSymbol* symbol;
-      do 
-      {
-         symbol = table[level]->find(name);
-         --level;
-      } while (symbol == 0 && level >= 0);
-      level++;
-      if (builtIn)
-         *builtIn = level == 0;
-      if (sameScope)
-         *sameScope = level == currentLevel();
-      return symbol;
-   }
+	bool insert(TSymbol& symbol)
+	{
+		symbol.setGlobal(atGlobalLevel());
+		symbol.setUniqueId(++uniqueId);
+		return table[currentLevel()]->insert(symbol);
+	}
 
-   TSymbol* findCompatible(const TFunction* call, bool *builtIn, bool &ambiguous) 
-   {
-      int level = currentLevel();
-      TSymbol *symbol = 0;
-      ambiguous = false;
+	TSymbol* find(const TString& name, bool* builtIn = 0, bool *sameScope = 0) 
+	{
+		int level = currentLevel();
+		TSymbol* symbol;
+		do 
+		{
+			symbol = table[level]->find(name);
+			--level;
+		} while (symbol == 0 && level >= 0);
+		
+		level++;
+		if (builtIn)
+			*builtIn = level == 0;
+		if (sameScope)
+			*sameScope = level == currentLevel();
+		return symbol;
+	}
 
-      do 
-      {
-         symbol = table[level]->findCompatible(call, ambiguous);
-         --level;
-      } while ( symbol == 0 && level >= 0 && !ambiguous);
-      level++;
-      if (builtIn)
-         *builtIn = level == 0;
-      //if (sameScope)
-      //    *sameScope = level == currentLevel();
-      return symbol;
-   }
+	TSymbol* findCompatible(const TFunction* call, bool *builtIn, bool &ambiguous) 
+	{
+		int level = currentLevel();
+		TSymbol *symbol = 0;
+		ambiguous = false;
 
-   TSymbolTableLevel* getGlobalLevel() { assert(table.size() >= 3); return table[2]; }
-   void relateToOperator(const char* name, TOperator op) { table[0]->relateToOperator(name, op); }
-   void dump(TInfoSink &infoSink) const;
-   void copyTable(const TSymbolTable& copyOf);
+		do 
+		{
+			symbol = table[level]->findCompatible(call, ambiguous);
+			--level;
+		} while ( symbol == 0 && level >= 0 && !ambiguous);
+			
+		level++;
+		if (builtIn)
+			*builtIn = level == 0;
+		return symbol;
+	}
+
+	TSymbolTableLevel* getGlobalLevel() { assert(table.size() >= 3); return table[2]; }
+	void relateToOperator(const char* name, TOperator op) { table[0]->relateToOperator(name, op); }
+	void dump(TInfoSink &infoSink) const;
+	void copyTable(const TSymbolTable& copyOf);
 
 protected:    
-   int currentLevel() const { return static_cast<int>(table.size()) - 1; }
-   bool atDynamicBuiltInLevel() const { return table.size() == 2; }
+	int currentLevel() const { return static_cast<int>(table.size()) - 1; }
+	bool atDynamicBuiltInLevel() const { return table.size() == 2; }
 
-   std::vector<TSymbolTableLevel*> table;
-   int uniqueId;     // for unique identification in code generation
+	std::vector<TSymbolTableLevel*> table;
+	int uniqueId;     // for unique identification in code generation
 };
 
 #endif // _SYMBOL_TABLE_INCLUDED_

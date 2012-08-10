@@ -389,36 +389,39 @@ protected:
 class TIntermSymbol : public TIntermTyped
 {
 public:
-   // if symbol is initialized as symbol(sym), the memory comes from the poolallocator of sym. If sym comes from
-   // per process globalpoolallocator, then it causes increased memory usage per compile
-   // it is essential to use "symbol = sym" to assign to symbol
-   TIntermSymbol(int i, const TString& sym, const TType& t) : 
-   TIntermTyped(t), id(i), info(0)
-   {
-      symbol = sym;
-   } 
-   TIntermSymbol(int i, const TString& sym, const TTypeInfo *inf, const TType& t) : 
-   TIntermTyped(t), id(i), info(inf)
-   {
-      symbol = sym;
-   } 
+	// if symbol is initialized as symbol(sym), the memory comes from the poolallocator of sym. If sym comes from
+	// per process globalpoolallocator, then it causes increased memory usage per compile
+	// it is essential to use "symbol = sym" to assign to symbol
+	TIntermSymbol(int i, const TString& sym, const TType& t) : 
+		TIntermTyped(t), id(i), info(0), global(false)
+	{
+		symbol = sym;
+	} 
+	TIntermSymbol(int i, const TString& sym, const TTypeInfo *inf, const TType& t) : 
+		TIntermTyped(t), id(i), info(inf), global(false)
+	{
+		symbol = sym;
+	} 
 
-   int getId() const { return id; }
-   const TString& getSymbol() const { return symbol; }
+	int getId() const { return id; }
+	const TString& getSymbol() const { return symbol; }
+	bool isGlobal() const { return global; }
+	void setGlobal(bool g) { global = g; }
 
-   virtual const TTypeInfo* getInfo() const
-   {
-      return info;
-   }
-   virtual void traverse(TIntermTraverser*);
-   virtual TIntermSymbol* getAsSymbolNode()
-   {
-      return this;
-   }
+	virtual const TTypeInfo* getInfo() const
+	{
+		return info;
+	}
+	virtual void traverse(TIntermTraverser*);
+	virtual TIntermSymbol* getAsSymbolNode()
+	{
+		return this;
+	}
 protected:
-   int id;
-   TString symbol;
-   const TTypeInfo *info;
+	int id;
+	bool global;
+	TString symbol;
+	const TTypeInfo *info;
 };
 
 class TIntermDeclaration : public TIntermTyped {

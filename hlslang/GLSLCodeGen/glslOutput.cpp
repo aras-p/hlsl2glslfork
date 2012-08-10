@@ -332,39 +332,43 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 
 void TGlslOutputTraverser::traverseSymbol(TIntermSymbol *node, TIntermTraverser *it)
 {
-   TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
-   GlslFunction *current = goit->current;
-   std::stringstream& out = current->getActiveOutput();
+	TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
+	GlslFunction *current = goit->current;
+	std::stringstream& out = current->getActiveOutput();
 
-   current->beginStatement();
+	current->beginStatement();
 
-   if ( ! current->hasSymbol( node->getId()))
-   {
+	if ( ! current->hasSymbol( node->getId()))
+	{
 
-      //check to see if it is a global we can share
-      if ( goit->global->hasSymbol( node->getId()))
-      {
-         current->addSymbol( &goit->global->getSymbol( node->getId()));
-      }
-      else
-      {
-         int array = node->getTypePointer()->isArray() ? node->getTypePointer()->getArraySize() : 0;
-         const char* semantic = "";
-         if (node->getInfo())
-            semantic = node->getInfo()->getSemantic().c_str();
-         GlslSymbol * sym = new GlslSymbol( node->getSymbol().c_str(), semantic, node->getId(),
-			 translateType(node->getTypePointer()), goit->m_UsePrecision?node->getPrecision():EbpUndefined, translateQualifier(node->getQualifier()), array);
-         current->addSymbol(sym);
-         if (sym->getType() == EgstStruct)
-         {
-            GlslStruct *s = goit->createStructFromType( node->getTypePointer());
-            sym->setStruct(s);
-         }
-      }
-   }
+		//check to see if it is a global we can share
+		if ( goit->global->hasSymbol( node->getId()))
+		{
+			current->addSymbol( &goit->global->getSymbol( node->getId()));
+		}
+		else
+		{
+			int array = node->getTypePointer()->isArray() ? node->getTypePointer()->getArraySize() : 0;
+			const char* semantic = "";
+			if (node->getInfo())
+				semantic = node->getInfo()->getSemantic().c_str();
+			
+			GlslSymbol * sym = new GlslSymbol( node->getSymbol().c_str(), semantic, node->getId(),
+				translateType(node->getTypePointer()), goit->m_UsePrecision?node->getPrecision():EbpUndefined, translateQualifier(node->getQualifier()), array);
+			sym->setIsGlobal(node->isGlobal());
 
+			current->addSymbol(sym);
+			if (sym->getType() == EgstStruct)
+			{
+				GlslStruct *s = goit->createStructFromType( node->getTypePointer());
+				sym->setStruct(s);
+			}
+		}
+	}
 
-   out << current->getSymbol( node->getId()).getName();
+	// If we're at the global scope, emit the non-mutable names of uniforms.
+	bool globalScope = current == goit->global;
+	out << current->getSymbol(node->getId()).getName(!globalScope);
 }
 
 

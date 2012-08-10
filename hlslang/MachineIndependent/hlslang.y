@@ -206,10 +206,12 @@ variable_identifier
 
         // don't delete $1.string, it's used by error recovery, and the pool
         // pop will reclaim the memory
-		$$ = parseContext.intermediate.addSymbol(variable->getUniqueId(), 
+		TIntermSymbol* sym = parseContext.intermediate.addSymbol(variable->getUniqueId(), 
                                                      variable->getName(),
                                                      variable->getInfo(), 
                                                      variable->getType(), $1.line);
+		sym->setGlobal(variable->isGlobal());
+		$$ = sym;
     }
     ;
 
@@ -1771,8 +1773,6 @@ type_qualifier
         $$.setBasic(EbtVoid, EvqConst, $1.line);
     }
     | STATIC_QUAL {
-        if (parseContext.globalErrorCheck($1.line, parseContext.symbolTable.atGlobalLevel(), "static"))
-            parseContext.recover();
         $$.setBasic(EbtVoid, EvqStatic, $1.line);
     }
     | STATIC_QUAL CONST_QUAL {
