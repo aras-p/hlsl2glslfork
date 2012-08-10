@@ -1,8 +1,9 @@
 mediump vec4 xlat_main(  );
 #line 1
 mediump vec4 xlat_main(  ) {
-    #line 4
-    return vec4( 1.0, 1.0, 1.0, 1.0);
+    #line 3
+    const mediump float f = 1.0;
+    return vec4(f, f, f, f);
 }
 void main() {
     mediump vec4 xl_retval;

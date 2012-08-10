@@ -93,6 +93,7 @@ Jutta Degener, 1995
             TIntermNodePair nodePair;
             TIntermTyped* intermTypedNode;
             TIntermAggregate* intermAggregate;
+			TIntermDeclaration* intermDeclaration;
         };
         union {
             TPublicType type;
@@ -155,11 +156,12 @@ Jutta Degener, 1995
 %type <interm.intermNode> statement simple_statement
 %type <interm.intermAggregate>  statement_list compound_statement 
 %type <interm.intermNode> declaration_statement selection_statement expression_statement
-%type <interm.intermNode> declaration external_declaration
+%type <interm.intermNode> external_declaration
+%type <interm.intermDeclaration> declaration
 %type <interm.intermNode> for_init_statement compound_statement_no_new_scope
 %type <interm.nodePair> selection_rest_statement for_rest_statement
 %type <interm.intermNode> iteration_statement jump_statement statement_no_new_scope
-%type <interm> single_declaration init_declarator_list
+%type <interm.intermDeclaration> single_declaration init_declarator_list
 
 %type <interm> parameter_declaration parameter_declarator parameter_type_specifier
 %type <interm.qualifier> parameter_qualifier
@@ -204,13 +206,7 @@ variable_identifier
 
         // don't delete $1.string, it's used by error recovery, and the pool
         // pop will reclaim the memory
-
-        if (variable->getType().getQualifier() == EvqConst ) {
-            constUnion* constArray = variable->getConstPointer();
-            TType t(variable->getType());
-            $$ = parseContext.intermediate.addConstantUnion(constArray, t, $1.line);        
-        } else
-            $$ = parseContext.intermediate.addSymbol(variable->getUniqueId(), 
+		$$ = parseContext.intermediate.addSymbol(variable->getUniqueId(), 
                                                      variable->getName(),
                                                      variable->getInfo(), 
                                                      variable->getType(), $1.line);
@@ -221,20 +217,20 @@ primary_expression
     : variable_identifier {
         $$ = $1;
     }
-    | INTCONSTANT {        
-        constUnion *unionArray = new constUnion[1];
-        unionArray->setIConst($1.i);
-        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $1.line);
+    | INTCONSTANT {
+        TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $1.line);
+		constant->setValue($1.i);
+		$$ = constant;
     }
     | FLOATCONSTANT {
-        constUnion *unionArray = new constUnion[1];
-        unionArray->setFConst($1.f);
-        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
+        TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
+		constant->setValue($1.f);
+		$$ = constant;
     }
     | BOOLCONSTANT {
-        constUnion *unionArray = new constUnion[1];
-        unionArray->setBConst($1.b);
-        $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $1.line);
+        TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $1.line);
+		constant->setValue($1.b);
+		$$ = constant;
     }
     | LEFT_PAREN expression RIGHT_PAREN {
         $$ = $2;
@@ -257,52 +253,39 @@ postfix_expression
                 parseContext.error($2.line, " left of '[' is not of type array, matrix, or vector ", "expression", "");
             parseContext.recover();
         }
-        if ($1->getType().getQualifier() == EvqConst && $3->getQualifier() == EvqConst) {
-            if ($1->isArray()) { // constant folding for arrays
-                $$ = parseContext.addConstArrayNode($3->getAsConstantUnion()->getUnionArrayPointer()->getIConst(), $1, $2.line);
-            } else if ($1->isVector()) {  // constant folding for vectors
-                TVectorFields fields;                
-                fields.num = 1;
-                fields.offsets[0] = $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst(); // need to do it this way because v.xy sends fields integer array
-                $$ = parseContext.addConstVectorNode(fields, $1, $2.line);
-            } else if ($1->isMatrix()) { // constant folding for matrices
-                $$ = parseContext.addConstMatrixNode($3->getAsConstantUnion()->getUnionArrayPointer()->getIConst(), $1, $2.line);
-            } 
-        } else {
-            if ($3->getQualifier() == EvqConst) {
-                if (($1->isVector() || $1->isMatrix()) && $1->getType().getNominalSize() <= $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst() && !$1->isArray() ) {
-                    parseContext.error($2.line, "", "[", "field selection out of range '%d'", $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst());
-                    parseContext.recover();
-                } else {
-                    if ($1->isArray()) {
-                        if ($1->getType().getArraySize() == 0) {
-                            if ($1->getType().getMaxArraySize() <= $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst()) {
-                                if (parseContext.arraySetMaxSize($1->getAsSymbolNode(), $1->getTypePointer(), $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst(), true, $2.line))
-                                    parseContext.recover(); 
-                            } else {
-                                if (parseContext.arraySetMaxSize($1->getAsSymbolNode(), $1->getTypePointer(), 0, false, $2.line))
-                                    parseContext.recover(); 
-                            }
-                        } else if ( $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst() >= $1->getType().getArraySize()) {
-                            parseContext.error($2.line, "", "[", "array index out of range '%d'", $3->getAsConstantUnion()->getUnionArrayPointer()->getIConst());
-                            parseContext.recover();
-                        }
-                    }
-                    $$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, $3, $2.line);
-                }
-            } else {
-                if ($1->isArray() && $1->getType().getArraySize() == 0) {
-                    parseContext.error($2.line, "", "[", "array must be redeclared with a size before being indexed with a variable");
-                    parseContext.recover();
-                }
-                
-                $$ = parseContext.intermediate.addIndex(EOpIndexIndirect, $1, $3, $2.line);
-            }
-        } 
+		if ($3->getQualifier() == EvqConst) {
+			if (($1->isVector() || $1->isMatrix()) && $1->getType().getNominalSize() <= $3->getAsConstant()->toInt() && !$1->isArray() ) {
+				parseContext.error($2.line, "", "[", "field selection out of range '%d'", $3->getAsConstant()->toInt());
+				parseContext.recover();
+			} else {
+				if ($1->isArray()) {
+					if ($1->getType().getArraySize() == 0) {
+						if ($1->getType().getMaxArraySize() <= $3->getAsConstant()->toInt()) {
+							if (parseContext.arraySetMaxSize($1->getAsSymbolNode(), $1->getTypePointer(), $3->getAsConstant()->toInt(), true, $2.line))
+								parseContext.recover(); 
+						} else {
+							if (parseContext.arraySetMaxSize($1->getAsSymbolNode(), $1->getTypePointer(), 0, false, $2.line))
+								parseContext.recover(); 
+						}
+					} else if ( $3->getAsConstant()->toInt() >= $1->getType().getArraySize()) {
+						parseContext.error($2.line, "", "[", "array index out of range '%d'", $3->getAsConstant()->toInt());
+						parseContext.recover();
+					}
+				}
+				$$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, $3, $2.line);
+			}
+		} else {
+			if ($1->isArray() && $1->getType().getArraySize() == 0) {
+				parseContext.error($2.line, "", "[", "array must be redeclared with a size before being indexed with a variable");
+				parseContext.recover();
+			}
+			
+			$$ = parseContext.intermediate.addIndex(EOpIndexIndirect, $1, $3, $2.line);
+		}
         if ($$ == 0) {
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setFConst(0.0f);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(0.f);
+			$$ = constant;
         } else if ($1->isArray()) {
             if ($1->getType().getStruct())
                 $$->setType(TType($1->getType().getStruct(), $1->getType().getTypeName(), EbpUndefined, $1->getLine()));
@@ -343,28 +326,17 @@ postfix_expression
                 parseContext.recover();
             }
 
-            if ($1->getType().getQualifier() == EvqConst) { // constant folding for vector fields
-                $$ = parseContext.addConstVectorNode(fields, $1, $3.line);
-                if ($$ == 0) {
-                    parseContext.recover();
-                    $$ = $1;
-                }
-                else
-                    $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqConst, (int) (*$3.string).size()));
-            } else {
-                if (fields.num == 1) {
-                    constUnion *unionArray = new constUnion[1];
-                    unionArray->setIConst(fields.offsets[0]);
-                    TIntermTyped* index = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $3.line);
-                    $$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, index, $2.line);
-                    $$->setType(TType($1->getBasicType(), $1->getPrecision()));
-                } else {
-                    TString vectorString = *$3.string;
-                    TIntermTyped* index = parseContext.intermediate.addSwizzle(fields, $3.line);                
-                    $$ = parseContext.intermediate.addIndex(EOpVectorSwizzle, $1, index, $2.line);
-                    $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, (int) vectorString.size()));  
-                }
-            }
+			if (fields.num == 1) {
+				TIntermConstant* index = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
+				index->setValue(fields.offsets[0]);
+				$$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, index, $2.line);
+				$$->setType(TType($1->getBasicType(), $1->getPrecision()));
+			} else {
+				TString vectorString = *$3.string;
+				TIntermTyped* index = parseContext.intermediate.addSwizzle(fields, $3.line);                
+				$$ = parseContext.intermediate.addIndex(EOpVectorSwizzle, $1, index, $2.line);
+				$$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, (int) vectorString.size()));  
+			}
         } else if ($1->isMatrix()) {
             TVectorFields fields;
             if (! parseContext.parseMatrixFields(*$3.string, $1->getNominalSize(), fields, $3.line)) {
@@ -394,25 +366,10 @@ postfix_expression
                     }                
                 }
                 if (fieldFound) {
-                    if ($1->getType().getQualifier() == EvqConst) {
-                        $$ = parseContext.addConstStruct(*$3.string, $1, $2.line);
-                        if ($$ == 0) {
-                            parseContext.recover();
-                            $$ = $1;
-                        }
-                        else {
-                            $$->setType(*(*fields)[i].type);
-                            // change the qualifier of the return type, not of the structure field
-                            // as the structure definition is shared between various structures.
-                            $$->getTypePointer()->changeQualifier(EvqConst);
-                        }
-                    } else {
-                        constUnion *unionArray = new constUnion[1];
-                        unionArray->setIConst(i);
-                        TIntermTyped* index = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $3.line);
-                        $$ = parseContext.intermediate.addIndex(EOpIndexDirectStruct, $1, index, $2.line);                
-                        $$->setType(*(*fields)[i].type);
-                    }
+					TIntermConstant* index = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
+					index->setValue(i);
+					$$ = parseContext.intermediate.addIndex(EOpIndexDirectStruct, $1, index, $2.line);                
+					$$->setType(*(*fields)[i].type);
                 } else {
                     parseContext.error($2.line, " no such field in structure", $3.string->c_str(), "");
                     parseContext.recover();
@@ -485,9 +442,9 @@ function_call
                 parseContext.recover();
             }
 
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setIConst($1.intermNode->getAsTyped()->getType().getArraySize());
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtInt, EbpUndefined, EvqConst), $1.line);
+			TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $1.line);
+			constant->setValue($1.intermNode->getAsTyped()->getType().getArraySize());
+            $$ = constant;
         } else if (op != EOpNull) {
             //
             // Then this should be a constructor.
@@ -507,9 +464,8 @@ function_call
             if ($$ == 0) {        
                 parseContext.recover();
                 $$ = parseContext.intermediate.setAggregateOperator(0, op, $1.line);
-            }
-			if ($$ != $1.intermNode)
 				$$->setType(type);
+            }
         } else {
             //
             // Not a constructor.  Find it in the symbol table.
@@ -554,6 +510,7 @@ function_call
                         }
                     } else {
                         $$ = parseContext.intermediate.setAggregateOperator($1.intermAggregate, op, $1.line);
+						$$->setType(fnCandidate->getReturnType());
                     }
                 } else {
                     // This is a real function call
@@ -579,9 +536,10 @@ function_call
             } else {
                 // error message was put out by PaFindFunction()
                 // Put on a dummy node for error recovery
-                constUnion *unionArray = new constUnion[1];
-                unionArray->setFConst(0.0f);
-                $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
+                
+				TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
+				constant->setValue(0.f);
+				$$ = constant;
                 parseContext.recover();
             }
         }
@@ -850,10 +808,10 @@ unary_expression
         if ($$ == 0) {        
             parseContext.recover();
             $$ = parseContext.intermediate.setAggregateOperator(0, op, $2.line);
-        }
-		if ($$ != $4)
+        } else {
 			$$->setType(type2);
-    }
+		}
+	}
     ;
 // Grammar Note:  No traditional style type casts.
 
@@ -945,9 +903,9 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "<", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     | relational_expression RIGHT_ANGLE shift_expression  { 
@@ -955,9 +913,9 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, ">", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     | relational_expression LE_OP shift_expression  { 
@@ -965,9 +923,9 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "<=", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     | relational_expression GE_OP shift_expression  { 
@@ -975,9 +933,9 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, ">=", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     ;
@@ -989,9 +947,9 @@ equality_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "==", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         } else if (($1->isArray() || $3->isArray()))
             parseContext.recover();
     }
@@ -1000,9 +958,9 @@ equality_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "!=", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         } else if (($1->isArray() || $3->isArray()))
             parseContext.recover();
     }
@@ -1054,9 +1012,9 @@ logical_and_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "&&", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     ;
@@ -1068,9 +1026,9 @@ logical_xor_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "^^", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     ;
@@ -1082,9 +1040,9 @@ logical_or_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "||", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            constUnion *unionArray = new constUnion[1];
-            unionArray->setBConst(false);
-            $$ = parseContext.intermediate.addConstantUnion(unionArray, TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+			constant->setValue(false);
+			$$ = constant;
         }
     }
     ;
@@ -1158,11 +1116,7 @@ constant_expression
 
 declaration
     : function_prototype SEMICOLON   { $$ = 0; }
-    | init_declarator_list SEMICOLON { 
-        if ($1.intermAggregate)
-            $1.intermAggregate->setOperator(EOpSequence); 
-        $$ = $1.intermAggregate; 
-    }
+    | init_declarator_list SEMICOLON { $$ = $1; }
     ;
 
 function_prototype 
@@ -1451,183 +1405,200 @@ init_declarator_list
         $$ = $1;
     } 
     | init_declarator_list COMMA IDENTIFIER type_info {
-        $$ = $1;
-        if (parseContext.structQualifierErrorCheck($3.line, $$.type))
+		TPublicType type = $1->getPublicType();
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
         
-        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, $$.type))
+        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, type))
             parseContext.recover();
 
-        if (parseContext.nonInitErrorCheck($3.line, *$3.string, $4, $$.type))
+        if (parseContext.nonInitErrorCheck($3.line, *$3.string, $4, type))
             parseContext.recover();
+		
+		TSymbol* sym = parseContext.symbolTable.find(*$3.string);
+		if (!sym)
+			$$ = $1;
+		else
+			$$ = parseContext.intermediate.growDeclaration($1, sym, NULL);
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info {
-        if (parseContext.structQualifierErrorCheck($3.line, $1.type))
+		TPublicType type = $1->getPublicType();
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
             
-        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, $1.type))
+        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, type))
             parseContext.recover();
-
-        $$ = $1;
         
-        if (parseContext.arrayTypeErrorCheck($4.line, $1.type) || parseContext.arrayQualifierErrorCheck($4.line, $1.type))
+        if (parseContext.arrayTypeErrorCheck($4.line, type) || parseContext.arrayQualifierErrorCheck($4.line, type))
             parseContext.recover();
         else {
-            $1.type.setArray(true);
             TVariable* variable;
-            if (parseContext.arrayErrorCheck($4.line, *$3.string, $6, $1.type, variable))
+            if (parseContext.arrayErrorCheck($4.line, *$3.string, $6, type, variable))
                 parseContext.recover();
+		
+			if (!variable)
+				$$ = $1;
+			else {
+				variable->getType().setArray(true);
+				$$ = parseContext.intermediate.growDeclaration($1, variable, NULL);
+			}
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info {
-        if (parseContext.structQualifierErrorCheck($3.line, $1.type))
+		TPublicType type = $1->getPublicType();
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
             
-        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, $1.type))
+        if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, type))
             parseContext.recover();
-        
-        $$ = $1;
 
-        if (parseContext.arrayTypeErrorCheck($4.line, $1.type) || parseContext.arrayQualifierErrorCheck($4.line, $1.type))
+        if (parseContext.arrayTypeErrorCheck($4.line, type) || parseContext.arrayQualifierErrorCheck($4.line, type))
             parseContext.recover();
         else {
             int size;
             if (parseContext.arraySizeErrorCheck($4.line, $5, size))
                 parseContext.recover();
-            $1.type.setArray(true, size);        
+			
             TVariable* variable;
-            if (parseContext.arrayErrorCheck($4.line, *$3.string, $7, $1.type, variable))
+            if (parseContext.arrayErrorCheck($4.line, *$3.string, $7, type, variable))
                 parseContext.recover();
+			
+			if (!variable)
+				$$ = $1;
+			else {
+				variable->getType().setArray(true);
+				variable->getType().setArraySize(size);
+				$$ = parseContext.intermediate.growDeclaration($1, variable, NULL);
+			}
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info EQUAL initializer {
-        if (parseContext.structQualifierErrorCheck($3.line, $1.type))
+		TPublicType type = $1->getPublicType();
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
-            
-        $$ = $1;
             
         TVariable* variable = 0;
-        if (parseContext.arrayTypeErrorCheck($4.line, $1.type) || parseContext.arrayQualifierErrorCheck($4.line, $1.type))
+        if (parseContext.arrayTypeErrorCheck($4.line, type) || parseContext.arrayQualifierErrorCheck($4.line, type))
             parseContext.recover();
-        else {
-			$1.type.setArray(true, $8->getType().getArraySize());
-            if (parseContext.arrayErrorCheck($4.line, *$3.string, $1.type, variable))
-                parseContext.recover();
-        }
-
+        else if (parseContext.arrayErrorCheck($4.line, *$3.string, type, variable))
+			parseContext.recover();
+		
         {
-            TIntermNode* intermNode;
-            if (!parseContext.executeInitializer($3.line, *$3.string, $6, $1.type, $8, intermNode, variable)) {
-                //
-                // build the intermediate representation
-                //
-                if (intermNode)
-                    $$.intermAggregate = parseContext.intermediate.growAggregate($1.intermNode, intermNode, $7.line);
-                else
-                    $$.intermAggregate = $1.intermAggregate;
+            TIntermSymbol* symbol;
+            if (!parseContext.executeInitializer($3.line, *$3.string, $6, type, $8, symbol, variable)) {
+                if (!variable)
+					$$ = $1;
+				else {
+					variable->getType().setArray(true);
+					variable->getType().setArraySize($8->getType().getArraySize());
+					$$ = parseContext.intermediate.growDeclaration($1, variable, $8);
+				}
             } else {
                 parseContext.recover();
-                $$.intermAggregate = 0;
+                $$ = 0;
             }
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info EQUAL initializer {
-        if (parseContext.structQualifierErrorCheck($3.line, $1.type))
+		TPublicType type = $1->getPublicType();
+		int array_size;
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
-            
-        $$ = $1;
             
         TVariable* variable = 0;
-        if (parseContext.arrayTypeErrorCheck($4.line, $1.type) || parseContext.arrayQualifierErrorCheck($4.line, $1.type))
+        if (parseContext.arrayTypeErrorCheck($4.line, type) || parseContext.arrayQualifierErrorCheck($4.line, type))
             parseContext.recover();
         else {
-            int size;
-            if (parseContext.arraySizeErrorCheck($4.line, $5, size))
+            if (parseContext.arraySizeErrorCheck($4.line, $5, array_size))
                 parseContext.recover();
-            $1.type.setArray(true, size);
-            if (parseContext.arrayErrorCheck($4.line, *$3.string, $7, $1.type, variable))
+			
+            if (parseContext.arrayErrorCheck($4.line, *$3.string, $7, type, variable))
                 parseContext.recover();
         }
 
         {
-            TIntermNode* intermNode;
-            if (!parseContext.executeInitializer($3.line, *$3.string, $7, $1.type, $9, intermNode, variable)) {
-                //
-                // build the intermediate representation
-                //
-                if (intermNode)
-                    $$.intermAggregate = parseContext.intermediate.growAggregate($1.intermNode, intermNode, $8.line);
-                else
-                    $$.intermAggregate = $1.intermAggregate;
+            TIntermSymbol* symbol;
+            if (!parseContext.executeInitializer($3.line, *$3.string, $7, type, $9, symbol, variable)) {
+				if (!variable)
+					$$ = $1;
+				else {
+					variable->getType().setArray(true);
+					variable->getType().setArraySize(array_size);
+					
+					$$ = parseContext.intermediate.growDeclaration($1, variable, $9);
+				}
             } else {
                 parseContext.recover();
-                $$.intermAggregate = 0;
+                $$ = 0;
             }
         }
     }
     | init_declarator_list COMMA IDENTIFIER type_info EQUAL initializer {
-        if (parseContext.structQualifierErrorCheck($3.line, $1.type))
+		TPublicType type = $1->getPublicType();
+		
+        if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
-        
-        $$ = $1;
-        
-        TIntermNode* intermNode;
-	if ( !IsSampler($1.type.type)) {
-	    if (!parseContext.executeInitializer($3.line, *$3.string, $4, $1.type, $6, intermNode)) {
-		//
-		// build the intermediate representation
-		//
-		if (intermNode)
-		    $$.intermAggregate = parseContext.intermediate.growAggregate($1.intermNode, intermNode, $5.line);
-		else
-		    $$.intermAggregate = $1.intermAggregate;
-	    } else {
-		parseContext.recover();
-		$$.intermAggregate = 0;
-	    }
+			
+        TIntermSymbol* symbol;
+		if ( !IsSampler(type.type)) {
+			if (!parseContext.executeInitializer($3.line, *$3.string, $4, type, $6, symbol)) {
+				TSymbol* variable = parseContext.symbolTable.find(*$3.string);
+				if (!variable)
+					$$ = $1;
+				else 				
+					$$ = parseContext.intermediate.growDeclaration($1, variable, $6);
+			} else {
+				parseContext.recover();
+				$$ = 0;
+			}
+		} else {
+			//Special code to skip initializers for samplers
+			$$ = $1;
+			if (parseContext.structQualifierErrorCheck($3.line, type))
+				parseContext.recover();
+			
+			if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, type))
+				parseContext.recover();
+			
+			if (parseContext.nonInitErrorCheck($3.line, *$3.string, $4, type))
+				parseContext.recover();
+		}
 	}
-	else {
-	    //Special code to skip initializers for samplers
-	    $$ = $1;
-	    if (parseContext.structQualifierErrorCheck($3.line, $$.type))
-		parseContext.recover();
-	    
-	    if (parseContext.nonInitConstErrorCheck($3.line, *$3.string, $$.type))
-		parseContext.recover();
-	    
-	    if (parseContext.nonInitErrorCheck($3.line, *$3.string, $4, $$.type))
-		parseContext.recover();
-	}
-    }
     ;
 
 single_declaration 
     : fully_specified_type {
-        $$.type = $1;
-        $$.intermAggregate = 0;
+		$$ = 0;
     }    
-    | fully_specified_type IDENTIFIER type_info {
-        $$.intermAggregate = 0;
-        $$.type = $1;
-
-        if (parseContext.structQualifierErrorCheck($2.line, $$.type))
+    | fully_specified_type IDENTIFIER type_info {				
+		bool error = false;
+        if (error &= parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
         
-        if (parseContext.nonInitConstErrorCheck($2.line, *$2.string, $$.type))
+        if (error &= parseContext.nonInitConstErrorCheck($2.line, *$2.string, $1))
             parseContext.recover();
 
-        if (parseContext.nonInitErrorCheck($2.line, *$2.string, $3, $$.type))
+        if (error &= parseContext.nonInitErrorCheck($2.line, *$2.string, $3, $1))
             parseContext.recover();
+		
+		TSymbol* symbol = parseContext.symbolTable.find(*$2.string);
+		if (!error && symbol) {
+			$$ = parseContext.intermediate.addDeclaration(symbol, NULL, $2.line);
+		} else {
+			$$ = 0;
+		}
     }
     | fully_specified_type IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info {
-        $$.intermAggregate = 0;
         if (parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
 
         if (parseContext.nonInitConstErrorCheck($2.line, *$2.string, $1))
             parseContext.recover();
-
-        $$.type = $1;
 
         if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
             parseContext.recover();
@@ -1637,17 +1608,22 @@ single_declaration
             if (parseContext.arrayErrorCheck($3.line, *$2.string, $5, $1, variable))
                 parseContext.recover();
         }
+		
+		TSymbol* symbol = parseContext.symbolTable.find(*$2.string);
+		if (symbol) {
+			$$ = parseContext.intermediate.addDeclaration(symbol, NULL, $2.line);
+		} else {
+			$$ = 0;
+		}
     }
     | fully_specified_type IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info {
-        $$.intermAggregate = 0;
         if (parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
 
         if (parseContext.nonInitConstErrorCheck($2.line, *$2.string, $1))
-            parseContext.recover();
-            
-        $$.type = $1;
-
+			parseContext.recover();
+		
+		TVariable* variable;
         if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
             parseContext.recover();
         else {
@@ -1656,52 +1632,45 @@ single_declaration
                 parseContext.recover();
             
             $1.setArray(true, size);
-            TVariable* variable;
             if (parseContext.arrayErrorCheck($3.line, *$2.string, $6, $1, variable))
                 parseContext.recover();
+			
+			if (variable) {
+				$$ = parseContext.intermediate.addDeclaration(variable, NULL, $2.line);
+			} else {
+				$$ = 0;
+			}
         }
-    }
+	}
     | fully_specified_type IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info EQUAL initializer {
-        $$.intermAggregate = 0;
+		if (parseContext.structQualifierErrorCheck($2.line, $1))
+			parseContext.recover();
 
-        if (parseContext.structQualifierErrorCheck($2.line, $1))
-            parseContext.recover();
+		TVariable* variable = 0;
+		if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
+			parseContext.recover();
+		else {
+			$1.setArray(true, $7->getType().getArraySize());
+			if (parseContext.arrayErrorCheck($3.line, *$2.string, $5, $1, variable))
+				parseContext.recover();
+		}
 
-        $$.type = $1;
-
-        TVariable* variable = 0;
-        if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
-            parseContext.recover();
-        else {
-            $1.setArray(true, $7->getType().getArraySize());
-            if (parseContext.arrayErrorCheck($3.line, *$2.string, $5, $1, variable))
-                parseContext.recover();
-        }
-
-        
-	     {        
-            TIntermNode* intermNode;
-            if (!parseContext.executeInitializer($2.line, *$2.string, $5, $1, $7, intermNode, variable)) {
-                //
-                // Build intermediate representation
-                //
-                if (intermNode)
-                    $$.intermAggregate = parseContext.intermediate.makeAggregate(intermNode, $6.line);
-                else
-                    $$.intermAggregate = 0;
-            } else {
-                parseContext.recover();
-                $$.intermAggregate = 0;
-            }
-        }
+		{        
+			TIntermSymbol* symbol;
+			if (!parseContext.executeInitializer($2.line, *$2.string, $5, $1, $7, symbol, variable)) {
+				if (variable)
+					$$ = parseContext.intermediate.addDeclaration(symbol, $7, $6.line);
+				else
+					$$ = 0;
+			} else {
+				parseContext.recover();
+				$$ = 0;
+			}
+		}
     }
     | fully_specified_type IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info EQUAL initializer {
-        $$.intermAggregate = 0;
-
         if (parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
-
-        $$.type = $1;
 
         TVariable* variable = 0;
         if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
@@ -1716,58 +1685,48 @@ single_declaration
                 parseContext.recover();
         }
         
-        {        
-            TIntermNode* intermNode;
-            if (!parseContext.executeInitializer($2.line, *$2.string, $6, $1, $8, intermNode, variable)) {
-                //
-                // Build intermediate representation
-                //
-                if (intermNode)
-                    $$.intermAggregate = parseContext.intermediate.makeAggregate(intermNode, $7.line);
-                else
-                    $$.intermAggregate = 0;
-            } else {
-                parseContext.recover();
-                $$.intermAggregate = 0;
-            }
-        }        
+		{        
+			TIntermSymbol* symbol;
+			if (!parseContext.executeInitializer($2.line, *$2.string, $6, $1, $8, symbol, variable)) {
+				if (variable)
+					$$ = parseContext.intermediate.addDeclaration(symbol, $8, $7.line);
+				else
+					$$ = 0;
+			} else {
+				parseContext.recover();
+				$$ = 0;
+			}
+		}       
     }
     | fully_specified_type IDENTIFIER type_info EQUAL initializer {
-        if (parseContext.structQualifierErrorCheck($2.line, $1))
-            parseContext.recover();
+		if (parseContext.structQualifierErrorCheck($2.line, $1))
+			parseContext.recover();
+		
+		if (!IsSampler($1.type)) {
+			TIntermSymbol* symbol;
+			if (!parseContext.executeInitializer($2.line, *$2.string, $3, $1, $5, symbol)) {
+				if (symbol)
+					$$ = parseContext.intermediate.addDeclaration(symbol, $5, $4.line);
+				else
+					$$ = 0;
+			} else {
+				parseContext.recover();
+				$$ = 0;
+			}
+		} else {
+			//Skip sampler initializers for now
+			$$ = 0;
 
-        $$.type = $1;
+			if (parseContext.structQualifierErrorCheck($2.line, $1))
+				parseContext.recover();
 
-        TIntermNode* intermNode;
-	if ( !IsSampler($1.type)) {
-	    if (!parseContext.executeInitializer($2.line, *$2.string, $3, $1, $5, intermNode)) {
-		//
-		// Build intermediate representation
-		//
-		if (intermNode)
-		    $$.intermAggregate = parseContext.intermediate.makeAggregate(intermNode, $4.line);
-		else
-		    $$.intermAggregate = 0;
-	    } else {
-		parseContext.recover();
-		$$.intermAggregate = 0;
-	    }
-	}
-	else {
-	    //Skip sampler initializers for now
-	    $$.intermAggregate = 0;
+			if (parseContext.nonInitConstErrorCheck($2.line, *$2.string, $1))
+				parseContext.recover();
 
-	    if (parseContext.structQualifierErrorCheck($2.line, $$.type))
-		parseContext.recover();
-	    
-	    if (parseContext.nonInitConstErrorCheck($2.line, *$2.string, $$.type))
-		parseContext.recover();
-	    
-	    if (parseContext.nonInitErrorCheck($2.line, *$2.string, $3, $$.type))
-		parseContext.recover();
-	}
+			if (parseContext.nonInitErrorCheck($2.line, *$2.string, $3, $1))
+				parseContext.recover();
+		}
     }
-    
     ;
 
 // Grammar Note:  No 'enum', or 'typedef'.
@@ -1817,8 +1776,6 @@ type_qualifier
         $$.setBasic(EbtVoid, EvqStatic, $1.line);
     }
     | STATIC_QUAL CONST_QUAL {
-        if (parseContext.globalErrorCheck($1.line, parseContext.symbolTable.atGlobalLevel(), "static const"))
-            parseContext.recover();
         $$.setBasic(EbtVoid, EvqStaticConst, $1.line);
     }
     | ATTRIBUTE { 
@@ -2282,15 +2239,15 @@ condition
             parseContext.recover();          
     }
     | fully_specified_type IDENTIFIER EQUAL initializer {
-        TIntermNode* intermNode;
+        TIntermSymbol* symbol;
         if (parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
         if (parseContext.boolErrorCheck($2.line, $1))
             parseContext.recover();
         
-        if (!parseContext.executeInitializer($2.line, *$2.string, $1, $4, intermNode))
-            $$ = $4;
-        else {
+        if (!parseContext.executeInitializer($2.line, *$2.string, $1, $4, symbol)) {
+			$$ = parseContext.intermediate.addDeclaration(symbol, $4, $2.line);
+        } else {
             parseContext.recover();
             $$ = 0;
         }
@@ -2518,10 +2475,10 @@ function_definition
    
 initialization_list
     : LEFT_BRACE initializer_list RIGHT_BRACE {
-       $$ = $2;
+		$$ = $2;
     }
     | LEFT_BRACE initializer_list COMMA RIGHT_BRACE {
-       $$ = $2;
+		$$ = $2;
     }
     ;
 
@@ -2558,11 +2515,11 @@ annotation
 annotation_list
     : annotation_item {
         $$ = new TAnnotation;
-	$$->addKey( *$1.string);
+		$$->addKey( *$1.string);
     }
     | annotation_list annotation_item {
         $1->addKey( *$2.string);
-	$$ = $1;
+		$$ = $1;
     }
     ;
 
@@ -2597,36 +2554,36 @@ ann_type
     ;
 
 ann_literal
-: ann_numerical_constant {}
-| STRINGCONSTANT {}
-| ann_literal_constructor {}
-| ann_literal_init_list {}
-;
+	: ann_numerical_constant {}
+	| STRINGCONSTANT {}
+	| ann_literal_constructor {}
+	| ann_literal_init_list {}
+	;
 
 ann_numerical_constant
-: INTCONSTANT {
-    $$.f = (float)$1.i;
-}
-| BOOLCONSTANT {
-    $$.f = ($1.b) ? 1.0f : 0.0f;
-}
-| FLOATCONSTANT {
-    $$ = $1;
-}
-;
+	: INTCONSTANT {
+		$$.f = (float)$1.i;
+	}
+	| BOOLCONSTANT {
+		$$.f = ($1.b) ? 1.0f : 0.0f;
+	}
+	| FLOATCONSTANT {
+		$$.f = $1.f;
+	}
+	;
 
 ann_literal_constructor
-: ann_type LEFT_PAREN ann_value_list RIGHT_PAREN {}
-;
+	: ann_type LEFT_PAREN ann_value_list RIGHT_PAREN {}
+	;
 
 ann_value_list
-: ann_numerical_constant {}
-| ann_value_list COMMA ann_numerical_constant {}
-;
+	: ann_numerical_constant {}
+	| ann_value_list COMMA ann_numerical_constant {}
+	;
 
 ann_literal_init_list
-: LEFT_BRACE ann_value_list RIGHT_BRACE {}
-;
+	: LEFT_BRACE ann_value_list RIGHT_BRACE {}
+	;
 
 register_specifier
     : COLON REGISTER LEFT_PAREN IDENTIFIER RIGHT_PAREN {
@@ -2635,44 +2592,42 @@ register_specifier
     ;
 
 semantic
-: COLON IDENTIFIER { $$.string = $2.string;}
-;
+	: COLON IDENTIFIER { $$.string = $2.string;}
+	;
 
 type_info
-: { $$ = 0;}
-| semantic { $$ = new TTypeInfo( *$1.string, 0); }
-| register_specifier { $$ = 0; }
-| annotation { $$ = new TTypeInfo( "", $1); }
-| semantic annotation { $$ = new TTypeInfo( *$1.string, $2); }
-| semantic register_specifier { $$ = new TTypeInfo( *$1.string, 0); }
-| register_specifier annotation { $$ = new TTypeInfo( "", $2); }
-| semantic register_specifier annotation { $$ = new TTypeInfo( *$1.string, $3); }
-;
+	: { $$ = 0;}
+	| semantic { $$ = new TTypeInfo( *$1.string, 0); }
+	| register_specifier { $$ = 0; }
+	| annotation { $$ = new TTypeInfo( "", $1); }
+	| semantic annotation { $$ = new TTypeInfo( *$1.string, $2); }
+	| semantic register_specifier { $$ = new TTypeInfo( *$1.string, 0); }
+	| register_specifier annotation { $$ = new TTypeInfo( "", $2); }
+	| semantic register_specifier annotation { $$ = new TTypeInfo( *$1.string, $3); }
+	;
 
 sampler_initializer
-: SAMPLERSTATE LEFT_BRACE sampler_init_list RIGHT_BRACE {
-    constUnion *cUnion = new constUnion[1];
-    cUnion[0].setFConst(0.0f);
-    $$ = parseContext.intermediate.addConstantUnion( cUnion, TType(EbtFloat, EbpUndefined, EvqConst, 1), $1.line);
-}
-| SAMPLERSTATE LEFT_BRACE RIGHT_BRACE {
-}
-;
+	: SAMPLERSTATE LEFT_BRACE sampler_init_list RIGHT_BRACE {
+		TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst, 1), $1.line);
+		constant->setValue(0.f);
+		$$ = constant;
+	}
+	| SAMPLERSTATE LEFT_BRACE RIGHT_BRACE {
+	}
+	;
 
 sampler_init_list
-: sampler_init_item {
-}
-| sampler_init_list sampler_init_item {
-}
-;
+	: sampler_init_item { }
+	| sampler_init_list sampler_init_item { }
+	;
 
 sampler_init_item
-: IDENTIFIER EQUAL IDENTIFIER SEMICOLON {}
-| IDENTIFIER EQUAL LEFT_ANGLE IDENTIFIER RIGHT_ANGLE SEMICOLON {}
-| IDENTIFIER EQUAL LEFT_PAREN IDENTIFIER RIGHT_PAREN SEMICOLON {}
-| TEXTURE EQUAL IDENTIFIER SEMICOLON {}
-| TEXTURE EQUAL LEFT_ANGLE IDENTIFIER RIGHT_ANGLE SEMICOLON {}
-| TEXTURE EQUAL LEFT_PAREN IDENTIFIER RIGHT_PAREN SEMICOLON {}
-;
+	: IDENTIFIER EQUAL IDENTIFIER SEMICOLON {}
+	| IDENTIFIER EQUAL LEFT_ANGLE IDENTIFIER RIGHT_ANGLE SEMICOLON {}
+	| IDENTIFIER EQUAL LEFT_PAREN IDENTIFIER RIGHT_PAREN SEMICOLON {}
+	| TEXTURE EQUAL IDENTIFIER SEMICOLON {}
+	| TEXTURE EQUAL LEFT_ANGLE IDENTIFIER RIGHT_ANGLE SEMICOLON {}
+	| TEXTURE EQUAL LEFT_PAREN IDENTIFIER RIGHT_PAREN SEMICOLON {}
+	;
 
 %%

@@ -37,7 +37,7 @@ static bool RemoveSelection(bool  /*preVisit*/ , TIntermSelection* node, TInterm
    return true;
 }
 
-static void RemoveConstantUnion(TIntermConstantUnion* node, TIntermTraverser*)
+static void RemoveConstantUnion(TIntermConstant* node, TIntermTraverser*)
 {
    delete node;
 }

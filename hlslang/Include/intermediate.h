@@ -17,236 +17,235 @@
 
 #include "../Include/Common.h"
 #include "../Include/Types.h"
-#include "../Include/ConstantUnion.h"
 
 //
 // Operators used by the high-level (parse tree) representation.
 //
 enum TOperator
 {
-   EOpNull,            // if in a node, should only mean a node is still being built
-   EOpSequence,        // denotes a list of statements, or parameters, etc.
-   EOpFunctionCall,    
-   EOpFunction,        // For function definition
-   EOpParameters,      // an aggregate listing the parameters to a function
+	EOpNull,            // if in a node, should only mean a node is still being built
+	EOpSequence,        // denotes a list of statements, or parameters, etc.
+	EOpFunctionCall,    
+	EOpFunction,        // For function definition
+	EOpParameters,      // an aggregate listing the parameters to a function
 
-   //
-   // Unary operators
-   //
+	//
+	// Unary operators
+	//
 
-   EOpNegative,
-   EOpLogicalNot,
-   EOpVectorLogicalNot,
-   EOpBitwiseNot,
+	EOpNegative,
+	EOpLogicalNot,
+	EOpVectorLogicalNot,
+	EOpBitwiseNot,
 
-   EOpPostIncrement,
-   EOpPostDecrement,
-   EOpPreIncrement,
-   EOpPreDecrement,
+	EOpPostIncrement,
+	EOpPostDecrement,
+	EOpPreIncrement,
+	EOpPreDecrement,
 
-   EOpConvIntToBool,
-   EOpConvFloatToBool,
-   EOpConvBoolToFloat,
-   EOpConvIntToFloat,
-   EOpConvFloatToInt,
-   EOpConvBoolToInt,
+	EOpConvIntToBool,
+	EOpConvFloatToBool,
+	EOpConvBoolToFloat,
+	EOpConvIntToFloat,
+	EOpConvFloatToInt,
+	EOpConvBoolToInt,
 
-   //
-   // binary operations
-   //
+	//
+	// binary operations
+	//
 
-   EOpAdd,
-   EOpSub,
-   EOpMul,
-   EOpDiv,
-   EOpMod,
-   EOpRightShift,
-   EOpLeftShift,
-   EOpAnd,
-   EOpInclusiveOr,
-   EOpExclusiveOr,
-   EOpEqual,
-   EOpNotEqual,
-   EOpVectorEqual,
-   EOpVectorNotEqual,
-   EOpLessThan,
-   EOpGreaterThan,
-   EOpLessThanEqual,
-   EOpGreaterThanEqual,
-   EOpComma,
+	EOpAdd,
+	EOpSub,
+	EOpMul,
+	EOpDiv,
+	EOpMod,
+	EOpRightShift,
+	EOpLeftShift,
+	EOpAnd,
+	EOpInclusiveOr,
+	EOpExclusiveOr,
+	EOpEqual,
+	EOpNotEqual,
+	EOpVectorEqual,
+	EOpVectorNotEqual,
+	EOpLessThan,
+	EOpGreaterThan,
+	EOpLessThanEqual,
+	EOpGreaterThanEqual,
+	EOpComma,
 
-   EOpVectorTimesScalar,
-   EOpVectorTimesMatrix,
-   EOpMatrixTimesVector,
-   EOpMatrixTimesScalar,
+	EOpVectorTimesScalar,
+	EOpVectorTimesMatrix,
+	EOpMatrixTimesVector,
+	EOpMatrixTimesScalar,
 
-   EOpLogicalOr,
-   EOpLogicalXor,
-   EOpLogicalAnd,
+	EOpLogicalOr,
+	EOpLogicalXor,
+	EOpLogicalAnd,
 
-   EOpIndexDirect,
-   EOpIndexIndirect,
-   EOpIndexDirectStruct,
+	EOpIndexDirect,
+	EOpIndexIndirect,
+	EOpIndexDirectStruct,
 
-   EOpVectorSwizzle,
-   EOpMatrixSwizzle,
+	EOpVectorSwizzle,
+	EOpMatrixSwizzle,
 
-   //
-   // Built-in functions potentially mapped to operators
-   //
+	//
+	// Built-in functions potentially mapped to operators
+	//
 
-   EOpRadians,
-   EOpDegrees,
-   EOpSin,
-   EOpCos,
-   EOpTan,
-   EOpAsin,
-   EOpAcos,
-   EOpAtan,
-   EOpAtan2,
-   EOpSinCos,
+	EOpRadians,
+	EOpDegrees,
+	EOpSin,
+	EOpCos,
+	EOpTan,
+	EOpAsin,
+	EOpAcos,
+	EOpAtan,
+	EOpAtan2,
+	EOpSinCos,
 
-   EOpPow,
-   EOpExp,
-   EOpLog,
-   EOpExp2,
-   EOpLog2,
-   EOpLog10,
-   EOpSqrt,
-   EOpInverseSqrt,
+	EOpPow,
+	EOpExp,
+	EOpLog,
+	EOpExp2,
+	EOpLog2,
+	EOpLog10,
+	EOpSqrt,
+	EOpInverseSqrt,
 
-   EOpAbs,
-   EOpSign,
-   EOpFloor,
-   EOpCeil,
-   EOpFract,
-   EOpMin,
-   EOpMax,
-   EOpClamp,
-   EOpMix,
-   EOpStep,
-   EOpSmoothStep,
+	EOpAbs,
+	EOpSign,
+	EOpFloor,
+	EOpCeil,
+	EOpFract,
+	EOpMin,
+	EOpMax,
+	EOpClamp,
+	EOpMix,
+	EOpStep,
+	EOpSmoothStep,
 
-   EOpLength,
-   EOpDistance,
-   EOpDot,
-   EOpCross,
-   EOpNormalize,
-   EOpFaceForward,
-   EOpReflect,
-   EOpRefract,
+	EOpLength,
+	EOpDistance,
+	EOpDot,
+	EOpCross,
+	EOpNormalize,
+	EOpFaceForward,
+	EOpReflect,
+	EOpRefract,
 
-   EOpLit,
+	EOpLit,
 
-   EOpDPdx,            // Fragment only
-   EOpDPdy,            // Fragment only
-   EOpFwidth,          // Fragment only
-   EOpFclip,		   // Framgent only
+	EOpDPdx,            // Fragment only
+	EOpDPdy,            // Fragment only
+	EOpFwidth,          // Fragment only
+	EOpFclip,		   // Framgent only
 
-   //Added for HLSL support
-   EOpTex1D,
-   EOpTex1DProj,
-   EOpTex1DLod,
-   EOpTex1DBias,
-   EOpTex1DGrad,
-   EOpTex2D,
-   EOpTex2DProj,
-   EOpTex2DLod,
-   EOpTex2DBias,
-   EOpTex2DGrad,
-   EOpTex3D,
-   EOpTex3DProj,
-   EOpTex3DLod,
-   EOpTex3DBias,
-   EOpTex3DGrad,
-   EOpTexCube,
-   EOpTexCubeProj,
-   EOpTexCubeLod,
-   EOpTexCubeBias,
-   EOpTexCubeGrad,
-   EOpTexRect,
-   EOpTexRectProj,
-	
-   EOpTranspose,
-   EOpDeterminant,
-   EOpSaturate,
-   EOpModf,
-   EOpLdexp,
+	//Added for HLSL support
+	EOpTex1D,
+	EOpTex1DProj,
+	EOpTex1DLod,
+	EOpTex1DBias,
+	EOpTex1DGrad,
+	EOpTex2D,
+	EOpTex2DProj,
+	EOpTex2DLod,
+	EOpTex2DBias,
+	EOpTex2DGrad,
+	EOpTex3D,
+	EOpTex3DProj,
+	EOpTex3DLod,
+	EOpTex3DBias,
+	EOpTex3DGrad,
+	EOpTexCube,
+	EOpTexCubeProj,
+	EOpTexCubeLod,
+	EOpTexCubeBias,
+	EOpTexCubeGrad,
+	EOpTexRect,
+	EOpTexRectProj,
 
-   EOpMatrixTimesMatrix,
+	EOpTranspose,
+	EOpDeterminant,
+	EOpSaturate,
+	EOpModf,
+	EOpLdexp,
 
-   EOpAny,
-   EOpAll,
+	EOpMatrixTimesMatrix,
 
-   //
-   // Branch
-   //
+	EOpAny,
+	EOpAll,
 
-   EOpKill,            // Fragment only
-   EOpReturn,
-   EOpBreak,
-   EOpContinue,
+	//
+	// Branch
+	//
 
-   //
-   // Constructors
-   //
+	EOpKill,            // Fragment only
+	EOpReturn,
+	EOpBreak,
+	EOpContinue,
 
-   EOpConstructInt,
-   EOpConstructBool,
-   EOpConstructFloat,
-   EOpConstructVec2,
-   EOpConstructVec3,
-   EOpConstructVec4,
-   EOpConstructBVec2,
-   EOpConstructBVec3,
-   EOpConstructBVec4,
-   EOpConstructIVec2,
-   EOpConstructIVec3,
-   EOpConstructIVec4,
-   EOpConstructMat2,
-   EOpConstructMat3,
-   EOpConstructMat4,
-   EOpConstructStruct,
+	//
+	// Constructors
+	//
 
-   //HLSL matrix/matrix constructors
-   EOpConstructMat2FromMat,
-   EOpConstructMat3FromMat,
+	EOpConstructInt,
+	EOpConstructBool,
+	EOpConstructFloat,
+	EOpConstructVec2,
+	EOpConstructVec3,
+	EOpConstructVec4,
+	EOpConstructBVec2,
+	EOpConstructBVec3,
+	EOpConstructBVec4,
+	EOpConstructIVec2,
+	EOpConstructIVec3,
+	EOpConstructIVec4,
+	EOpConstructMat2,
+	EOpConstructMat3,
+	EOpConstructMat4,
+	EOpConstructStruct,
+	EOpConstructArray,
 
-   EOpMatrixIndex,
-   EOpMatrixIndexDynamic,
+	//HLSL matrix/matrix constructors
+	EOpConstructMat2FromMat,
+	EOpConstructMat3FromMat,
 
-   //
-   // moves
-   //
+	EOpMatrixIndex,
+	EOpMatrixIndexDynamic,
 
-   EOpAssign,
-   EOpInitialize,  //Special Assign only happening at declaration
-   EOpAddAssign,
-   EOpSubAssign,
-   EOpMulAssign,
-   EOpVectorTimesMatrixAssign,
-   EOpVectorTimesScalarAssign,
-   EOpMatrixTimesScalarAssign,
-   EOpMatrixTimesMatrixAssign,
-   EOpDivAssign,
-   EOpModAssign,
-   EOpAndAssign,
-   EOpInclusiveOrAssign,
-   EOpExclusiveOrAssign,
-   EOpLeftShiftAssign,
-   EOpRightShiftAssign,
+	//
+	// moves
+	//
 
-   //
-   // Array operators
-   //
+	EOpAssign,
+	EOpAddAssign,
+	EOpSubAssign,
+	EOpMulAssign,
+	EOpVectorTimesMatrixAssign,
+	EOpVectorTimesScalarAssign,
+	EOpMatrixTimesScalarAssign,
+	EOpMatrixTimesMatrixAssign,
+	EOpDivAssign,
+	EOpModAssign,
+	EOpAndAssign,
+	EOpInclusiveOrAssign,
+	EOpExclusiveOrAssign,
+	EOpLeftShiftAssign,
+	EOpRightShiftAssign,
 
-   EOpArrayLength,
+	//
+	// Array operators
+	//
 
-   //
-   // Special HLSL functions
-   //
-   EOpD3DCOLORtoUBYTE4,
-	
+	EOpArrayLength,
+
+	//
+	// Special HLSL functions
+	//
+	EOpD3DCOLORtoUBYTE4,
+
 	//
 	// Ternary selection on vector
 	//
@@ -256,12 +255,13 @@ enum TOperator
 class TIntermTraverser;
 class TIntermAggregate;
 class TIntermBinary;
-class TIntermConstantUnion;
+class TIntermConstant;
 class TIntermSelection;
 class TIntermOperator;
 class TIntermTyped;
 class TIntermSymbol;
 class TInfoSink;
+class TIntermDeclaration;
 
 //
 // Base class for the tree nodes
@@ -269,28 +269,29 @@ class TInfoSink;
 class TIntermNode
 {
 public:
-   POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
+	POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
 
-   TIntermNode() : line(0)
-   {
-   }
+	TIntermNode() : line(0)
+	{
+	}
 
-   TSourceLoc getLine() const { return line; }
-   void setLine(TSourceLoc l) { line = l; }
+	TSourceLoc getLine() const { return line; }
+	void setLine(TSourceLoc l) { line = l; }
 
-   virtual void traverse(TIntermTraverser*) = 0;
+	virtual void traverse(TIntermTraverser*) = 0;
 
-   virtual TIntermTyped*     getAsTyped() { return 0; }
-   virtual TIntermOperator*  getAsOperatorNode() { return 0; }
-   virtual TIntermConstantUnion*     getAsConstantUnion() { return 0; }
-   virtual TIntermAggregate* getAsAggregate() { return 0; }
-   virtual TIntermBinary*    getAsBinaryNode() { return 0; }
-   virtual TIntermSelection* getAsSelectionNode() { return 0; }
-   virtual TIntermSymbol*    getAsSymbolNode() { return 0; }
-   virtual ~TIntermNode() { }
+	virtual TIntermTyped*     getAsTyped() { return 0; }
+	virtual TIntermOperator*  getAsOperatorNode() { return 0; }
+	virtual TIntermConstant*     getAsConstant() { return 0; }
+	virtual TIntermAggregate* getAsAggregate() { return 0; }
+	virtual TIntermBinary*    getAsBinaryNode() { return 0; }
+	virtual TIntermSelection* getAsSelectionNode() { return 0; }
+	virtual TIntermSymbol*    getAsSymbolNode() { return 0; }
+	virtual TIntermDeclaration* getAsDeclaration() { return 0; }
+	virtual ~TIntermNode() { }
 
 protected:
-   TSourceLoc line;
+	TSourceLoc line;
 };
 
 //
@@ -344,10 +345,10 @@ class TIntermLoop : public TIntermNode
 {
 public:
    TIntermLoop(TIntermNode* aBody, TIntermTyped* aTest, TIntermTyped* aTerminal, bool testFirst) : 
-   body(aBody),
-   test(aTest),
-   terminal(aTerminal),
-   first(testFirst)
+	   body(aBody),
+	   test(aTest),
+	   terminal(aTerminal),
+	   first(testFirst)
    {
    }
    virtual void traverse(TIntermTraverser*);
@@ -420,28 +421,94 @@ protected:
    const TTypeInfo *info;
 };
 
-class TIntermConstantUnion : public TIntermTyped
+class TIntermDeclaration : public TIntermTyped {
+public:
+	TIntermDeclaration(const TType& type) : TIntermTyped(type), _declaration(NULL) {
+		
+	}
+	virtual void traverse(TIntermTraverser*);
+	virtual TIntermDeclaration* getAsDeclaration() { return this; }
+	
+	bool isSingleDeclaration() { return _declaration->getAsSymbolNode() != NULL || _declaration->getAsBinaryNode() != NULL; }
+	bool isMultipleDeclaration() { return _declaration->getAsAggregate() != NULL; }
+	
+	TIntermTyped*& getDeclaration() { return _declaration; }
+	
+	TPublicType getPublicType() {
+		TType& t = *getTypePointer();
+		TPublicType p = {
+			t.getBasicType(),
+			t.getQualifier(),
+			t.getPrecision(),
+			t.getNominalSize(),
+			t.isMatrix(),
+			t.isArray(),
+			t.getArraySize(),
+			t.getBasicType() == EbtStruct ? &t : NULL,
+			t.getLine()
+		};
+		return p;
+	}
+	
+private:
+	TIntermTyped* _declaration;
+};
+
+class TIntermTyped;
+void wtf(TIntermTyped*);
+
+class TIntermConstant : public TIntermTyped
 {
 public:
-   TIntermConstantUnion(constUnion *unionPointer, const TType& t) : TIntermTyped(t), unionArrayPointer(unionPointer)
-   {
-   }
-   constUnion* getUnionArrayPointer() const
-   {
-      return unionArrayPointer;
-   }
-   void setUnionArrayPointer(constUnion *c)
-   {
-      unionArrayPointer = c;
-   }
-   virtual TIntermConstantUnion* getAsConstantUnion()
-   {
-      return this;
-   }
-   virtual void traverse(TIntermTraverser* );
-   virtual TIntermTyped* fold(TOperator, TIntermTyped*, TInfoSink&);
+	TIntermConstant(const TType& t) : TIntermTyped(t)
+	{
+		grow(t.getObjectSize() - 1);
+	}
+
+	virtual TIntermConstant* getAsConstant()
+	{
+		return this;
+	}
+
+	struct Value {
+		TBasicType type;
+		union {
+			int asInt;
+			float asFloat;
+			bool asBool;
+		};
+	};
+	
+	#define defset(i, t) Value& v = values[(i)]; v.as##t = (val); v.type = Ebt##t
+	void setValue(unsigned val)			{ defset(0, Int); }
+	void setValue(int val)				{ defset(0, Int); }
+	void setValue(float val)			{ defset(0, Float); }
+	void setValue(bool val)				{ defset(0, Bool); }
+	void setValue(unsigned i, int val)	{ grow(i); defset(i, Int); }
+	void setValue(unsigned i, float val){ grow(i); defset(i, Float); ;}
+	void setValue(unsigned i, bool val) { grow(i); defset(i, Bool); }
+	
+	int toInt(unsigned i = 0) { return values[i].asInt; }
+	float toFloat(unsigned i = 0) { return values[i].asFloat; }
+	bool toBool(unsigned i = 0) { return values[i].asBool; }
+	#undef defset
+	
+	const Value& getValue(unsigned i = 0) const { return values[i]; }
+	Value& getValue(unsigned i = 0) { return values[i]; }
+	
+	unsigned getCount() {
+		return values.size();
+	}
+
+	virtual void traverse(TIntermTraverser* );
 protected:
-   constUnion *unionArrayPointer;
+	void grow(unsigned ix) {
+		if (values.size() <= ix)
+			values.resize(ix + 1);
+	}
+	
+	typedef std::vector<Value> Values;
+	Values values;
 };
 
 //
@@ -591,35 +658,37 @@ protected:
 class TIntermTraverser
 {
 public:
-   POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
+	POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
 
-   TIntermTraverser() : 
-      visitSymbol(0), 
-      visitConstantUnion(0),
-      visitBinary(0),
-      visitUnary(0),
-      visitSelection(0),
-      visitAggregate(0),
-      visitLoop(0),
-      visitBranch(0),
-      depth(0),
-      preVisit(true),
-      postVisit(false)
-   {
-   }
+	TIntermTraverser() : 
+		visitSymbol(0), 
+		visitConstantUnion(0),
+		visitBinary(0),
+		visitUnary(0),
+		visitSelection(0),
+		visitAggregate(0),
+		visitDeclaration(0),
+		visitLoop(0),
+		visitBranch(0),
+		depth(0),
+		preVisit(true),
+		postVisit(false)
+	{
+	}
 
-   void (*visitSymbol)(TIntermSymbol*, TIntermTraverser*);
-   void (*visitConstantUnion)(TIntermConstantUnion*, TIntermTraverser*);
-   bool (*visitBinary)(bool preVisit, TIntermBinary*, TIntermTraverser*);
-   bool (*visitUnary)(bool preVisit, TIntermUnary*, TIntermTraverser*);
-   bool (*visitSelection)(bool preVisit, TIntermSelection*, TIntermTraverser*);
-   bool (*visitAggregate)(bool preVisit, TIntermAggregate*, TIntermTraverser*);
-   bool (*visitLoop)(bool preVisit, TIntermLoop*, TIntermTraverser*);
-   bool (*visitBranch)(bool preVisit, TIntermBranch*,  TIntermTraverser*);
+	bool (*visitDeclaration)(bool preVisit, TIntermDeclaration*, TIntermTraverser*);
+	void (*visitSymbol)(TIntermSymbol*, TIntermTraverser*);
+	void (*visitConstantUnion)(TIntermConstant*, TIntermTraverser*);
+	bool (*visitBinary)(bool preVisit, TIntermBinary*, TIntermTraverser*);
+	bool (*visitUnary)(bool preVisit, TIntermUnary*, TIntermTraverser*);
+	bool (*visitSelection)(bool preVisit, TIntermSelection*, TIntermTraverser*);
+	bool (*visitAggregate)(bool preVisit, TIntermAggregate*, TIntermTraverser*);
+	bool (*visitLoop)(bool preVisit, TIntermLoop*, TIntermTraverser*);
+	bool (*visitBranch)(bool preVisit, TIntermBranch*,  TIntermTraverser*);
 
-   int  depth;
-   bool preVisit;
-   bool postVisit;
+	int  depth;
+	bool preVisit;
+	bool postVisit;
 };
 
 #endif // __INTERMEDIATE_H

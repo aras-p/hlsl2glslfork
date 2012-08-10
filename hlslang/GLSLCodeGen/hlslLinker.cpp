@@ -482,7 +482,7 @@ static void EmitCalledFunctions (std::stringstream& shader, const FunctionSet& f
 	{
 		shader << "\n#line " << (*fit)->getLine() << '\n';
 		shader << (*fit)->getPrototype() << " {\n";
-		shader << (*fit)->getLocalDecls(1) << "\n";
+		//shader << (*fit)->getLocalDecls(1) << "\n";
 		shader << (*fit)->getCode() << "\n"; //has embedded }
 		shader << "\n";
 	}
@@ -696,13 +696,14 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 		infoStruct.type = (EShType)it->second->getType();
 		infoStruct.arraySize = it->second->getArraySize();
 
-		if ( it->second->hasInitializer() )
+		// TODO: Save initializer as interminate nodes on the symbol instead of as a string, and convert to usable data here.
+		/*if ( it->second->hasInitializer() )
 		{
 			int initSize = it->second->initializerSize();
 			infoStruct.init = new float[initSize];
 			memcpy( infoStruct.init, it->second->getInitializer(), sizeof(float) * initSize);
 		}
-		else
+		else*/
 			infoStruct.init = 0;
 
 		//TODO: need to add annotation
@@ -740,7 +741,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 			}
 		}
 
-		// Write all mutable initializations
+		/*// Write all mutable initializations
 		if ( calledFunctions.size() > 0 )
 		{
 			for (FunctionSet::iterator fit = calledFunctions.begin(); fit != calledFunctions.end(); fit++)
@@ -752,7 +753,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 					preamble << mutableDecls;
 				}
 			}
-		}
+		}*/
 
 		call << "    ";
 		if (retType != EgstVoid)

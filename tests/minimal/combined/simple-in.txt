@@ -1,0 +1,27 @@
+float4x4 world_view_proj;
+
+struct VS_INPUT {
+	float4 position : POSITION;
+};
+
+struct PS_INPUT {
+	float4 position : POSITION;
+};
+
+PS_INPUT vs_main(VS_INPUT input) {
+	static const float2 points[] = {
+		float2(1, 2),
+		float2(3, 4)
+	};
+
+	static const float a = 1, b = 2, c = 3;
+	static const float asd = a + b + c;
+
+	PS_INPUT o = {float4(1, 1, 1, 1)};
+	o.position = mul(input.position, world_view_proj);
+	return o;
+}
+
+half4 ps_main(PS_INPUT input) : COLOR0 {
+	return half4(input.position);
+}

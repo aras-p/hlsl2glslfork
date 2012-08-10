@@ -53,41 +53,39 @@ vec4 LightingLambert( in SurfaceOutput s, in vec3 lightDir, in float atten );
 vec4 xlat_main( in v2f_surf IN );
 #line 23
 void surf( in Input IN, inout SurfaceOutput o ) {
-    vec4 c;
-    c = (texture2D( _MainTex, IN.uv_MainTex) * _Color);
+    vec4 c = (texture2D(_MainTex, IN.uv_MainTex) * _Color);
     o.Albedo = c.xyz;
     o.Alpha = c.w;
 }
 #line 749
 vec4 LightingLambert( in SurfaceOutput s, in vec3 lightDir, in float atten ) {
-    float diff;
+    #line 751
+    float diff = max(0.0, dot(s.Normal, lightDir));
     vec4 c;
-    diff = max( 0.0, dot( s.Normal, lightDir));
-    #line 754
     c.xyz = ((s.Albedo * _LightColor0.xyz) * ((diff * atten) * 2.0));
+    #line 755
     c.w = s.Alpha;
     return c;
 }
 #line 81
 vec4 xlat_main( in v2f_surf IN ) {
     Input surfIN;
-    SurfaceOutput o;
-    float atten = 1.0;
-    vec4 c;
     surfIN.uv_MainTex = IN.pack0.xy;
+    SurfaceOutput o;
     #line 85
-    o.Albedo = vec3( 0.0);
-    o.Emission = vec3( 0.0);
+    o.Albedo = vec3(0.0);
+    o.Emission = vec3(0.0);
     o.Specular = 0.0;
     o.Alpha = 0.0;
     #line 89
     o.Gloss = 0.0;
     o.Normal = IN.normal;
     #line 93
-    surf( surfIN, o);
-    c = vec4( 0.0);
+    surf(surfIN, o);
+    float atten = 1.0;
+    vec4 c = vec4(0.0);
     #line 97
-    c = LightingLambert( o, _WorldSpaceLightPos0.xyz, atten);
+    c = LightingLambert(o, _WorldSpaceLightPos0.xyz, atten);
     c.xyz += (o.Albedo * IN.vlight);
     #line 122
     return c;

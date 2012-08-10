@@ -234,16 +234,6 @@ TVariable::TVariable(const TVariable& copyOf, TStructureMap& remapper) : TSymbol
    // for builtIn symbol table level, unionArray and arrayInformation pointers should be NULL
    assert(copyOf.arrayInformationType == 0); 
    arrayInformationType = 0;
-
-   if (copyOf.unionArray)
-   {
-      assert(!copyOf.type.getStruct()); 
-      assert(copyOf.type.getObjectSize() == 1);
-      unionArray = new constUnion[1];
-      unionArray[0] = copyOf.unionArray[0];
-   }
-   else
-      unionArray = 0;
 }
 
 TVariable* TVariable::clone(TStructureMap& remapper) 

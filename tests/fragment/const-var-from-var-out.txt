@@ -2,8 +2,7 @@ uniform vec4 _Color;
 vec4 xlat_main(  );
 #line 3
 vec4 xlat_main(  ) {
-    vec4 c;
-    c = _Color;
+    const vec4 c = _Color;
     return c;
 }
 void main() {

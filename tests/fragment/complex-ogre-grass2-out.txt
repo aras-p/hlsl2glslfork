@@ -6,32 +6,27 @@ uniform sampler2D shadowMap;
 void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLight, out vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, float fixedDepthBias, float gradientClamp, float gradientScaleBias );
 #line 17
 void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLight, out vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, float fixedDepthBias, float gradientClamp, float gradientScaleBias ) {
-    vec4 diffuse;
-    vec4 shadowDepths;
-    float gradientFactor;
-    float depthAdjust;
-    float centerdepth;
     #line 19
     if ((shadowUV.z > 0.0)){
-        diffuse = texture2D( diffuseMap, uv.xy);
+        vec4 diffuse = texture2D(diffuseMap, uv.xy);
         if ((diffuse.w > 0.001)){
             #line 24
-            oColour = vec4( 0.0, 0.0, 0.0, 0.0);
+            oColour = vec4(0.0, 0.0, 0.0, 0.0);
         }
         else{
             #line 29
             shadowUV = (shadowUV / shadowUV.w);
-            shadowDepths = texture2D( shadowMap, shadowUV.xy);
-            gradientFactor = (gradientClamp * gradientScaleBias);
+            vec4 shadowDepths = texture2D(shadowMap, shadowUV.xy);
+            float gradientFactor = (gradientClamp * gradientScaleBias);
             #line 33
-            depthAdjust = (gradientFactor + (fixedDepthBias * shadowDepths.x));
-            centerdepth = (shadowDepths.x + depthAdjust);
-            oColour = (( (centerdepth > shadowUV.z) ) ? ( vec4( vertexLight.xyz, diffuse.w) ) : ( vec4( 0.0, 0.0, 0.0, diffuse.w) ));
+            float depthAdjust = (gradientFactor + (fixedDepthBias * shadowDepths.x));
+            float centerdepth = (shadowDepths.x + depthAdjust);
+            oColour = (( (centerdepth > shadowUV.z) ) ? ( vec4(vertexLight.xyz, diffuse.w) ) : ( vec4(0.0, 0.0, 0.0, diffuse.w) ));
         }
     }
     else{
         #line 41
-        oColour = vec4( 0.0, 0.0, 0.0, 0.0);
+        oColour = vec4(0.0, 0.0, 0.0, 0.0);
     }
 }
 uniform sampler2D xlu_shadowMap;

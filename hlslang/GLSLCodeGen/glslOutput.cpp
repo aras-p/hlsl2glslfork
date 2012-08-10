@@ -51,62 +51,61 @@ int getElements( EGlslSymbolType t )
    return 0;
 }
 
+TString buildArrayConstructorString(const TType& type) {
+	EGlslSymbolType glslt = translateType(&type);
+	TString constructor = getTypeString(glslt);
+	constructor += '[';
+	constructor += '0' + type.getArraySize();
+	constructor += ']';
+	return constructor;
+}
 
-void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPrecision prec, constUnion *c, GlslStruct *str = 0 )
+
+void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPrecision prec, TIntermConstant *c, GlslStruct *structure = 0 )
 {
-   int elementCount = getElements(t);
-   bool construct = elementCount > 1 || str != 0;
+	unsigned n_elems = getElements(t);
+	bool construct = n_elems > 1 || structure != 0;
 
-   if (construct)
-   {
-      writeType (out, t, str, EbpUndefined);
-      out << "( ";
-   }
+	if (construct) {
+		writeType (out, t, structure, EbpUndefined);
+		out << "(";
+	}
+	
+	if (structure) {
+		// compound type
+		unsigned n_members = structure->memberCount();
+		for (unsigned i = 0; i != n_members; ++i) {
+			const GlslStruct::member &m = structure->getMember(i);
+			if (construct && i > 0)
+				out << ", ";
+			writeConstantConstructor (out, m.type, m.precision, c);
+		}
+	} else {
+		// simple type
+		unsigned n_constants = c->getCount();
+		for (unsigned i = 0; i != n_elems; ++i) {
+			unsigned v = Min(i, n_constants - 1);
+			if (construct && i > 0)
+				out << ", ";
+			
+			switch (c->getBasicType()) {
+				case EbtBool:
+					out << (c->toBool(v) ? "true" : "false");
+					break;
+				case EbtInt:
+					out << c->toInt(v);
+					break;
+				case EbtFloat:
+					GlslSymbol::writeFloat(out, c->toFloat(v));
+					break;
+				default:
+					assert(0);
+			}
+		}
+	}
 
-   if ( str == 0)
-   {
-      // simple type
-      for (int ii = 0; ii<elementCount; ii++, c++)
-      {
-         if (construct && ii > 0)
-         {
-            out << ", ";
-         }
-
-         switch (c->getType())
-         {
-         case EbtBool:
-            out << (c->getBConst() ? "true" : "false");
-            break;
-         case EbtInt:
-            out << c->getIConst();
-            break;
-         case EbtFloat:
-            GlslSymbol::writeFloat(out, c->getFConst());
-            break;
-         default:
-            assert(0);
-         }
-      }
-   }
-   else
-   {
-      // compound type
-      for (int ii = 0; ii<str->memberCount(); ii++)
-      {
-         const GlslStruct::member &m = str->getMember(ii);
-
-         if (construct && ii > 0)
-            out << ", ";
-
-         writeConstantConstructor (out, m.type, m.precision, c);
-      }
-   }
-
-   if (construct)
-   {
-      out << ")";
-   }
+	if (construct)
+		out << ")";
 }
 
 
@@ -200,7 +199,7 @@ void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTrav
       }
    }      
 
-   out << name << "( ";
+   out << name << "(";
 
 	for (sit = sequence.begin(); sit != sequence.end(); ++sit)
 	{
@@ -277,26 +276,58 @@ void TGlslOutputTraverser::outputLineDirective (int line)
 
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision)
-: infoSink(i)
-, generatingCode(true)
-, functionList(funcList)
-, structList(sList)
-, swizzleAssignTempCounter(0)
-, m_UsePrecision(usePrecision)
-, m_LastLineOutput(-1)
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision) :
+	infoSink(i)
+	, generatingCode(true)
+	, functionList(funcList)
+	, structList(sList)
+	, swizzleAssignTempCounter(0)
+	, m_UsePrecision(usePrecision)
+	, m_LastLineOutput(-1)
 {
-   visitSymbol = traverseSymbol;
-   visitConstantUnion = traverseConstantUnion;
-   visitBinary = traverseBinary;
-   visitUnary = traverseUnary;
-   visitSelection = traverseSelection;
-   visitAggregate = traverseAggregate;
-   visitLoop = traverseLoop;
-   visitBranch = traverseBranch;
-   global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "", 1);
-   functionList.push_back(global);
-   current = global;
+	visitSymbol = traverseSymbol;
+	visitConstantUnion = traverseConstantUnion;
+	visitBinary = traverseBinary;
+	visitUnary = traverseUnary;
+	visitSelection = traverseSelection;
+	visitAggregate = traverseAggregate;
+	visitLoop = traverseLoop;
+	visitBranch = traverseBranch;
+	visitDeclaration = traverseDeclaration;
+	
+	global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "", 1);
+	functionList.push_back(global);
+	current = global;
+}
+
+
+bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration* decl, TIntermTraverser* it) {
+	TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
+	GlslFunction *current = goit->current;
+	std::stringstream& out = current->getActiveOutput();
+	EGlslSymbolType symbol_type = translateType(decl->getTypePointer());
+	TType& type = *decl->getTypePointer();
+	
+	current->beginStatement();
+	
+	if (type.getQualifier() != EvqTemporary)
+		out << type.getQualifierString() << " ";
+	
+	if (type.getBasicType() == EbtStruct)
+		out << type.getTypeName();
+	else
+		writeType(out, symbol_type, NULL, goit->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
+	
+	if (type.isArray())
+		out << "[" << type.getArraySize() << "]";
+	
+	out << " ";
+	
+	decl->getDeclaration()->traverse(goit);
+	
+	current->endStatement();
+	
+	return false;
 }
 
 
@@ -359,7 +390,7 @@ void TGlslOutputTraverser::traverseParameterSymbol(TIntermSymbol *node, TIntermT
 }
 
 
-void TGlslOutputTraverser::traverseConstantUnion( TIntermConstantUnion *node, TIntermTraverser *it )
+void TGlslOutputTraverser::traverseConstantUnion( TIntermConstant *node, TIntermTraverser *it )
 {
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
    GlslFunction *current = goit->current;
@@ -367,7 +398,6 @@ void TGlslOutputTraverser::traverseConstantUnion( TIntermConstantUnion *node, TI
    EGlslSymbolType type = translateType( node->getTypePointer());
    GlslStruct *str = 0;
 
-   constUnion *c = node->getUnionArrayPointer();
 
    current->beginStatement();
 
@@ -376,33 +406,31 @@ void TGlslOutputTraverser::traverseConstantUnion( TIntermConstantUnion *node, TI
       str = goit->createStructFromType( node->getTypePointer());
    }
 
-   writeConstantConstructor (out, type, goit->m_UsePrecision?node->getPrecision():EbpUndefined, c, str);
+   writeConstantConstructor (out, type, goit->m_UsePrecision?node->getPrecision():EbpUndefined, node, str);
 }
 
 
-void TGlslOutputTraverser::traverseImmediateConstant( TIntermConstantUnion *node, TIntermTraverser *it )
+void TGlslOutputTraverser::traverseImmediateConstant( TIntermConstant *c, TIntermTraverser *it )
 {
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
 
-   constUnion *c = node->getUnionArrayPointer();
-
    // These are all expected to be length 1
-   assert( node->getSize() == 1);
+   assert(c->getSize() == 1);
 
    // Autotype the result
-   switch (c[0].getType())
+   switch (c->getBasicType())
    {
    case EbtBool:
-      goit->indexList.push_back( c[0].getBConst() ? 1 : 0);
+      goit->indexList.push_back(c->toBool() ? 1 : 0);
       break;
    case EbtInt:
-      goit->indexList.push_back( c[0].getIConst());
+      goit->indexList.push_back(c->toInt());
       break;
    case EbtFloat:
-      goit->indexList.push_back( int(c[0].getFConst()));
+      goit->indexList.push_back((int)c->toFloat());
       break;
    default:
-      assert(0); 
+      assert(false && "Invalid constant type. Only bool, int and float supported"); 
       goit->indexList.push_back(0);
    }
 }
@@ -446,49 +474,6 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    switch (node->getOp())
    {
    case EOpAssign:                   op = "=";   infix = true; needsParens = false; break;
-
-   case EOpInitialize:
-      if (goit->parseInitializer(node))
-         return false;
-
-      // Check to see if we have an array initializer list
-      if ( node->getLeft() && node->getRight() )
-      {
-         TIntermSymbol *symNode = node->getLeft()->getAsSymbolNode();
-         TIntermAggregate *aggNode = node->getRight()->getAsAggregate();
-
-         // Left hand size is a symbol, right hand side is an aggregate.  This
-         // is an initializer sequence for an array.
-         if ( symNode && symNode->isArray() && aggNode )
-         {
-            // Get the number of elements in the array.  TParseContext::constructArray should
-            // have already made sure that the correct number of elements are present in
-            // the initializer sequence
-            int nElements = symNode->getTypePointer()->getArraySize();
-
-            // Loop over all elements
-            for ( int i = 0; i < nElements; i++ )
-            {
-               // Initialize each element
-               node->getLeft()->traverse(goit);
-               out << "[" << i << "] = ";
-               aggNode->getSequence()[i]->traverse(goit);                      
-
-               current->endStatement();
-               if ( i != nElements - 1 )
-                  current->beginStatement();
-            }
-            return false;
-         }
-      }
-
-      // Fallthrough and process as a normal assignment
-      current->beginStatement();
-      op = "=";
-      infix = true;
-      needsParens = false;
-      break;
-
    case EOpAddAssign:                op = "+=";  infix = true; needsParens = false; break;
    case EOpSubAssign:                op = "-=";  infix = true; needsParens = false; break;
    case EOpMulAssign:                op = "*=";  infix = true; needsParens = false; break;
@@ -517,7 +502,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 
 		 if (left->isMatrix() && !left->isArray())
 		 {
-			 if (right->getAsConstantUnion())
+			 if (right->getAsConstant())
 			 {
 				 current->addLibFunction (EOpMatrixIndex);
 				 out << "xll_matrixindex (";
@@ -544,7 +529,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          left->traverse(goit);
 
          // Special code for handling a vector component select (this improves readability)
-         if (left->isVector() && !left->isArray() && right->getAsConstantUnion())
+         if (left->isVector() && !left->isArray() && right->getAsConstant())
          {
             char swiz[] = "xyzw";
             goit->visitConstantUnion = TGlslOutputTraverser::traverseImmediateConstant;
@@ -576,7 +561,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 
 	  if (left && right && left->isMatrix() && !left->isArray())
 	  {
-		  if (right->getAsConstantUnion())
+		  if (right->getAsConstant())
 		  {
 			  current->addLibFunction (EOpMatrixIndex);
 			  out << "xll_matrixindex (";
@@ -1211,7 +1196,8 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpConstructMat2:  writeFuncCall( "mat2", node, goit); return false;
    case EOpConstructMat3:  writeFuncCall( "mat3", node, goit); return false;
    case EOpConstructMat4:  writeFuncCall( "mat4", node, goit); return false;
-   case EOpConstructStruct:  writeFuncCall( "struct", node, goit); return false;
+   case EOpConstructStruct:  writeFuncCall( node->getTypePointer()->getTypeName(), node, goit); return false;
+   case EOpConstructArray:  writeFuncCall( buildArrayConstructorString(*node->getTypePointer()), node, goit); return false;
 
 
    case EOpConstructMat2FromMat:
@@ -1589,14 +1575,11 @@ bool TGlslOutputTraverser::parseInitializer( TIntermBinary *node )
    left = node->getLeft();
    right = node->getRight();
 
-   if (! left->getAsSymbolNode())
+   if (!left->getAsSymbolNode())
       return false; //Something is likely seriously wrong
 
-   if (! right->getAsConstantUnion())
-      return false; //only constant initializers
-
    TIntermSymbol *symNode = left->getAsSymbolNode();
-   TIntermConstantUnion *cUnion = right->getAsConstantUnion();
+   
 
    if (symNode->getBasicType() == EbtStruct)
       return false;
@@ -1618,9 +1601,19 @@ bool TGlslOutputTraverser::parseInitializer( TIntermBinary *node )
    }
    else
       return false; //can't init already declared variable
-
-
-   sym->setInitializer ( cUnion->getUnionArrayPointer() );
+	
+	if (right->getAsTyped())
+	{
+		std::stringstream ss;
+		std::stringstream* oldOut = &current->getActiveOutput();
+		current->pushDepth(0);
+		current->setActiveOutput(&ss);
+		right->getAsTyped()->traverse(this);
+		current->setActiveOutput(oldOut);
+		current->popDepth();
+		
+		sym->setInitializer(ss.str());
+	}
 
    return true;
 }
