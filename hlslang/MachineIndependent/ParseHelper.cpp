@@ -685,9 +685,6 @@ bool TParseContext::constructorErrorCheck(int line, TIntermNode* node, TFunction
       error(line, "cannot convert a void", "constructor", "");
       return true;
    }
-	
-	if (node->getAsTyped())
-		node->getAsTyped()->setType(function.getReturnType());
 
    return false;
 }

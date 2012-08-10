@@ -480,7 +480,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    case EOpVectorTimesMatrixAssign:  op = "*=";  infix = true; needsParens = false; break;
    case EOpVectorTimesScalarAssign:  op = "*=";  infix = true; needsParens = false; break;
    case EOpMatrixTimesScalarAssign:  op = "*=";  infix = true; needsParens = false; break;
-   case EOpMatrixTimesMatrixAssign:  op = "matrixCompMult";  infix = false; assign = true; break;
+   case EOpMatrixTimesMatrixAssign:  op = "*=";  infix = true; needsParens = false; break;
    case EOpDivAssign:                op = "/=";  infix = true; needsParens = false; break;
    case EOpModAssign:                op = "%=";  infix = true; needsParens = false; break;
    case EOpAndAssign:                op = "&=";  infix = true; needsParens = false; break;
@@ -755,7 +755,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    case EOpVectorTimesMatrix: op = "*"; infix = true; break;
    case EOpMatrixTimesVector: op = "*"; infix = true; break;
    case EOpMatrixTimesScalar: op = "*"; infix = true; break;
-   case EOpMatrixTimesMatrix: op = "matrixCompMult"; infix = false; assign = false; break;
+   case EOpMatrixTimesMatrix: op = "*"; infix = true; break;
 
    case EOpLogicalOr:  op = "||"; infix = true; break;
    case EOpLogicalXor: op = "^^"; infix = true; break;
@@ -1193,22 +1193,16 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpConstructIVec2: writeFuncCall( "ivec2", node, goit); return false;
    case EOpConstructIVec3: writeFuncCall( "ivec3", node, goit); return false;
    case EOpConstructIVec4: writeFuncCall( "ivec4", node, goit); return false;
+		   
+   case EOpConstructMat2FromMat:
    case EOpConstructMat2:  writeFuncCall( "mat2", node, goit); return false;
+		   
+   case EOpConstructMat3FromMat:
    case EOpConstructMat3:  writeFuncCall( "mat3", node, goit); return false;
+		   
    case EOpConstructMat4:  writeFuncCall( "mat4", node, goit); return false;
    case EOpConstructStruct:  writeFuncCall( node->getTypePointer()->getTypeName(), node, goit); return false;
    case EOpConstructArray:  writeFuncCall( buildArrayConstructorString(*node->getTypePointer()), node, goit); return false;
-
-
-   case EOpConstructMat2FromMat:
-      current->addLibFunction(EOpConstructMat2FromMat);
-      writeFuncCall( "xll_constructMat2", node, goit);
-      return false;
-
-   case EOpConstructMat3FromMat:
-      current->addLibFunction(EOpConstructMat3FromMat);
-      writeFuncCall( "xll_constructMat3", node, goit);
-      return false;
 
    case EOpComma:
       {
