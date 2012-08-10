@@ -440,7 +440,7 @@ public:
 			t.getBasicType(),
 			t.getQualifier(),
 			t.getPrecision(),
-			t.getObjectSize(),
+			t.getNominalSize(),
 			t.isMatrix(),
 			t.isArray(),
 			t.getArraySize(),
@@ -454,8 +454,8 @@ private:
 	TIntermTyped* _declaration;
 };
 
-class TFunction;
-void wtf(TFunction*);
+class TIntermTyped;
+void wtf(TIntermTyped*);
 
 class TIntermConstant : public TIntermTyped
 {

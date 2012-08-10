@@ -61,61 +61,51 @@ TString buildArrayConstructorString(const TType& type) {
 }
 
 
-void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPrecision prec, TIntermConstant *c, GlslStruct *str = 0 )
+void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPrecision prec, TIntermConstant *c, GlslStruct *structure = 0 )
 {
-   int elementCount = getElements(t);
-   bool construct = elementCount > 1 || str != 0;
+	unsigned n_elems = getElements(t);
+	bool construct = n_elems > 1 || structure != 0;
 
-   if (construct)
-   {
-      writeType (out, t, str, EbpUndefined);
-      out << "( ";
-   }
+	if (construct) {
+		writeType (out, t, structure, EbpUndefined);
+		out << "(";
+	}
+	
+	if (structure) {
+		// compound type
+		unsigned n_members = structure->memberCount();
+		for (unsigned i = 0; i != n_members; ++i) {
+			const GlslStruct::member &m = structure->getMember(i);
+			if (construct && i > 0)
+				out << ", ";
+			writeConstantConstructor (out, m.type, m.precision, c);
+		}
+	} else {
+		// simple type
+		unsigned n_constants = c->getCount();
+		for (unsigned i = 0; i != n_elems; ++i) {
+			unsigned v = Min(i, n_constants - 1);
+			if (construct && i > 0)
+				out << ", ";
+			
+			switch (c->getBasicType()) {
+				case EbtBool:
+					out << (c->toBool(v) ? "true" : "false");
+					break;
+				case EbtInt:
+					out << c->toInt(v);
+					break;
+				case EbtFloat:
+					GlslSymbol::writeFloat(out, c->toFloat(v));
+					break;
+				default:
+					assert(0);
+			}
+		}
+	}
 
-   if ( str == 0)
-   {
-      // simple type
-      for (int ii = 0; ii<elementCount; ii++, c++)
-      {
-         if (construct && ii > 0)
-         {
-            out << ", ";
-         }
-
-         switch (c->getBasicType())
-         {
-         case EbtBool:
-            out << (c->toBool() ? "true" : "false");
-            break;
-         case EbtInt:
-            out << c->toInt();
-            break;
-         case EbtFloat:
-            GlslSymbol::writeFloat(out, c->toFloat());
-            break;
-         default:
-            assert(0);
-         }
-      }
-   }
-   else
-   {
-      // compound type
-      for (int ii = 0; ii<str->memberCount(); ii++)
-      {
-         const GlslStruct::member &m = str->getMember(ii);
-
-         if (construct && ii > 0)
-            out << ", ";
-
-         writeConstantConstructor (out, m.type, m.precision, c);
-      }
-   }
-
-   if (construct)
-   {
-      out << ")";
-   }
+	if (construct)
+		out << ")";
 }
 
 
@@ -337,7 +327,7 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 	
 	current->endStatement();
 	
-	return true;
+	return false;
 }
 
 

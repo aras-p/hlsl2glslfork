@@ -23,7 +23,7 @@ namespace {
 	
 	inline bool isConst(TQualifier q)
 	{
-		return q == EvqConst || q == EvqStaticConst;
+		return q == EvqConst || q == EvqStaticConst || q == EvqUniform;
 	}
 	
 	inline bool isConst(TOperator op)
@@ -1445,7 +1445,7 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
       assert( (int)seq.size() == func->getParamCount());
 
       for ( TIntermSequence::iterator it = seq.begin(); it != seq.end(); it++, paramNum++)
-      {
+      { 
          tNode = (*it)->getAsTyped();
 
          if ( tNode != 0 && tNode->getType() != *(*func)[paramNum].type)

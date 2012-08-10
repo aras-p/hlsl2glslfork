@@ -1401,7 +1401,7 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 	return true;
 }
 
-void wtf(TFunction* asd) {
+void wtf(TIntermTyped* asd) {
 	int a = 0;
 }
 

@@ -29,14 +29,13 @@ void TIntermSymbol::traverse(TIntermTraverser* it)
 }
 
 void TIntermDeclaration::traverse(TIntermTraverser* it)
-{
-	if (!it->visitDeclaration)
+{	
+	if (it->preVisit && it->visitDeclaration && !it->visitDeclaration(true, this, it))
 		return;
 	
-	if (it->preVisit && !it->visitDeclaration(true, this, it))
-		return;
+	_declaration->traverse(it);
 	
-	if (it->postVisit)
+	if (it->postVisit && it->visitDeclaration)
 		it->visitDeclaration(false, this, it);
 }
 
