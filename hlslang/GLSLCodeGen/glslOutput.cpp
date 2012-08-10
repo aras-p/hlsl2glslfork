@@ -52,12 +52,11 @@ int getElements( EGlslSymbolType t )
 }
 
 TString buildArrayConstructorString(const TType& type) {
-	EGlslSymbolType glslt = translateType(&type);
-	TString constructor = getTypeString(glslt);
-	constructor += '[';
-	constructor += '0' + type.getArraySize();
-	constructor += ']';
-	return constructor;
+	std::stringstream constructor;
+	constructor << getTypeString(translateType(&type))
+				<< '[' << type.getArraySize() << ']';
+
+	return TString(constructor.str().c_str());
 }
 
 
