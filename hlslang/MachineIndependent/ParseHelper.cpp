@@ -23,7 +23,7 @@ namespace {
 	
 	inline bool isConst(TQualifier q)
 	{
-		return q == EvqConst || q == EvqStaticConst || q == EvqUniform;
+		return q == EvqConst || q == EvqStaticConst;
 	}
 	
 	inline bool isConst(TOperator op)

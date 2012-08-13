@@ -457,9 +457,6 @@ private:
 	TIntermTyped* _declaration;
 };
 
-class TIntermTyped;
-void wtf(TIntermTyped*);
-
 class TIntermConstant : public TIntermTyped
 {
 public:

@@ -1404,11 +1404,6 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 	return true;
 }
 
-
-void wtf(TIntermTyped* asd) {
-	int a = 0;
-}
-
 TIntermTyped* TIntermediate::promoteConstant(TBasicType promoteTo, TIntermConstant* right) 
 {
 	unsigned size = right->getCount();
