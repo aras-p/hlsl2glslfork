@@ -17,6 +17,12 @@ task :default do sh %{rake --describe} end
 # Zip files will be placed below this directory.
 RedistDirName = "redist"
 
+BitsquidRevision="r2"
+def product(settings)
+	platform = settings[:platform].to_s.downcase
+	return "luajit-#{platform}-#{BitsquidRevision}"
+end
+
 # --------------------------------------------------
 # Utility functions.
 # --------------------------------------------------
@@ -115,7 +121,7 @@ Settings.each do |platform, platform_settings|
 	vs_versions.each do |vs_version, vs_settings|
 		vs_version_name = vs_version.to_s.upcase
 		rake_task_name = "#{platform}_#{vs_version}" # => "pc_vc10"
-		zip_file = vs_settings[:zip_file]            # => "hlsl2glsl_vc10"
+		zip_file = product(vs_settings)            # => "hlsl2glsl_vc10-win32-r2"
 
 		namespace "just:build" do
 			compiler = vs_settings[:compiler]          # => <Proc>
