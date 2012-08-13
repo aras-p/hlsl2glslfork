@@ -9,7 +9,9 @@ For an opposite tool (GLSL ES to HLSL translator), look at [Google's ANGLE](http
 
 Changes from original HLSL2GLSL 0.9
 --------
-
+* Removed all constant folding functionality as it was completely broken.
+* Added support for emission of const initializers (including struct and array initializers using GLSL 1.20 array syntax).
+* A myriad of various bug fixes.
 * Support DX10 SV_VertexID, SV_PrimitiveID and SV_InstanceID semantics.
 * Support for shadow sampler types (samplerRECTShadow/sampler2DShadow etc.) which generate appropriate shadow2DRect/shadow2D etc. calls.
 * Fixed matrix swizzle access & assignments (view._m01_m02_m33 = value)
