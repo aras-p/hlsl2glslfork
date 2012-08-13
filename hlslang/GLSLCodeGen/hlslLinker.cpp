@@ -583,7 +583,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 		unsigned n_symbols = symbols.size();
 		for (unsigned i = 0; i != n_symbols; ++i) {
 			GlslSymbol* s = symbols[i];
-			if (s->getIsGlobal())
+			if (s->getQualifier() == EqtUniform || s->getQualifier() == EqtMutableUniform)
 				constants.push_back(s);
 		}
 		
@@ -591,7 +591,9 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 		const std::set<TOperator> &referencedFunctions = (*it)->getLibFunctions();
 		libFunctions.insert( referencedFunctions.begin(), referencedFunctions.end());
 	}
-
+	
+	// Remove duplicates
+	constants.resize(std::unique(constants.begin(), constants.end()) - constants.begin());
 
 	// The following code is what is used to generate the actual shader and "main"
 	// function. The process is to take all the components collected above, and
@@ -654,7 +656,6 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 		}
 		
 		ShUniformInfo info;
-		
 		const std::string& name = s->getName(false);
 		info.name = new char[name.size()+1];
 		strcpy(info.name, name.c_str());
