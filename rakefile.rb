@@ -20,7 +20,7 @@ RedistDirName = "redist"
 BitsquidRevision="r2"
 def product(settings, vs_version)
 	platform = settings[:platform].to_s.downcase
-	return "hlsl2glsl-#{vs_version}-#{platform}-#{BitsquidRevision}"
+	return "hlsl2glsl-#{platform}-#{vs_version}-#{BitsquidRevision}"
 end
 
 # --------------------------------------------------
