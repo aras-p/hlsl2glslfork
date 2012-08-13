@@ -18,9 +18,9 @@ task :default do sh %{rake --describe} end
 RedistDirName = "redist"
 
 BitsquidRevision="r2"
-def product(settings)
+def product(settings, vs_version)
 	platform = settings[:platform].to_s.downcase
-	return "luajit-#{platform}-#{BitsquidRevision}"
+	return "hlsl2glsl-#{vs_version}-#{platform}-#{BitsquidRevision}"
 end
 
 # --------------------------------------------------
@@ -121,7 +121,7 @@ Settings.each do |platform, platform_settings|
 	vs_versions.each do |vs_version, vs_settings|
 		vs_version_name = vs_version.to_s.upcase
 		rake_task_name = "#{platform}_#{vs_version}" # => "pc_vc10"
-		zip_file = product(vs_settings)            # => "hlsl2glsl_vc10-win32-r2"
+		zip_file = product(vs_settings, vs_version)            # => "hlsl2glsl-vc10-win32-r2"
 
 		namespace "just:build" do
 			compiler = vs_settings[:compiler]          # => <Proc>
