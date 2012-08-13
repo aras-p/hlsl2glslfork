@@ -482,7 +482,6 @@ static void EmitCalledFunctions (std::stringstream& shader, const FunctionSet& f
 	{
 		shader << "\n#line " << (*fit)->getLine() << '\n';
 		shader << (*fit)->getPrototype() << " {\n";
-		//shader << (*fit)->getLocalDecls(1) << "\n";
 		shader << (*fit)->getCode() << "\n"; //has embedded }
 		shader << "\n";
 	}
@@ -572,29 +571,25 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	//add all the called functions to the list
 	calledFunctions.push_back (funcMain);
 	if (!addCalledFunctions (funcMain, calledFunctions, functionList))
-	{
 		infoSink.info << "Failed to resolve all called functions in the " << kShaderTypeNames[lang] << " shader\n";
-	}
 
 	//iterate over the functions, building a global list of structure declaractions and symbols
 	// assume a single compilation unit for expediency (eliminates name clashes, as type checking
 	// withing a single compilation unit has been performed)
-	for (FunctionSet::iterator it=calledFunctions.begin(); it != calledFunctions.end(); it++)
-	{
-		//get each symbol and each structure, and add them to the map
-		// checking that any previous entries are equivalent
-		const std::vector<GlslSymbol*> &symList = (*it)->getSymbols();
+	std::vector<GlslSymbol*> constants;
+	for (FunctionSet::iterator it = calledFunctions.begin(); it != calledFunctions.end(); ++it) {
+		const std::vector<GlslSymbol*> &symbols = (*it)->getSymbols();
 
-		for (std::vector<GlslSymbol*>::const_iterator cit = symList.begin(); cit < symList.end(); cit++)
-		{
-			if ((*cit)->getIsGlobal() && (*cit)->getIsMutable())
-				globalSymMap[(*cit)->getName()] = *cit;
+		unsigned n_symbols = symbols.size();
+		for (unsigned i = 0; i != n_symbols; ++i) {
+			GlslSymbol* s = symbols[i];
+			if (s->getIsGlobal())
+				constants.push_back(s);
 		}
-
+		
 		//take each referenced library function, and add it to the set
-		const std::set<TOperator> &libSet = (*it)->getLibFunctions();
-
-		libFunctions.insert( libSet.begin(), libSet.end());
+		const std::set<TOperator> &referencedFunctions = (*it)->getLibFunctions();
+		libFunctions.insert( referencedFunctions.begin(), referencedFunctions.end());
 	}
 
 
@@ -643,65 +638,44 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	}
 
 	//
-	// Write global variables
+	// Write global scope
 	//
 	unsigned n_func = globalList.size();
 	for (unsigned i = 0; i != n_func; ++i)
 		shader << globalList[i]->getCode();
 
-	// Write mutable uniforms
-	std::map<std::string,GlslSymbol*>::iterator it, end = globalSymMap.end();
-	for (it = globalSymMap.begin(); it != end; ++it) {
-		it->second->writeDecl(shader, true, false);
-		shader << ";\n";
+	// Write mutable uniform declarations and populate unfiform reflection.
+	unsigned n_constants = constants.size();
+	for (unsigned i = 0; i != n_constants; ++i) {
+		GlslSymbol* s = constants[i];
+		if (s->getIsMutable()) {
+			s->writeDecl(shader, true, false);
+			shader << ";\n";	
+		}
+		
+		ShUniformInfo info;
+		
+		const std::string& name = s->getName(false);
+		info.name = new char[name.size()+1];
+		strcpy(info.name, name.c_str());
+		
+		if (s->getSemantic() != "") {
+			info.semantic = new char[s->getSemantic().size()+1];
+			strcpy(info.semantic, s->getSemantic().c_str());
+		}
+		else
+			info.semantic = 0;
+		
+		info.type = (EShType)s->getType();
+		info.arraySize = s->getArraySize();
+		info.init = 0;
+		uniforms.push_back(info);
 	}
 
 	//
 	// Write function declarations and definitions
 	//
 	EmitCalledFunctions (shader, calledFunctions);
-
-	// 
-	// Gather the uniforms into the uniform list
-	//
-	for (std::map<std::string, GlslSymbol*>::iterator it = globalSymMap.begin(); it != globalSymMap.end(); it++)
-	{
-		if (it->second->getQualifier() != EqtUniform && it->second->getQualifier() != EqtMutableUniform)
-			continue;
-		
-		ShUniformInfo infoStruct;
-		
-		const std::string& name = it->second->getName(false);
-		infoStruct.name = new char[name.size()+1];
-		strcpy(infoStruct.name, name.c_str());
-		
-		if (it->second->getSemantic() != "")
-		{
-			infoStruct.semantic = new char[it->second->getSemantic().size()+1];
-			strcpy( infoStruct.semantic, it->second->getSemantic().c_str());
-		}
-		else
-			
-			infoStruct.semantic = 0;
-
-		//gigantic hack, the enumerations are kept in alignment
-		infoStruct.type = (EShType)it->second->getType();
-		infoStruct.arraySize = it->second->getArraySize();
-
-		// TODO: Save initializer as interminate nodes on the symbol instead of as a string, and convert to usable data here.
-		/*if ( it->second->hasInitializer() )
-		{
-			int initSize = it->second->initializerSize();
-			infoStruct.init = new float[initSize];
-			memcpy( infoStruct.init, it->second->getInitializer(), sizeof(float) * initSize);
-		}
-		else*/
-			infoStruct.init = 0;
-
-		//TODO: need to add annotation
-
-		uniforms.push_back( infoStruct);
-	}
 
 	//
 	// Generate the main function
