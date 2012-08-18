@@ -545,7 +545,7 @@ function_call
                         //
                         // Treat it like a built-in unary operator.
                         //
-                        $$ = parseContext.intermediate.addUnaryMath(op, $1.intermNode, gNullSourceLoc, parseContext.symbolTable);
+                        $$ = parseContext.intermediate.addUnaryMath(op, $1.intermNode, gNullSourceLoc);
                         if ($$ == 0)  {
                             parseContext.error($1.intermNode->getLine(), " wrong operand type", "Internal Error", 
                                 "built in unary operator function.  Type: %s",

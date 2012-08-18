@@ -49,7 +49,7 @@ struct TParseContext
    void binaryOpError(const TSourceLoc& line, char* op, TString left, TString right);
    bool lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTyped*);
    bool constErrorCheck(TIntermTyped* node);
-   bool integerErrorCheck(TIntermTyped* node, char* token);
+   bool integerErrorCheck(TIntermTyped* node, const char* token);
    bool globalErrorCheck(const TSourceLoc& line, bool global, char* token);
    bool constructorErrorCheck(const TSourceLoc& line, TIntermNode*, TFunction&, TOperator, TType*);
    bool arraySizeErrorCheck(const TSourceLoc& line, TIntermTyped* expr, int& size);

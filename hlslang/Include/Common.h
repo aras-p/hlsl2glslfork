@@ -34,7 +34,7 @@
 #include <assert.h>
 
 #include "PoolAlloc.h"
-#include "preprocessor/sourceloc.h"
+#include "../MachineIndependent/preprocessor/sourceloc.h"
 
 //
 // Put POOL_ALLOCATOR_NEW_DELETE in base classes to make them use this scheme.
