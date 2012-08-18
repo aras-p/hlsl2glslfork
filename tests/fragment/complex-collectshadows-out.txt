@@ -1,5 +1,5 @@
 
-#line 2
+#line 2 // complex-collectshadows-in.txt
 struct v2f {
     vec4 pos;
     vec2 uv;
@@ -19,7 +19,7 @@ float unitySampleShadow( in vec4 eyePos );
 float Linear01Depth( in float z );
 vec2 EncodeFloatRG( in float v );
 vec4 xlat_main( in v2f i );
-#line 37
+#line 37 // complex-collectshadows-in.txt
 float unitySampleShadow( in vec4 eyePos ) {
     vec3 sc0;
     vec3 sc1;
@@ -33,35 +33,35 @@ float unitySampleShadow( in vec4 eyePos ) {
     float shadow;
     sc0 = (_View2Shadow * eyePos).xyz;
     sc1 = (_View2Shadow1 * eyePos).xyz;
-    #line 41
+    #line 41 // complex-collectshadows-in.txt
     sc2 = (_View2Shadow2 * eyePos).xyz;
     sc3 = (_View2Shadow3 * eyePos).xyz;
     z = eyePos.z;
-    #line 46
+    #line 46 // complex-collectshadows-in.txt
     near = vec4(greaterThanEqual( vec4( z ), _LightSplitsNear));
     far = vec4(lessThan( vec4( z ), _LightSplitsFar));
     weights = (near * far);
-    coord = vec4( ((((sc0 * weights.x) + (sc1 * weights.y)) + (sc2 * weights.z)) + (sc3 * weights.w)), 1.00000);
-    #line 50
-    shadow = (( (texture2D( _ShadowMapTexture, coord.xy).x < coord.z) ) ? ( _LightShadowData.x ) : ( 1.00000 ));
+    coord = vec4( ((((sc0 * weights.x) + (sc1 * weights.y)) + (sc2 * weights.z)) + (sc3 * weights.w)), 1.0);
+    #line 50 // complex-collectshadows-in.txt
+    shadow = (( (texture2D( _ShadowMapTexture, coord.xy).x < coord.z) ) ? ( _LightShadowData.x ) : ( 1.0 ));
     return shadow;
 }
-#line 22
+#line 22 // complex-collectshadows-in.txt
 float Linear01Depth( in float z ) {
-    return (1.00000 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
+    return (1.0 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
 }
-#line 27
+#line 27 // complex-collectshadows-in.txt
 vec2 EncodeFloatRG( in float v ) {
-    vec2 kEncodeMul = vec2(1.00000, 255.000);
+    vec2 kEncodeMul = vec2(1.0, 255.0);
     float kEncodeBit = 0.00392157;
     vec2 enc;
-    #line 31
+    #line 31 // complex-collectshadows-in.txt
     enc = (kEncodeMul * v);
     enc = fract(enc);
     enc.x -= (enc.y * kEncodeBit);
     return enc;
 }
-#line 54
+#line 54 // complex-collectshadows-in.txt
 vec4 xlat_main( in v2f i ) {
     float depth;
     vec4 vpos;
@@ -69,13 +69,13 @@ vec4 xlat_main( in v2f i ) {
     vec4 res;
     depth = texture2D( _CameraDepthTexture, i.uv).x;
     depth = Linear01Depth( depth);
-    #line 58
-    vpos = vec4( (i.ray * depth), 1.00000);
+    #line 58 // complex-collectshadows-in.txt
+    vpos = vec4( (i.ray * depth), 1.0);
     shadow = unitySampleShadow( vpos);
     res.x = shadow;
-    #line 62
-    res.y = 1.00000;
-    res.zw = EncodeFloatRG( (1.00000 - depth));
+    #line 62 // complex-collectshadows-in.txt
+    res.y = 1.0;
+    res.zw = EncodeFloatRG( (1.0 - depth));
     return res;
 }
 varying vec2 xlv_TEXCOORD0;

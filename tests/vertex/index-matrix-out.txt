@@ -34,42 +34,42 @@ vec3 xll_matrixindexdynamic (mat3 m, int i) { return xll_matrixindex (m, i); }
 vec4 xll_matrixindexdynamic (mat4 m, int i) { return xll_matrixindex (m, i); }
 #endif
 vec4 xlat_main( in vec4 pos );
-#line 1
+#line 1 // index-matrix-in.txt
 vec4 xlat_main( in vec4 pos ) {
     vec4 v;
-    mat2 m2 = mat2(1.00000, 3.00000, 2.00000, 4.00000);
-    mat2 m2b = mat2(1.00000, 3.00000, 2.00000, 4.00000);
-    mat3 m3 = mat3(1.00000, 4.00000, 7.00000, 2.00000, 5.00000, 8.00000, 3.00000, 6.00000, 9.00000);
-    mat3 m3b = mat3(1.00000, 4.00000, 7.00000, 2.00000, 5.00000, 8.00000, 3.00000, 6.00000, 9.00000);
+    mat2 m2 = mat2(1.0, 3.0, 2.0, 4.0);
+    mat2 m2b = mat2(1.0, 3.0, 2.0, 4.0);
+    mat3 m3 = mat3(1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0);
+    mat3 m3b = mat3(1.0, 4.0, 7.0, 2.0, 5.0, 8.0, 3.0, 6.0, 9.0);
     mat3 m3c;
     int i = 0;
-    mat4 m4 = mat4(1.00000, 5.00000, 9.00000, 13.0000, 2.00000, 6.00000, 10.0000, 14.0000, 3.00000, 7.00000, 11.0000, 15.0000, 4.00000, 8.00000, 12.0000, 16.0000);
-    mat4 m4b = mat4(1.00000, 5.00000, 9.00000, 13.0000, 2.00000, 6.00000, 10.0000, 14.0000, 3.00000, 7.00000, 11.0000, 15.0000, 4.00000, 8.00000, 12.0000, 16.0000);
-    #line 3
-    v = vec4( 0.00000);
-    #line 8
-    #line 12
+    mat4 m4 = mat4(1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0);
+    mat4 m4b = mat4(1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0);
+    #line 3 // index-matrix-in.txt
+    v = vec4( 0.0);
+    #line 8 // index-matrix-in.txt
+    #line 12 // index-matrix-in.txt
     v.xy += xll_matrixindex (m2, 0);
     v.xy += xll_matrixindex (m2b, 1);
-    #line 19
-    #line 24
-    m3c = xll_transpose(mat3( vec3( 1.00000, 2.00000, 3.00000), vec3( 4.00000, 5.00000, 6.00000), pos.xyz));
-    #line 29
+    #line 19 // index-matrix-in.txt
+    #line 24 // index-matrix-in.txt
+    m3c = xll_transpose(mat3( vec3( 1.0, 2.0, 3.0), vec3( 4.0, 5.0, 6.0), pos.xyz));
+    #line 29 // index-matrix-in.txt
     v.xyz += xll_matrixindex (m3, 0);
     v.xyz += xll_matrixindex (m3b, 1);
     v.xyz += xll_matrixindex (m3c, 2);
-    v.xyz += vec3( 7.00000, 8.00000, 9.00000);
-    #line 36
+    v.xyz += vec3( 7.0, 8.0, 9.0);
+    #line 36 // index-matrix-in.txt
     for ( ; (i < 3); (++i)) {
         v.xyz += xll_matrixindexdynamic (m3c, i);
         v.x += m3b[2][i];
         v.x += m3c[i][2];
     }
-    #line 41
+    #line 41 // index-matrix-in.txt
     v.x += m3b[2][1];
     v.x += m3c[2][1];
-    #line 49
-    #line 55
+    #line 49 // index-matrix-in.txt
+    #line 55 // index-matrix-in.txt
     v.xyzw += xll_matrixindex (m4, 0);
     v.xyzw += xll_matrixindex (m4b, 1);
     return v;

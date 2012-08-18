@@ -1,23 +1,23 @@
 
-#line 123 complex-flare-in.txt
+#line 123 // complex-flare-in.txt
 struct v2f_vertex_lit {
     vec2 uv;
     vec4 diff;
     vec4 spec;
 };
-#line 159 complex-flare-in.txt
+#line 159 // complex-flare-in.txt
 struct v2f_img {
     vec4 pos;
     vec2 uv;
 };
-#line 153 complex-flare-in.txt
+#line 153 // complex-flare-in.txt
 struct appdata_img {
     vec4 vertex;
     vec2 texcoord;
 };
 uniform sampler2D _FlareTexture;
 vec4 xlat_main( in vec4 color, in vec2 texcoord );
-#line 270 complex-flare-in.txt
+#line 270 // complex-flare-in.txt
 vec4 xlat_main( in vec4 color, in vec2 texcoord ) {
     return (texture2D( _FlareTexture, texcoord) * color);
 }

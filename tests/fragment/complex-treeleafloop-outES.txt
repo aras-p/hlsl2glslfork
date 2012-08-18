@@ -1,7 +1,7 @@
 void xll_clip(float x) {
   if ( x<0.0 ) discard;
 }
-#line 11
+#line 11 // vertex
 struct v2f {
     highp vec4 pos;
     highp vec2 uv;
@@ -19,7 +19,7 @@ uniform highp vec4 _TerrainTreeLightColors[4];
 uniform lowp vec3 _TranslucencyColor;
 uniform sampler2D _TranslucencyMap;
 lowp vec4 xlat_main( in v2f i );
-#line 30
+#line 30 // vertex
 lowp vec4 xlat_main( in v2f i ) {
     lowp vec4 col;
     lowp vec3 albedo;
@@ -37,28 +37,28 @@ lowp vec4 xlat_main( in v2f i ) {
     lowp vec4 c;
     col = texture2D( _MainTex, i.uv);
     xll_clip((col.w - _Cutoff));
-    #line 35
+    #line 35 // vertex
     albedo = (col.xyz * i.color);
-    specular = (texture2D( _BumpSpecMap, i.uv).x * 128.000);
-    #line 39
+    specular = (texture2D( _BumpSpecMap, i.uv).x * 128.0);
+    #line 39 // vertex
     trngls = texture2D( _TranslucencyMap, i.uv);
     gloss = trngls.w;
     light = (vec3( UNITY_LIGHTMODEL_AMBIENT) * albedo);
-    #line 44
+    #line 44 // vertex
     backContribs = (i.backContrib * trngls.z);
     for ( ; (j < 3); (j++)) {
-        #line 48
+        #line 48 // vertex
         lightColor = _TerrainTreeLightColors[j].xyz;
         translucencyColor = (backContribs[j] * _TranslucencyColor);
         nl = i.nl[j];
-        #line 52
+        #line 52 // vertex
         nh = i.nh[j];
         spec = (pow( nh, specular) * gloss);
         light += (((albedo * (translucencyColor + nl)) + (_SpecColor.xyz * spec)) * lightColor);
     }
-    #line 58
-    c.xyz = (light * 2.00000);
-    c.w = 1.00000;
+    #line 58 // vertex
+    c.xyz = (light * 2.0);
+    c.w = 1.0;
     return c;
 }
 varying highp vec4 xlv_SV_POSITION;

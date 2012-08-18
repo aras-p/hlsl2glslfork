@@ -1,5 +1,5 @@
 
-#line 3
+#line 3 // in-vals-ret-struct-in.txt
 struct v2f {
     highp vec4 pos;
     highp float fog;
@@ -8,11 +8,11 @@ struct v2f {
 };
 uniform highp mat4 mvp;
 v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in highp vec4 color );
-#line 15
+#line 15 // in-vals-ret-struct-in.txt
 v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in highp vec4 color ) {
     v2f o;
     o.pos = (mvp * pos);
-    #line 19
+    #line 19 // in-vals-ret-struct-in.txt
     o.color = color;
     o.color.xyz += normal;
     o.uv = uv;

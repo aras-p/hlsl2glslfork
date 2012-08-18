@@ -1,7 +1,7 @@
 mediump vec4 xlat_main(  );
-#line 1 const-float-from-int-in.txt
+#line 1 // const-float-from-int-in.txt
 mediump vec4 xlat_main(  ) {
-    #line 4 const-float-from-int-in.txt
+    #line 4 // const-float-from-int-in.txt
     return vec4( 1.0, 1.0, 1.0, 1.0);
 }
 void main() {

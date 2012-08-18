@@ -4,23 +4,23 @@ uniform vec4 objSpaceLight;
 uniform vec4 offset;
 uniform mat4 worldViewProj;
 void xlat_main( in vec4 position, in vec3 normal, in vec2 uv, out vec4 oPosition, out vec2 oUv, out vec4 oColour, mat4 worldViewProj, vec4 ambient, vec4 objSpaceLight, vec4 lightColour, vec4 offset );
-#line 13
+#line 13 // complex-ogre-grass1-in.txt
 void xlat_main( in vec4 position, in vec3 normal, in vec2 uv, out vec4 oPosition, out vec2 oUv, out vec4 oColour, mat4 worldViewProj, vec4 ambient, vec4 objSpaceLight, vec4 lightColour, vec4 offset ) {
     vec4 mypos;
     vec4 factor;
     vec3 light;
     float diffuseFactor;
-    #line 15
+    #line 15 // complex-ogre-grass1-in.txt
     mypos = position;
-    factor = (vec4( 1.00000, 1.00000, 1.00000, 1.00000) - uv.yyyy);
+    factor = (vec4( 1.0, 1.0, 1.0, 1.0) - uv.yyyy);
     mypos = (mypos + (offset * factor));
-    #line 19
+    #line 19 // complex-ogre-grass1-in.txt
     oPosition = (worldViewProj * mypos);
     oUv = uv;
-    #line 24
+    #line 24 // complex-ogre-grass1-in.txt
     light = normalize((objSpaceLight.xyz - (mypos.xyz * objSpaceLight.w)));
     diffuseFactor = abs(dot( normal.xyz, light));
-    #line 28
+    #line 28 // complex-ogre-grass1-in.txt
     oColour = (ambient + (diffuseFactor * lightColour));
 }
 uniform mat4 xlu_worldViewProj;

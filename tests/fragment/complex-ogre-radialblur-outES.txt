@@ -23,7 +23,7 @@ uniform highp float sampleDist;
 uniform highp float sampleStrength;
 uniform sampler2D tex;
 highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength );
-#line 21
+#line 21 // complex-ogre-radialblur-in.txt
 highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength ) {
     highp vec2 dir;
     highp float dist;
@@ -32,35 +32,35 @@ highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sam
     highp int i = 0;
     highp vec4 res;
     highp float samples[10];
-    samples[0] = -0.0800000;
-    samples[1] = -0.0500000;
-    samples[2] = -0.0300000;
-    samples[3] = -0.0200000;
-    samples[4] = -0.0100000;
-    samples[5] = 0.0100000;
-    samples[6] = 0.0200000;
-    samples[7] = 0.0300000;
-    samples[8] = 0.0500000;
-    samples[9] = 0.0800000;
+    samples[0] = -0.08;
+    samples[1] = -0.05;
+    samples[2] = -0.03;
+    samples[3] = -0.02;
+    samples[4] = -0.01;
+    samples[5] = 0.01;
+    samples[6] = 0.02;
+    samples[7] = 0.03;
+    samples[8] = 0.05;
+    samples[9] = 0.08;
     highp float t;
-    dir = (0.500000 - texCoord);
-    #line 28
+    dir = (0.5 - texCoord);
+    #line 28 // complex-ogre-radialblur-in.txt
     dist = sqrt(((dir.x * dir.x) + (dir.y * dir.y)));
-    #line 32
+    #line 32 // complex-ogre-radialblur-in.txt
     dir = normalize(dir);
     color = texture2D( tex, texCoord);
-    #line 37
+    #line 37 // complex-ogre-radialblur-in.txt
     sum = color;
     for ( ; (i < 10); (i++)) {
         res = texture2D( tex, (texCoord + ((dir * samples[i]) * sampleDist)));
-        #line 41
+        #line 41 // complex-ogre-radialblur-in.txt
         sum += res;
     }
-    sum /= 11.0000;
-    #line 47
+    sum /= 11.0;
+    #line 47 // complex-ogre-radialblur-in.txt
     t = (dist * sampleStrength);
     t = xll_saturate(t);
-    #line 51
+    #line 51 // complex-ogre-radialblur-in.txt
     return mix( color, sum, vec4( t));
 }
 uniform highp float xlu_sampleDist;

@@ -3,7 +3,7 @@ vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {
 }
 uniform sampler2D tex;
 highp vec4 xlat_main( in highp vec4 pos, in highp vec2 uv );
-#line 3 tex2dlod-in.txt
+#line 3 // tex2dlod-in.txt
 highp vec4 xlat_main( in highp vec4 pos, in highp vec2 uv ) {
     highp vec4 c;
     c = xll_tex2Dlod( tex, vec4( uv, 0.0, 0.0));

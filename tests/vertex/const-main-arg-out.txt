@@ -1,18 +1,18 @@
 
-#line 6 const-main-arg-in.txt
+#line 6 // const-main-arg-in.txt
 struct VertexOutput {
     vec4 pos;
 };
-#line 1 const-main-arg-in.txt
+#line 1 // const-main-arg-in.txt
 struct VertexInput {
     vec4 pos;
 };
 VertexOutput xlat_main( const VertexInput xlat_var_input );
-#line 11 const-main-arg-in.txt
+#line 11 // const-main-arg-in.txt
 VertexOutput xlat_main( const VertexInput xlat_var_input ) {
     VertexOutput xlat_var_output;
     xlat_var_output.pos = xlat_var_input.pos;
-    #line 15 const-main-arg-in.txt
+    #line 15 // const-main-arg-in.txt
     return xlat_var_output;
 }
 void main() {

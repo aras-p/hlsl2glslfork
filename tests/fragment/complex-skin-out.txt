@@ -19,7 +19,7 @@ mat3 xll_saturate(mat3 m) {
 mat4 xll_saturate(mat4 m) {
   return mat4( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0), clamp(m[2], 0.0, 1.0), clamp(m[3], 0.0, 1.0));
 }
-#line 11
+#line 11 // _Ma
 struct v2f_withBlurCoords {
     vec4 pos;
     vec4 uv;
@@ -29,44 +29,44 @@ uniform sampler2D _MainTex;
 uniform sampler2D _SssStretch;
 uniform vec4 _SssStretch_AddMul;
 vec4 xlat_main( in v2f_withBlurCoords i );
-#line 17
+#line 17 // _Ma
 vec4 xlat_main( in v2f_withBlurCoords i ) {
     vec2 uv;
     float curve[7];
-    curve[0] = 0.00600000;
-    curve[1] = 0.0610000;
-    curve[2] = 0.242000;
-    curve[3] = 0.383000;
-    curve[4] = 0.242000;
-    curve[5] = 0.0610000;
-    curve[6] = 0.00600000;
+    curve[0] = 0.006;
+    curve[1] = 0.061;
+    curve[2] = 0.242;
+    curve[3] = 0.383;
+    curve[4] = 0.242;
+    curve[5] = 0.061;
+    curve[6] = 0.006;
     vec2 stretch;
     vec2 netFilterWidth;
     vec2 coords;
     vec4 sum;
-    float weightSum = 0.00000;
+    float weightSum = 0.0;
     int l = 0;
     vec4 tap;
     float weight;
     vec4 center;
     uv = i.uv.xy;
-    #line 21
+    #line 21 // _Ma
     stretch = ((texture2D( _SssStretch, uv).xy * _SssStretch_AddMul.yy) + _SssStretch_AddMul.xx);
     netFilterWidth = (stretch * i.offs);
-    coords = (uv - (netFilterWidth * 3.00000));
-    #line 25
-    sum = vec4( 0.00000);
+    coords = (uv - (netFilterWidth * 3.0));
+    #line 25 // _Ma
+    sum = vec4( 0.0);
     for ( ; (l < 7); (l++)) {
-        #line 30
+        #line 30 // _Ma
         tap = texture2D( _MainTex, coords);
-        weight = ((2.00000 * xll_saturate((tap.w - 0.500000))) * curve[l]);
+        weight = ((2.0 * xll_saturate((tap.w - 0.5))) * curve[l]);
         sum += (tap * weight);
         weightSum += weight;
-        #line 34
+        #line 34 // _Ma
         coords += netFilterWidth;
     }
-    sum = clamp( (sum / (weightSum + 0.000100000)), vec4( 0.00000), vec4( 10.0000));
-    #line 38
+    sum = clamp( (sum / (weightSum + 0.0001)), vec4( 0.0), vec4( 10.0));
+    #line 38 // _Ma
     center = texture2D( _MainTex, i.uv.xy);
     sum.w = center.w;
     return mix( center, sum, vec4( center.w));

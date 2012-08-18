@@ -1,16 +1,16 @@
 uniform vec4 _Color;
 vec4 xlat_main(  );
-#line 3 const-var-from-struct-in.txt
+#line 3 // const-var-from-struct-in.txt
 vec4 xlat_main(  ) {
     float r;
     float g;
     float b;
     float a;
-    r = _Color.x ;
-    g = _Color.y ;
-    #line 7 const-var-from-struct-in.txt
-    b = _Color.z ;
-    a = _Color.w ;
+    r = _Color.x;
+    g = _Color.y;
+    #line 7 // const-var-from-struct-in.txt
+    b = _Color.z;
+    a = _Color.w;
     return vec4( r, g, b, a);
 }
 void main() {

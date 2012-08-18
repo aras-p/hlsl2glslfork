@@ -1,6 +1,6 @@
 uniform vec4 _Color;
 vec4 xlat_main(  );
-#line 3 const-var-from-var-in.txt
+#line 3 // const-var-from-var-in.txt
 vec4 xlat_main(  ) {
     vec4 c;
     c = _Color;
