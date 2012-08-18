@@ -1,6 +1,7 @@
 vec4 xlat_main( in vec4 pos, in vec4 color );
-#line 1
+#line 1 pos-unused-in.txt
 vec4 xlat_main( in vec4 pos, in vec4 color ) {
+    #line 2 pos-unused-in.txt
     return color;
 }
 varying vec4 xlv_COLOR;

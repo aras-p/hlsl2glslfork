@@ -1,3 +1,4 @@
+#line 1 "pp-complex2-in.txt" 
 #define DIRECTIONAL 1
 #define LIGHTMAP_OFF 1
 #define DIRLIGHTMAP_OFF 1

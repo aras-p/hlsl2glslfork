@@ -347,8 +347,8 @@ std::string HlslLinker::stripSemanticModifier( const std::string &semantic, bool
 {
 	std::string newSemantic = semantic;
 
-	int nCentroidLoc = semantic.find ( "_centroid" );
-	if ( nCentroidLoc != -1 )
+	size_t nCentroidLoc = semantic.find ( "_centroid" );
+	if ( nCentroidLoc != std::string::npos )
 	{
 		if ( bWarn )
 		{
@@ -467,7 +467,8 @@ static void EmitCalledFunctions (std::stringstream& shader, const FunctionSet& f
 
 	for (FunctionSet::const_reverse_iterator fit = functions.rbegin(); fit != functions.rend(); fit++) // emit backwards, will put least used ones in front
 	{
-		shader << "\n#line " << (*fit)->getLine() << '\n';
+		shader << "\n";
+		OutputLineDirective(shader, (*fit)->getLine());
 		shader << (*fit)->getPrototype() << " {\n";
 		shader << (*fit)->getLocalDecls(1) << "\n";
 		shader << (*fit)->getCode() << "\n"; //has embedded }
@@ -620,7 +621,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 		{
 			for (std::vector<GlslStruct*>::iterator it = sList.begin(); it < sList.end(); it++)
 			{
-				shader << "\n#line " << (*it)->getLine() << '\n';
+		        shader << "\n";
+		        OutputLineDirective(shader, (*it)->getLine());
 				shader << (*it)->getDecl() << "\n";
 			}
 		}
@@ -749,6 +751,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 			// -------- IN & OUT parameters
 			case EqtIn:
 			case EqtInOut:
+			case EqtConst:
 				if ( sym->getType() != EgstStruct)
 				{
 					std::string name, ctor;

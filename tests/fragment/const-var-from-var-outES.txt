@@ -1,0 +1,13 @@
+uniform mediump vec4 _Color;
+mediump vec4 xlat_main(  );
+#line 3 const-var-from-var-in.txt
+mediump vec4 xlat_main(  ) {
+    mediump vec4 c;
+    c = _Color;
+    return c;
+}
+void main() {
+    mediump vec4 xl_retval;
+    xl_retval = xlat_main( );
+    gl_FragData[0] = vec4( xl_retval);
+}

@@ -31,11 +31,10 @@
 #include <stdio.h>
 #include <sstream>
 
-typedef int TSourceLoc;
-
 #include <assert.h>
 
 #include "PoolAlloc.h"
+#include "preprocessor/sourceloc.h"
 
 //
 // Put POOL_ALLOCATOR_NEW_DELETE in base classes to make them use this scheme.
@@ -144,25 +143,6 @@ inline const TString String(const int i, const int base = 10)
 
    return text;
 }
-
-const unsigned int SourceLocLineMask = 0xffff;
-const unsigned int SourceLocStringShift = 16;
-
-__inline TPersistString FormatSourceLoc(const TSourceLoc loc)
-{
-   char locText[64];
-
-   int string = loc >> SourceLocStringShift;
-   int line = loc & SourceLocLineMask;
-
-   if (line)
-      sprintf(locText, "%d:%d", string, line);
-   else
-      sprintf(locText, "%d:? ", string);
-
-   return TPersistString(locText);
-}
-
 
 #endif // _COMMON_INCLUDED_
 

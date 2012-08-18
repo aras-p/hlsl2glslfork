@@ -70,7 +70,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
             out << c->getIConst();
             break;
          case EbtFloat:
-            out << c->getFConst();
+            GlslSymbol::writeFloat(out, c->getFConst());
             break;
          default:
             assert(0);
@@ -225,17 +225,31 @@ void writeTex( const TString &name, TIntermAggregate *node, TGlslOutputTraverser
    writeFuncCall( name, node, goit);
 }
 
-
-void TGlslOutputTraverser::outputLineDirective (int line)
+static bool SafeEquals(const char* a, const char* b)
 {
-	if (line <= 0 || !current)
+    if((!a && b) || (a && !b))
+    {
+        return(false);
+    }
+
+    if(!a && !b)
+    {
+        return(true);
+    }
+
+    return(strcmp(a, b) == 0);
+}
+
+void TGlslOutputTraverser::outputLineDirective (const TSourceLoc& line)
+{
+	if (line.line <= 0 || !current)
 		return;
-	if (std::abs(line - m_LastLineOutput) < 4) // don't sprinkle too many #line directives ;)
+	if (SafeEquals(line.file, m_LastLineOutput.file) && abs(line.line - m_LastLineOutput.line) < 4) // don't sprinkle too many #line directives ;)
 		return;
 	std::stringstream& out = current->getActiveOutput();
 	out << '\n';
-	current->indent();
-	out << "#line " << line << '\n';
+	current->indent(); // without this we could dry the code out further to put the preceeding CRLF in the shared function
+	OutputLineDirective(out, line);
 	m_LastLineOutput = line;
 }
 
@@ -247,8 +261,9 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
 , functionList(funcList)
 , structList(sList)
 , m_UsePrecision(usePrecision)
-, m_LastLineOutput(-1)
 {
+   m_LastLineOutput.file = NULL;
+   m_LastLineOutput.line = -1;
    visitSymbol = traverseSymbol;
    visitConstantUnion = traverseConstantUnion;
    visitBinary = traverseBinary;
@@ -257,7 +272,12 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
    visitAggregate = traverseAggregate;
    visitLoop = traverseLoop;
    visitBranch = traverseBranch;
-   global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "", 1);
+   
+   TSourceLoc oneSourceLoc;
+   oneSourceLoc.file=NULL;
+   oneSourceLoc.line=1;
+   
+   global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "", oneSourceLoc);
    functionList.push_back(global);
    current = global;
 }

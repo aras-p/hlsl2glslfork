@@ -16,7 +16,7 @@ class TType;
 struct TTypeLine
 {
    TType* type;
-   int line;
+   TSourceLoc line;
 };
 typedef TVector<TTypeLine> TTypeList;
 
@@ -46,9 +46,9 @@ public:
    bool array;
    int arraySize;
    TType* userDef;
-   int line;
+   TSourceLoc line;
 
-   void setBasic(TBasicType bt, TQualifier q, int ln = 0) 
+   void setBasic(TBasicType bt, TQualifier q, const TSourceLoc& ln = gNullSourceLoc) 
    {
       type = bt;
       qualifier = q;
@@ -96,7 +96,7 @@ public:
 
    explicit TType() { }
    explicit TType(TBasicType t, TPrecision p, TQualifier q = EvqTemporary, int s = 1, bool m = false, bool a = false) :
-      type(t), precision(p), qualifier(q), size(s), line(0), matrix(m), array(a), arraySize(0),
+      type(t), precision(p), qualifier(q), size(s), line(gNullSourceLoc), matrix(m), array(a), arraySize(0),
       structure(0), structureSize(0), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), typeName(0),
       semantic(0)
    {
@@ -113,7 +113,7 @@ public:
          typeName = NewPoolTString(p.userDef->getTypeName().c_str());
       }
    }
-   explicit TType(TTypeList* userDef, const TString& n, TPrecision p = EbpUndefined, int l = 0) :
+   explicit TType(TTypeList* userDef, const TString& n, TPrecision p = EbpUndefined, const TSourceLoc& l = gNullSourceLoc) :
       type(EbtStruct), precision(p), qualifier(EvqTemporary), size(1), line(l), matrix(false), array(false), arraySize(0),
       structure(userDef), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), semantic(0)
    {
@@ -207,7 +207,7 @@ public:
    TBasicType getBasicType() const { return type; }
    TPrecision getPrecision() const { return precision; }
    TQualifier getQualifier() const { return qualifier; }
-	int getLine() const { return line; }
+   const TSourceLoc& getLine() const { return line; }
 
    void setBasicType(TBasicType t) { type = t; }
    void setPrecision(TPrecision p) { precision = p; }
@@ -332,7 +332,7 @@ private:
    unsigned int matrix  : 1;
    unsigned int array   : 1;
    int arraySize;
-	int line;
+   TSourceLoc line;
 
    TTypeList* structure;      // 0 unless this is a struct
    mutable int structureSize;

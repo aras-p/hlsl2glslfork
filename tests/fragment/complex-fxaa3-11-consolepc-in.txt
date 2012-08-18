@@ -1,3 +1,4 @@
+#line 1 "complex-fxaa3-11-consolepc-in.txt" 
 
 #define FXAA_PC_CONSOLE 1
 #define FXAA_GREEN_AS_LUMA 1

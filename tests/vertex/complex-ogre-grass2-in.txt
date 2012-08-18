@@ -1,3 +1,4 @@
+#line 1 "complex-ogre-grass2-in.txt" 
 // GRASS SHADOW RECEIVER
 void main(
                 float4 position : POSITION,

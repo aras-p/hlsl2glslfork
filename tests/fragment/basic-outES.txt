@@ -1,7 +1,8 @@
 mediump vec4 xlat_main(  );
-#line 1
+#line 1 basic-in.txt
 mediump vec4 xlat_main(  ) {
-    return vec4( 1.00000);
+    #line 2 basic-in.txt
+    return vec4( 1.0);
 }
 void main() {
     mediump vec4 xl_retval;

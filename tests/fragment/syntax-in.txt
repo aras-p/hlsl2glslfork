@@ -1,3 +1,4 @@
+#line 1 "syntax-in.txt" 
 half4 main() : COLOR0 {
 	float foo = 1.0;
 	foo += 1.0f;

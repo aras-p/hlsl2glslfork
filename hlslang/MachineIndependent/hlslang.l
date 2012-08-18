@@ -42,7 +42,7 @@ I           [uUlL]
 #endif
 
 int yy_input(char* buf, int max_size);
-static TSourceLoc lexlineno;
+static TSourceLoc lexlineno = { 0, 0 };
 
 #ifdef _WIN32
     extern int yyparse(TParseContext&);
@@ -324,7 +324,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
 	cpp->pC = (void*)&parseContextLocal;
 	
     if (!source) {
-        parseContextLocal.error(0, "Null shader source string", "", "");
+        parseContextLocal.error(gNullSourceLoc, "Null shader source string", "", "");
         parseContextLocal.recover();
         return 1;
     }
@@ -333,7 +333,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
     
     yyrestart(0);
     (&parseContextLocal)->AfterEOF = false;
-    lexlineno = 1;
+    lexlineno.line = 1;
    
     if (sourceLen >= 0) {
         int ret;
@@ -384,7 +384,7 @@ int PaIdentOrType(TString& id, TParseContext& parseContextLocal, TSymbol*& symbo
     return IDENTIFIER;
 }
 
-int PaParseComment(int &lineno, TParseContext& parseContextLocal)
+int PaParseComment(TSourceLoc &lineno, TParseContext& parseContextLocal)
 {
     int transitionFlag = 0;
     int nextChar;
@@ -392,7 +392,7 @@ int PaParseComment(int &lineno, TParseContext& parseContextLocal)
     while (transitionFlag != 2) {
         nextChar = yyinput();
         if (nextChar == '\n')
-             lineno++;
+             lineno.line++;
         switch (nextChar) {
         case '*' :
             transitionFlag = 1;
@@ -433,32 +433,47 @@ void CPPErrorToInfoLog(char *msg)
     GlobalParseContext->recover();
 }
 
-void SetLineNumber(int line)
+void SetLineNumber(TSourceLoc line)
 {
-    lexlineno &= ~SourceLocLineMask;
-    lexlineno |= line;
+    lexlineno.file = NULL;
+    lexlineno.line = line.line;
+    
+    if(line.file && line.file[0])
+    {
+	    // GLSL does not permit quoted strings in #line directives
+    
+	    if(line.file[0] == '"')
+	    {
+	        TString stripped(line.file + 1);
+	        size_t len = stripped.size();
+	        if(stripped[len - 1] == '"')
+	        {
+	            stripped.resize(len - 1);
+	        }
+	        
+	        lexlineno.file = NewPoolTString(stripped.c_str())->c_str();
+	    }
+	    else
+	    {
+	        lexlineno.file = NewPoolTString(line.file)->c_str();
+	    }
+	}
 }
 
-int GetStringNumber(void)
+const TSourceLoc GetLineNumber(void)
 {
-    return lexlineno >> 16;
-}
-
-int GetLineNumber(void)
-{
-    return lexlineno & SourceLocLineMask;
+    return lexlineno;
 }
 
 void IncLineNumber(void)
 {
-    if ((lexlineno & SourceLocLineMask) <= SourceLocLineMask)
-        ++lexlineno;
+    ++lexlineno.line;
 }
 
 void DecLineNumber(void)
 {
-    if ((lexlineno & SourceLocLineMask) > 0)
-        --lexlineno;
+    if (lexlineno.line > 0)
+        --lexlineno.line;
 }
 
 void StoreStr(char *string)

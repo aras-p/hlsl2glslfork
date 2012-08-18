@@ -4,17 +4,17 @@ struct Inner {
     highp float member1;
     highp ivec3 member2;
 };
-#line 7
+#line 7 struct-in.txt
 struct Outer {
     Inner inner;
     Inner inner2;
 };
 highp vec4 xlat_main(  );
-#line 13
+#line 13 struct-in.txt
 highp vec4 xlat_main(  ) {
     Outer test;
-    test.inner.member1 = 1.00000;
-    #line 17
+    test.inner.member1 = 1.0;
+    #line 17 struct-in.txt
     test.inner.member2 = ivec3( 0);
     return vec4( vec3(test.inner.member2), test.inner.member1);
 }

@@ -1,7 +1,8 @@
 vec4 xlat_main( in vec2 pos );
-#line 1
+#line 1 vpos-in.txt
 vec4 xlat_main( in vec2 pos ) {
-    return vec4( pos, 0.00000, 0.00000);
+    #line 2 vpos-in.txt
+    return vec4( pos, 0.0, 0.0);
 }
 void main() {
     vec4 xl_retval;

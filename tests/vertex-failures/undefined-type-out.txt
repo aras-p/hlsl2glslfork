@@ -1,0 +1,4 @@
+undefined-type-in.hlsl(3): ERROR: 'bloat4' : undeclared identifier 
+undefined-type-in.hlsl(3): ERROR: 'b' : syntax error parse error
+ERROR: 2 compilation errors.  No code generated.
+

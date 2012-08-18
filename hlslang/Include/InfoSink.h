@@ -117,7 +117,9 @@ public:
    }
    void location(TSourceLoc loc)
    {
-      append(FormatSourceLoc(loc).c_str());
+      std::stringstream s;
+      s << loc;
+      append(s.str());
       append(": ");
    }
    void message(TPrefixType message, const char* s)
@@ -128,8 +130,8 @@ public:
    }
    void message(TPrefixType message, const char* s, TSourceLoc loc)
    {
-      prefix(message);
       location(loc);
+      prefix(message);
       append(s);
       append("\n");
    }

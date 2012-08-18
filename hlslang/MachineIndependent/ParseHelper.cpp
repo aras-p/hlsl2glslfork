@@ -17,7 +17,7 @@
 // Look at a '.' field selector string and change it into offsets
 // for a vector.
 //
-bool TParseContext::parseVectorFields(const TString& compString, int vecSize, TVectorFields& fields, int line)
+bool TParseContext::parseVectorFields(const TString& compString, int vecSize, TVectorFields& fields, const TSourceLoc& line)
 {
    fields.num = (int) compString.size();
    if (fields.num > 4)
@@ -118,7 +118,7 @@ bool TParseContext::parseVectorFields(const TString& compString, int vecSize, TV
 // Look at a '.' field selector string and change it into offsets
 // for a matrix.
 //
-bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TVectorFields& fields, int line)
+bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TVectorFields& fields, const TSourceLoc& line)
 {
    fields.num = 1;
    fields.offsets[0] = 0;
@@ -159,7 +159,7 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TV
          }
          fields.offsets[ii/4] =  row * 4 + collumn;
       }
-      fields.num = compString.size()/4;
+      fields.num = static_cast<int>(compString.size())/4;
    }
    else
    {
@@ -191,7 +191,7 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TV
          }
          fields.offsets[ii/3] =  row * 4 + collumn;
       }
-      fields.num = compString.size()/3;
+      fields.num = static_cast<int>(compString.size())/3;
    }
 
    return true;
@@ -222,8 +222,8 @@ void C_DECL TParseContext::error(TSourceLoc nLine, const char *szReason, const c
    _vsnprintf(szExtraInfo, sizeof(szExtraInfo), szExtraInfoFormat, marker);
 
    /* VC++ format: file(linenum) : error #: 'token' : extrainfo */
-   infoSink.info.prefix(EPrefixError);
    infoSink.info.location(nLine);
+   infoSink.info.prefix(EPrefixError);
    infoSink.info << "'" << szToken <<  "' : " << szReason << " " << szExtraInfo << "\n";
 
    va_end(marker);
@@ -234,7 +234,7 @@ void C_DECL TParseContext::error(TSourceLoc nLine, const char *szReason, const c
 //
 // Same error message for all places assignments don't work.
 //
-void TParseContext::assignError(int line, const char* op, TString left, TString right)
+void TParseContext::assignError(const TSourceLoc& line, const char* op, TString left, TString right)
 {
    error(line, "", op, "cannot convert from '%s' to '%s'",
          right.c_str(), left.c_str());
@@ -243,7 +243,7 @@ void TParseContext::assignError(int line, const char* op, TString left, TString 
 //
 // Same error message for all places unary operations don't work.
 //
-void TParseContext::unaryOpError(int line, const char* op, TString operand)
+void TParseContext::unaryOpError(const TSourceLoc& line, char* op, TString operand)
 {
    error(line, " wrong operand type", op, 
          "no operation '%s' exists that takes an operand of type %s (or there is no acceptable conversion)",
@@ -253,7 +253,7 @@ void TParseContext::unaryOpError(int line, const char* op, TString operand)
 //
 // Same error message for all binary operations don't work.
 //
-void TParseContext::binaryOpError(int line, const char* op, TString left, TString right)
+void TParseContext::binaryOpError(const TSourceLoc& line, char* op, TString left, TString right)
 {
    error(line, " wrong operand types ", op, 
          "no operation '%s' exists that takes a left-hand operand of type '%s' and "
@@ -267,7 +267,7 @@ void TParseContext::binaryOpError(int line, const char* op, TString left, TStrin
 //
 // Returns true if the was an error.
 //
-bool TParseContext::lValueErrorCheck(int line, const char* op, TIntermTyped* node)
+bool TParseContext::lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTyped* node)
 {
    TIntermSymbol* symNode = node->getAsSymbolNode();
    TIntermBinary* binaryNode = node->getAsBinaryNode();
@@ -444,7 +444,7 @@ bool TParseContext::integerErrorCheck(TIntermTyped* node, const char* token)
 //
 // Returns true if the was an error.
 //
-bool TParseContext::globalErrorCheck(int line, bool global, const char* token)
+bool TParseContext::globalErrorCheck(const TSourceLoc& line, bool global, char* token)
 {
    if (global)
       return false;
@@ -461,7 +461,7 @@ bool TParseContext::globalErrorCheck(int line, bool global, const char* token)
 //
 // Returns true if there was an error.
 //
-bool TParseContext::reservedErrorCheck(int line, const TString& identifier)
+bool TParseContext::reservedErrorCheck(const TSourceLoc& line, const TString& identifier)
 {
    if (!symbolTable.atBuiltInLevel())
    {
@@ -489,7 +489,7 @@ bool TParseContext::reservedErrorCheck(int line, const TString& identifier)
 //
 // Returns true if there was an error in construction.
 //
-bool TParseContext::constructorErrorCheck(int line, TIntermNode* node, TFunction& function, TOperator op, TType* type)
+bool TParseContext::constructorErrorCheck(const TSourceLoc& line, TIntermNode* node, TFunction& function, TOperator op, TType* type)
 {
    *type = function.getReturnType();
 
@@ -591,7 +591,7 @@ bool TParseContext::constructorErrorCheck(int line, TIntermNode* node, TFunction
 //
 // returns true in case of an error
 //
-bool TParseContext::voidErrorCheck(int line, const TString& identifier, const TPublicType& pubType)
+bool TParseContext::voidErrorCheck(const TSourceLoc& line, const TString& identifier, const TPublicType& pubType)
 {
    if (pubType.type == EbtVoid)
    {
@@ -606,7 +606,7 @@ bool TParseContext::voidErrorCheck(int line, const TString& identifier, const TP
 //
 // returns true in case of an error
 //
-bool TParseContext::boolErrorCheck(int line, const TIntermTyped* type)
+bool TParseContext::boolErrorCheck(const TSourceLoc& line, const TIntermTyped* type)
 {
    // In HLSL, any float or int will be automatically casted to a bool, so the basic type can be bool,
    // float, or int.
@@ -621,7 +621,7 @@ bool TParseContext::boolErrorCheck(int line, const TIntermTyped* type)
 }
 
 
-bool TParseContext::boolOrVectorErrorCheck(int line, const TIntermTyped* type)
+bool TParseContext::boolOrVectorErrorCheck(const TSourceLoc& line, const TIntermTyped* type)
 {
 	// In HLSL, any float or int will be automatically casted to a bool, so the basic type can be bool,
 	// float, or int.
@@ -640,7 +640,7 @@ bool TParseContext::boolOrVectorErrorCheck(int line, const TIntermTyped* type)
 //
 // returns true in case of an error
 //
-bool TParseContext::boolErrorCheck(int line, const TPublicType& pType)
+bool TParseContext::boolErrorCheck(const TSourceLoc& line, const TPublicType& pType)
 {
    // In HLSL, any float or int will be automatically casted to a bool, so the basic type can be bool,
    // float, or int.   
@@ -654,7 +654,7 @@ bool TParseContext::boolErrorCheck(int line, const TPublicType& pType)
    return false;
 }
 
-bool TParseContext::samplerErrorCheck(int line, const TPublicType& pType, const char* reason)
+bool TParseContext::samplerErrorCheck(const TSourceLoc& line, const TPublicType& pType, const char* reason)
 {
    if (pType.type == EbtStruct)
    {
@@ -677,7 +677,7 @@ bool TParseContext::samplerErrorCheck(int line, const TPublicType& pType, const 
    return false;
 }
 
-bool TParseContext::structQualifierErrorCheck(int line, const TPublicType& pType)
+bool TParseContext::structQualifierErrorCheck(const TSourceLoc& line, const TPublicType& pType)
 {
    if ((pType.qualifier == EvqVaryingIn || pType.qualifier == EvqVaryingOut || pType.qualifier == EvqAttribute) &&
        pType.type == EbtStruct)
@@ -691,7 +691,7 @@ bool TParseContext::structQualifierErrorCheck(int line, const TPublicType& pType
    return false;
 }
 
-bool TParseContext::parameterSamplerErrorCheck(int line, TQualifier qualifier, const TType& type)
+bool TParseContext::parameterSamplerErrorCheck(const TSourceLoc& line, TQualifier qualifier, const TType& type)
 {
    if ((qualifier == EvqOut || qualifier == EvqInOut) && 
        type.getBasicType() != EbtStruct && IsSampler(type.getBasicType()))
@@ -727,7 +727,7 @@ bool TParseContext::insertBuiltInArrayAtGlobalLevel()
    TSymbol* symbol = symbolTable.find(*name);
    if (!symbol)
    {
-      error(0, "INTERNAL ERROR finding symbol", name->c_str(), "");
+      error(gNullSourceLoc, "INTERNAL ERROR finding symbol", name->c_str(), "");
       return true;
    }
    TVariable* variable = static_cast<TVariable*>(symbol);
@@ -737,7 +737,7 @@ bool TParseContext::insertBuiltInArrayAtGlobalLevel()
    if (! symbolTable.insert(*newVariable))
    {
       delete newVariable;
-      error(0, "INTERNAL ERROR inserting new symbol", name->c_str(), "");
+      error(gNullSourceLoc, "INTERNAL ERROR inserting new symbol", name->c_str(), "");
       return true;
    }
 
@@ -751,7 +751,7 @@ bool TParseContext::insertBuiltInArrayAtGlobalLevel()
 //
 // Returns true if there was an error.
 //
-bool TParseContext::arraySizeErrorCheck(int line, TIntermTyped* expr, int& size)
+bool TParseContext::arraySizeErrorCheck(const TSourceLoc& line, TIntermTyped* expr, int& size)
 {
    TIntermConstantUnion* constant = expr->getAsConstantUnion();
    if (constant == 0 || constant->getBasicType() != EbtInt)
@@ -777,7 +777,7 @@ bool TParseContext::arraySizeErrorCheck(int line, TIntermTyped* expr, int& size)
 //
 // Returns true if there is an error.
 //
-bool TParseContext::arrayQualifierErrorCheck(int line, TPublicType type)
+bool TParseContext::arrayQualifierErrorCheck(const TSourceLoc& line, TPublicType type)
 {
    if (type.qualifier == EvqAttribute)
    {
@@ -793,7 +793,7 @@ bool TParseContext::arrayQualifierErrorCheck(int line, TPublicType type)
 //
 // Returns true if there is an error.
 //
-bool TParseContext::arrayTypeErrorCheck(int line, TPublicType type)
+bool TParseContext::arrayTypeErrorCheck(const TSourceLoc& line, TPublicType type)
 {
    //
    // Can the type be an array?
@@ -815,7 +815,7 @@ bool TParseContext::arrayTypeErrorCheck(int line, TPublicType type)
 //
 // Returns true if there was an error.
 //
-bool TParseContext::arrayErrorCheck(int line, TString& identifier, TPublicType type, TVariable*& variable)
+bool TParseContext::arrayErrorCheck(const TSourceLoc& line, TString& identifier, TPublicType type, TVariable*& variable)
 {
 
    return arrayErrorCheck( line, identifier, 0, type, variable);
@@ -829,7 +829,7 @@ bool TParseContext::arrayErrorCheck(int line, TString& identifier, TPublicType t
 //
 // Returns true if there was an error.
 //
-bool TParseContext::arrayErrorCheck(int line, TString& identifier, const TTypeInfo *info, TPublicType type, TVariable*& variable)
+bool TParseContext::arrayErrorCheck(const TSourceLoc& line, TString& identifier, const TTypeInfo *info, TPublicType type, TVariable*& variable)
 {
    //
    // Don't check for reserved word use until after we know it's not in the symbol table,
@@ -968,7 +968,7 @@ bool TParseContext::arraySetMaxSize(TIntermSymbol *node, TType* type, int size, 
 //
 // Returns true if there was an error.
 //
-bool TParseContext::nonInitConstErrorCheck(int line, TString& identifier, TPublicType& type)
+bool TParseContext::nonInitConstErrorCheck(const TSourceLoc& line, TString& identifier, TPublicType& type)
 {
    //
    // Make the qualifier make sense.
@@ -989,7 +989,7 @@ bool TParseContext::nonInitConstErrorCheck(int line, TString& identifier, TPubli
 //
 // Returns true if there was an error.
 //
-bool TParseContext::nonInitErrorCheck(int line, TString& identifier, TPublicType& type)
+bool TParseContext::nonInitErrorCheck(const TSourceLoc& line, TString& identifier, TPublicType& type)
 {
 
    return nonInitErrorCheck( line, identifier, 0, type);
@@ -1001,7 +1001,7 @@ bool TParseContext::nonInitErrorCheck(int line, TString& identifier, TPublicType
 //
 // Returns true if there was an error.
 //
-bool TParseContext::nonInitErrorCheck(int line, TString& identifier, const TTypeInfo *info, TPublicType& type)
+bool TParseContext::nonInitErrorCheck(const TSourceLoc& line, TString& identifier, const TTypeInfo *info, TPublicType& type)
 {
    if (reservedErrorCheck(line, identifier))
       recover();
@@ -1028,7 +1028,7 @@ bool TParseContext::nonInitErrorCheck(int line, TString& identifier, const TType
    return false;
 }
 
-bool TParseContext::paramErrorCheck(int line, TQualifier qualifier, TQualifier paramQualifier, TType* type)
+bool TParseContext::paramErrorCheck(const TSourceLoc& line, TQualifier qualifier, TQualifier paramQualifier, TType* type)
 {
    if (qualifier != EvqConst && qualifier != EvqTemporary && qualifier != EvqUniform)
    {
@@ -1061,7 +1061,7 @@ bool TParseContext::paramErrorCheck(int line, TQualifier qualifier, TQualifier p
 //
 // Return the function symbol if found, otherwise 0.
 //
-const TFunction* TParseContext::findFunction(int line, TFunction* call, bool *builtIn)
+const TFunction* TParseContext::findFunction(const TSourceLoc& line, TFunction* call, bool *builtIn)
 {
    const TSymbol* symbol = symbolTable.find(call->getMangledName(), builtIn);
 
@@ -1182,19 +1182,50 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 
    if (qualifier == EvqConst)
    {
-      if (qualifier != initializer->getType().getQualifier())
-      {
-         error(line, " assigning non-constant to", "=", "'%s'", variable->getType().getCompleteString().c_str());
-         variable->getType().changeQualifier(EvqTemporary);
-         return true;
-      }
       if (type != initializer->getType())
       {
-         error(line, " non-matching types for const initializer ", 
-               variable->getType().getQualifierString(), "");
-         variable->getType().changeQualifier(EvqTemporary);
-         return true;
+         TBasicType basicType = type.getBasicType();
+         TBasicType initializerType = initializer->getType().getBasicType();
+
+         // allow type promotion (eg: const float SCALE = 2;)
+         if
+         (
+            (basicType == EbtFloat) && (initializerType == EbtInt) &&
+            (type.getObjectSize() == initializer->getType().getObjectSize())
+         )
+         {
+            TIntermConstantUnion* iUnion = initializer->getAsConstantUnion();
+            
+            if(iUnion)
+            {
+               constUnion* cUnion = iUnion->getUnionArrayPointer();
+               int objectSize = type.getObjectSize();
+            
+               for(int i = 0; i < objectSize; ++i)
+               {
+                  cUnion[i].setFConst(static_cast<float>(cUnion[i].getIConst()));
+               }
+            }
+         
+            initializer->getTypePointer()->setBasicType(basicType);
+         }
+         else
+         { 
+            error(line, " non-matching types for const initializer ", 
+                  variable->getType().getQualifierString(), "");
+            variable->getType().changeQualifier(EvqTemporary);
+            return true;
+         }
       }
+      
+      TQualifier initializerQualifier = initializer->getType().getQualifier();
+
+      if ((initializerQualifier != EvqConst) && (initializerQualifier != EvqStaticConst))
+      {
+         qualifier = EvqTemporary;
+         variable->getType().changeQualifier(qualifier);
+      }
+      
       if (initializer->getAsConstantUnion())
       {
          constUnion* unionArray = variable->getConstPointer();
@@ -1215,6 +1246,12 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 
          constUnion* constArray = tVar->getConstPointer();
          variable->shareConstPointer(constArray);
+      }
+      else if (initializer->getAsOperatorNode())
+      {
+         // Let this fall through to the bottom; we've already validated the type matches
+         qualifier = EvqTemporary;
+         variable->getType().changeQualifier(qualifier);
       }
       else
       {

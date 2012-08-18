@@ -11,6 +11,7 @@ const bool kDumpShaderAST = false;
 #ifdef _MSC_VER
 #include <windows.h>
 #include <gl/GL.h>
+#include <cstdarg>
 
 extern "C" {
 typedef char GLcharARB;		/* native character */
@@ -32,6 +33,29 @@ static PFNGLGETINFOLOGARBPROC glGetInfoLogARB;
 static PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
 }
 
+// forks stdio to debug console so when you hit a breakpoint you can more easily see what test is running:
+static void logf(const char* format, ...)
+{
+    va_list args = NULL;
+    va_start(args, format);
+    vprintf(format, args);
+    va_end(args); //lint !e1924: C-style cast
+    
+    char buffer[4096];
+    const size_t bufferSize = sizeof(buffer) - 1;
+
+    args = NULL;
+    va_start(args, format);
+    int rc = _vsnprintf(buffer, bufferSize, format, args);
+    va_end(args); //lint !e1924: C-style cast
+    
+    size_t outputLen = (rc <= 0) ? 0 : static_cast<size_t>(rc);
+    buffer[outputLen] = '\0';
+
+    OutputDebugStringA(buffer);
+}
+
+#define printf logf
 
 #else
 #include <OpenGL/OpenGL.h>
@@ -104,7 +128,7 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 		return false;
 	
 	fseek(file, 0, SEEK_END);
-	int length = ftell(file);
+	size_t length = ftell(file);
 	fseek(file, 0, SEEK_SET);
 	if (length < 0)
 	{
@@ -113,7 +137,7 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 	}
 	
 	output.resize(length);
-	int readLength = fread(&*output.begin(), 1, length, file);
+	size_t readLength = fread(&*output.begin(), 1, length, file);
 	
 	fclose(file);
 	
@@ -260,6 +284,17 @@ static bool TestFile (bool vertex,
 		if (translateOk)
 		{
 			std::string text = Hlsl2Glsl_GetShader (parser);
+			
+			for (size_t i = 0, n = text.size(); i != n; ++i)
+			{
+			   char c = text[i];
+			   
+			   if (!isascii(c))
+			   {
+				   printf ("  contains non-ascii '%c' (0x%02X)\n", c, c);
+				   res = false;
+			   }
+			}
 
 			std::string output;
 			ReadStringFromFile (outputPath.c_str(), output);
@@ -295,6 +330,62 @@ static bool TestFile (bool vertex,
 	return res;
 }
 
+static bool TestFileFailure (bool vertex,
+	const std::string& inputPath,
+	const std::string& outputPath)
+{
+	std::string input;
+	if (!ReadStringFromFile (inputPath.c_str(), input))
+	{
+		printf ("  failed to read input file\n");
+		return false;
+	}
+
+	ShHandle parser = Hlsl2Glsl_ConstructCompiler (vertex ? EShLangVertex : EShLangFragment);
+
+	const char* sourceStr = input.c_str();
+
+	bool res = true;
+
+	int options = 0;
+	if (kDumpShaderAST)
+		options |= ETranslateOpIntermediate;
+	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, options);
+	
+	if (parseOk)
+	{
+		int translateOk = Hlsl2Glsl_Translate (parser, "main", options);
+		
+		if (translateOk) 
+		{
+			printf ("  translation was expected to fail\n");
+		    res = false;
+		}
+    }
+    
+	std::string text = Hlsl2Glsl_GetInfoLog( parser );
+	std::string output;
+	
+	if (res)
+	{
+	    ReadStringFromFile (outputPath.c_str(), output);
+    }
+    
+	if (!res || (text != output))
+	{
+		// write output
+		FILE* f = fopen (outputPath.c_str(), "wb");
+		fwrite (text.c_str(), 1, text.size(), f);
+		fclose (f);
+		printf ("  does not match expected output\n");
+		res = false;
+	}
+
+	Hlsl2Glsl_DestructCompiler (parser);
+
+	return res;
+}
+
 
 int main (int argc, const char** argv)
 {
@@ -312,7 +403,7 @@ int main (int argc, const char** argv)
 
 	std::string baseFolder = argv[1];
 
-	static const char* kTypeName[2] = { "vertex", "fragment" };
+	static const char* kTypeName[4] = { "vertex", "fragment", "vertex-failures", "fragment-failures" };
 	size_t tests = 0;
 	size_t errors = 0;
 	for (int type = 0; type < 2; ++type)
@@ -329,7 +420,7 @@ int main (int argc, const char** argv)
 			printf ("test %s\n", inname.c_str());
 			std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
 			std::string outnameES = inname.substr (0,inname.size()-7) + "-outES.txt";
-			bool ok = TestFile (type==0,
+			bool ok = TestFile ((type % 2) == 0,
 				testFolder + "/" + inname,
 				testFolder + "/" + outname,
 				false,
@@ -348,6 +439,30 @@ int main (int argc, const char** argv)
 			}
 		}
 	}
+
+	for (int type = 2; type < 4; ++type)
+	{
+		printf ("testing %s...\n", kTypeName[type]);
+		std::string testFolder = baseFolder + "/" + kTypeName[type];
+		StringVector inputFiles = GetFiles (testFolder, "-in.txt");
+
+		size_t n = inputFiles.size();
+		tests += n;
+		for (size_t i = 0; i < n; ++i)
+		{
+			std::string inname = inputFiles[i];
+			printf ("test %s\n", inname.c_str());
+			std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
+			bool ok = TestFileFailure ((type % 2) == 0,
+				testFolder + "/" + inname,
+				testFolder + "/" + outname);
+			if (!ok)
+			{
+				++errors;
+			}
+		}
+	}
+	
 	clock_t time1 = clock();
 	float t = float(time1-time0) / float(CLOCKS_PER_SEC);
 	if (errors != 0)

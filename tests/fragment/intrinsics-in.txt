@@ -1,3 +1,4 @@
+#line 1 "intrinsics-in.txt" 
 half4 main (float4 uv:TEXCOORD0) : COLOR0 {
 	half4 c = 0;
 	// fmod() in HLSL different from mod() in GLSL

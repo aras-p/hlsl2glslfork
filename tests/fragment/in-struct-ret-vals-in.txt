@@ -1,3 +1,4 @@
+#line 1 "in-struct-ret-vals-in.txt" 
 struct v2f {
 	float4 pos : POSITION;
 	float2 uv : TEXCOORD0;
