@@ -309,7 +309,7 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 	
 	current->beginStatement();
 	
-	if (type.getQualifier() != EvqTemporary)
+	if (type.getQualifier() != EvqTemporary && type.getQualifier() != EvqGlobal)
 		out << type.getQualifierString() << " ";
 	
 	if (type.getBasicType() == EbtStruct)
