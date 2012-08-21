@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 0
 struct Inner {
@@ -9,6 +11,7 @@ struct Outer {
     Inner inner;
     Inner inner2;
 };
+#line 13
 vec4 xlat_main(  );
 #line 13
 vec4 xlat_main(  ) {

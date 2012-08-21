@@ -1,19 +1,9 @@
+#version 120
+
 vec4 xll_lit( float n_dot_l, float n_dot_h, float m ) {
    return vec4(1, max(0.0, n_dot_l), (n_dot_l < 0.0 || n_dot_h < 0.0) ? 0.0 : n_dot_h * m, 1);
 }
-uniform highp vec4 ambient;
-uniform sampler2D diffuse;
-uniform highp vec4 invShadowMapSize0;
-uniform highp vec4 invShadowMapSize1;
-uniform highp vec4 invShadowMapSize2;
-uniform highp vec4 lightDiffuse;
-uniform highp vec4 lightSpecular;
-uniform sampler2D normalMap;
-uniform highp vec4 pssmSplitPoints;
-uniform sampler2D shadowMap0;
-uniform sampler2D shadowMap1;
-uniform sampler2D shadowMap2;
-uniform sampler2D specular;
+#line 44
 highp float shadowPCF( in sampler2D shadowMap, in highp vec4 shadowMapPos, in highp vec2 offset );
 void xlat_main( in highp vec3 uv, in highp vec3 OSlightDir, in highp vec3 OShalfAngle, in highp vec4 LightPosition0, in highp vec4 LightPosition1, in highp vec4 LightPosition2, in highp vec3 normal, out highp vec4 oColour, highp vec4 invShadowMapSize0, highp vec4 invShadowMapSize1, highp vec4 invShadowMapSize2, highp vec4 pssmSplitPoints, sampler2D diffuse, sampler2D specular, sampler2D normalMap, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, highp vec4 lightDiffuse, highp vec4 lightSpecular, highp vec4 ambient );
 #line 1

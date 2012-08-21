@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 3
 struct a2v {
@@ -7,6 +9,7 @@ struct a2v {
     vec4 color;
 };
 uniform mat4 mvp;
+#line 15
 void xlat_main( in a2v v, out vec4 opos, out float ofog, out vec2 ouv, out vec4 ocolor );
 #line 15
 void xlat_main( in a2v v, out vec4 opos, out float ofog, out vec2 ouv, out vec4 ocolor ) {

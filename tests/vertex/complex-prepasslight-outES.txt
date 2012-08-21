@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 17
 struct v2f {
@@ -10,9 +12,11 @@ struct appdata {
     highp vec4 vertex;
     highp vec3 normal;
 };
-uniform highp vec4 _ProjectionParams;
-uniform highp mat4 glstate_matrix_modelview0;
 uniform highp mat4 glstate_matrix_mvp;
+uniform highp mat4 glstate_matrix_modelview0;
+#line 3
+uniform highp vec4 _ProjectionParams;
+#line 24
 highp vec4 ComputeScreenPos( in highp vec4 pos );
 v2f xlat_main( in appdata v );
 #line 4

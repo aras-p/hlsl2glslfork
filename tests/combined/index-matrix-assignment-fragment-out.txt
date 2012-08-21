@@ -1,3 +1,5 @@
+#version 120
+
 #extension GL_EXT_gpu_shader4 : require
 
 #line 16
@@ -12,12 +14,20 @@ struct VS_INPUT {
     int vertex_id;
     int instance_id;
 };
+uniform mat4 world;
+uniform mat4 view;
+#line 3
+uniform mat4 proj;
+uniform mat4[10] stupid;
 uniform sampler2D diffuse_map;
+#line 7
 uniform sampler2DShadow shadow_map;
+#line 21
+#line 41
 vec4 ps_main( in PS_INPUT xlat_var_input, in int primitive_id );
 #line 41
 vec4 ps_main( in PS_INPUT xlat_var_input, in int primitive_id ) {
-    vec4 c = vec4(1.0, 1.0, 1.0, primitive_id);
+    vec4 c = vec4(1.0, 1.0, 1.0, float(primitive_id));
     c = texture2D(diffuse_map, xlat_var_input.uv);
     float depth = 1.0;
     #line 45

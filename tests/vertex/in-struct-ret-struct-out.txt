@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 10
 struct v2f {
@@ -14,6 +16,7 @@ struct a2v {
     vec4 color;
 };
 uniform mat4 mvp;
+#line 17
 v2f xlat_main( in a2v v );
 #line 17
 v2f xlat_main( in a2v v ) {

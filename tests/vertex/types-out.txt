@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 16
 struct v2f {
@@ -13,13 +15,16 @@ struct a2v {
     vec3 normal;
     vec4 color;
 };
-uniform mat2 fmat2;
-uniform mat3 fmat3;
-uniform mat4 fmat4;
-uniform mat2 hmat2;
-uniform mat3 hmat3;
-uniform mat4 hmat4;
 uniform mat4 mvp;
+uniform mat4 hmat4;
+#line 3
+uniform mat3 hmat3;
+uniform mat2 hmat2;
+uniform mat4 fmat4;
+uniform mat3 fmat3;
+#line 7
+uniform mat2 fmat2;
+#line 23
 v2f xlat_main( in a2v v );
 #line 23
 v2f xlat_main( in a2v v ) {

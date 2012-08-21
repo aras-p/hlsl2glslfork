@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 10
 struct v2f {
@@ -9,8 +11,10 @@ struct appdata {
     highp vec4 vertex;
     highp vec3 normal;
 };
+uniform highp vec4[4] unity_LightColor;
+#line 3
 uniform highp mat4 UNITY_MATRIX_MVP;
-uniform highp vec4 unity_LightColor[4];
+#line 15
 v2f xlat_main( in appdata v );
 #line 15
 v2f xlat_main( in appdata v ) {

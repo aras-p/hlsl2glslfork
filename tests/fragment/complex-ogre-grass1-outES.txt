@@ -1,4 +1,5 @@
-uniform sampler2D diffuseMap;
+#version 120
+
 void xlat_main( in highp vec4 position, in highp vec2 uv, in highp vec2 depth, out highp vec4 result, sampler2D diffuseMap );
 #line 10
 void xlat_main( in highp vec4 position, in highp vec2 uv, in highp vec2 depth, out highp vec4 result, sampler2D diffuseMap ) {

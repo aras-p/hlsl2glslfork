@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 14
 struct v2f {
@@ -9,18 +11,21 @@ struct appdata {
     vec4 vertex;
     vec3 normal;
 };
-uniform mat4 UNITY_MATRIX_IT_MV;
-uniform mat4 UNITY_MATRIX_MV;
+uniform vec4[4] unity_LightColor;
+uniform vec4[4] unity_LightPosition;
+#line 3
+uniform vec4[4] unity_LightAtten;
 uniform mat4 UNITY_MATRIX_MVP;
-uniform vec4 unity_LightAtten[4];
-uniform vec4 unity_LightColor[4];
-uniform vec4 unity_LightPosition[4];
+uniform mat4 UNITY_MATRIX_MV;
+#line 7
+uniform mat4 UNITY_MATRIX_IT_MV;
+#line 19
 vec3 ShadeMyVertexLights( in vec4 vertex, in vec3 normal );
 v2f xlat_main( in appdata v );
 #line 19
 vec3 ShadeMyVertexLights( in vec4 vertex, in vec3 normal ) {
     vec3 viewpos = (UNITY_MATRIX_MV * vertex).xyz;
-    vec3 viewN = (UNITY_MATRIX_IT_MV * normal);
+    vec3 viewN = (mat3(UNITY_MATRIX_IT_MV) * normal);
     #line 23
     vec3 lightColor = vec3(0.0, 0.0, 0.0);
     int i = 0;

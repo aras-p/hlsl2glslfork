@@ -1,3 +1,5 @@
+#version 120
+
 #extension GL_ARB_shader_texture_lod : require
 float xll_dFdx(float f) {
   return dFdx(f);
@@ -142,52 +144,85 @@ struct appdata_full {
     vec4 texcoord1;
     vec4 color;
 };
-uniform sampler2D _BumpMap;
-uniform sampler2D _BumpMap2;
-uniform vec4 _BumpMap2_ST;
-uniform float _BumpMapFactor;
-uniform float _BumpMapFactor2;
-uniform vec4 _Color;
-uniform samplerCube _Cube;
-uniform float _Falloff;
+uniform vec3 _WorldSpaceCameraPos;
+uniform vec4 _WorldSpaceLightPos0;
+#line 3
+uniform vec4 unity_SHAr;
+uniform vec4 unity_SHAg;
+uniform vec4 unity_SHAb;
+uniform vec4 unity_SHBr;
+#line 7
+uniform vec4 unity_SHBg;
+uniform vec4 unity_SHBb;
+uniform vec4 unity_SHC;
+uniform mat4 glstate_matrix_mvp;
+#line 11
+uniform mat4 glstate_matrix_modelview0;
+uniform mat4 _Object2World;
+uniform mat4 _World2Object;
+uniform vec4 unity_Scale;
+#line 15
+uniform mat4 glstate_matrix_projection;
+uniform vec4 glstate_lightmodel_ambient;
+#line 27
+#line 32
+#line 37
+#line 41
+#line 46
+#line 85
 uniform vec4 _LightColor0;
+uniform vec4 _SpecColor;
 uniform sampler2D _LightTexture0;
-uniform sampler2D _MainReflectivityTex;
-uniform vec4 _MainReflectivityTex_AddMul;
-uniform sampler2D _MainRoughnessTex;
-uniform vec4 _MainRoughnessTex_AddMul;
-uniform sampler2D _MainTex;
-uniform float _Metalic;
-uniform sampler2D _MirrorTex;
-uniform vec4 _PlanarReflection0;
-uniform vec4 _PlanarReflection1;
-uniform vec4 _PlanarReflection2;
-uniform vec4 _PlanarReflectionBiTangent0;
-uniform vec4 _PlanarReflectionBiTangent1;
-uniform vec4 _PlanarReflectionBiTangent2;
-uniform vec4 _PlanarReflectionTangent0;
-uniform vec4 _PlanarReflectionTangent1;
-uniform vec4 _PlanarReflectionTangent2;
-uniform sampler2D _PlanarReflectionTex0;
-uniform sampler2D _PlanarReflectionTex1;
-uniform sampler2D _PlanarReflectionTex2;
-uniform float _Refl0;
-uniform float _Refl90;
-uniform vec4 _ReflColor;
-uniform float _ReflOnlyIntensity;
-uniform float _Reflectivity;
+uniform mat4 _LightMatrix0;
+#line 117
 uniform float _Rolloff;
+#line 122
+#line 126
+uniform float _Falloff;
+#line 212
 uniform float _Roughness;
 uniform float _Roughness2;
+#line 220
+uniform float _Reflectivity;
+uniform float _Refl0, _Refl90;
+uniform float _Metalic;
 uniform float _SpecOnlyIntensity;
+#line 224
+uniform float _ReflOnlyIntensity;
+#line 251
+#line 255
+#line 267
 uniform mat4 _WorldToMirrorProjMatrix;
-uniform vec4 unity_SHAb;
-uniform vec4 unity_SHAg;
-uniform vec4 unity_SHAr;
-uniform vec4 unity_SHBb;
-uniform vec4 unity_SHBg;
-uniform vec4 unity_SHBr;
-uniform vec4 unity_SHC;
+uniform sampler2D _MirrorTex;
+#line 293
+uniform vec4 _PlanarReflection0;
+uniform vec4 _PlanarReflectionTangent0, _PlanarReflectionBiTangent0;
+#line 333
+uniform sampler2D _PlanarReflectionTex0;
+uniform vec4 _PlanarReflection1;
+uniform vec4 _PlanarReflectionTangent1, _PlanarReflectionBiTangent1;
+uniform sampler2D _PlanarReflectionTex1;
+#line 337
+uniform vec4 _PlanarReflection2;
+uniform vec4 _PlanarReflectionTangent2, _PlanarReflectionBiTangent2;
+uniform sampler2D _PlanarReflectionTex2;
+uniform samplerCube _Cube;
+#line 341
+uniform sampler2D _MainTex;
+uniform sampler2D _BumpMap, _BumpMap2;
+#line 373
+uniform sampler2D _MainReflectivityTex;
+uniform sampler2D _MainRoughnessTex;
+uniform vec4 _BumpMap2_ST;
+uniform vec4 _Color, _ReflColor;
+#line 377
+uniform float _BumpMapFactor, _BumpMapFactor2;
+uniform vec4 _MainReflectivityTex_AddMul;
+uniform vec4 _MainRoughnessTex_AddMul;
+#line 412
+uniform vec4 _MainTex_ST;
+uniform vec4 _BumpMap_ST;
+#line 440
 vec3 UnpackNormal( in vec4 packednormal );
 float RemapToRange( in float v, in vec4 range );
 vec3 ShadeSH9( in vec4 normal );

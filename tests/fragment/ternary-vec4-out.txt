@@ -1,3 +1,5 @@
+#version 120
+
 vec2 xll_vecTSel (bvec2 a, vec2 b, vec2 c) {
   return vec2 (a.x ? b.x : c.x, a.y ? b.y : c.y);
 }
@@ -13,11 +15,11 @@ vec4 xlat_main( in vec4 uv ) {
     vec4 a = vec4(0.0);
     #line 3
     a += xll_vecTSel (greaterThan( uv, vec4( 0.5 )), vec4(1.0, 2.0, 3.0, 4.0), vec4(5.0, 6.0, 7.0, 8.0));
-    a += xll_vecTSel (greaterThan( uv, vec4(0.5, 0.5, 0.5, 0.5)), vec4(1.0, 2.0, 3.0, 4.0), vec4(5.0, 6.0, 7.0, 8.0));
-    a += xll_vecTSel (greaterThan( uv, vec4( 0.5 )), vec4(1.4013e-45, 1.4013e-45, 1.4013e-45, 1.4013e-45), vec4(2.8026e-45, 2.8026e-45, 2.8026e-45, 2.8026e-45));
+    a += xll_vecTSel (greaterThan( uv, vec4(0.5)), vec4(1.0, 2.0, 3.0, 4.0), vec4(5.0, 6.0, 7.0, 8.0));
+    a += xll_vecTSel (greaterThan( uv, vec4( 0.5 )), vec4(1.0), vec4(2.0));
     a += xll_vecTSel (greaterThan( uv, vec4( 0.5 )), vec4(1), vec4(2));
     #line 7
-    a += xll_vecTSel (bvec4(fract(uv)), vec4(1.4013e-45, 1.4013e-45, 1.4013e-45, 1.4013e-45), vec4(2.8026e-45, 2.8026e-45, 2.8026e-45, 2.8026e-45));
+    a += xll_vecTSel (bvec4(fract(uv)), vec4(1.0), vec4(2.0));
     return a;
 }
 varying vec4 xlv_TEXCOORD0;

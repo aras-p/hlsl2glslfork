@@ -1,10 +1,5 @@
-uniform vec4 camObjPos;
-uniform vec4 lightColour;
-uniform vec4 objSpaceLight;
-uniform vec4 offset;
-uniform mat4 texViewProj;
-uniform mat4 world;
-uniform mat4 worldViewProj;
+#version 120
+
 void xlat_main( in vec4 position, in vec4 normal, in vec2 uv, out vec4 oPosition, out vec4 oShadowUV, out vec3 oUv, out vec4 oColour, mat4 world, mat4 worldViewProj, mat4 texViewProj, vec4 camObjPos, vec4 objSpaceLight, vec4 lightColour, vec4 offset );
 #line 22
 void xlat_main( in vec4 position, in vec4 normal, in vec2 uv, out vec4 oPosition, out vec4 oShadowUV, out vec3 oUv, out vec4 oColour, mat4 world, mat4 worldViewProj, mat4 texViewProj, vec4 camObjPos, vec4 objSpaceLight, vec4 lightColour, vec4 offset ) {

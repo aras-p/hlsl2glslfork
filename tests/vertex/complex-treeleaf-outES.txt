@@ -1,3 +1,5 @@
+#version 120
+
 vec2 xll_matrixindex (mat2 m, int i) { vec2 v; v.x=m[0][i]; v.y=m[1][i]; return v; }
 vec3 xll_matrixindex (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }
 vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }
@@ -19,20 +21,36 @@ struct v2f_surf {
     highp vec3 viewDir;
     highp vec2 _LightCoord;
 };
-uniform highp mat4 _LightMatrix0;
-uniform highp vec4 _MainTex_ST;
-uniform highp mat4 _Object2World;
-uniform highp vec4 _Scale;
-uniform highp float _SquashAmount;
-uniform highp vec4 _SquashPlaneNormal;
+uniform highp mat4 glstate_matrix_mvp;
+uniform highp mat4 glstate_matrix_modelview0;
+#line 3
+uniform highp mat4 glstate_matrix_invtrans_modelview0;
 uniform highp vec4 _Time;
-uniform highp vec4 _Wind;
-uniform highp mat4 _World2Object;
+uniform highp vec4 _ProjectionParams;
+uniform highp vec4 unity_Scale;
+#line 7
 uniform highp vec3 _WorldSpaceCameraPos;
 uniform highp vec4 _WorldSpaceLightPos0;
-uniform highp mat4 glstate_matrix_invtrans_modelview0;
-uniform highp mat4 glstate_matrix_mvp;
-uniform highp vec4 unity_Scale;
+uniform highp mat4 _Object2World, _World2Object;
+#line 20
+#line 25
+#line 30
+uniform highp vec4 _LightColor0;
+uniform highp vec4 _SpecColor;
+uniform highp mat4 _LightMatrix0;
+#line 42
+uniform highp vec4 _Scale;
+uniform highp vec4 _SquashPlaneNormal;
+uniform highp float _SquashAmount;
+#line 52
+uniform highp vec4 _Wind;
+#line 101
+uniform highp vec4 _Color;
+uniform mediump vec3 _TranslucencyColor;
+uniform mediump float _TranslucencyViewDependency;
+uniform mediump float _ShadowStrength;
+#line 115
+uniform highp vec4 _MainTex_ST;
 highp vec4 Squash( in highp vec4 pos );
 void ExpandBillboard( in highp mat4 mat, inout highp vec4 pos, inout highp vec3 normal, inout highp vec4 tangent );
 highp vec4 TriangleWave( in highp vec4 x );

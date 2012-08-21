@@ -1,3 +1,5 @@
+#version 120
+
 #extension GL_EXT_gpu_shader4 : require
 mat2 xll_transpose(mat2 m) {
   return mat2( m[0][0], m[1][0], m[0][1], m[1][1]);
@@ -46,16 +48,22 @@ struct VS_INPUT {
     highp int vertex_id;
     highp int instance_id;
 };
-uniform highp mat4 proj;
-uniform highp mat4 view;
 uniform highp mat4 world;
-uniform highp mat4 stupid[10];
+uniform highp mat4 view;
+#line 3
+uniform highp mat4 proj;
+uniform highp mat4[10] stupid;
+uniform sampler2D diffuse_map;
+#line 7
+uniform sampler2DShadow shadow_map;
+#line 21
+#line 41
 highp mat4 xlat_mutable_stupid[10] = stupid;
 PS_INPUT vs_main( in VS_INPUT xlat_var_input );
 #line 21
 PS_INPUT vs_main( in VS_INPUT xlat_var_input ) {
     PS_INPUT o;
-    highp mat3 dummy = xll_transpose(mat3(vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 0.0)));
+    highp mat3 dummy = xll_transpose(mat3(vec3(0.0), vec3(0.0), vec3(0.0)));
     #line 26
     highp vec4 wp = (xlat_var_input.position * world);
     xlat_mutable_stupid[2] = view;

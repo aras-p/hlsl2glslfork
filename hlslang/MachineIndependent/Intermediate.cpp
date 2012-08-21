@@ -72,7 +72,7 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
    case EOpLogicalOr:
    case EOpLogicalXor:
    case EOpLogicalAnd:
-      if (left->getType().isMatrix() || left->getType().isArray() || left->getType().isVector())
+      if (left->getType().isMatrix() || left->getType().isArray())
          return 0;
 
       if ( left->getBasicType() != EbtBool )
@@ -123,13 +123,13 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
       if (left->getType().getBasicType() == EbtStruct)
 		  return 0;
 	  // If left or right type is a bool, convert to a float.
-	  if (left->getType().getBasicType() == EbtBool && right->getType().getBasicType() != EbtBool)
+	  if (left->getType().getBasicType() == EbtBool)
 	  {
 		  left = addConversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getNominalSize(), left->isMatrix(), left->isArray()), left);
 		  if (left == 0)
 			  return 0;
 	  }
-	  if (right->getType().getBasicType() == EbtBool && left->getType().getBasicType() != EbtBool)
+	  if (right->getType().getBasicType() == EbtBool)
 	  {
 		  right = addConversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getNominalSize(), right->isMatrix(), right->isArray()), right);
 		  if (right == 0)

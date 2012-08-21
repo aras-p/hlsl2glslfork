@@ -1,3 +1,5 @@
+#version 120
+
 float xll_saturate( float x) {
   return clamp( x, 0.0, 1.0);
 }
@@ -34,21 +36,34 @@ struct v2f {
     highp vec4 uv;
     highp vec3 ray;
 };
-uniform sampler2D _CameraDepthTexture;
-uniform sampler2D _CameraNormalsTexture;
-uniform highp mat4 _CameraToWorld;
-uniform highp vec4 _LightColor;
-uniform highp mat4 _LightMatrix0;
-uniform highp vec4 _LightPos;
-uniform highp vec4 _LightPositionRange;
-uniform highp vec4 _LightShadowData;
-uniform samplerCube _LightTexture0;
-uniform sampler2D _LightTextureB0;
 uniform highp vec4 _ProjectionParams;
-uniform samplerCube _ShadowMapTexture;
 uniform highp vec3 _WorldSpaceCameraPos;
+#line 3
+uniform highp vec4 _LightPositionRange;
+#line 8
+#line 13
 uniform highp vec4 _ZBufferParams;
+#line 18
+uniform highp vec4 unity_LightShadowBias;
+#line 26
+uniform sampler2D _CameraNormalsTexture;
+uniform sampler2D _CameraDepthTexture;
+uniform highp vec4 _LightDir;
+uniform highp vec4 _LightPos;
+#line 30
+uniform highp vec4 _LightColor;
+uniform highp vec4 _LightShadowData;
 uniform highp vec4 unity_LightmapFade;
+uniform highp mat4 _CameraToWorld;
+#line 34
+uniform highp mat4 _LightMatrix0;
+uniform sampler2D _LightTextureB0;
+uniform samplerCube _LightTexture0;
+uniform samplerCube _ShadowMapTexture;
+#line 38
+uniform highp mat4 unity_World2Shadow;
+#line 55
+#line 64
 mediump float Luminance( in mediump vec3 c );
 highp float Linear01Depth( in highp float z );
 highp float DecodeFloatRGBA( in highp vec4 enc );
@@ -66,7 +81,7 @@ highp float Linear01Depth( in highp float z ) {
 }
 #line 8
 highp float DecodeFloatRGBA( in highp vec4 enc ) {
-    highp vec4 kDecodeDot = vec4(1.0, (1.0 / 255.0), (1.0 / 65025.0), (1.0 / 1.60581e+08));
+    highp vec4 kDecodeDot = vec4(1.0, (1.0 / 255.0), (1.0 / 65025.0), (1.0 / 160581376.0));
     return dot(enc, kDecodeDot);
 }
 #line 39

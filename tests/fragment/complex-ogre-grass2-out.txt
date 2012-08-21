@@ -1,8 +1,5 @@
-uniform sampler2D diffuseMap;
-uniform float fixedDepthBias;
-uniform float gradientClamp;
-uniform float gradientScaleBias;
-uniform sampler2D shadowMap;
+#version 120
+
 void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLight, out vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, float fixedDepthBias, float gradientClamp, float gradientScaleBias );
 #line 17
 void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLight, out vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, float fixedDepthBias, float gradientClamp, float gradientScaleBias ) {

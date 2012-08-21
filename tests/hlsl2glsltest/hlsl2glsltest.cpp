@@ -263,7 +263,8 @@ static bool TestFile (TestRun type,
 		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 		if (translateOk)
 		{
-			std::string text = Hlsl2Glsl_GetShader (parser);
+			std::string text = "#version 120\n\n";
+			text += Hlsl2Glsl_GetShader (parser);
 			
 			std::string output;
 			ReadStringFromFile (outputPath.c_str(), output);

@@ -1,3 +1,5 @@
+#version 120
+
 float xll_mod( float x, float y ) {
   float d = x / y;
   float f = fract (abs(d)) * y;
@@ -54,23 +56,30 @@ struct appdata_full {
     vec4 texcoord1;
     vec4 color;
 };
-uniform float _Bias;
-uniform float _BlinkingTimeOffsScale;
-uniform vec4 _Color;
-uniform float _FadeOutDistFar;
-uniform float _FadeOutDistNear;
-uniform float _MaxGrowSize;
-uniform float _Multiplier;
-uniform float _NoiseAmount;
-uniform float _SizeGrowEndDist;
-uniform float _SizeGrowStartDist;
-uniform vec4 _Time;
-uniform float _TimeOffDuration;
-uniform float _TimeOnDuration;
-uniform float _VerticalBillboarding;
-uniform mat4 _World2Object;
-uniform vec3 _WorldSpaceCameraPos;
 uniform mat4 glstate_matrix_mvp;
+uniform vec4 _Time;
+#line 3
+uniform vec3 _WorldSpaceCameraPos;
+uniform mat4 _World2Object;
+#line 14
+uniform float _FadeOutDistNear;
+uniform float _FadeOutDistFar;
+uniform float _Multiplier;
+uniform float _Bias;
+#line 18
+uniform float _TimeOnDuration;
+uniform float _TimeOffDuration;
+uniform float _BlinkingTimeOffsScale;
+uniform float _SizeGrowStartDist;
+#line 22
+uniform float _SizeGrowEndDist;
+uniform float _MaxGrowSize;
+uniform float _NoiseAmount;
+uniform float _VerticalBillboarding;
+#line 26
+uniform vec4 _Color;
+#line 35
+#line 64
 void CalcOrthonormalBasis( in vec3 dir, out vec3 right, out vec3 up );
 float CalcFadeOutFactor( in float dist );
 float CalcDistScale( in float dist );

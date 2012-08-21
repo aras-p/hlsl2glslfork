@@ -1,12 +1,14 @@
+#version 120
+
 mediump vec4 xlat_main( in highp vec4 uv );
 #line 1
 mediump vec4 xlat_main( in highp vec4 uv ) {
     mediump vec4 c = vec4(0.0);
     #line 3
     c += (( (uv.x > 0.5) ) ? ( 0.9 ) : ( 0.1 ));
-    c += (( (uv.x > 0.5) ) ? ( vec4(0.9, 0.9, 0.9, 0.9) ) : ( vec4(0.1, 0.1, 0.1, 0.1) ));
-    c.xyz += (( (uv.x > 0.5) ) ? ( vec3(0.9, 0.9, 0.9) ) : ( vec3(0.1, 0.1, 0.1) ));
-    c.xy += (( (uv.x > 0.5) ) ? ( vec2(0.9, 0.9) ) : ( vec2(0.1, 0.1) ));
+    c += (( (uv.x > 0.5) ) ? ( vec4(0.9) ) : ( vec4(0.1) ));
+    c.xyz += (( (uv.x > 0.5) ) ? ( vec3(0.9) ) : ( vec3(0.1) ));
+    c.xy += (( (uv.x > 0.5) ) ? ( vec2(0.9) ) : ( vec2(0.1) ));
     #line 7
     c.x += (( bool(fract(uv.x)) ) ? ( 0.9 ) : ( 0.1 ));
     return c;

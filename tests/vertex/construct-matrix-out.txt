@@ -1,3 +1,5 @@
+#version 120
+
 mat2 xll_transpose(mat2 m) {
   return mat2( m[0][0], m[1][0], m[0][1], m[1][1]);
 }

@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 10
 struct v2f {
@@ -14,6 +16,8 @@ struct a2v {
     highp vec4 color;
 };
 uniform highp mat4 mvp;
+#line 17
+#line 22
 highp vec4 DoPosMul( in highp vec4 pos, in highp mat4 mvp );
 highp vec4 DoColor( in highp vec4 color, in highp vec3 normal );
 v2f xlat_main( in a2v v );

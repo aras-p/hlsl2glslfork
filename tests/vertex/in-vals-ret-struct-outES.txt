@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 3
 struct v2f {
@@ -7,6 +9,7 @@ struct v2f {
     highp vec4 color;
 };
 uniform highp mat4 mvp;
+#line 15
 v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in highp vec4 color );
 #line 15
 v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in highp vec4 color ) {

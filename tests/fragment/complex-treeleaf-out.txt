@@ -1,3 +1,5 @@
+#version 120
+
 void xll_clip(float x) {
   if ( x<0.0 ) discard;
 }
@@ -47,16 +49,24 @@ struct v2f_surf {
     vec3 viewDir;
     vec2 _LightCoord;
 };
-uniform sampler2D _BumpSpecMap;
-uniform vec4 _Color;
-uniform float _Cutoff;
+#line 8
 uniform vec4 _LightColor0;
+uniform vec4 _SpecColor;
 uniform sampler2D _LightTexture0;
-uniform sampler2D _MainTex;
-uniform float _ShadowStrength;
+uniform mat4 _LightMatrix0;
+#line 12
+uniform vec4 _Color;
 uniform vec3 _TranslucencyColor;
-uniform sampler2D _TranslucencyMap;
 uniform float _TranslucencyViewDependency;
+uniform float _ShadowStrength;
+#line 28
+#line 44
+uniform sampler2D _MainTex;
+uniform sampler2D _BumpSpecMap;
+uniform sampler2D _TranslucencyMap;
+#line 53
+#line 76
+uniform float _Cutoff;
 vec4 UnpackNormal( in vec4 packednormal );
 void surf( in Input IN, inout LeafSurfaceOutput o );
 vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in vec3 lightDir, in vec3 viewDir, in float atten );

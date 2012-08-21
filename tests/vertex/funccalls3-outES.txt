@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 7
 struct v2f {
@@ -9,6 +11,7 @@ struct a2v {
     highp vec4 pos;
 };
 uniform highp mat4 mvp;
+#line 12
 highp vec4 ComputeColor( in highp vec4 pos );
 v2f xlat_main( in a2v v );
 #line 12

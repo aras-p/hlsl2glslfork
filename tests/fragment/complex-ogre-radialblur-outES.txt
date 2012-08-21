@@ -1,3 +1,5 @@
+#version 120
+
 float xll_saturate( float x) {
   return clamp( x, 0.0, 1.0);
 }
@@ -19,9 +21,10 @@ mat3 xll_saturate(mat3 m) {
 mat4 xll_saturate(mat4 m) {
   return mat4( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0), clamp(m[2], 0.0, 1.0), clamp(m[3], 0.0, 1.0));
 }
-uniform highp float sampleDist;
-uniform highp float sampleStrength;
 uniform sampler2D tex;
+#line 3
+const highp float[10] samples = float[10]((-0.08), (-0.05), (-0.03), (-0.02), (-0.01), 0.01, 0.02, 0.03, 0.05, 0.08);
+#line 21
 highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength );
 #line 21
 highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength ) {

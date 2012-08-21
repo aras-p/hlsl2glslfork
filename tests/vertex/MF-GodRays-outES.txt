@@ -1,3 +1,5 @@
+#version 120
+
 float xll_mod( float x, float y ) {
   float d = x / y;
   float f = fract (abs(d)) * y;
@@ -54,23 +56,30 @@ struct appdata_full {
     highp vec4 texcoord1;
     highp vec4 color;
 };
-uniform highp float _Bias;
-uniform highp float _BlinkingTimeOffsScale;
-uniform highp vec4 _Color;
-uniform highp float _FadeOutDistFar;
-uniform highp float _FadeOutDistNear;
-uniform highp float _MaxGrowSize;
-uniform highp float _Multiplier;
-uniform highp float _NoiseAmount;
-uniform highp float _SizeGrowEndDist;
-uniform highp float _SizeGrowStartDist;
-uniform highp vec4 _Time;
-uniform highp float _TimeOffDuration;
-uniform highp float _TimeOnDuration;
-uniform highp float _VerticalBillboarding;
-uniform highp mat4 _World2Object;
-uniform highp vec3 _WorldSpaceCameraPos;
 uniform highp mat4 glstate_matrix_mvp;
+uniform highp vec4 _Time;
+#line 3
+uniform highp vec3 _WorldSpaceCameraPos;
+uniform highp mat4 _World2Object;
+#line 14
+uniform highp float _FadeOutDistNear;
+uniform highp float _FadeOutDistFar;
+uniform highp float _Multiplier;
+uniform highp float _Bias;
+#line 18
+uniform highp float _TimeOnDuration;
+uniform highp float _TimeOffDuration;
+uniform highp float _BlinkingTimeOffsScale;
+uniform highp float _SizeGrowStartDist;
+#line 22
+uniform highp float _SizeGrowEndDist;
+uniform highp float _MaxGrowSize;
+uniform highp float _NoiseAmount;
+uniform highp float _VerticalBillboarding;
+#line 26
+uniform highp vec4 _Color;
+#line 35
+#line 64
 void CalcOrthonormalBasis( in highp vec3 dir, out highp vec3 right, out highp vec3 up );
 highp float CalcFadeOutFactor( in highp float dist );
 highp float CalcDistScale( in highp float dist );

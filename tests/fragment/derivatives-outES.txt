@@ -1,3 +1,5 @@
+#version 120
+
 #extension GL_OES_standard_derivatives : require
 float xll_dFdx(float f) {
   return dFdx(f);

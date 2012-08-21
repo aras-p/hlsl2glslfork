@@ -1,3 +1,5 @@
+#version 120
+
 mat2 xll_transpose(mat2 m) {
   return mat2( m[0][0], m[1][0], m[0][1], m[1][1]);
 }
@@ -72,15 +74,84 @@ struct appdata_full {
     highp vec4 texcoord1;
     lowp vec4 color;
 };
-uniform highp vec4 _BumpMap_ST;
-uniform highp mat4 _LightMatrix0;
-uniform highp vec4 _MainTex_ST;
-uniform highp mat4 _Object2World;
-uniform highp mat4 _World2Object;
 uniform highp vec3 _WorldSpaceCameraPos;
 uniform lowp vec4 _WorldSpaceLightPos0;
+#line 3
+uniform highp vec4 unity_SHAr;
+uniform highp vec4 unity_SHAg;
+uniform highp vec4 unity_SHAb;
+uniform highp vec4 unity_SHBr;
+#line 7
+uniform highp vec4 unity_SHBg;
+uniform highp vec4 unity_SHBb;
+uniform highp vec4 unity_SHC;
 uniform highp mat4 glstate_matrix_mvp;
+#line 11
+uniform highp mat4 glstate_matrix_modelview0;
+uniform highp mat4 _Object2World;
+uniform highp mat4 _World2Object;
 uniform highp vec4 unity_Scale;
+#line 15
+uniform highp mat4 glstate_matrix_projection;
+uniform highp vec4 glstate_lightmodel_ambient;
+#line 27
+#line 32
+#line 37
+#line 41
+#line 46
+#line 85
+uniform lowp vec4 _LightColor0;
+uniform lowp vec4 _SpecColor;
+uniform sampler2D _LightTexture0;
+uniform highp mat4 _LightMatrix0;
+#line 117
+uniform highp float _Rolloff;
+#line 122
+#line 126
+uniform highp float _Falloff;
+#line 212
+uniform highp float _Roughness;
+uniform highp float _Roughness2;
+#line 220
+uniform highp float _Reflectivity;
+uniform highp float _Refl0, _Refl90;
+uniform highp float _Metalic;
+uniform highp float _SpecOnlyIntensity;
+#line 224
+uniform highp float _ReflOnlyIntensity;
+#line 251
+#line 255
+#line 267
+uniform highp mat4 _WorldToMirrorProjMatrix;
+uniform sampler2D _MirrorTex;
+#line 293
+uniform highp vec4 _PlanarReflection0;
+uniform highp vec4 _PlanarReflectionTangent0, _PlanarReflectionBiTangent0;
+#line 333
+uniform sampler2D _PlanarReflectionTex0;
+uniform highp vec4 _PlanarReflection1;
+uniform highp vec4 _PlanarReflectionTangent1, _PlanarReflectionBiTangent1;
+uniform sampler2D _PlanarReflectionTex1;
+#line 337
+uniform highp vec4 _PlanarReflection2;
+uniform highp vec4 _PlanarReflectionTangent2, _PlanarReflectionBiTangent2;
+uniform sampler2D _PlanarReflectionTex2;
+uniform samplerCube _Cube;
+#line 341
+uniform sampler2D _MainTex;
+uniform sampler2D _BumpMap, _BumpMap2;
+#line 373
+uniform sampler2D _MainReflectivityTex;
+uniform sampler2D _MainRoughnessTex;
+uniform highp vec4 _BumpMap2_ST;
+uniform lowp vec4 _Color, _ReflColor;
+#line 377
+uniform highp float _BumpMapFactor, _BumpMapFactor2;
+uniform highp vec4 _MainReflectivityTex_AddMul;
+uniform highp vec4 _MainRoughnessTex_AddMul;
+#line 412
+uniform highp vec4 _MainTex_ST;
+uniform highp vec4 _BumpMap_ST;
 highp vec3 ObjSpaceViewDir( in highp vec4 v );
 highp vec3 ObjSpaceLightDir( in highp vec4 v );
 v2f_surf xlat_main( in appdata_full v );
@@ -107,14 +178,14 @@ v2f_surf xlat_main( in appdata_full v ) {
     o.worldPos = (_Object2World * v.vertex).xyz;
     highp vec3 viewDir = (-ObjSpaceViewDir(v.vertex));
     #line 424
-    highp vec3 worldRefl = (_Object2World * viewDir);
+    highp vec3 worldRefl = (mat3(_Object2World) * viewDir);
     highp vec3 binormal = (cross(normalize(v.normal), normalize(v.tangent.xyz)) * v.tangent.w);
     highp mat3 rotation = xll_transpose(mat3(v.tangent.xyz, binormal, v.normal));
     o.TtoW0 = (vec4((rotation * xll_matrixindex (_Object2World, 0).xyz), worldRefl.x) * unity_Scale.w);
     #line 428
     o.TtoW1 = (vec4((rotation * xll_matrixindex (_Object2World, 1).xyz), worldRefl.y) * unity_Scale.w);
     o.TtoW2 = (vec4((rotation * xll_matrixindex (_Object2World, 2).xyz), worldRefl.z) * unity_Scale.w);
-    highp vec3 worldN = (_Object2World * (v.normal * unity_Scale.w));
+    highp vec3 worldN = (mat3(_Object2World) * (v.normal * unity_Scale.w));
     highp vec3 lightDir = (rotation * ObjSpaceLightDir(v.vertex));
     #line 432
     o.lightDir = lightDir;

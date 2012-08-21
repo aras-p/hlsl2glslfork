@@ -1,3 +1,5 @@
+#version 120
+
 float xll_mod( float x, float y ) {
   float d = x / y;
   float f = fract (abs(d)) * y;

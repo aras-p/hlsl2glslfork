@@ -1,3 +1,5 @@
+#version 120
+
 
 #line 7
 struct v2f {
@@ -11,8 +13,9 @@ struct appdata_t {
     vec4 color;
     vec2 texcoord;
 };
-uniform vec4 _MainTex_ST;
 uniform mat4 glstate_matrix_mvp;
+#line 12
+uniform vec4 _MainTex_ST;
 v2f xlat_main( in appdata_t v );
 #line 13
 v2f xlat_main( in appdata_t v ) {
