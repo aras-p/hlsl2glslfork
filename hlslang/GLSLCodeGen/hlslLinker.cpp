@@ -42,7 +42,7 @@ static const char attribString[EAttrSemCount][32] = {
 	"",
 	"",
 	"gl_VertexID",
-	"gl_InstanceID",
+	"gl_InstanceIDARB",
 	""
 };
 
@@ -508,7 +508,8 @@ void HlslLinker::addRequiredExtensions(EAttribSemantic sem, ExtensionSet &extens
 {
 	if (sem == EAttrSemPrimitiveID || sem == EAttrSemVertexID)
 		extensions.insert("GL_EXT_gpu_shader4");
-	else if (sem == EAttrSemInstanceID && extensions.find("GL_EXT_gpu_shader4") == extensions.end())
+	
+	if (sem == EAttrSemInstanceID)
 		extensions.insert("GL_ARB_draw_instanced");
 }
 
