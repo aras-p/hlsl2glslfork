@@ -17,7 +17,7 @@ task :default do sh %{rake --describe} end
 # Zip files will be placed below this directory.
 RedistDirName = "redist"
 
-BitsquidRevision="r3"
+BitsquidRevision="r4"
 def product(settings, vs_version)
 	platform = settings[:platform].to_s.downcase
 	return "hlsl2glsl-#{platform}-#{vs_version}-#{BitsquidRevision}"
