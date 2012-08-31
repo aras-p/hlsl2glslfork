@@ -35,6 +35,7 @@ enum EGlslSymbolType
    EgstSampler3D,
    EgstSamplerCube,
    EgstSamplerRect,
+   EgstSampler2DShadow,
    EgstStruct,
    EgstTypeCount
 };

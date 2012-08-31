@@ -166,6 +166,8 @@ enum TOperator
    EOpTexCubeGrad,
    EOpTexRect,
    EOpTexRectProj,
+   EOpShadow2D,
+   EOpShadow2DProj,
 	
    EOpTranspose,
    EOpDeterminant,

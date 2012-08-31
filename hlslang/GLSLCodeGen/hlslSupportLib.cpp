@@ -819,6 +819,24 @@ void initializeHLSLSupportLibrary()
         );
 	hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
 
+	// shadow2D / shadow2Dproj
+	hlslSupportLib->insert(CodeMap::value_type(EOpShadow2D,
+		"float xll_shadow2D(sampler2DShadow s, vec3 coord) { return shadow2D (s, coord).r; }\n"
+	));
+	hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2D,
+	   "float xll_shadow2D(sampler2DShadow s, vec3 coord) { return shadow2DEXT (s, coord).r; }\n"
+	));
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2D, std::make_pair("","#extension GL_EXT_shadow_samplers : require\n")));
+	
+	hlslSupportLib->insert(CodeMap::value_type(EOpShadow2DProj,
+	   "float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return shadow2DProj (s, coord).r; }\n"
+	));
+	hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2DProj,
+		"float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return shadow2DProjEXT (s, coord).r; }\n"
+	));
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2DProj, std::make_pair("","#extension GL_EXT_shadow_samplers : require\n")));
+	
+
    hlslSupportLib->insert( CodeMap::value_type( EOpD3DCOLORtoUBYTE4,  
         "ivec4 xll_D3DCOLORtoUBYTE4(vec4 x) {\n"
         "  return ivec4 ( x.zyxw * 255.001953 );\n"

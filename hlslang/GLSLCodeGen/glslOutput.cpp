@@ -1348,6 +1348,16 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 	   writeTex( "texture2DRectProj", node, goit);
 	   return false;
 		   
+   case EOpShadow2D:		   
+		current->addLibFunction(EOpShadow2D);
+		writeTex("xll_shadow2D", node, goit);
+		return false;
+	   
+   case EOpShadow2DProj:
+	   current->addLibFunction(EOpShadow2DProj);
+	   writeTex("xll_shadow2Dproj", node, goit);
+	   return false;
+		   
    case EOpModf:
       current->addLibFunction(EOpModf);
       writeFuncCall( "xll_modf", node, goit);

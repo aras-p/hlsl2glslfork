@@ -242,7 +242,28 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
          }
          // We need to continue the traverse here, because the calls could be nested 
          break;
-
+			  
+		case EOpShadow2D:
+		case EOpShadow2DProj:
+		{
+			TIntermSequence &sequence = node->getSequence();
+			assert(sequence.size());
+			TIntermTyped *sampArg = sequence[0]->getAsTyped();
+			if (sampArg)
+			{
+				if (sampArg->getBasicType() == EbtSamplerGeneric)
+					sit->typeSampler(sampArg, EbtSampler2DShadow);
+				else if (sampArg->getBasicType() != EbtSampler2DShadow)
+					infoSink.info << "Error: " << node->getLine() << ": Sampler type mismatch, likely using a generic sampler as two types\n";
+			}
+			else
+			{
+				assert(0);
+			}
+		}
+		// We need to continue the traverse here, because the calls could be nested 
+		break;
+			  
 	  case EOpTexRect:
 	  case EOpTexRectProj:
 		  {

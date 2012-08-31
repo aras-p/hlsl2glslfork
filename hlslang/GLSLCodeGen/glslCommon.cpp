@@ -30,6 +30,7 @@ const char typeString[EgstTypeCount][32] =
    "sampler3D",
    "samplerCube",
    "sampler2DRect",
+   "sampler2DShadow",
    "struct"
 };
 
@@ -80,6 +81,7 @@ void writeType (std::stringstream &out, EGlslSymbolType type, GlslStruct *s, TPr
    case EgstSampler3D:
    case EgstSamplerCube:
    case EgstSamplerRect:
+   case EgstSampler2DShadow:
       out << typeString[type];
       break;
    case EgstStruct:
@@ -134,6 +136,8 @@ EGlslSymbolType translateType( const TType *type )
          return EgstSamplerCube;
 	  case EbtSamplerRect:
 		  return EgstSamplerRect;
+	  case EbtSampler2DShadow:
+		  return EgstSampler2DShadow;
       case EbtStruct:
          return EgstStruct;
       }
