@@ -55,12 +55,11 @@ inline void OutputLineDirective(std::stringstream& s, const TSourceLoc& l)
 	s << "#line " << l.line;
 	
 	// GLSL spec (1.10 & 1.20) doesn't allow printing file name here; only an integer "string number".
-	// So just print file name as a comment.
-	if(l.file)
-	{
-	    s << " // ";
-       s << l.file;
-	}
+	//if(l.file)
+	//{
+	//	s << " // ";
+	//	s << l.file;
+	//}
 	
 	s << '\n';
 }
