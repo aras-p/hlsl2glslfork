@@ -1,7 +1,7 @@
 mediump vec4 xlat_main( in highp vec4 pos, in highp vec4 color );
-#line 1 // pos-unused-in.txt
+#line 1
 mediump vec4 xlat_main( in highp vec4 pos, in highp vec4 color ) {
-    #line 2 // pos-unused-in.txt
+    #line 2
     return color;
 }
 varying highp vec4 xlv_COLOR;

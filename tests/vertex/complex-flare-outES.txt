@@ -1,21 +1,21 @@
 
-#line 123 // complex-flare-in.txt
+#line 123
 struct v2f_vertex_lit {
     highp vec2 uv;
     highp vec4 diff;
     highp vec4 spec;
 };
-#line 159 // complex-flare-in.txt
+#line 159
 struct v2f_img {
     highp vec4 pos;
     highp vec2 uv;
 };
-#line 153 // complex-flare-in.txt
+#line 153
 struct appdata_img {
     highp vec4 vertex;
     highp vec2 texcoord;
 };
-#line 262 // complex-flare-in.txt
+#line 262
 struct appdata_t {
     highp vec4 vertex;
     highp vec4 color;
@@ -24,11 +24,11 @@ struct appdata_t {
 uniform highp vec4 _FlareTexture_ST;
 uniform highp mat4 glstate_matrix_mvp;
 void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, out highp vec2 otexcoord );
-#line 270 // complex-flare-in.txt
+#line 270
 void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, out highp vec2 otexcoord ) {
     overtex = (glstate_matrix_mvp * v.vertex);
     ocolor = v.color;
-    #line 274 // complex-flare-in.txt
+    #line 274
     otexcoord = ((v.texcoord.xy * _FlareTexture_ST.xy) + _FlareTexture_ST.zw);
 }
 varying highp vec4 xlv_COLOR;

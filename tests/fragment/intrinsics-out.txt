@@ -78,27 +78,27 @@ vec4 xll_trunc (vec4 v) { return vec4(
   v.w < 0.0 ? -floor(-v.w) : floor(v.w)
 ); }
 vec4 xlat_main( in vec4 uv );
-#line 1 // intrinsics-in.txt
+#line 1
 vec4 xlat_main( in vec4 uv ) {
     vec4 c;
     vec4 d;
-    #line 2 // intrinsics-in.txt
+    #line 2
     c = vec4( 0.0);
     c.x += xll_mod( uv.x, 2.0);
     c.xy += xll_mod( uv.xy, vec2( 2.0));
-    #line 6 // intrinsics-in.txt
+    #line 6
     c.xyz += xll_mod( uv.xyz, vec3( 2.0));
     c.xyzw += xll_mod( uv.xyzw, vec4( 2.0));
-    #line 10 // intrinsics-in.txt
+    #line 10
     c.x += xll_modf( uv.x, d.x);
     c.xy += xll_modf( uv.xy, d.xy);
     c.xyz += xll_modf( uv.xyz, d.xyz);
     c.xyzw += xll_modf( uv.xyzw, d.xyzw);
-    #line 15 // intrinsics-in.txt
+    #line 15
     c += xll_lit( c.x, 0.2, 0.3);
     c.x += xll_round(2.5);
     c.xy += xll_round(vec2( 2.5, 3.5));
-    #line 20 // intrinsics-in.txt
+    #line 20
     c.x += xll_trunc(2.5);
     c.xy += xll_trunc(vec2( 2.5, 3.5));
     return c;

@@ -1,6 +1,6 @@
 uniform vec4 _Color;
 vec4 xlat_main(  );
-#line 3 // const-var-from-function-in.txt
+#line 3
 vec4 xlat_main(  ) {
     float c1;
     float c2;
@@ -8,7 +8,7 @@ vec4 xlat_main(  ) {
     float c4;
     c1 = max( _Color.x, _Color.y);
     c2 = (_Color.z * _Color.w);
-    #line 7 // const-var-from-function-in.txt
+    #line 7
     c3 = log2(16.0);
     c4 = (-_Color.x);
     return vec4( c1, c2, c3, c4);

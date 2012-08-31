@@ -5,21 +5,21 @@ uniform highp mat4 texWorldViewProjMatrix1;
 uniform highp mat4 texWorldViewProjMatrix2;
 uniform highp mat4 worldViewProjMatrix;
 void xlat_main( in highp vec4 position, in highp vec3 normal, in highp vec2 uv, out highp vec4 oPosition, out highp vec3 oUv, out highp vec3 oLightDir, out highp vec3 oHalfAngle, out highp vec4 oLightPosition0, out highp vec4 oLightPosition1, out highp vec4 oLightPosition2, out highp vec3 oNormal, highp vec4 lightPosition, highp vec3 eyePosition, highp mat4 worldViewProjMatrix, highp mat4 texWorldViewProjMatrix0, highp mat4 texWorldViewProjMatrix1, highp mat4 texWorldViewProjMatrix2 );
-#line 20 // complex-ogre-pssm-in.txt
+#line 20
 void xlat_main( in highp vec4 position, in highp vec3 normal, in highp vec2 uv, out highp vec4 oPosition, out highp vec3 oUv, out highp vec3 oLightDir, out highp vec3 oHalfAngle, out highp vec4 oLightPosition0, out highp vec4 oLightPosition1, out highp vec4 oLightPosition2, out highp vec3 oNormal, highp vec4 lightPosition, highp vec3 eyePosition, highp mat4 worldViewProjMatrix, highp mat4 texWorldViewProjMatrix0, highp mat4 texWorldViewProjMatrix1, highp mat4 texWorldViewProjMatrix2 ) {
     highp vec3 eyeDir;
-    #line 23 // complex-ogre-pssm-in.txt
+    #line 23
     oPosition = (worldViewProjMatrix * position);
     oUv.xy = uv;
-    #line 27 // complex-ogre-pssm-in.txt
+    #line 27
     oUv.z = oPosition.z;
-    #line 31 // complex-ogre-pssm-in.txt
+    #line 31
     oLightDir = normalize((lightPosition.xyz - (position * lightPosition.w).xyz));
     eyeDir = normalize((eyePosition - position.xyz));
-    #line 35 // complex-ogre-pssm-in.txt
+    #line 35
     oHalfAngle = normalize((eyeDir + oLightDir));
     oLightPosition0 = (texWorldViewProjMatrix0 * position);
-    #line 39 // complex-ogre-pssm-in.txt
+    #line 39
     oLightPosition1 = (texWorldViewProjMatrix1 * position);
     oLightPosition2 = (texWorldViewProjMatrix2 * position);
     oNormal = normal;

@@ -6,7 +6,7 @@ uniform highp mat4 texViewProj;
 uniform highp mat4 world;
 uniform highp mat4 worldViewProj;
 void xlat_main( in highp vec4 position, in highp vec4 normal, in highp vec2 uv, out highp vec4 oPosition, out highp vec4 oShadowUV, out highp vec3 oUv, out highp vec4 oColour, highp mat4 world, highp mat4 worldViewProj, highp mat4 texViewProj, highp vec4 camObjPos, highp vec4 objSpaceLight, highp vec4 lightColour, highp vec4 offset );
-#line 22 // complex-ogre-grass2-in.txt
+#line 22
 void xlat_main( in highp vec4 position, in highp vec4 normal, in highp vec2 uv, out highp vec4 oPosition, out highp vec4 oShadowUV, out highp vec3 oUv, out highp vec4 oColour, highp mat4 world, highp mat4 worldViewProj, highp mat4 texViewProj, highp vec4 camObjPos, highp vec4 objSpaceLight, highp vec4 lightColour, highp vec4 offset ) {
     highp vec4 mypos;
     highp vec4 factor;
@@ -16,29 +16,29 @@ void xlat_main( in highp vec4 position, in highp vec4 normal, in highp vec2 uv, 
     highp vec3 lightVec;
     highp float alignedLight;
     highp float diffuseFactor;
-    #line 24 // complex-ogre-grass2-in.txt
+    #line 24
     mypos = position;
     factor = (vec4( 1.0, 1.0, 1.0, 1.0) - uv.yyyy);
     mypos = (mypos + (offset * factor));
     oPosition = (worldViewProj * mypos);
-    #line 28 // complex-ogre-grass2-in.txt
+    #line 28
     oUv.xy = uv.xy;
     worldPos = (world * mypos);
-    #line 32 // complex-ogre-grass2-in.txt
+    #line 32
     oShadowUV = (texViewProj * worldPos);
     EyeVec = (camObjPos - mypos);
-    #line 38 // complex-ogre-grass2-in.txt
+    #line 38
     alignedEye = dot( normal, EyeVec);
     if ((alignedEye < 0.0)){
         normal = (-normal);
     }
-    #line 45 // complex-ogre-grass2-in.txt
+    #line 45
     lightVec = normalize((objSpaceLight.xyz - (mypos.xyz * objSpaceLight.w)));
     alignedLight = dot( normal.xyz, lightVec);
-    #line 50 // complex-ogre-grass2-in.txt
+    #line 50
     oUv.z = float((( (alignedLight < 0.0) ) ? ( 0 ) : ( 1 )));
     diffuseFactor = max( alignedLight, 0.0);
-    #line 54 // complex-ogre-grass2-in.txt
+    #line 54
     oColour = lightColour;
 }
 uniform highp mat4 xlu_world;

@@ -13,7 +13,7 @@ mat4 xll_transpose(mat4 m) {
                m[0][3], m[1][3], m[2][3], m[3][3]);
 }
 vec4 xlat_main( in vec4 pos );
-#line 1 // construct-matrix-in.txt
+#line 1
 vec4 xlat_main( in vec4 pos ) {
     vec4 v;
     mat2 m2 = mat2(1.0, 3.0, 2.0, 4.0);
@@ -23,21 +23,21 @@ vec4 xlat_main( in vec4 pos ) {
     mat3 m3c;
     mat4 m4 = mat4(1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0);
     mat4 m4b = mat4(1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0);
-    #line 3 // construct-matrix-in.txt
+    #line 3
     v = vec4( 0.0);
-    #line 8 // construct-matrix-in.txt
-    #line 12 // construct-matrix-in.txt
+    #line 8
+    #line 12
     v.xy += (m2 * pos.xy);
     v.xy += (m2b * pos.xy);
-    #line 19 // construct-matrix-in.txt
-    #line 24 // construct-matrix-in.txt
+    #line 19
+    #line 24
     m3c = xll_transpose(mat3( vec3( 1.0, 2.0, 3.0), vec3( 4.0, 5.0, 6.0), pos.xyz));
-    #line 29 // construct-matrix-in.txt
+    #line 29
     v.xyz += (m3 * pos.xyz);
     v.xyz += (m3b * pos.xyz);
     v.xyz += (m3c * pos.xyz);
-    #line 38 // construct-matrix-in.txt
-    #line 44 // construct-matrix-in.txt
+    #line 38
+    #line 44
     v.xyzw += (m4 * pos.xyzw);
     v.xyzw += (m4b * pos.xyzw);
     return v;

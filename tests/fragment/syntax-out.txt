@@ -1,25 +1,25 @@
 vec4 xlat_main(  );
-#line 1 // syntax-in.txt
+#line 1
 vec4 xlat_main(  ) {
     float foo = 1.0;
     vec4 v;
     vec3 f3;
     float boo;
-    #line 2 // syntax-in.txt
+    #line 2
     foo += 1.0;
     foo += 100000.0;
     foo += -0.001;
-    #line 6 // syntax-in.txt
+    #line 6
     foo += 2.0;
     foo += 3.0;
-    #line 12 // syntax-in.txt
+    #line 12
     v = vec4( f3.zyx, 1.0);
     v = vec4( vec3( foo), 1.0);
     v = vec4( vec3( boo), 1.0);
     v = vec4( foo);
-    #line 16 // syntax-in.txt
+    #line 16
     v = vec4( 2.0);
-    #line 20 // syntax-in.txt
+    #line 20
     v = vec4( 1.9);
     return vec4( foo);
 }

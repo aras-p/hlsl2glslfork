@@ -1,8 +1,8 @@
 mediump vec4 xlat_main( in highp vec2 uv, in highp vec4 color );
-#line 4 // in-vals-ret-vals-in.txt
+#line 4
 mediump vec4 xlat_main( in highp vec2 uv, in highp vec4 color ) {
     mediump vec4 c;
-    #line 7 // in-vals-ret-vals-in.txt
+    #line 7
     c = color;
     c.xy += uv;
     return c;

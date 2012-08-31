@@ -15,36 +15,36 @@ vec3 FxaaLerp3( in vec3 a, in vec3 b, in float amountOfA );
 vec3 FxaaFilterReturn( in vec3 rgb );
 vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame );
 vec4 xlat_main( in vec2 uv );
-#line 120 // complex-fxaa-preset1-in.txt
+#line 120
 vec4 FxaaTexOff( in sampler2D tex, in vec2 pos, in vec2 off, in vec2 rcpFrame ) {
-    #line 128 // complex-fxaa-preset1-in.txt
+    #line 128
     return xll_tex2Dlod( tex, vec4( (pos.xy + (off * rcpFrame)), 0.0, 0.0));
 }
-#line 90 // complex-fxaa-preset1-in.txt
+#line 90
 vec4 FxaaTexLod0( in sampler2D tex, in vec2 pos ) {
-    #line 98 // complex-fxaa-preset1-in.txt
+    #line 98
     return xll_tex2Dlod( tex, vec4( pos.xy, 0.0, 0.0));
 }
-#line 105 // complex-fxaa-preset1-in.txt
+#line 105
 vec4 FxaaTexGrad( in sampler2D tex, in vec2 pos, in vec2 grad ) {
-    #line 113 // complex-fxaa-preset1-in.txt
+    #line 113
     return xll_tex2Dgrad( tex, pos.xy, grad, grad);
 }
-#line 281 // complex-fxaa-preset1-in.txt
+#line 281
 float FxaaLuma( in vec3 rgb ) {
     return ((rgb.y * 1.96321) + rgb.x);
 }
-#line 284 // complex-fxaa-preset1-in.txt
+#line 284
 vec3 FxaaLerp3( in vec3 a, in vec3 b, in float amountOfA ) {
-    #line 285 // complex-fxaa-preset1-in.txt
+    #line 285
     return ((vec3( (-amountOfA), (-amountOfA), (-amountOfA)) * b) + ((a * vec3( amountOfA, amountOfA, amountOfA)) + b));
 }
-#line 289 // complex-fxaa-preset1-in.txt
+#line 289
 vec3 FxaaFilterReturn( in vec3 rgb ) {
-    #line 299 // complex-fxaa-preset1-in.txt
+    #line 299
     return rgb;
 }
-#line 313 // complex-fxaa-preset1-in.txt
+#line 313
 vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     vec3 rgbN;
     vec3 rgbW;
@@ -93,50 +93,50 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     float subPixelOffset;
     vec3 rgbF;
     rgbN = FxaaTexOff( tex, pos.xy, vec2( 0.0, -1.0), rcpFrame).xyz;
-    #line 317 // complex-fxaa-preset1-in.txt
+    #line 317
     rgbW = FxaaTexOff( tex, pos.xy, vec2( -1.0, 0.0), rcpFrame).xyz;
     rgbM = FxaaTexOff( tex, pos.xy, vec2( 0.0, 0.0), rcpFrame).xyz;
     rgbE = FxaaTexOff( tex, pos.xy, vec2( 1.0, 0.0), rcpFrame).xyz;
     rgbS = FxaaTexOff( tex, pos.xy, vec2( 0.0, 1.0), rcpFrame).xyz;
-    #line 321 // complex-fxaa-preset1-in.txt
+    #line 321
     lumaN = FxaaLuma( rgbN);
     lumaW = FxaaLuma( rgbW);
     lumaM = FxaaLuma( rgbM);
     lumaE = FxaaLuma( rgbE);
-    #line 325 // complex-fxaa-preset1-in.txt
+    #line 325
     lumaS = FxaaLuma( rgbS);
     rangeMin = min( lumaM, min( min( lumaN, lumaW), min( lumaS, lumaE)));
     rangeMax = max( lumaM, max( max( lumaN, lumaW), max( lumaS, lumaE)));
     range = (rangeMax - rangeMin);
-    #line 329 // complex-fxaa-preset1-in.txt
+    #line 329
     if ((range < max( 0.0625, (rangeMax * 0.125)))){
         return FxaaFilterReturn( rgbM);
     }
-    #line 336 // complex-fxaa-preset1-in.txt
+    #line 336
     rgbL = ((((rgbN + rgbW) + rgbM) + rgbE) + rgbS);
-    #line 342 // complex-fxaa-preset1-in.txt
+    #line 342
     lumaL = ((((lumaN + lumaW) + lumaE) + lumaS) * 0.25);
     rangeL = abs((lumaL - lumaM));
-    #line 346 // complex-fxaa-preset1-in.txt
+    #line 346
     blendL = (max( 0.0, ((rangeL / range) - 0.25)) * 1.33333);
     blendL = min( 0.75, blendL);
-    #line 355 // complex-fxaa-preset1-in.txt
+    #line 355
     rgbNW = FxaaTexOff( tex, pos.xy, vec2( -1.0, -1.0), rcpFrame).xyz;
     rgbNE = FxaaTexOff( tex, pos.xy, vec2( 1.0, -1.0), rcpFrame).xyz;
     rgbSW = FxaaTexOff( tex, pos.xy, vec2( -1.0, 1.0), rcpFrame).xyz;
     rgbSE = FxaaTexOff( tex, pos.xy, vec2( 1.0, 1.0), rcpFrame).xyz;
-    #line 360 // complex-fxaa-preset1-in.txt
+    #line 360
     rgbL += (((rgbNW + rgbNE) + rgbSW) + rgbSE);
     rgbL *= vec3( 0.111111, 0.111111, 0.111111);
     lumaNW = FxaaLuma( rgbNW);
-    #line 364 // complex-fxaa-preset1-in.txt
+    #line 364
     lumaNE = FxaaLuma( rgbNE);
     lumaSW = FxaaLuma( rgbSW);
     lumaSE = FxaaLuma( rgbSE);
     edgeVert = ((abs((((0.25 * lumaNW) + (-0.5 * lumaN)) + (0.25 * lumaNE))) + abs((((0.5 * lumaW) + (-1.0 * lumaM)) + (0.5 * lumaE)))) + abs((((0.25 * lumaSW) + (-0.5 * lumaS)) + (0.25 * lumaSE))));
-    #line 371 // complex-fxaa-preset1-in.txt
+    #line 371
     edgeHorz = ((abs((((0.25 * lumaNW) + (-0.5 * lumaW)) + (0.25 * lumaSW))) + abs((((0.5 * lumaN) + (-1.0 * lumaM)) + (0.5 * lumaS)))) + abs((((0.25 * lumaNE) + (-0.5 * lumaE)) + (0.25 * lumaSE))));
-    #line 375 // complex-fxaa-preset1-in.txt
+    #line 375
     horzSpan = (edgeHorz >= edgeVert);
     lengthSign = (( horzSpan ) ? ( (-rcpFrame.y) ) : ( (-rcpFrame.x) ));
     if ((!horzSpan)){
@@ -145,12 +145,12 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     if ((!horzSpan)){
         lumaS = lumaE;
     }
-    #line 379 // complex-fxaa-preset1-in.txt
+    #line 379
     gradientN = abs((lumaN - lumaM));
     gradientS = abs((lumaS - lumaM));
     lumaN = ((lumaN + lumaM) * 0.5);
     lumaS = ((lumaS + lumaM) * 0.5);
-    #line 385 // complex-fxaa-preset1-in.txt
+    #line 385
     pairN = (gradientN >= gradientS);
     if ((!pairN)){
         lumaN = lumaS;
@@ -161,31 +161,31 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     if ((!pairN)){
         lengthSign *= -1.0;
     }
-    #line 390 // complex-fxaa-preset1-in.txt
+    #line 390
     posN.x = (pos.x + (( horzSpan ) ? ( 0.0 ) : ( (lengthSign * 0.5) )));
     posN.y = (pos.y + (( horzSpan ) ? ( (lengthSign * 0.5) ) : ( 0.0 )));
-    #line 394 // complex-fxaa-preset1-in.txt
+    #line 394
     gradientN *= 0.25;
     posP = posN;
-    #line 398 // complex-fxaa-preset1-in.txt
+    #line 398
     offNP = (( horzSpan ) ? ( vec2( rcpFrame.x, 0.0) ) : ( vec2( 0.0, rcpFrame.y) ));
     lumaEndN = lumaN;
-    #line 402 // complex-fxaa-preset1-in.txt
+    #line 402
     lumaEndP = lumaN;
-    #line 415 // complex-fxaa-preset1-in.txt
+    #line 415
     posN += (offNP * vec2( -2.0, -2.0));
     posP += (offNP * vec2( 2.0, 2.0));
     offNP *= vec2( 3.0, 3.0);
-    #line 424 // complex-fxaa-preset1-in.txt
+    #line 424
     for ( ; (i < 4); (i++)) {
-        #line 431 // complex-fxaa-preset1-in.txt
+        #line 431
         if ((!doneN)){
             lumaEndN = FxaaLuma( FxaaTexGrad( tex, posN.xy, offNP).xyz);
         }
         if ((!doneP)){
             lumaEndP = FxaaLuma( FxaaTexGrad( tex, posP.xy, offNP).xyz);
         }
-        #line 436 // complex-fxaa-preset1-in.txt
+        #line 436
         doneN = (doneN || (abs((lumaEndN - lumaN)) >= gradientN));
         doneP = (doneP || (abs((lumaEndP - lumaN)) >= gradientN));
         if ((doneN && doneP)){
@@ -194,29 +194,29 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
         if ((!doneN)){
             posN -= offNP;
         }
-        #line 440 // complex-fxaa-preset1-in.txt
+        #line 440
         if ((!doneP)){
             posP += offNP;
         }
     }
     dstN = (( horzSpan ) ? ( (pos.x - posN.x) ) : ( (pos.y - posN.y) ));
-    #line 444 // complex-fxaa-preset1-in.txt
+    #line 444
     dstP = (( horzSpan ) ? ( (posP.x - pos.x) ) : ( (posP.y - pos.y) ));
     directionN = (dstN < dstP);
     lumaEndN = (( directionN ) ? ( lumaEndN ) : ( lumaEndP ));
-    #line 449 // complex-fxaa-preset1-in.txt
+    #line 449
     if ((((lumaM - lumaN) < 0.0) == ((lumaEndN - lumaN) < 0.0))){
         lengthSign = 0.0;
     }
-    #line 453 // complex-fxaa-preset1-in.txt
+    #line 453
     spanLength = (dstP + dstN);
     dstN = (( directionN ) ? ( dstN ) : ( dstP ));
     subPixelOffset = ((0.5 + (dstN * (-1.0 / spanLength))) * lengthSign);
     rgbF = FxaaTexLod0( tex, vec2( (pos.x + (( horzSpan ) ? ( 0.0 ) : ( subPixelOffset ))), (pos.y + (( horzSpan ) ? ( subPixelOffset ) : ( 0.0 ))))).xyz;
-    #line 462 // complex-fxaa-preset1-in.txt
+    #line 462
     return FxaaFilterReturn( FxaaLerp3( rgbL, rgbF, blendL));
 }
-#line 471 // complex-fxaa-preset1-in.txt
+#line 471
 vec4 xlat_main( in vec2 uv ) {
     return vec4( FxaaPixelShader( uv.xy, _MainTex, _MainTex_TexelSize.xy).xyz, 0.0);
 }

@@ -23,7 +23,7 @@ uniform highp float sampleDist;
 uniform highp float sampleStrength;
 uniform sampler2D tex;
 highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength );
-#line 21 // complex-ogre-radialblur-in.txt
+#line 21
 highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength ) {
     highp vec2 dir;
     highp float dist;
@@ -44,23 +44,23 @@ highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sam
     samples[9] = 0.08;
     highp float t;
     dir = (0.5 - texCoord);
-    #line 28 // complex-ogre-radialblur-in.txt
+    #line 28
     dist = sqrt(((dir.x * dir.x) + (dir.y * dir.y)));
-    #line 32 // complex-ogre-radialblur-in.txt
+    #line 32
     dir = normalize(dir);
     color = texture2D( tex, texCoord);
-    #line 37 // complex-ogre-radialblur-in.txt
+    #line 37
     sum = color;
     for ( ; (i < 10); (i++)) {
         res = texture2D( tex, (texCoord + ((dir * samples[i]) * sampleDist)));
-        #line 41 // complex-ogre-radialblur-in.txt
+        #line 41
         sum += res;
     }
     sum /= 11.0;
-    #line 47 // complex-ogre-radialblur-in.txt
+    #line 47
     t = (dist * sampleStrength);
     t = xll_saturate(t);
-    #line 51 // complex-ogre-radialblur-in.txt
+    #line 51
     return mix( color, sum, vec4( t));
 }
 uniform highp float xlu_sampleDist;

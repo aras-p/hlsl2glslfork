@@ -1,14 +1,14 @@
 mediump vec4 xlat_main(  );
-#line 1 // loops-empty-in.txt
+#line 1
 mediump vec4 xlat_main(  ) {
     highp int i = 0;
     highp int j = 0;
-    #line 2 // loops-empty-in.txt
+    #line 2
     for ( ; (i < 10); (++i)) {
     }
     while ( ((j++) < 10) ) {
     }
-    #line 8 // loops-empty-in.txt
+    #line 8
     do {
     }
     while (     ((j--) > 0) )

@@ -1,7 +1,7 @@
 vec4 xlat_main( in vec4 pos );
-#line 1 // pos-in.txt
+#line 1
 vec4 xlat_main( in vec4 pos ) {
-    #line 2 // pos-in.txt
+    #line 2
     return pos;
 }
 void main() {

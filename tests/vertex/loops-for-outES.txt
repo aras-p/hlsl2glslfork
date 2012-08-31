@@ -1,12 +1,12 @@
 mat3 xll_constructMat3( mat4 m) {
   return mat3( vec3( m[0]), vec3( m[1]), vec3( m[2]));
 }
-#line 14 // loops-for-in.txt
+#line 14
 struct v2f {
     mediump vec4 pos;
     mediump vec4 color;
 };
-#line 9 // loops-for-in.txt
+#line 9
 struct appdata {
     highp vec4 vertex;
     highp vec3 normal;
@@ -19,7 +19,7 @@ uniform highp vec4 unity_LightColor[4];
 uniform highp vec4 unity_LightPosition[4];
 highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal );
 v2f xlat_main( in appdata v );
-#line 19 // loops-for-in.txt
+#line 19
 highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal ) {
     highp vec3 viewpos;
     highp vec3 viewN;
@@ -31,22 +31,22 @@ highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal ) {
     highp float diff;
     viewpos = (UNITY_MATRIX_MV * vertex).xyz;
     viewN = (xll_constructMat3( UNITY_MATRIX_IT_MV) * normal);
-    #line 23 // loops-for-in.txt
+    #line 23
     for ( ; (i < 2); (i++)) {
         toLight = (unity_LightPosition[i].xyz - viewpos.xyz);
-        #line 27 // loops-for-in.txt
+        #line 27
         lengthSq = dot( toLight, toLight);
         atten = (1.0 / (1.0 + (lengthSq * unity_LightAtten[i].z)));
         diff = max( 0.0, dot( viewN, normalize(toLight)));
         lightColor += (unity_LightColor[i].xyz * (diff * atten));
     }
-    #line 32 // loops-for-in.txt
+    #line 32
     return (lightColor * 2.0);
 }
-#line 35 // loops-for-in.txt
+#line 35
 v2f xlat_main( in appdata v ) {
     v2f o;
-    #line 38 // loops-for-in.txt
+    #line 38
     o.pos = (UNITY_MATRIX_MVP * v.vertex);
     o.color = vec4( ShadeMyVertexLights( v.vertex, v.normal), 1.0);
     return o;

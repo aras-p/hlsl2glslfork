@@ -22,7 +22,7 @@ mat3 xll_saturate(mat3 m) {
 mat4 xll_saturate(mat4 m) {
   return mat4( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0), clamp(m[2], 0.0, 1.0), clamp(m[3], 0.0, 1.0));
 }
-#line 16 // complex-treeleaf-in.txt
+#line 16
 struct LeafSurfaceOutput {
     mediump vec3 Albedo;
     mediump vec3 Normal;
@@ -33,12 +33,12 @@ struct LeafSurfaceOutput {
     mediump float Gloss;
     mediump float Alpha;
 };
-#line 47 // complex-treeleaf-in.txt
+#line 47
 struct Input {
     highp vec2 uv_MainTex;
     highp vec4 color;
 };
-#line 66 // complex-treeleaf-in.txt
+#line 66
 struct v2f_surf {
     highp vec4 pos;
     highp vec2 hip_pack0;
@@ -61,33 +61,33 @@ mediump vec4 UnpackNormal( in mediump vec4 packednormal );
 void surf( in Input IN, inout LeafSurfaceOutput o );
 mediump vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in mediump vec3 lightDir, in mediump vec3 viewDir, in mediump float atten );
 mediump vec4 xlat_main( in v2f_surf IN );
-#line 1 // complex-treeleaf-in.txt
+#line 1
 mediump vec4 UnpackNormal( in mediump vec4 packednormal ) {
     mediump vec4 normal;
     normal.xy = ((packednormal.wy * 2.0) - 1.0);
-    #line 5 // complex-treeleaf-in.txt
+    #line 5
     normal.z = sqrt(((1.0 - (normal.x * normal.x)) - (normal.y * normal.y)));
     return normal;
 }
-#line 53 // complex-treeleaf-in.txt
+#line 53
 void surf( in Input IN, inout LeafSurfaceOutput o ) {
     mediump vec4 c;
     mediump vec4 trngls;
     mediump vec4 norspc;
     c = texture2D( _MainTex, IN.uv_MainTex);
     o.Albedo = ((c.xyz * _Color.xyz) * IN.color.w);
-    #line 57 // complex-treeleaf-in.txt
+    #line 57
     trngls = texture2D( _TranslucencyMap, IN.uv_MainTex);
     o.Translucency = trngls.z;
     o.Gloss = (trngls.w * _Color.x);
     o.Alpha = c.w;
-    #line 61 // complex-treeleaf-in.txt
+    #line 61
     norspc = texture2D( _BumpSpecMap, IN.uv_MainTex);
     o.Specular = norspc.x;
     o.ShadowOffset = norspc.z;
     o.Normal = vec3( UnpackNormal( norspc));
 }
-#line 28 // complex-treeleaf-in.txt
+#line 28
 mediump vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in mediump vec3 lightDir, in mediump vec3 viewDir, in mediump float atten ) {
     mediump vec3 h;
     mediump float nl;
@@ -98,37 +98,37 @@ mediump vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in mediump vec3 lightDir,
     mediump vec4 c;
     h = normalize((lightDir + viewDir));
     nl = dot( s.Normal, lightDir);
-    #line 32 // complex-treeleaf-in.txt
+    #line 32
     nh = max( 0.0, dot( s.Normal, h));
     spec = (pow( nh, (s.Specular * 128.0)) * s.Gloss);
     backContrib = xll_saturate(dot( viewDir, (-lightDir)));
     backContrib = mix( xll_saturate((-nl)), backContrib, _TranslucencyViewDependency);
-    #line 36 // complex-treeleaf-in.txt
+    #line 36
     translucencyColor = ((backContrib * s.Translucency) * _TranslucencyColor);
     nl = max( 0.0, ((nl * 0.6) + 0.4));
     c.xyz = (s.Albedo * ((translucencyColor * 2.0) + nl));
-    #line 40 // complex-treeleaf-in.txt
+    #line 40
     c.xyz = ((c.xyz * _LightColor0.xyz) + spec);
     c.xyz *= mix( 2.0, (atten * 2.0), _ShadowStrength);
     return c;
 }
-#line 77 // complex-treeleaf-in.txt
+#line 77
 mediump vec4 xlat_main( in v2f_surf IN ) {
     Input surfIN;
     LeafSurfaceOutput o;
     mediump vec3 lightDir;
     mediump vec4 c;
     surfIN.uv_MainTex = IN.hip_pack0.xy;
-    #line 81 // complex-treeleaf-in.txt
+    #line 81
     surfIN.color = IN.lop_color;
     o.Albedo = vec3( 0.0);
     o.Emission = vec3( 0.0);
-    #line 85 // complex-treeleaf-in.txt
+    #line 85
     o.Specular = 0.0;
     o.Alpha = 0.0;
     surf( surfIN, o);
     xll_clip((o.Alpha - _Cutoff));
-    #line 89 // complex-treeleaf-in.txt
+    #line 89
     lightDir = IN.lightDir;
     c = LightingTreeLeaf( o, lightDir, normalize(IN.viewDir), (texture2D( _LightTexture0, IN._LightCoord).w * 1.0));
     c.w = o.Alpha;

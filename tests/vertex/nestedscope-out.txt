@@ -1,12 +1,12 @@
 
-#line 10 // nestedscope-in.txt
+#line 10
 struct v2f {
     vec4 pos;
     float fog;
     vec2 uv;
     vec4 color;
 };
-#line 3 // nestedscope-in.txt
+#line 3
 struct a2v {
     vec4 pos;
     vec2 uv;
@@ -15,17 +15,17 @@ struct a2v {
 };
 uniform mat4 mvp;
 v2f xlat_main( in a2v v );
-#line 17 // nestedscope-in.txt
+#line 17
 v2f xlat_main( in a2v v ) {
     vec4 vec;
     vec4 vec_1;
     v2f o;
     vec = (v.pos * mvp);
-    #line 22 // nestedscope-in.txt
+    #line 22
     vec_1 = v.color;
     vec_1.xyz += v.normal;
     o.color = vec_1;
-    #line 26 // nestedscope-in.txt
+    #line 26
     o.pos = vec;
     o.uv = v.uv;
     return o;

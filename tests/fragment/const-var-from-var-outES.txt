@@ -1,6 +1,6 @@
 uniform mediump vec4 _Color;
 mediump vec4 xlat_main(  );
-#line 3 // const-var-from-var-in.txt
+#line 3
 mediump vec4 xlat_main(  ) {
     mediump vec4 c;
     c = _Color;

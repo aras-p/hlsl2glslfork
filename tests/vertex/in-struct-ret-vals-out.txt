@@ -1,5 +1,5 @@
 
-#line 3 // in-struct-ret-vals-in.txt
+#line 3
 struct a2v {
     vec4 pos;
     vec2 uv;
@@ -8,11 +8,11 @@ struct a2v {
 };
 uniform mat4 mvp;
 void xlat_main( in a2v v, out vec4 opos, out float ofog, out vec2 ouv, out vec4 ocolor );
-#line 15 // in-struct-ret-vals-in.txt
+#line 15
 void xlat_main( in a2v v, out vec4 opos, out float ofog, out vec2 ouv, out vec4 ocolor ) {
     opos = (mvp * v.pos);
     ocolor = v.color;
-    #line 19 // in-struct-ret-vals-in.txt
+    #line 19
     ocolor.xyz += v.normal;
     ouv = v.uv;
 }

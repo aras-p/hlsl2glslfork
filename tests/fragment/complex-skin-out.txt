@@ -19,7 +19,7 @@ mat3 xll_saturate(mat3 m) {
 mat4 xll_saturate(mat4 m) {
   return mat4( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0), clamp(m[2], 0.0, 1.0), clamp(m[3], 0.0, 1.0));
 }
-#line 11 // _Ma
+#line 11
 struct v2f_withBlurCoords {
     vec4 pos;
     vec4 uv;
@@ -29,7 +29,7 @@ uniform sampler2D _MainTex;
 uniform sampler2D _SssStretch;
 uniform vec4 _SssStretch_AddMul;
 vec4 xlat_main( in v2f_withBlurCoords i );
-#line 17 // _Ma
+#line 17
 vec4 xlat_main( in v2f_withBlurCoords i ) {
     vec2 uv;
     float curve[7];
@@ -50,23 +50,23 @@ vec4 xlat_main( in v2f_withBlurCoords i ) {
     float weight;
     vec4 center;
     uv = i.uv.xy;
-    #line 21 // _Ma
+    #line 21
     stretch = ((texture2D( _SssStretch, uv).xy * _SssStretch_AddMul.yy) + _SssStretch_AddMul.xx);
     netFilterWidth = (stretch * i.offs);
     coords = (uv - (netFilterWidth * 3.0));
-    #line 25 // _Ma
+    #line 25
     sum = vec4( 0.0);
     for ( ; (l < 7); (l++)) {
-        #line 30 // _Ma
+        #line 30
         tap = texture2D( _MainTex, coords);
         weight = ((2.0 * xll_saturate((tap.w - 0.5))) * curve[l]);
         sum += (tap * weight);
         weightSum += weight;
-        #line 34 // _Ma
+        #line 34
         coords += netFilterWidth;
     }
     sum = clamp( (sum / (weightSum + 0.0001)), vec4( 0.0), vec4( 10.0));
-    #line 38 // _Ma
+    #line 38
     center = texture2D( _MainTex, i.uv.xy);
     sum.w = center.w;
     return mix( center, sum, vec4( center.w));
