@@ -824,7 +824,7 @@ void initializeHLSLSupportLibrary()
 		"float xll_shadow2D(sampler2DShadow s, vec3 coord) { return shadow2D (s, coord).r; }\n"
 	));
 	hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2D,
-	   "float xll_shadow2D(sampler2DShadow s, vec3 coord) { return shadow2DEXT (s, coord).r; }\n"
+	   "float xll_shadow2D(sampler2DShadow s, vec3 coord) { return shadow2DEXT (s, coord); }\n"
 	));
 	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2D, std::make_pair("","#extension GL_EXT_shadow_samplers : require\n")));
 	
@@ -832,7 +832,7 @@ void initializeHLSLSupportLibrary()
 	   "float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return shadow2DProj (s, coord).r; }\n"
 	));
 	hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2DProj,
-		"float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return shadow2DProjEXT (s, coord).r; }\n"
+		"float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return shadow2DProjEXT (s, coord); }\n"
 	));
 	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2DProj, std::make_pair("","#extension GL_EXT_shadow_samplers : require\n")));
 	
