@@ -255,7 +255,11 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 			else
 			{
 				// Use built-in varying name
-				outName = varOutString[sem];                
+				outName = varOutString[sem];
+
+				// Always pad built-in varying outputs to 4 elements
+				pad = 4 - size;
+				ctor = "vec4";
 			}
 			break;
 
