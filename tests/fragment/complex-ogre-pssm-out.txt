@@ -1,5 +1,5 @@
 vec4 xll_lit( float n_dot_l, float n_dot_h, float m ) {
-   return vec4(1, max(0.0, n_dot_l), (n_dot_l < 0.0 || n_dot_h < 0.0) ? 0.0 : n_dot_h * m, 1);
+   return vec4(1, max(0.0, n_dot_l), pow(max(0.0, n_dot_h) * step(0.0, n_dot_l), m), 1.0);
 }
 uniform vec4 ambient;
 uniform sampler2D diffuse;

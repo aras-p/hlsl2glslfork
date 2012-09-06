@@ -19,7 +19,7 @@ vec4 xll_mod( vec4 x, vec4 y ) {
   return vec4 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z, d.w >= 0.0 ? f.w : -f.w);
 }
 vec4 xll_lit( float n_dot_l, float n_dot_h, float m ) {
-   return vec4(1, max(0.0, n_dot_l), (n_dot_l < 0.0 || n_dot_h < 0.0) ? 0.0 : n_dot_h * m, 1);
+   return vec4(1, max(0.0, n_dot_l), pow(max(0.0, n_dot_h) * step(0.0, n_dot_l), m), 1.0);
 }
 float xll_modf( float x, out int ip) {
   ip = int (x);
