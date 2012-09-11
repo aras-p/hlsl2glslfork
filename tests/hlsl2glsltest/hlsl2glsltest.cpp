@@ -239,6 +239,9 @@ static bool TestFile (TestRun type,
 		options |= ETranslateOpIntermediate;
 	if (usePrecision)
 		options |= ETranslateOpUsePrecision;
+	
+	options |= ETranslateOpEmitSnowLeopardCompatibleArrayInitializers;
+	
 	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, options);
 	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 	if (kDumpShaderAST)

@@ -33,7 +33,7 @@ private:
 	void outputLineDirective (int line);
 
 public:
-	TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision);
+	TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, TTranslateOptions options);
 	GlslStruct *createStructFromType( TType *type );
 	bool parseInitializer( TIntermBinary *node );
 
@@ -63,6 +63,7 @@ public:
 
 	unsigned swizzleAssignTempCounter;
 	bool m_UsePrecision;
+	bool m_EmitSnowLeopardCompatibleArrayInitializers;
 	int m_LastLineOutput;
 };
 

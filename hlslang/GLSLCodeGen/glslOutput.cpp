@@ -275,13 +275,14 @@ void TGlslOutputTraverser::outputLineDirective (int line)
 
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, bool usePrecision) :
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, TTranslateOptions options) :
 	infoSink(i)
 	, generatingCode(true)
 	, functionList(funcList)
 	, structList(sList)
 	, swizzleAssignTempCounter(0)
-	, m_UsePrecision(usePrecision)
+	, m_UsePrecision(options & ETranslateOpUsePrecision)
+	, m_EmitSnowLeopardCompatibleArrayInitializers(options & ETranslateOpEmitSnowLeopardCompatibleArrayInitializers)
 	, m_LastLineOutput(-1)
 {
 	visitSymbol = traverseSymbol;
@@ -307,6 +308,48 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 	EGlslSymbolType symbol_type = translateType(decl->getTypePointer());
 	TType& type = *decl->getTypePointer();
 	
+	
+	bool emit_osx10_6_arrays = goit->m_EmitSnowLeopardCompatibleArrayInitializers
+		&& decl->containsArrayInitialization();
+	
+	if (emit_osx10_6_arrays) {
+		assert(decl->isSingleInitialization() && "Emission of multiple in-line array declarations isn't supported when running in OS X 10.6 compatible mode.");
+		
+		current->indent(out);
+		out << "#if defined(OSX_SNOW_LEOPARD)" << std::endl;
+		current->increaseDepth();
+		
+		TQualifier q = type.getQualifier();
+		if (q == EvqConst)
+			q = EvqTemporary;
+		
+		current->beginStatement();
+		if (q != EvqTemporary && q != EvqGlobal)
+			out << type.getQualifierString() << " ";
+		
+		TIntermBinary* assign = decl->getDeclaration()->getAsBinaryNode();
+		TIntermSymbol* sym = assign->getLeft()->getAsSymbolNode();
+		TIntermSequence& init = assign->getRight()->getAsAggregate()->getSequence();
+		
+		writeType(out, symbol_type, NULL, goit->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
+		out << "[" << type.getArraySize() << "] " << sym->getSymbol();
+		current->endStatement();
+		
+		unsigned n_vals = init.size();
+		for (unsigned i = 0; i != n_vals; ++i) {
+			current->beginStatement();
+			sym->traverse(goit);
+			out << " = ";
+			init[i]->traverse(goit);
+			current->endStatement();
+		}
+		
+		current->decreaseDepth();
+		current->indent(out);
+		out << "#else" << std::endl;
+		current->increaseDepth();
+	}
+	
 	current->beginStatement();
 	
 	if (type.getQualifier() != EvqTemporary && type.getQualifier() != EvqGlobal)
@@ -325,6 +368,12 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 	decl->getDeclaration()->traverse(goit);
 	
 	current->endStatement();
+	
+	if (emit_osx10_6_arrays) {
+		current->decreaseDepth();
+		current->indent(out);
+		out << "#endif" << std::endl;
+	}
 	
 	return false;
 }

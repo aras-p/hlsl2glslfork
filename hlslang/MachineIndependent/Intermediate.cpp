@@ -585,6 +585,23 @@ TIntermDeclaration* TIntermediate::growDeclaration(TIntermDeclaration* declarati
 	return declaration;
 }
 
+bool TIntermDeclaration::containsArrayInitialization() {
+	const TType& t = *this->getTypePointer();
+	if (isSingleInitialization() && t.isArray())
+		return true;
+	
+	if (t.isArray() && isMultipleDeclaration()) {
+		TIntermSequence& decls = _declaration->getAsAggregate()->getSequence();
+		unsigned n_decls = decls.size();
+		for (unsigned i = 0; i != n_decls; ++i) {
+			if (decls[i]->getAsBinaryNode())
+				return true;
+		}
+	}
+	
+	return false;
+}
+
 //
 // Safe way to combine two nodes into an aggregate.  Works with null pointers, 
 // a node that's not a aggregate yet, etc.
