@@ -284,7 +284,7 @@ void GlslSymbol::writeFloat(std::stringstream &out, float f)
    sprintf(buffer, "%g", f);
    out << buffer;
    
-   if(!strchr(buffer, '.'))
+   if(!strchr(buffer, '.') && !strrchr(buffer, 'e') && !strrchr(buffer, 'E'))
    {
        out << ".0";
    }

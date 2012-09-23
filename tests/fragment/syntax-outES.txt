@@ -10,16 +10,18 @@ mediump vec4 xlat_main(  ) {
     foo += 100000.0;
     foo += -0.001;
     #line 6
+    foo += 1e-06;
+    foo += 1e-06;
     foo += 2.0;
     foo += 3.0;
-    #line 12
+    #line 14
     v = vec4( f3.zyx, 1.0);
     v = vec4( vec3( foo), 1.0);
     v = vec4( vec3( boo), 1.0);
     v = vec4( foo);
-    #line 16
+    #line 18
     v = vec4( 2.0);
-    #line 20
+    #line 22
     v = vec4( 1.9);
     return vec4( foo);
 }

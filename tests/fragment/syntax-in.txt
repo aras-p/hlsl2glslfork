@@ -4,6 +4,8 @@ half4 main() : COLOR0 {
 	foo += 1.0f;
 	foo += 1e5f;
 	foo += -1.0e-3;
+	foo += 0.000001;
+	foo += 1.0e-6;
 	foo += 2f;
 	foo += 3;
 	
