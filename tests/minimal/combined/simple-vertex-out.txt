@@ -1,0 +1,48 @@
+#version 120
+
+#extension GL_EXT_gpu_shader4 : require
+#extension GL_ARB_draw_instanced : require
+
+#line 15
+struct PS_INPUT {
+    vec4 position;
+    vec2 uv;
+};
+#line 8
+struct VS_INPUT {
+    vec4 position;
+    vec2 uv;
+    int vertex_id;
+    int instance_id;
+};
+uniform mat4 world;
+uniform mat4 view;
+#line 3
+uniform mat4 proj;
+uniform sampler2D diffuse_map;
+uniform sampler2DShadow shadow_map;
+#line 20
+PS_INPUT vs_main( in VS_INPUT xlat_var_input );
+#line 20
+PS_INPUT vs_main( in VS_INPUT xlat_var_input ) {
+    PS_INPUT o;
+    vec4 wp = (xlat_var_input.position * world);
+    o.position = (wp * proj);
+    #line 24
+    o.uv = xlat_var_input.uv;
+    int asd = int(mod(12, 2));
+    #line 28
+    return o;
+}
+varying vec2 xlv_TEXCOORD0;
+void main() {
+    PS_INPUT xl_retval;
+    VS_INPUT xlt_xlat_var_input;
+    xlt_xlat_var_input.position = vec4( gl_Vertex);
+    xlt_xlat_var_input.uv = vec2( gl_MultiTexCoord0);
+    xlt_xlat_var_input.vertex_id = int( gl_VertexID);
+    xlt_xlat_var_input.instance_id = int( gl_InstanceIDARB);
+    xl_retval = vs_main( xlt_xlat_var_input);
+    gl_Position = vec4( xl_retval.position);
+    xlv_TEXCOORD0 = vec2( xl_retval.uv);
+}

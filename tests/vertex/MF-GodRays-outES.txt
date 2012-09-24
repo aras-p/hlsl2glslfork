@@ -1,25 +1,5 @@
 #version 120
 
-float xll_mod( float x, float y ) {
-  float d = x / y;
-  float f = fract (abs(d)) * y;
-  return d >= 0.0 ? f : -f;
-}
-vec2 xll_mod( vec2 x, vec2 y ) {
-  vec2 d = x / y;
-  vec2 f = fract (abs(d)) * y;
-  return vec2 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y);
-}
-vec3 xll_mod( vec3 x, vec3 y ) {
-  vec3 d = x / y;
-  vec3 f = fract (abs(d)) * y;
-  return vec3 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z);
-}
-vec4 xll_mod( vec4 x, vec4 y ) {
-  vec4 d = x / y;
-  vec4 f = fract (abs(d)) * y;
-  return vec4 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z, d.w >= 0.0 ? f.w : -f.w);
-}
 float xll_saturate( float x) {
   return clamp( x, 0.0, 1.0);
 }
@@ -131,7 +111,7 @@ v2f xlat_main( in appdata_full v ) {
     highp vec3 BBLocalPos = ((centerLocal - ((rightLocal * centerOffs.x) + (upLocal * centerOffs.y))) + (BBNormal * distScale));
     #line 84
     highp float time = (_Time.y + (_BlinkingTimeOffsScale * v.color.z));
-    highp float fracTime = xll_mod(time, (_TimeOnDuration + _TimeOffDuration));
+    highp float fracTime = mod(time, (_TimeOnDuration + _TimeOffDuration));
     highp float wave = (smoothstep(0.0, (_TimeOnDuration * 0.25), fracTime) * (1.0 - smoothstep((_TimeOnDuration * 0.75), _TimeOnDuration, fracTime)));
     highp float noiseTime = (time * (6.28319 / _TimeOnDuration));
     #line 88

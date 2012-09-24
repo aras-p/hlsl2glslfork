@@ -37,7 +37,18 @@ vec4 xlat_main( in v2f_withBlurCoords i );
 vec4 xlat_main( in v2f_withBlurCoords i ) {
     vec2 uv = i.uv.xy;
     #line 21
-    const float[7] curve = float[7](0.006, 0.061, 0.242, 0.383, 0.242, 0.061, 0.006);
+    #if defined(OSX_SNOW_LEOPARD)
+        float[7] curve;
+        curve[0] = 0.006;
+        curve[1] = 0.061;
+        curve[2] = 0.242;
+        curve[3] = 0.383;
+        curve[4] = 0.242;
+        curve[5] = 0.061;
+        curve[6] = 0.006;
+    #else
+        const float[7] curve = float[7](0.006, 0.061, 0.242, 0.383, 0.242, 0.061, 0.006);
+    #endif
     vec2 stretch = ((texture2D(_SssStretch, uv).xy * _SssStretch_AddMul.yy) + _SssStretch_AddMul.xx);
     vec2 netFilterWidth = (stretch * i.offs);
     vec2 coords = (uv - (netFilterWidth * 3.0));

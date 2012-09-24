@@ -339,7 +339,7 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 		for (unsigned i = 0; i != n_vals; ++i) {
 			current->beginStatement();
 			sym->traverse(goit);
-			out << " = ";
+			out << "[" << i << "]" << " = ";
 			init[i]->traverse(goit);
 			current->endStatement();
 		}
@@ -771,8 +771,9 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    case EOpSub:    op = "-"; infix = true; break;
    case EOpMul:    op = "*"; infix = true; break;
    case EOpDiv:    op = "/"; infix = true; break;
-   case EOpMod:    op = "%"; infix = true; break;
-   case EOpRightShift:  op = "<<"; infix = true; break;
+   case EOpMod:    op = "mod"; infix = false; break;
+   case EOpRightShift:  op = "<<"; infix = true;
+		   break;
    case EOpLeftShift:   op = ">>"; infix = true; break;
    case EOpAnd:         op = "&"; infix = true; break;
    case EOpInclusiveOr: op = "|"; infix = true; break;
@@ -1281,10 +1282,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpVectorEqual:      writeFuncCall( "equal", node, goit); return false;
    case EOpVectorNotEqual:   writeFuncCall( "notEqual", node, goit); return false;
 
-   case EOpMod:
-	   current->addLibFunction(EOpMod);
-	   writeFuncCall( "xll_mod", node, goit);
-	   return false;
+   case EOpMod:			  writeFuncCall( "mod", node, goit, true); return false;
 
    case EOpPow:           writeFuncCall( "pow", node, goit, true); return false;
 

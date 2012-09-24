@@ -1,25 +1,5 @@
 #version 120
 
-float xll_mod( float x, float y ) {
-  float d = x / y;
-  float f = fract (abs(d)) * y;
-  return d >= 0.0 ? f : -f;
-}
-vec2 xll_mod( vec2 x, vec2 y ) {
-  vec2 d = x / y;
-  vec2 f = fract (abs(d)) * y;
-  return vec2 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y);
-}
-vec3 xll_mod( vec3 x, vec3 y ) {
-  vec3 d = x / y;
-  vec3 f = fract (abs(d)) * y;
-  return vec3 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z);
-}
-vec4 xll_mod( vec4 x, vec4 y ) {
-  vec4 d = x / y;
-  vec4 f = fract (abs(d)) * y;
-  return vec4 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z, d.w >= 0.0 ? f.w : -f.w);
-}
 vec4 xll_lit( float n_dot_l, float n_dot_h, float m ) {
    return vec4(1, max(0.0, n_dot_l), (n_dot_l < 0.0 || n_dot_h < 0.0) ? 0.0 : n_dot_h * m, 1);
 }
@@ -64,10 +44,10 @@ vec4 xlat_main( in vec4 uv );
 vec4 xlat_main( in vec4 uv ) {
     vec4 c = vec4(0.0);
     #line 4
-    c.x += xll_mod(uv.x, 2.0);
-    c.xy += xll_mod(uv.xy, vec2(2.0));
-    c.xyz += xll_mod(uv.xyz, vec3(2.0));
-    c.xyzw += xll_mod(uv.xyzw, vec4(2.0));
+    c.x += mod(uv.x, 2.0);
+    c.xy += mod(uv.xy, vec2(2.0));
+    c.xyz += mod(uv.xyz, vec3(2.0));
+    c.xyzw += mod(uv.xyzw, vec4(2.0));
     #line 9
     vec4 d;
     c.x += xll_modf(uv.x, d.x);

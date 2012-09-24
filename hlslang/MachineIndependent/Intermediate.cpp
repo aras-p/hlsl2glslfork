@@ -120,6 +120,7 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
    case EOpSub:
    case EOpDiv:
    case EOpMul:
+   case EOpMod:
       if (left->getType().getBasicType() == EbtStruct)
 		  return 0;
 	  // If left or right type is a bool, convert to a float.
@@ -1070,6 +1071,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          // Check for integer only operands.
          //
       case EOpMod:
+          setType(TType(EbtFloat, EbpUndefined));
       case EOpRightShift:
       case EOpLeftShift:
       case EOpAnd:
@@ -1323,16 +1325,17 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          size = right->getNominalSize();
       }
       // fall through
+   case EOpMod:
+      type = EbtFloat;
    case EOpAdd:
    case EOpSub:
    case EOpDiv:
-   case EOpMod:
    case EOpAddAssign:
    case EOpSubAssign:
    case EOpDivAssign:
    case EOpModAssign:
-      if (left->isMatrix() && right->isVector() ||
-          left->isVector() && right->isMatrix() ||
+      if ((left->isMatrix() && right->isVector()) ||
+          (left->isVector() && right->isMatrix()) ||
           left->getBasicType() != right->getBasicType())
          return false;
       setType(TType(type, left->getPrecision(), EvqTemporary, size, left->isMatrix() || right->isMatrix()));
@@ -1344,8 +1347,8 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
    case EOpGreaterThan:
    case EOpLessThanEqual:
    case EOpGreaterThanEqual:
-      if (left->isMatrix() && right->isVector() ||
-          left->isVector() && right->isMatrix() ||
+      if ((left->isMatrix() && right->isVector()) ||
+          (left->isVector() && right->isMatrix()) ||
           left->getBasicType() != right->getBasicType())
          return false;
       setType(TType(EbtBool, higherPrecision, EvqTemporary, size, false));

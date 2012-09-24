@@ -23,7 +23,21 @@ mat4 xll_saturate(mat4 m) {
 }
 uniform sampler2D tex;
 #line 3
-const highp float[10] samples = float[10]((-0.08), (-0.05), (-0.03), (-0.02), (-0.01), 0.01, 0.02, 0.03, 0.05, 0.08);
+#if defined(OSX_SNOW_LEOPARD)
+    highp float[10] samples;
+    samples[0] = (-0.08);
+    samples[1] = (-0.05);
+    samples[2] = (-0.03);
+    samples[3] = (-0.02);
+    samples[4] = (-0.01);
+    samples[5] = 0.01;
+    samples[6] = 0.02;
+    samples[7] = 0.03;
+    samples[8] = 0.05;
+    samples[9] = 0.08;
+#else
+    const highp float[10] samples = float[10]((-0.08), (-0.05), (-0.03), (-0.02), (-0.01), 0.01, 0.02, 0.03, 0.05, 0.08);
+#endif
 #line 21
 highp vec4 xlat_main( in highp vec4 Pos, in highp vec2 texCoord, highp float sampleDist, highp float sampleStrength );
 #line 21
