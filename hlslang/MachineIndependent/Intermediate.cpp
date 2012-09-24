@@ -1280,7 +1280,6 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          return false;
       }
       break;
-
    case EOpAssign:
       if (left->getNominalSize() != right->getNominalSize())
       {
@@ -1326,7 +1325,6 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
       }
       // fall through
    case EOpMod:
-      type = EbtFloat;
    case EOpAdd:
    case EOpSub:
    case EOpDiv:
@@ -1334,8 +1332,10 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
    case EOpSubAssign:
    case EOpDivAssign:
    case EOpModAssign:
-      if ((left->isMatrix() && right->isVector()) ||
-          (left->isVector() && right->isMatrix()) ||
+      if (op == EOpMod)
+		  type = EbtFloat;
+      if (left->isMatrix() && right->isVector() ||
+          left->isVector() && right->isMatrix() ||
           left->getBasicType() != right->getBasicType())
          return false;
       setType(TType(type, left->getPrecision(), EvqTemporary, size, left->isMatrix() || right->isMatrix()));
@@ -1347,8 +1347,8 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
    case EOpGreaterThan:
    case EOpLessThanEqual:
    case EOpGreaterThanEqual:
-      if ((left->isMatrix() && right->isVector()) ||
-          (left->isVector() && right->isMatrix()) ||
+      if (left->isMatrix() && right->isVector() ||
+          left->isVector() && right->isMatrix() ||
           left->getBasicType() != right->getBasicType())
          return false;
       setType(TType(EbtBool, higherPrecision, EvqTemporary, size, false));
