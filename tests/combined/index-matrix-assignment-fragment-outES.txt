@@ -1,0 +1,46 @@
+#version 120
+
+#extension GL_EXT_gpu_shader4 : require
+
+#line 16
+struct PS_INPUT {
+    highp vec4 position;
+    highp vec2 uv;
+};
+#line 9
+struct VS_INPUT {
+    highp vec4 position;
+    highp vec2 uv;
+    highp int vertex_id;
+    highp int instance_id;
+};
+uniform highp mat4 world;
+uniform highp mat4 view;
+#line 3
+uniform highp mat4 proj;
+uniform highp mat4[10] stupid;
+uniform sampler2D diffuse_map;
+#line 7
+uniform sampler2DShadow shadow_map;
+#line 21
+#line 41
+mediump vec4 ps_main( in PS_INPUT xlat_var_input, in highp int primitive_id );
+#line 41
+mediump vec4 ps_main( in PS_INPUT xlat_var_input, in highp int primitive_id ) {
+    mediump vec4 c = vec4(1.0, 1.0, 1.0, float(primitive_id));
+    c = texture2D(diffuse_map, xlat_var_input.uv);
+    highp float depth = 1.0;
+    #line 45
+    highp vec4 shadow = vec4(xlat_var_input.uv, depth, 1.0);
+    c *= shadow2DProj(shadow_map, shadow).x;
+    return c;
+}
+varying highp vec2 xlv_TEXCOORD0;
+void main() {
+    mediump vec4 xl_retval;
+    PS_INPUT xlt_xlat_var_input;
+    xlt_xlat_var_input.position = vec4(0.0);
+    xlt_xlat_var_input.uv = vec2( xlv_TEXCOORD0);
+    xl_retval = ps_main( xlt_xlat_var_input, int(gl_PrimitiveID));
+    gl_FragData[0] = vec4( xl_retval);
+}

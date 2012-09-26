@@ -131,10 +131,12 @@ static TSourceLoc lexlineno = { 0, 0 };
 "register"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (REGISTER); }
 
 "sampler1D"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER1D; }
+"sampler1DShadow" {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER1DSHADOW; }
 "sampler2D"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2D; }
+"sampler2DShadow" {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2DSHADOW; }
 "sampler3D"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER3D; }
 "samplerRECT"     {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLERRECT; }
-"sampler2Dshadow" {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2DSHADOW; }
+"samplerRECTShadow"     {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLERRECTSHADOW; }
 
 "sampler"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLERGENERIC; }
 "samplerCUBE"     {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLERCUBE; }

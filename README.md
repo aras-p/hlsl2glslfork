@@ -22,6 +22,12 @@ Changes from original HLSL2GLSL 0.9
 * Cleaner and more deterministic generated GLSL output
 * Unit testing suite
 * Simplified interface, code cleanup, unused code removal, merge copy-n-pasted code, simplify implementation etc.
+* Added support for emission of const initializers (including struct and array initializers using GLSL 1.20 array syntax).
+* Removed all constant folding functionality as it was completely broken.
+* A myriad of smaller bug fixes.
+* Support DX10 SV_VertexID, SV_PrimitiveID and SV_InstanceID semantics.
+* Support for shadow sampler types (samplerRECTShadow/sampler2DShadow etc.) which generate appropriate shadow2DRect/shadow2D etc. calls.
+* Fixed unaligned swizzled matrix access & assignments (view._m01_m02_m33 = value)
 
 
 Notes
@@ -36,6 +42,8 @@ Notes
 Status
 --------
 
-Seems to work quite well for Unity's shaders. When/if we bump into any issues; we'll just fix them.
+Used in Unity and bitsquid engine, and seems to work quite ok.
 
-No optimizations are performed on the generated GLSL, so it is expected that your platform will have a decent GLSL compiler. Or, use [GLSL Optimizer](http://github.com/aras-p/glsl-optimizer), we use it to optimize shaders produced by HLSL2GLSL; gives a substantial performance boost on mobile platforms.
+Support for DX11 features will probably not be added due to the bad condition the original code is in (very obscure and inefficient), instead maybe a new cross-compiler will be made.
+
+No optimizations are performed on the generated GLSL, so it is expected that your platform will have a decent GLSL compiler. Or, use [GLSL Optimizer](http://github.com/aras-p/glsl-optimizer), at Unity we use it to optimize shaders produced by HLSL2GLSL; gives a substantial performance boost on mobile platforms.

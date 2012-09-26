@@ -236,11 +236,13 @@ static bool CheckGLSL (bool vertex, const char* source)
 	return res;
 }
 
-static bool TestFile (bool vertex,
-	const std::string& inputPath,
-	const std::string& outputPath,
-	bool usePrecision,
-	bool doCheckGLSL)
+enum TestRun { VERTEX, FRAGMENT, BOTH, VERTEX_FAILURES, FRAGMENT_FAILURES, NUM_RUN_TYPES };
+static bool TestFile (TestRun type,
+					  const std::string& inputPath,
+					  const std::string& outputPath,
+					  const char* entryPoint,
+					  bool usePrecision,
+					  bool doCheckGLSL)
 {
 	std::string input;
 	if (!ReadStringFromFile (inputPath.c_str(), input))
@@ -248,8 +250,9 @@ static bool TestFile (bool vertex,
 		printf ("  failed to read input file\n");
 		return false;
 	}
-
-	ShHandle parser = Hlsl2Glsl_ConstructCompiler (vertex ? EShLangVertex : EShLangFragment);
+	
+	static const EShLanguage langs[] = {EShLangVertex, EShLangFragment};
+	ShHandle parser = Hlsl2Glsl_ConstructCompiler (langs[type]);
 
 	const char* sourceStr = input.c_str();
 
@@ -260,6 +263,9 @@ static bool TestFile (bool vertex,
 		options |= ETranslateOpIntermediate;
 	if (usePrecision)
 		options |= ETranslateOpUsePrecision;
+	
+	options |= ETranslateOpEmitSnowLeopardCompatibleArrayInitializers;
+	
 	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, options);
 	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 	if (kDumpShaderAST)
@@ -279,11 +285,13 @@ static bool TestFile (bool vertex,
 		};
 		Hlsl2Glsl_SetUserAttributeNames (parser, kAttribSemantic, kAttribString, 1);
 		Hlsl2Glsl_UseUserVaryings (parser, true);
-		int translateOk = Hlsl2Glsl_Translate (parser, "main", options);
+		
+		int translateOk = Hlsl2Glsl_Translate (parser, entryPoint, options);
 		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 		if (translateOk)
 		{
-			std::string text = Hlsl2Glsl_GetShader (parser);
+			std::string text = "#version 120\n\n";
+			text += Hlsl2Glsl_GetShader (parser);
 			
 			for (size_t i = 0, n = text.size(); i != n; ++i)
 			{
@@ -308,7 +316,7 @@ static bool TestFile (bool vertex,
 				printf ("  does not match expected output\n");
 				res = false;
 			}
-			if (doCheckGLSL && !CheckGLSL (vertex, text.c_str()))
+			if (doCheckGLSL && !CheckGLSL (type == VERTEX, text.c_str()))
 			{
 				res = false;
 			}
@@ -329,6 +337,7 @@ static bool TestFile (bool vertex,
 
 	return res;
 }
+
 
 static bool TestFileFailure (bool vertex,
 	const std::string& inputPath,
@@ -386,6 +395,59 @@ static bool TestFileFailure (bool vertex,
 	return res;
 }
 
+static bool TestCombinedFile(const std::string& inputPath,
+							 bool usePrecision,
+							 bool checkGL)
+{
+	std::string outname = inputPath.substr (0,inputPath.size()-7);
+	std::string frag_out, vert_out;
+	
+	if (usePrecision) {
+		vert_out = outname + "-vertex-outES.txt";
+		frag_out = outname + "-fragment-outES.txt";
+	} else {
+		vert_out = outname + "-vertex-out.txt";
+		frag_out = outname + "-fragment-out.txt";
+	}
+	
+	bool res = TestFile(VERTEX, inputPath, vert_out, "vs_main", usePrecision, !usePrecision && checkGL);
+	return res & TestFile(FRAGMENT, inputPath, frag_out, "ps_main", usePrecision, !usePrecision && checkGL);
+}
+
+
+static bool TestFile (TestRun type,
+					  const std::string& inputPath,
+					  bool usePrecision,
+					  bool checkGL)
+{
+	std::string outname = inputPath.substr (0,inputPath.size()-7);
+
+	if (type == VERTEX_FAILURES || type == FRAGMENT_FAILURES) {
+		return TestFileFailure(type==VERTEX_FAILURES, inputPath, outname + "-out.txt");
+	} else {
+		if (usePrecision) {
+			return TestFile(type, inputPath, outname + "-outES.txt", "main", true, false);
+		} else {
+			return TestFile(type, inputPath, outname + "-out.txt", "main", false, checkGL);
+		}
+	}
+	return false;
+}
+
+void Delete(void* p, void* ud);
+void* Allocate(unsigned size, void* ud);
+
+void* Allocate(unsigned size, void* ud)
+{
+	return malloc(size);
+}
+
+void Delete(void* p, void* ud)
+{
+	free(p);
+}
+
+
 
 int main (int argc, const char** argv)
 {
@@ -399,14 +461,14 @@ int main (int argc, const char** argv)
 	
 	clock_t time0 = clock();
 	
-	Hlsl2Glsl_Initialize ();
+	Hlsl2Glsl_Initialize (Allocate, Delete, NULL);
 
 	std::string baseFolder = argv[1];
 
-	static const char* kTypeName[4] = { "vertex", "fragment", "vertex-failures", "fragment-failures" };
+	static const char* kTypeName[NUM_RUN_TYPES] = { "vertex", "fragment", "combined", "vertex-failures", "fragment-failures" };
 	size_t tests = 0;
 	size_t errors = 0;
-	for (int type = 0; type < 2; ++type)
+	for (int type = 0; type < NUM_RUN_TYPES; ++type)
 	{
 		printf ("testing %s...\n", kTypeName[type]);
 		std::string testFolder = baseFolder + "/" + kTypeName[type];
@@ -417,52 +479,24 @@ int main (int argc, const char** argv)
 		for (size_t i = 0; i < n; ++i)
 		{
 			std::string inname = inputFiles[i];
+			bool ok = true;
+			
 			printf ("test %s\n", inname.c_str());
-			std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
-			std::string outnameES = inname.substr (0,inname.size()-7) + "-outES.txt";
-			bool ok = TestFile ((type % 2) == 0,
-				testFolder + "/" + inname,
-				testFolder + "/" + outname,
-				false,
-				hasOpenGL);
-			if (ok)
-			{
-				ok = TestFile (type==0,
-					testFolder + "/" + inname,
-					testFolder + "/" + outnameES,
-					true,
-					false);
+			if (type == BOTH) {
+				ok = TestCombinedFile(testFolder + "/" + inname, false, hasOpenGL);
+				if (ok)
+					ok = TestCombinedFile(testFolder + "/" + inname, true, false);
+			} else {
+				ok = TestFile(TestRun(type), testFolder + "/" + inname, false, hasOpenGL);
+				if (ok)
+					ok = TestFile(TestRun(type), testFolder + "/" + inname, true, false);
 			}
+			
 			if (!ok)
-			{
 				++errors;
-			}
 		}
 	}
 
-	for (int type = 2; type < 4; ++type)
-	{
-		printf ("testing %s...\n", kTypeName[type]);
-		std::string testFolder = baseFolder + "/" + kTypeName[type];
-		StringVector inputFiles = GetFiles (testFolder, "-in.txt");
-
-		size_t n = inputFiles.size();
-		tests += n;
-		for (size_t i = 0; i < n; ++i)
-		{
-			std::string inname = inputFiles[i];
-			printf ("test %s\n", inname.c_str());
-			std::string outname = inname.substr (0,inname.size()-7) + "-out.txt";
-			bool ok = TestFileFailure ((type % 2) == 0,
-				testFolder + "/" + inname,
-				testFolder + "/" + outname);
-			if (!ok)
-			{
-				++errors;
-			}
-		}
-	}
-	
 	clock_t time1 = clock();
 	float t = float(time1-time0) / float(CLOCKS_PER_SEC);
 	if (errors != 0)

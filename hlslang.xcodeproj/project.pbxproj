@@ -29,7 +29,6 @@
 		2B951CB11135197300DBAF46 /* IntermTraverse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E2B0AF106F40045E29C /* IntermTraverse.cpp */; };
 		2B951CB31135197300DBAF46 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10EAA0AF109530045E29C /* memory.c */; };
 		2B951CB41135197300DBAF46 /* ossource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E480AF107290045E29C /* ossource.cpp */; };
-		2B951CB51135197300DBAF46 /* parseConst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E2C0AF106F40045E29C /* parseConst.cpp */; };
 		2B951CB61135197300DBAF46 /* ParseHelper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E2D0AF106F40045E29C /* ParseHelper.cpp */; };
 		2B951CB71135197300DBAF46 /* PoolAlloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E2E0AF106F40045E29C /* PoolAlloc.cpp */; };
 		2B951CB81135197300DBAF46 /* propagateMutable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E060AF103660045E29C /* propagateMutable.cpp */; };
@@ -52,7 +51,6 @@
 		3A9176410A643D5A00E8641B /* InitializeDll.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = InitializeDll.h; sourceTree = "<group>"; };
 		3AC10DD20AF103020045E29C /* BaseTypes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = BaseTypes.h; path = hlslang/Include/BaseTypes.h; sourceTree = "<group>"; };
 		3AC10DD30AF103020045E29C /* Common.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Common.h; path = hlslang/Include/Common.h; sourceTree = "<group>"; };
-		3AC10DD40AF103020045E29C /* ConstantUnion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ConstantUnion.h; path = hlslang/Include/ConstantUnion.h; sourceTree = "<group>"; };
 		3AC10DD50AF103020045E29C /* InfoSink.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = InfoSink.h; path = hlslang/Include/InfoSink.h; sourceTree = "<group>"; };
 		3AC10DD60AF103020045E29C /* InitializeGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = InitializeGlobals.h; path = hlslang/Include/InitializeGlobals.h; sourceTree = "<group>"; };
 		3AC10DD70AF103020045E29C /* InitializeParseContext.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = InitializeParseContext.h; path = hlslang/Include/InitializeParseContext.h; sourceTree = "<group>"; };
@@ -91,7 +89,6 @@
 		3AC10E290AF106F40045E29C /* Intermediate.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Intermediate.cpp; path = hlslang/MachineIndependent/Intermediate.cpp; sourceTree = "<group>"; };
 		3AC10E2A0AF106F40045E29C /* intermOut.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = intermOut.cpp; path = hlslang/MachineIndependent/intermOut.cpp; sourceTree = "<group>"; };
 		3AC10E2B0AF106F40045E29C /* IntermTraverse.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IntermTraverse.cpp; path = hlslang/MachineIndependent/IntermTraverse.cpp; sourceTree = "<group>"; };
-		3AC10E2C0AF106F40045E29C /* parseConst.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = parseConst.cpp; path = hlslang/MachineIndependent/parseConst.cpp; sourceTree = "<group>"; };
 		3AC10E2D0AF106F40045E29C /* ParseHelper.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ParseHelper.cpp; path = hlslang/MachineIndependent/ParseHelper.cpp; sourceTree = "<group>"; };
 		3AC10E2E0AF106F40045E29C /* PoolAlloc.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = PoolAlloc.cpp; path = hlslang/MachineIndependent/PoolAlloc.cpp; sourceTree = "<group>"; };
 		3AC10E300AF106F40045E29C /* RemoveTree.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = RemoveTree.cpp; path = hlslang/MachineIndependent/RemoveTree.cpp; sourceTree = "<group>"; };
@@ -209,7 +206,6 @@
 			children = (
 				3AC10DD20AF103020045E29C /* BaseTypes.h */,
 				3AC10DD30AF103020045E29C /* Common.h */,
-				3AC10DD40AF103020045E29C /* ConstantUnion.h */,
 				3AC10DD50AF103020045E29C /* InfoSink.h */,
 				3AC10DD60AF103020045E29C /* InitializeGlobals.h */,
 				3AC10DD70AF103020045E29C /* InitializeParseContext.h */,
@@ -234,7 +230,6 @@
 				3AC10E290AF106F40045E29C /* Intermediate.cpp */,
 				3AC10E2A0AF106F40045E29C /* intermOut.cpp */,
 				3AC10E2B0AF106F40045E29C /* IntermTraverse.cpp */,
-				3AC10E2C0AF106F40045E29C /* parseConst.cpp */,
 				3AC10E2D0AF106F40045E29C /* ParseHelper.cpp */,
 				3AC10E2E0AF106F40045E29C /* PoolAlloc.cpp */,
 				3AC10E300AF106F40045E29C /* RemoveTree.cpp */,
@@ -417,7 +412,6 @@
 				2B951CB11135197300DBAF46 /* IntermTraverse.cpp in Sources */,
 				2B951CB31135197300DBAF46 /* memory.c in Sources */,
 				2B951CB41135197300DBAF46 /* ossource.cpp in Sources */,
-				2B951CB51135197300DBAF46 /* parseConst.cpp in Sources */,
 				2B951CB61135197300DBAF46 /* ParseHelper.cpp in Sources */,
 				2B951CB71135197300DBAF46 /* PoolAlloc.cpp in Sources */,
 				2B951CB81135197300DBAF46 /* propagateMutable.cpp in Sources */,

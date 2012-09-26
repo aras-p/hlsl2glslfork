@@ -22,22 +22,22 @@ extern "C" {
 /// Types of languages the HLSL2GLSL translator can consume.
 typedef enum
 {
-   EShLangVertex,
-   EShLangFragment,
-   EShLangCount,
+	EShLangVertex,
+	EShLangFragment,
+	EShLangCount,
 } EShLanguage;
 
 /// Binding table.  This can be used for locating attributes, uniforms, globals, etc., as needed.
 typedef struct
 {
-   char* name;
-   int binding;
+	char* name;
+	int binding;
 } ShBinding;
 
 typedef struct
 {
-   int numBindings;
-   ShBinding* bindings;  // array of bindings
+	int numBindings;
+	ShBinding* bindings;  // array of bindings
 } ShBindingTable;
 
 
@@ -45,28 +45,32 @@ typedef struct
 /// NOTE: these are ordered to exactly match the internal enums
 typedef enum
 {
-   EShTypeVoid,
-   EShTypeBool,
-   EShTypeBVec2,
-   EShTypeBVec3,
-   EShTypeBVec4,
-   EShTypeInt,
-   EShTypeIVec2,
-   EShTypeIVec3,
-   EShTypeIVec4,
-   EShTypeFloat,
-   EShTypeVec2,
-   EShTypeVec3,
-   EShTypeVec4,
-   EShTypeMat2,
-   EShTypeMat3,
-   EShTypeMat4,
-   EShTypeSampler,
-   EShTypeSampler1D,
-   EShTypeSampler2D,
-   EShTypeSampler3D,
-   EShTypeSamplerCube,
-   EShTypeStruct
+	EShTypeVoid,
+	EShTypeBool,
+	EShTypeBVec2,
+	EShTypeBVec3,
+	EShTypeBVec4,
+	EShTypeInt,
+	EShTypeIVec2,
+	EShTypeIVec3,
+	EShTypeIVec4,
+	EShTypeFloat,
+	EShTypeVec2,
+	EShTypeVec3,
+	EShTypeVec4,
+	EShTypeMat2,
+	EShTypeMat3,
+	EShTypeMat4,
+	EShTypeSampler,
+	EShTypeSampler1D,
+	EShTypeSampler1DShadow,
+	EShTypeSampler2D,
+	EShTypeSampler2DShadow,
+	EShTypeSampler3D,
+	EShTypeSamplerCube,
+	EShTypeSamplerRect,
+	EShTypeSamplerRectShadow,
+	EShTypeStruct
 } EShType;
 
 
@@ -74,53 +78,78 @@ typedef enum
 /// NOTE: these are ordered to exactly match the internal tables
 enum EAttribSemantic
 {
-   EAttrSemNone,
-   EAttrSemPosition,
-   EAttrSemVPos,
-   EAttrSemVFace,
-   EAttrSemNormal,
-   EAttrSemColor0,
-   EAttrSemColor1,
-   EAttrSemColor2,
-   EAttrSemColor3,
-   EAttrSemTex0,
-   EAttrSemTex1,
-   EAttrSemTex2,
-   EAttrSemTex3,
-   EAttrSemTex4,
-   EAttrSemTex5,
-   EAttrSemTex6,
-   EAttrSemTex7,
-   EAttrSemTex8,
-   EAttrSemTex9,
-   EAttrSemTangent,
-   EAttrSemBinormal,
-   EAttrSemBlendWeight,
-   EAttrSemBlendIndices,
-   EAttrSemDepth,
-   EAttrSemUnknown,
-   EAttrSemCount
+	EAttrSemNone,
+	EAttrSemPosition,
+	EAttrSemVPos,
+	EAttrSemVFace,
+	EAttrSemNormal,
+	EAttrSemColor0,
+	EAttrSemColor1,
+	EAttrSemColor2,
+	EAttrSemColor3,
+	EAttrSemTex0,
+	EAttrSemTex1,
+	EAttrSemTex2,
+	EAttrSemTex3,
+	EAttrSemTex4,
+	EAttrSemTex5,
+	EAttrSemTex6,
+	EAttrSemTex7,
+	EAttrSemTex8,
+	EAttrSemTex9,
+	EAttrSemTangent,
+	EAttrSemBinormal,
+	EAttrSemBlendWeight,
+	EAttrSemBlendIndices,
+	EAttrSemDepth,
+	EAttrSemUnknown,
+	EAttrSemVertexID,
+	EAttrSemInstanceID,
+	EAttrSemPrimitiveID,
+	EAttrSemCount
 };
 
 
 /// Uniform info struct
 typedef struct
 {
-   char *name;
-   char *semantic;
-   EShType type;
-   int arraySize;
-   float *init;
-   void *annt;
+	char *name;
+	char *semantic;
+	EShType type;
+	int arraySize;
+	float *init;
+	void *annt;
 } ShUniformInfo;
 
 
 /// Translation options
 enum TTranslateOptions
 {
-   ETranslateOpNone = 0,
-   ETranslateOpIntermediate = (1<<0),
-   ETranslateOpUsePrecision = (1<<1),
+	ETranslateOpNone = 0,
+	ETranslateOpIntermediate = (1<<0),
+	ETranslateOpUsePrecision = (1<<1),
+	
+	/// Array initializers on OS X 10.6.X GLSL 1.20 are broken. Enabling this flag will tell the compiler
+	/// to emit two versions of all array initializations, one that is compatible with snow leopard and one that
+	/// is standard GLSL 1.20.
+	///
+	/// Example of emitted code for a simple array declaration:
+	/// (HLSL Source)
+	///		float2 samples[] = {
+	///			float2(-1, 0.1),
+	///			float2(0, 0.5),
+	///			float2(1, 0.1)
+	///		};
+	/// (GLSL Emitted result)
+	///		#if defined(OSX_SNOW_LEOPARD)
+	///			vec2[] samples;
+	///			samples[0] = vec2(-1.0, 0.1);
+	///			samples[0] = vec2(0.0, 0.5);
+	///			samples[0] = vec2(1.0, 0.1);
+	///		#else
+	///			const vec2 samples[] = vec2[](vec2(-1.0, 0.1), vec2(0.0, 0.5), vec2(1.0, 0.1)); 
+	///		#endif
+	ETranslateOpEmitSnowLeopardCompatibleArrayInitializers = (1<<2)
 };
 
 
@@ -129,13 +158,15 @@ enum TTranslateOptions
 /// If handle creation fails, 0 will be returned.
 class HlslCrossCompiler;
 typedef HlslCrossCompiler* ShHandle;
-
+	
+typedef void*(*GlobalAllocateFunction)(unsigned, void*);
+typedef void(*GlobalFreeFunction)(void*, void*);
 
 /// Initialize the HLSL2GLSL translator.  This function must be called once prior to calling any other
 /// HLSL2GLSL translator functions
 /// \return
 ///   1 on success, 0 on failure
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize();
+SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction free, void* user);
 
 
 /// Finalize the HLSL2GLSL translator.  This function should be called to de-initialize the HLSL2GLSL 
@@ -144,6 +175,8 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize();
 ///   1 on success, 0 on failure
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Finalize();
 
+/// 
+SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Shutdown();
 
 /// Construct a compiler for the given language (one per shader)
 SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage language );  

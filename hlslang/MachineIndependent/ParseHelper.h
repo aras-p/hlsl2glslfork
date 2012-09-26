@@ -9,7 +9,6 @@
 #include "SymbolTable.h"
 #include "localintermediate.h"
 
-
 //
 // The following are extra variables needed during parsing, grouped together so
 // they can be passed to the parser without needing a global.
@@ -72,19 +71,14 @@ struct TParseContext
    bool paramErrorCheck(const TSourceLoc& line, TQualifier qualifier, TQualifier paramQualifier, TType* type);
    const TFunction* findFunction(const TSourceLoc& line, TFunction* pfnCall, bool *builtIn = 0);
    bool executeInitializer(TSourceLoc line, TString& identifier, const TTypeInfo *info, TPublicType& pType, 
-                           TIntermTyped* initializer, TIntermNode*& intermNode, TVariable* variable = 0);
+                           TIntermTyped*& initializer, TIntermSymbol*& intermNode, TVariable* variable = 0);
    bool executeInitializer(TSourceLoc line, TString& identifier, TPublicType& pType, 
-                           TIntermTyped* initializer, TIntermNode*& intermNode, TVariable* variable = 0);
+                           TIntermTyped*& initializer, TIntermSymbol*& intermNode, TVariable* variable = 0);
    bool areAllChildConst(TIntermAggregate* aggrNode);
    TIntermTyped* addConstructor(TIntermNode*, const TType*, TOperator, TFunction*, TSourceLoc);
-   TIntermTyped* foldConstConstructor(TIntermAggregate* aggrNode, const TType& type);
    TIntermTyped* constructArray(TIntermAggregate*, const TType*, TOperator, TSourceLoc);
    TIntermTyped* constructStruct(TIntermNode*, TType*, int, TSourceLoc, bool subset);
    TIntermTyped* constructBuiltIn(const TType*, TOperator, TIntermNode*, TSourceLoc, bool subset);
-   TIntermTyped* addConstVectorNode(TVectorFields&, TIntermTyped*, TSourceLoc);
-   TIntermTyped* addConstMatrixNode(int , TIntermTyped*, TSourceLoc);
-   TIntermTyped* addConstArrayNode(int index, TIntermTyped* node, TSourceLoc line);
-   TIntermTyped* addConstStruct(TString& , TIntermTyped*, TSourceLoc);
    TIntermTyped* addAssign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
    TIntermAggregate* mergeAggregates( TIntermAggregate *left, TIntermAggregate *right);
    bool arraySetMaxSize(TIntermSymbol*, TType*, int, bool, TSourceLoc);

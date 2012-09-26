@@ -31,11 +31,13 @@ enum EGlslSymbolType
    EgstFloat4x4,
    EgstSamplerGeneric,
    EgstSampler1D,
+   EgstSampler1DShadow,
    EgstSampler2D,
+   EgstSampler2DShadow,
    EgstSampler3D,
    EgstSamplerCube,
    EgstSamplerRect,
-   EgstSampler2DShadow,
+   EgstSamplerRectShadow,
    EgstStruct,
    EgstTypeCount
 };

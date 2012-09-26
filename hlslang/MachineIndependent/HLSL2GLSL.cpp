@@ -131,11 +131,13 @@ bool GenerateBuiltInSymbolTable(TInfoSink& infoSink, TSymbolTable* symbolTables,
 
 
 
-int C_DECL Hlsl2Glsl_Initialize()
+int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction free, void* user)
 {
    TInfoSink infoSink;
    bool ret = true;
 
+   SetGlobalAllocationAllocator(alloc, free, user);
+	
    if (!InitProcess())
       return 0;
 
@@ -174,7 +176,10 @@ int C_DECL Hlsl2Glsl_Initialize()
    return ret ? 1 : 0;
 }
 
-
+int C_DECL Hlsl2Glsl_Shutdown()
+{
+   return DetachProcess();
+}
 
 int C_DECL Hlsl2Glsl_Finalize()
 {
@@ -267,7 +272,7 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 			intermediate.outputTree(parseContext.treeRoot);
 
 		compiler->TransformAST (parseContext.treeRoot);
-		compiler->ProduceGLSL (parseContext.treeRoot, (options & ETranslateOpUsePrecision) ? true : false);
+		compiler->ProduceGLSL (parseContext.treeRoot, TTranslateOptions(options));
    }
    else if (!success)
    {

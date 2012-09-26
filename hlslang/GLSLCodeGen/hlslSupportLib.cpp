@@ -440,7 +440,7 @@ void initializeHLSLSupportLibrary()
 		"vec4 xll_matrixindexdynamic (mat4 m, int i) { return xll_matrixindex (m, i); }\n"
 		"#endif\n")
 		);
-	
+
    hlslSupportLib->insert( CodeMap::value_type( EOpConstructMat2FromMat,
         "mat2 xll_constructMat2( mat3 m) {\n"
         "  return mat2( vec2( m[0]), vec2( m[1]));\n"

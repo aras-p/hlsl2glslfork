@@ -38,40 +38,40 @@ inline TTypeList* NewPoolTTypeList()
 class TPublicType
 {
 public:
-   TBasicType type;
-   TQualifier qualifier;
-   TPrecision precision;
-   int size;          // size of vector or matrix, not size of array
-   bool matrix;
-   bool array;
-   int arraySize;
-   TType* userDef;
-   TSourceLoc line;
+	TBasicType type;
+	TQualifier qualifier;
+	TPrecision precision;
+	int size;          // size of vector or matrix, not size of array
+	bool matrix;
+	bool array;
+	int arraySize;
+	TType* userDef;
+	TSourceLoc line;
 
-   void setBasic(TBasicType bt, TQualifier q, const TSourceLoc& ln = gNullSourceLoc) 
-   {
-      type = bt;
-      qualifier = q;
-	  precision = EbpUndefined;
-      size = 1;
-      matrix = false;
-      array = false;
-      arraySize = 0;
-      userDef = 0;
-      line = ln;
-   }
+	void setBasic(TBasicType bt, TQualifier q, const TSourceLoc& ln = gNullSourceLoc)
+	{
+		type = bt;
+		qualifier = q;
+		precision = EbpUndefined;
+		size = 1;
+		matrix = false;
+		array = false;
+		arraySize = 0;
+		userDef = 0;
+		line = ln;
+	}
 
-   void setAggregate(int s, bool m = false)
-   {
-      size = s;
-      matrix = m;
-   }
+	void setAggregate(int s, bool m = false)
+	{
+		size = s;
+		matrix = m;
+	}
 
-   void setArray(bool a, int s = 0)
-   {
-      array = a;
-      arraySize = s;
-   }
+	void setArray(bool a, int s = 0)
+	{
+		array = a;
+		arraySize = s;
+	}
 };
 
 typedef std::map<TTypeList*, TTypeList*> TStructureMap;
@@ -228,7 +228,7 @@ public:
 
    bool isMatrix() const { return matrix ? true : false; }
    void setMatrix(bool m) { matrix = m; }
-
+   void setArray(bool is_array) { array = is_array; }
    bool isArray() const { return array ? true : false; }
    int getArraySize() const { return arraySize; }
    void setArraySize(int s) { array = true; arraySize = s; }
@@ -260,7 +260,7 @@ public:
    }
    TTypeList* getStruct() const { return structure; }
    void setStruct(TTypeList* s) { structure = s; }
-
+	
    int getObjectSize() const
    {
       int totalSize;

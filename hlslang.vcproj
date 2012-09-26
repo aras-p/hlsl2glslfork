@@ -461,10 +461,6 @@
 				>
 			</File>
 			<File
-				RelativePath="hlslang\MachineIndependent\parseConst.cpp"
-				>
-			</File>
-			<File
 				RelativePath="hlslang\MachineIndependent\ParseHelper.cpp"
 				>
 			</File>
