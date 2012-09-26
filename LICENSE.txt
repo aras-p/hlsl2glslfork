@@ -2,7 +2,8 @@
 Source Copyright
 ----------------
 
-Copyright (C) 2010  Unity Technologies Inc.
+Copyright (C) 2010-2012  Unity Technologies Inc.
+Copyright (C) 2012       BitSquid AB
 Copyright (C) 2005-2006  ATI Research Inc. Ltd.
 Copyright (C) 2002-2005  3Dlabs Inc. Ltd.
 All rights reserved.
