@@ -352,14 +352,14 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 		TIntermSequence& init = assign->getRight()->getAsAggregate()->getSequence();
 		
 		writeType(out, symbol_type, NULL, goit->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
-		out << "[" << type.getArraySize() << "] " << sym->getSymbol();
+		out << " " << sym->getSymbol() << "[" << type.getArraySize() << "]";
 		current->endStatement();
 		
 		unsigned n_vals = init.size();
 		for (unsigned i = 0; i != n_vals; ++i) {
 			current->beginStatement();
 			sym->traverse(goit);
-			out << " = ";
+			out << "[" << i << "] = ";
 			init[i]->traverse(goit);
 			current->endStatement();
 		}
