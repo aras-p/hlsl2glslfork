@@ -298,7 +298,7 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
 	, structList(sList)
 	, swizzleAssignTempCounter(0)
 	, m_UsePrecision(options & ETranslateOpUsePrecision)
-	, m_EmitSnowLeopardCompatibleArrayInitializers(options & ETranslateOpEmitSnowLeopardCompatibleArrayInitializers)
+	, emitGLSL120ArrayInitializers(options & ETranslateOpEmitGLSL120ArrayInitializers)
 {
 	m_LastLineOutput.file = NULL;
 	m_LastLineOutput.line = -1;
@@ -329,15 +329,14 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 	EGlslSymbolType symbol_type = translateType(decl->getTypePointer());
 	TType& type = *decl->getTypePointer();
 	
-	
-	bool emit_osx10_6_arrays = goit->m_EmitSnowLeopardCompatibleArrayInitializers
+	const bool emit_pre_glsl_120_arrays = !goit->emitGLSL120ArrayInitializers
 		&& decl->containsArrayInitialization();
 	
-	if (emit_osx10_6_arrays) {
-		assert(decl->isSingleInitialization() && "Emission of multiple in-line array declarations isn't supported when running in OS X 10.6 compatible mode.");
+	if (emit_pre_glsl_120_arrays) {
+		assert(decl->isSingleInitialization() && "Emission of multiple in-line array declarations isn't supported when running in pre-GLSL1.20 compatible mode.");
 		
 		current->indent(out);
-		out << "#if defined(OSX_SNOW_LEOPARD)" << std::endl;
+		out << "#if !defined(HLSL2GLSL_ENABLE_ARRAY_INIT)" << std::endl;
 		current->increaseDepth();
 		
 		TQualifier q = type.getQualifier();
@@ -392,7 +391,7 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 	
 	current->endStatement();
 	
-	if (emit_osx10_6_arrays) {
+	if (emit_pre_glsl_120_arrays) {
 		current->decreaseDepth();
 		current->indent(out);
 		out << "#endif" << std::endl;

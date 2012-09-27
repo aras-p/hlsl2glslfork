@@ -242,6 +242,7 @@ static bool TestFile (TestRun type,
 					  const std::string& outputPath,
 					  const char* entryPoint,
 					  bool usePrecision,
+					  bool useGLSL120Arrays,
 					  bool doCheckGLSL)
 {
 	std::string input;
@@ -264,7 +265,11 @@ static bool TestFile (TestRun type,
 	if (usePrecision)
 		options |= ETranslateOpUsePrecision;
 	
-	options |= ETranslateOpEmitSnowLeopardCompatibleArrayInitializers;
+	if (useGLSL120Arrays)
+	{
+		assert (!usePrecision); // GLES 1.0 can't do that
+		options |= ETranslateOpEmitGLSL120ArrayInitializers;
+	}
 	
 	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, options);
 	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
@@ -410,14 +415,15 @@ static bool TestCombinedFile(const std::string& inputPath,
 		frag_out = outname + "-fragment-out.txt";
 	}
 	
-	bool res = TestFile(VERTEX, inputPath, vert_out, "vs_main", usePrecision, !usePrecision && checkGL);
-	return res & TestFile(FRAGMENT, inputPath, frag_out, "ps_main", usePrecision, !usePrecision && checkGL);
+	bool res = TestFile(VERTEX, inputPath, vert_out, "vs_main", usePrecision, false, !usePrecision && checkGL);
+	return res & TestFile(FRAGMENT, inputPath, frag_out, "ps_main", usePrecision, false, !usePrecision && checkGL);
 }
 
 
 static bool TestFile (TestRun type,
 					  const std::string& inputPath,
 					  bool usePrecision,
+					  bool useGLSL120Arrays,
 					  bool checkGL)
 {
 	std::string outname = inputPath.substr (0,inputPath.size()-7);
@@ -426,9 +432,9 @@ static bool TestFile (TestRun type,
 		return TestFileFailure(type==VERTEX_FAILURES, inputPath, outname + "-out.txt");
 	} else {
 		if (usePrecision) {
-			return TestFile(type, inputPath, outname + "-outES.txt", "main", true, false);
+			return TestFile(type, inputPath, outname + "-outES.txt", "main", true, useGLSL120Arrays, false);
 		} else {
-			return TestFile(type, inputPath, outname + "-out.txt", "main", false, checkGL);
+			return TestFile(type, inputPath, outname + "-out.txt", "main", false, useGLSL120Arrays, checkGL);
 		}
 	}
 	return false;
@@ -487,9 +493,10 @@ int main (int argc, const char** argv)
 				if (ok)
 					ok = TestCombinedFile(testFolder + "/" + inname, true, false);
 			} else {
-				ok = TestFile(TestRun(type), testFolder + "/" + inname, false, hasOpenGL);
-				if (ok)
-					ok = TestFile(TestRun(type), testFolder + "/" + inname, true, false);
+				const bool useGLSL120Arrays = (inname.find("arrayglsl120") != std::string::npos);
+				ok = TestFile(TestRun(type), testFolder + "/" + inname, false, useGLSL120Arrays, hasOpenGL);
+				if (ok && !useGLSL120Arrays)
+					ok = TestFile(TestRun(type), testFolder + "/" + inname, true, false, false);
 			}
 			
 			if (!ok)

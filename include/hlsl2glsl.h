@@ -129,9 +129,10 @@ enum TTranslateOptions
 	ETranslateOpIntermediate = (1<<0),
 	ETranslateOpUsePrecision = (1<<1),
 	
-	/// Array initializers on OS X 10.6.X GLSL 1.20 are broken. Enabling this flag will tell the compiler
-	/// to emit two versions of all array initializations, one that is compatible with snow leopard and one that
-	/// is standard GLSL 1.20.
+	/// Array initializers do not exist on GLSL ES 1.0, and are broken on
+	/// OS X 10.6.x with GLSL 1.20 as well. By default we'll emit code
+	/// that can handle both cases, with "real" initialization path
+	/// kicking in only when you've defined HLSL2GLSL_ENABLE_ARRAY_INIT.
 	///
 	/// Example of emitted code for a simple array declaration:
 	/// (HLSL Source)
@@ -141,15 +142,18 @@ enum TTranslateOptions
 	///			float2(1, 0.1)
 	///		};
 	/// (GLSL Emitted result)
-	///		#if defined(OSX_SNOW_LEOPARD)
-	///			vec2[] samples;
-	///			samples[0] = vec2(-1.0, 0.1);
-	///			samples[0] = vec2(0.0, 0.5);
-	///			samples[0] = vec2(1.0, 0.1);
-	///		#else
+	///		#if defined(HLSL2GLSL_ENABLE_ARRAY_INIT)
 	///			const vec2 samples[] = vec2[](vec2(-1.0, 0.1), vec2(0.0, 0.5), vec2(1.0, 0.1)); 
+	///		#else
+	///			vec2 samples[];
+	///			samples[0] = vec2(-1.0, 0.1);
+	///			samples[1] = vec2(0.0, 0.5);
+	///			samples[2] = vec2(1.0, 0.1);
 	///		#endif
-	ETranslateOpEmitSnowLeopardCompatibleArrayInitializers = (1<<2)
+	///
+	/// If you don't need GLSL ES 1.0 support, or OS X 10.6.x support,
+	/// then pass this flag to always use "real" array initializers.
+	ETranslateOpEmitGLSL120ArrayInitializers = (1<<2)
 };
 
 

@@ -61,10 +61,10 @@ public:
    // Persistent data for collecting indices
    std::vector<int> indexList;
 
-   unsigned swizzleAssignTempCounter;
-	bool m_UsePrecision;
-   bool m_EmitSnowLeopardCompatibleArrayInitializers;   
 	TSourceLoc m_LastLineOutput;
+	unsigned swizzleAssignTempCounter;
+	bool m_UsePrecision;
+	bool emitGLSL120ArrayInitializers;
 };
 
 #endif //GLSL_OUTPUT_H
