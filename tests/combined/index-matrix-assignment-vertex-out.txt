@@ -1,6 +1,5 @@
-#version 120
-
 #extension GL_EXT_gpu_shader4 : require
+#extension GL_ARB_draw_instanced : require
 mat2 xll_transpose(mat2 m) {
   return mat2( m[0][0], m[1][0], m[0][1], m[1][1]);
 }
@@ -48,13 +47,13 @@ struct VS_INPUT {
     int vertex_id;
     int instance_id;
 };
+#line 1
 uniform mat4 world;
 uniform mat4 view;
-#line 3
 uniform mat4 proj;
-uniform mat4[10] stupid;
+uniform mat4 stupid[10];
+#line 6
 uniform sampler2D diffuse_map;
-#line 7
 uniform sampler2DShadow shadow_map;
 #line 21
 #line 41
@@ -63,7 +62,7 @@ PS_INPUT vs_main( in VS_INPUT xlat_var_input );
 #line 21
 PS_INPUT vs_main( in VS_INPUT xlat_var_input ) {
     PS_INPUT o;
-    mat3 dummy = xll_transpose(mat3(vec3(0.0), vec3(0.0), vec3(0.0)));
+    mat3 dummy = xll_transpose(mat3( vec3( 0.0), vec3( 0.0), vec3( 0.0)));
     #line 26
     vec4 wp = (xlat_var_input.position * world);
     xlat_mutable_stupid[2] = view;
@@ -73,10 +72,10 @@ PS_INPUT vs_main( in VS_INPUT xlat_var_input ) {
     xlat_mutable_stupid[2][2][3] = xlat_swiztemp0.z;
     #line 31
     dummy[0][2] = 0.0;
-    vec2 xlat_swiztemp1 = vec2(0.0, 0.0);
+    vec2 xlat_swiztemp1 = vec2( 0.0, 0.0);
     dummy[0][2] = xlat_swiztemp1.x;
     dummy[2][0] = xlat_swiztemp1.y;
-    dummy[2][2] = float(xll_matrixindexdynamic (dummy, ((xlat_var_input.instance_id * 2) + xlat_var_input.vertex_id)));
+    dummy[2][2] = float( xll_matrixindexdynamic (dummy, ((xlat_var_input.instance_id * 2) + xlat_var_input.vertex_id)));
     #line 35
     o.position = ((wp * xlat_mutable_stupid[2]) * proj);
     o.uv = xlat_var_input.uv;
@@ -89,7 +88,7 @@ void main() {
     xlt_xlat_var_input.position = vec4( gl_Vertex);
     xlt_xlat_var_input.uv = vec2( gl_MultiTexCoord0);
     xlt_xlat_var_input.vertex_id = int( gl_VertexID);
-    xlt_xlat_var_input.instance_id = int( gl_InstanceID);
+    xlt_xlat_var_input.instance_id = int( gl_InstanceIDARB);
     xl_retval = vs_main( xlt_xlat_var_input);
     gl_Position = vec4( xl_retval.position);
     xlv_TEXCOORD0 = vec2( xl_retval.uv);

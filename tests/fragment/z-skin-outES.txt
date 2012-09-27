@@ -45,7 +45,7 @@ highp vec4 xlat_main( in v2f_withBlurCoords i ) {
         curve[5] = 0.061;
         curve[6] = 0.006;
     #else
-        const highp float curve = float[7]( 0.006, 0.061, 0.242, 0.383, 0.242, 0.061, 0.006)[7];
+        const highp float[7] curve = float[7]( 0.006, 0.061, 0.242, 0.383, 0.242, 0.061, 0.006);
     #endif
     highp vec2 stretch = ((texture2D( _SssStretch, uv).xy * _SssStretch_AddMul.yy) + _SssStretch_AddMul.xx);
     highp vec2 netFilterWidth = (stretch * i.offs);

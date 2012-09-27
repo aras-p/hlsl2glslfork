@@ -295,7 +295,9 @@ static bool TestFile (TestRun type,
 		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 		if (translateOk)
 		{
-			std::string text = "#version 120\n\n";
+			std::string text;
+			if (useGLSL120Arrays)
+				text += "#version 120\n\n";
 			text += Hlsl2Glsl_GetShader (parser);
 			
 			for (size_t i = 0, n = text.size(); i != n; ++i)
