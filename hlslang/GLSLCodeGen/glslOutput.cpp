@@ -380,13 +380,18 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 	else
 		writeType(out, symbol_type, NULL, goit->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
 
-	// Note: GLSL 1.20+ could emit array size here, but not GLSL 1.10 nor GLSL ES...
+	// If we're emitting GLSL 1.20+ code with array initializer,
+	// we need to emit size here.
+	if (type.isArray() && decl->containsArrayInitialization())
+		out << "[" << type.getArraySize() << "]";
 	
 	out << " ";
 	
 	decl->getDeclaration()->traverse(goit);
 	
-	if (type.isArray())
+	// Otherwise it's just array decl without initializer,
+	// so emit array size here.
+	if (type.isArray() && !decl->containsArrayInitialization())
 		out << "[" << type.getArraySize() << "]";
 	
 	current->endStatement();
