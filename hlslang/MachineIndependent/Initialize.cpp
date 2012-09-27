@@ -92,7 +92,7 @@ void TBuiltIns::initialize()
       s.append(TString("float3x3  acos(float3x3  x);"));
       s.append(TString("float4x4  acos(float4x4  x);"));
 
-      s.append(TString("float atan2(float y, float x);"));
+      s.append(TString("float atan2(float y, float x);")); 
       s.append(TString("float2  atan2(float2  y, float2  x);"));
       s.append(TString("float3  atan2(float3  y, float3  x);"));
       s.append(TString("float4  atan2(float4  y, float4  x);"));
@@ -452,8 +452,8 @@ void TBuiltIns::initialize()
       s.append(TString("float4 texRECTproj(samplerRECTShadow s, float4 coord);"));
       s.append(TString("float4 texRECTproj(samplerRECT s, float3 coord);"));
 	   
-		s.append(TString("float shadow2D(sampler2Dshadow s, float3 coord);"));
-		s.append(TString("float shadow2Dproj(sampler2Dshadow s, float4 coord);"));
+		s.append(TString("float shadow2D(sampler2DShadow s, float3 coord);"));
+		s.append(TString("float shadow2Dproj(sampler2DShadow s, float4 coord);"));
 	   
       s.append(TString("float4 tex1D(sampler s, float coord);"));
       s.append(TString("float4 tex1D(sampler s, float coord, float ddx, float ddy);"));
