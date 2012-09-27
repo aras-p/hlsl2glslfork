@@ -1,31 +1,17 @@
 vec4 xll_lit( float n_dot_l, float n_dot_h, float m ) {
    return vec4(1, max(0.0, n_dot_l), pow(max(0.0, n_dot_h) * step(0.0, n_dot_l), m), 1.0);
 }
-uniform highp vec4 ambient;
-uniform sampler2D diffuse;
-uniform highp vec4 invShadowMapSize0;
-uniform highp vec4 invShadowMapSize1;
-uniform highp vec4 invShadowMapSize2;
-uniform highp vec4 lightDiffuse;
-uniform highp vec4 lightSpecular;
-uniform sampler2D normalMap;
-uniform highp vec4 pssmSplitPoints;
-uniform sampler2D shadowMap0;
-uniform sampler2D shadowMap1;
-uniform sampler2D shadowMap2;
-uniform sampler2D specular;
+#line 1
+#line 44
 highp float shadowPCF( in sampler2D shadowMap, in highp vec4 shadowMapPos, in highp vec2 offset );
 void xlat_main( in highp vec3 uv, in highp vec3 OSlightDir, in highp vec3 OShalfAngle, in highp vec4 LightPosition0, in highp vec4 LightPosition1, in highp vec4 LightPosition2, in highp vec3 normal, out highp vec4 oColour, highp vec4 invShadowMapSize0, highp vec4 invShadowMapSize1, highp vec4 invShadowMapSize2, highp vec4 pssmSplitPoints, sampler2D diffuse, sampler2D specular, sampler2D normalMap, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, highp vec4 lightDiffuse, highp vec4 lightSpecular, highp vec4 ambient );
 #line 1
 highp float shadowPCF( in sampler2D shadowMap, in highp vec4 shadowMapPos, in highp vec2 offset ) {
-    highp vec2 uv;
-    highp vec3 o;
-    highp float c;
     shadowMapPos = (shadowMapPos / shadowMapPos.w);
-    uv = shadowMapPos.xy;
+    highp vec2 uv = shadowMapPos.xy;
     #line 5
-    o = (vec3( offset, (-offset.x)) * 0.3);
-    c = float((( (shadowMapPos.z <= texture2D( shadowMap, (uv.xy - o.xy)).x) ) ? ( 1 ) : ( 0 )));
+    highp vec3 o = (vec3( offset, (-offset.x)) * 0.3);
+    highp float c = float((( (shadowMapPos.z <= texture2D( shadowMap, (uv.xy - o.xy)).x) ) ? ( 1 ) : ( 0 )));
     #line 9
     c += float((( (shadowMapPos.z <= texture2D( shadowMap, (uv.xy + o.xy)).x) ) ? ( 1 ) : ( 0 )));
     c += float((( (shadowMapPos.z <= texture2D( shadowMap, (uv.xy + o.zy)).x) ) ? ( 1 ) : ( 0 )));
@@ -36,16 +22,11 @@ highp float shadowPCF( in sampler2D shadowMap, in highp vec4 shadowMapPos, in hi
 #line 44
 void xlat_main( in highp vec3 uv, in highp vec3 OSlightDir, in highp vec3 OShalfAngle, in highp vec4 LightPosition0, in highp vec4 LightPosition1, in highp vec4 LightPosition2, in highp vec3 normal, out highp vec4 oColour, highp vec4 invShadowMapSize0, highp vec4 invShadowMapSize1, highp vec4 invShadowMapSize2, highp vec4 pssmSplitPoints, sampler2D diffuse, sampler2D specular, sampler2D normalMap, sampler2D shadowMap0, sampler2D shadowMap1, sampler2D shadowMap2, highp vec4 lightDiffuse, highp vec4 lightSpecular, highp vec4 ambient ) {
     highp float shadowing = 1.0;
+    #line 48
     highp vec4 splitColour;
-    highp vec3 lightVec;
-    highp vec3 halfAngle;
-    highp vec4 diffuseColour;
-    highp vec4 specularColour;
-    highp float shininess;
-    highp vec4 lighting;
-    #line 49
     if ((uv.z <= pssmSplitPoints.y)){
         splitColour = vec4( 0.1, 0.0, 0.0, 1.0);
+        #line 52
         shadowing = shadowPCF( shadowMap0, LightPosition0, invShadowMapSize0.xy);
     }
     else{
@@ -61,16 +42,16 @@ void xlat_main( in highp vec3 uv, in highp vec3 OSlightDir, in highp vec3 OShalf
         }
     }
     #line 66
-    lightVec = normalize(OSlightDir);
-    halfAngle = normalize(OShalfAngle);
+    highp vec3 lightVec = normalize(OSlightDir);
+    highp vec3 halfAngle = normalize(OShalfAngle);
     #line 72
-    diffuseColour = texture2D( diffuse, uv.xy);
-    specularColour = texture2D( specular, uv.xy);
+    highp vec4 diffuseColour = texture2D( diffuse, uv.xy);
+    highp vec4 specularColour = texture2D( specular, uv.xy);
     #line 76
-    shininess = specularColour.w;
+    highp float shininess = specularColour.w;
     specularColour.w = 1.0;
     #line 80
-    lighting = (xll_lit( dot( normal, lightVec), dot( normal, halfAngle), (shininess * 128.0)) * shadowing);
+    highp vec4 lighting = (xll_lit( dot( normal, lightVec), dot( normal, halfAngle), (shininess * 128.0)) * shadowing);
     oColour = ((diffuseColour * clamp( (ambient + (lightDiffuse * lighting.y)), vec4( 0.0), vec4( 1.0))) + ((lightSpecular * specularColour) * lighting.z));
     #line 84
     oColour.w = diffuseColour.w;

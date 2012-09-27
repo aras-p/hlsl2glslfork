@@ -13,20 +13,20 @@ struct a2v {
     vec3 normal;
     vec4 color;
 };
-uniform mat2 fmat2;
-uniform mat3 fmat3;
-uniform mat4 fmat4;
-uniform mat2 hmat2;
-uniform mat3 hmat3;
-uniform mat4 hmat4;
+#line 1
 uniform mat4 mvp;
+uniform mat4 hmat4;
+uniform mat3 hmat3;
+uniform mat2 hmat2;
+#line 5
+uniform mat4 fmat4;
+uniform mat3 fmat3;
+uniform mat2 fmat2;
+#line 23
 v2f xlat_main( in a2v v );
 #line 23
 v2f xlat_main( in a2v v ) {
     v2f o;
-    float dx;
-    float dy;
-    float dz;
     o.pos = (mvp * v.pos);
     #line 27
     o.pos += (hmat4 * v.pos);
@@ -44,9 +44,9 @@ v2f xlat_main( in a2v v ) {
     o.color.xyz += v.normal;
     o.uv = v.uv;
     #line 40
-    dx = v.pos.x;
-    dy = v.pos.y;
-    dz = v.pos.z;
+    float dx = v.pos.x;
+    float dy = v.pos.y;
+    float dz = v.pos.z;
     #line 44
     return o;
 }

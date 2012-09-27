@@ -1,17 +1,14 @@
-uniform sampler2D diffuseMap;
 void xlat_main( in highp vec4 position, in highp vec2 uv, in highp vec2 depth, out highp vec4 result, sampler2D diffuseMap );
 #line 10
 void xlat_main( in highp vec4 position, in highp vec2 uv, in highp vec2 depth, out highp vec4 result, sampler2D diffuseMap ) {
-    highp float alpha;
-    highp float finalDepth;
     #line 12
-    alpha = texture2D( diffuseMap, uv).w;
+    highp float alpha = texture2D( diffuseMap, uv).w;
     if ((alpha > 0.001)){
         result = vec4( 1.0, 1.0, 1.0, 0.0);
     }
     else{
         #line 19
-        finalDepth = (depth.x / depth.y);
+        highp float finalDepth = (depth.x / depth.y);
         result = vec4( vec3( finalDepth), 1.0);
     }
 }

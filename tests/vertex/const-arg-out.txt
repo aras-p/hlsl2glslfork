@@ -6,19 +6,22 @@ struct fake4 {
     float fz;
     float fw;
 };
+#line 9
+#line 31
+#line 36
 vec4 fake_to_float( const fake4 fake );
 fake4 fake_splat( const float f );
 vec4 splat( const float f );
 vec4 xlat_main(  );
 #line 20
 vec4 fake_to_float( const fake4 fake ) {
+    #line 22
     vec4 real;
-    #line 23
     real.x = fake.fx;
     real.y = fake.fy;
     real.z = fake.fz;
+    #line 26
     real.w = fake.fw;
-    #line 28
     return real;
 }
 #line 9
@@ -34,12 +37,10 @@ fake4 fake_splat( const float f ) {
 }
 #line 31
 vec4 splat( const float f ) {
-    #line 33
     return fake_to_float( fake_splat( f));
 }
 #line 36
 vec4 xlat_main(  ) {
-    #line 38
     return splat( 1.0);
 }
 void main() {

@@ -1,9 +1,8 @@
 mediump vec4 xlat_main( in highp vec4 uv, in highp vec4 foobar_xlv_foo );
 #line 1
 mediump vec4 xlat_main( in highp vec4 uv, in highp vec4 foobar_xlv_foo ) {
-    mediump vec4 c;
     #line 2
-    c = vec4( 0.0);
+    mediump vec4 c = vec4( 0.0);
     return c;
 }
 varying highp vec4 xlv_TEXCOORD0;

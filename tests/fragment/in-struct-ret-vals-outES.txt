@@ -5,6 +5,7 @@ struct v2f {
     highp vec2 uv;
     highp vec4 color;
 };
+#line 7
 mediump vec4 xlat_main( in v2f i );
 #line 7
 mediump vec4 xlat_main( in v2f i ) {

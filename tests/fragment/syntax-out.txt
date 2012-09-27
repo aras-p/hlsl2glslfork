@@ -1,28 +1,29 @@
 vec4 xlat_main(  );
 #line 1
 vec4 xlat_main(  ) {
-    float foo = 1.0;
-    vec4 v;
-    vec3 f3;
-    float boo;
     #line 2
+    float foo = 1.0;
     foo += 1.0;
     foo += 100000.0;
-    foo += -0.001;
+    foo += (-0.001);
     #line 6
     foo += 1e-06;
     foo += 1e-06;
     foo += 2.0;
     foo += 3.0;
-    #line 14
+    #line 11
+    vec3 f3;
+    vec4 v;
+    float boo;
     v = vec4( f3.zyx, 1.0);
+    #line 15
     v = vec4( vec3( foo), 1.0);
     v = vec4( vec3( boo), 1.0);
     v = vec4( foo);
-    #line 18
     v = vec4( 2.0);
-    #line 22
-    v = vec4( 1.9);
+    #line 21
+    const float fcf = 1.9;
+    v = vec4( fcf);
     return vec4( foo);
 }
 void main() {

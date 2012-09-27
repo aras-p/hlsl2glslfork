@@ -8,34 +8,38 @@ struct v2f {
 struct a2v {
     vec4 pos;
 };
+#line 1
+uniform mat4 mvp;
+#line 12
 uniform vec4 _LightColor;
 uniform vec3 _LightPos;
-uniform mat4 mvp;
+#line 33
 float ComputeShadow( in vec3 pos );
 float ComputeAtten( in vec3 pos, in vec3 lightPos );
 vec4 ComputeSomeLighting( in vec3 pos );
 v2f xlat_main( in a2v v );
 #line 15
 float ComputeShadow( in vec3 pos ) {
+    #line 17
     return pow( pos.x, 4.0);
 }
 #line 20
 float ComputeAtten( in vec3 pos, in vec3 lightPos ) {
+    #line 22
     return (distance( pos, lightPos) * ComputeShadow( pos));
 }
 #line 25
 vec4 ComputeSomeLighting( in vec3 pos ) {
+    #line 27
     vec4 res;
     res = _LightColor;
-    #line 29
     res *= ComputeAtten( pos, _LightPos);
     return res;
 }
 #line 33
 v2f xlat_main( in a2v v ) {
-    vec4 pos;
     v2f o;
-    pos = (mvp * v.pos);
+    vec4 pos = (mvp * v.pos);
     #line 37
     o.pos = pos;
     o.color = ComputeSomeLighting( v.pos.xyz);

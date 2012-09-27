@@ -1,11 +1,11 @@
 mediump vec4 xlat_main(  );
 #line 1
 mediump vec4 xlat_main(  ) {
-    highp int i = 0;
-    highp int j = 0;
     #line 2
+    highp int i = 0;
     for ( ; (i < 10); (++i)) {
     }
+    highp int j = 0;
     while ( ((j++) < 10) ) {
     }
     #line 8

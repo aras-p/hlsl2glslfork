@@ -7,6 +7,7 @@ struct VertexOutput {
 struct VertexInput {
     highp vec4 pos;
 };
+#line 11
 VertexOutput xlat_main( const VertexInput xlat_var_input );
 #line 11
 VertexOutput xlat_main( const VertexInput xlat_var_input ) {

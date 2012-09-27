@@ -5,6 +5,7 @@ struct v2f {
     vec2 uv;
     vec4 color;
 };
+#line 7
 vec4 xlat_main( in v2f i );
 #line 7
 vec4 xlat_main( in v2f i ) {

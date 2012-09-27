@@ -11,14 +11,16 @@ struct appdata_t {
     lowp vec4 color;
     highp vec2 texcoord;
 };
-uniform highp vec4 _MainTex_ST;
+#line 1
 uniform highp mat4 glstate_matrix_mvp;
+#line 12
+uniform highp vec4 _MainTex_ST;
 v2f xlat_main( in appdata_t v );
 #line 13
 v2f xlat_main( in appdata_t v ) {
     v2f o;
+    #line 16
     o.vertex = (glstate_matrix_mvp * v.vertex);
-    #line 17
     o.color = v.color;
     o.texcoord = ((v.texcoord.xy * _MainTex_ST.xy) + _MainTex_ST.zw);
     return o;

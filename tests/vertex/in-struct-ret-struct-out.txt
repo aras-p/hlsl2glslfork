@@ -13,7 +13,9 @@ struct a2v {
     vec3 normal;
     vec4 color;
 };
+#line 1
 uniform mat4 mvp;
+#line 17
 v2f xlat_main( in a2v v );
 #line 17
 v2f xlat_main( in a2v v ) {

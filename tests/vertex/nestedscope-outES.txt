@@ -13,16 +13,16 @@ struct a2v {
     highp vec3 normal;
     highp vec4 color;
 };
+#line 1
 uniform highp mat4 mvp;
+#line 17
 v2f xlat_main( in a2v v );
 #line 17
 v2f xlat_main( in a2v v ) {
-    highp vec4 vec;
-    highp vec4 vec_1;
     v2f o;
-    vec = (v.pos * mvp);
+    highp vec4 vec = (v.pos * mvp);
     #line 22
-    vec_1 = v.color;
+    highp vec4 vec_1 = v.color;
     vec_1.xyz += v.normal;
     o.color = vec_1;
     #line 26
