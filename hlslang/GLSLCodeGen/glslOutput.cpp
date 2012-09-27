@@ -380,13 +380,15 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 		out << type.getTypeName();
 	else
 		writeType(out, symbol_type, NULL, goit->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
-	
-	if (type.isArray())
-		out << "[" << type.getArraySize() << "]";
+
+	// Note: GLSL 1.20+ could emit array size here, but not GLSL 1.10 nor GLSL ES...
 	
 	out << " ";
 	
 	decl->getDeclaration()->traverse(goit);
+	
+	if (type.isArray())
+		out << "[" << type.getArraySize() << "]";
 	
 	current->endStatement();
 	

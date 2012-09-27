@@ -10,7 +10,7 @@ struct appdata {
     vec3 normal;
 };
 #line 1
-uniform vec4[4] unity_LightColor;
+uniform vec4 unity_LightColor[4];
 uniform mat4 UNITY_MATRIX_MVP;
 #line 15
 v2f xlat_main( in appdata v );

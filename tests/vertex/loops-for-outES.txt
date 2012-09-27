@@ -11,33 +11,30 @@ struct appdata {
     highp vec4 vertex;
     highp vec3 normal;
 };
-uniform highp mat4 UNITY_MATRIX_IT_MV;
-uniform highp mat4 UNITY_MATRIX_MV;
-uniform highp mat4 UNITY_MATRIX_MVP;
-uniform highp vec4 unity_LightAtten[4];
+#line 1
 uniform highp vec4 unity_LightColor[4];
 uniform highp vec4 unity_LightPosition[4];
+uniform highp vec4 unity_LightAtten[4];
+#line 5
+uniform highp mat4 UNITY_MATRIX_MVP;
+uniform highp mat4 UNITY_MATRIX_MV;
+uniform highp mat4 UNITY_MATRIX_IT_MV;
+#line 19
 highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal );
 v2f xlat_main( in appdata v );
 #line 19
 highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal ) {
-    highp vec3 viewpos;
-    highp vec3 viewN;
-    highp vec3 lightColor = vec3(0.0, 0.0, 0.0);
-    highp int i = 0;
-    highp vec3 toLight;
-    highp float lengthSq;
-    highp float atten;
-    highp float diff;
-    viewpos = (UNITY_MATRIX_MV * vertex).xyz;
-    viewN = (xll_constructMat3( UNITY_MATRIX_IT_MV) * normal);
+    highp vec3 viewpos = (UNITY_MATRIX_MV * vertex).xyz;
+    highp vec3 viewN = (xll_constructMat3( UNITY_MATRIX_IT_MV) * normal);
     #line 23
+    highp vec3 lightColor = vec3( 0.0, 0.0, 0.0);
+    highp int i = 0;
     for ( ; (i < 2); (i++)) {
-        toLight = (unity_LightPosition[i].xyz - viewpos.xyz);
+        highp vec3 toLight = (unity_LightPosition[i].xyz - viewpos.xyz);
         #line 27
-        lengthSq = dot( toLight, toLight);
-        atten = (1.0 / (1.0 + (lengthSq * unity_LightAtten[i].z)));
-        diff = max( 0.0, dot( viewN, normalize(toLight)));
+        highp float lengthSq = dot( toLight, toLight);
+        highp float atten = (1.0 / (1.0 + (lengthSq * unity_LightAtten[i].z)));
+        highp float diff = max( 0.0, dot( viewN, normalize(toLight)));
         lightColor += (unity_LightColor[i].xyz * (diff * atten));
     }
     #line 32
@@ -45,8 +42,8 @@ highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal ) {
 }
 #line 35
 v2f xlat_main( in appdata v ) {
+    #line 37
     v2f o;
-    #line 38
     o.pos = (UNITY_MATRIX_MVP * v.vertex);
     o.color = vec4( ShadeMyVertexLights( v.vertex, v.normal), 1.0);
     return o;
