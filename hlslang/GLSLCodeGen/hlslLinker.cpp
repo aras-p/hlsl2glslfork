@@ -518,44 +518,35 @@ void HlslLinker::addRequiredExtensions(EAttribSemantic sem, ExtensionSet &extens
 		extensions.insert("GL_ARB_draw_instanced");
 }
 
-bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool usePrecision)
-{
-	std::vector<GlslFunction*> globalList;
-	std::vector<GlslFunction*> functionList;
-	std::string entryPoint;
-	GlslFunction* funcMain = NULL;
-	FunctionSet calledFunctions;
-	std::set<TOperator> libFunctions;
-	std::map<std::string,GlslSymbol*> globalSymMap;
 
+bool HlslLinker::linkerSanityCheck(HlslCrossCompiler* compiler, const char* entryFunc)
+{
 	if (!compiler)
 	{
 		infoSink.info << "No shader compiler provided\n";
 		return false;
 	}
-
-	EShLanguage lang = compiler->getLanguage();
-
 	if (!entryFunc)
 	{
 		infoSink.info << "No shader entry function provided\n";
 		return false;
 	}
+	return true;
+}
 
-	entryPoint = GetEntryName (entryFunc);
 
-	//build the list of functions
-	HlslCrossCompiler *comp = static_cast<HlslCrossCompiler*>(compiler);
-
+bool HlslLinker::buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, std::vector<GlslFunction*>& globalList, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain)
+{
+	// build the list of functions
 	std::vector<GlslFunction*> &fl = comp->functionList;
-
-	for ( std::vector<GlslFunction*>::iterator fit = fl.begin(); fit < fl.end(); fit++)
+	
+	for (std::vector<GlslFunction*>::iterator fit = fl.begin(); fit < fl.end(); ++fit)
 	{
 		if ( (*fit)->getName() == "__global__")
 			globalList.push_back( *fit);
 		else
 			functionList.push_back( *fit);
-
+		
 		if ((*fit)->getName() == entryPoint)
 		{
 			if (funcMain)
@@ -566,26 +557,28 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 			funcMain = *fit;
 		}
 	}
-
+	
 	// check to ensure that we found the entry function
 	if (!funcMain)
 	{
 		infoSink.info << "Failed to find entry function: '" << entryPoint <<"'\n";
 		return false;
 	}
-
+	
 	//add all the called functions to the list
 	calledFunctions.push_back (funcMain);
 	if (!addCalledFunctions (funcMain, calledFunctions, functionList))
 		infoSink.info << "Failed to resolve all called functions in the " << kShaderTypeNames[lang] << " shader\n";
+	
+	return true;
+}
 
-	//iterate over the functions, building a global list of structure declaractions and symbols
-	// assume a single compilation unit for expediency (eliminates name clashes, as type checking
-	// withing a single compilation unit has been performed)
-	std::vector<GlslSymbol*> constants;
-	for (FunctionSet::iterator it = calledFunctions.begin(); it != calledFunctions.end(); ++it) {
+
+void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions)
+{
+	for (FunctionSet::const_iterator it = calledFunctions.begin(); it != calledFunctions.end(); ++it) {
 		const std::vector<GlslSymbol*> &symbols = (*it)->getSymbols();
-
+		
 		unsigned n_symbols = symbols.size();
 		for (unsigned i = 0; i != n_symbols; ++i) {
 			GlslSymbol* s = symbols[i];
@@ -600,6 +593,35 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	
 	// Remove duplicates
 	constants.resize(std::unique(constants.begin(), constants.end()) - constants.begin());
+}
+
+
+bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool usePrecision)
+{
+	if (!linkerSanityCheck(compiler, entryFunc))
+		return false;
+	
+	std::map<std::string,GlslSymbol*> globalSymMap;
+
+	EShLanguage lang = compiler->getLanguage();
+	std::string entryPoint = GetEntryName (entryFunc);
+	
+	
+	// figure out all relevant functions
+	std::vector<GlslFunction*> globalList;
+	std::vector<GlslFunction*> functionList;
+	FunctionSet calledFunctions;
+	GlslFunction* funcMain = NULL;
+	if (!buildFunctionLists(compiler, lang, entryPoint, globalList, functionList, calledFunctions, funcMain))
+		return false;
+	assert(funcMain);
+	
+	
+	// uniforms and used built-in functions
+	std::vector<GlslSymbol*> constants;
+	std::set<TOperator> libFunctions;
+	buildUniformsAndLibFunctions(calledFunctions, constants, libFunctions);
+
 
 	// The following code is what is used to generate the actual shader and "main"
 	// function. The process is to take all the components collected above, and

@@ -90,6 +90,11 @@ protected:
 	
 	typedef std::set<const char*> ExtensionSet;
 	void addRequiredExtensions(EAttribSemantic sem, ExtensionSet& extensions);
+	
+private:
+	bool linkerSanityCheck(HlslCrossCompiler* compiler, const char* entryFunc);
+	bool buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, std::vector<GlslFunction*>& globalList, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain);
+	void buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions);
 };
 
 #endif //HLSL_LINKER_H
