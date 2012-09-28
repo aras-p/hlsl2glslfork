@@ -636,6 +636,51 @@ void HlslLinker::emitStructs(HlslCrossCompiler* comp)
 }
 
 
+void HlslLinker::emitOtherGlobals(const std::vector<GlslFunction*>& globalList, const std::vector<GlslSymbol*>& constants)
+{
+	// Write global scope
+	unsigned n_func = globalList.size();
+	for (unsigned i = 0; i != n_func; ++i)
+		shader << globalList[i]->getCode();
+	
+	// write mutable uniform declarations
+	const unsigned n_constants = constants.size();
+	for (unsigned i = 0; i != n_constants; ++i) {
+		GlslSymbol* s = constants[i];
+		if (s->getIsMutable()) {
+			s->writeDecl(shader, true, false);
+			shader << ";\n";	
+		}
+	}	
+}
+
+
+void HlslLinker::buildUniformReflection(const std::vector<GlslSymbol*>& constants)
+{
+	const unsigned n_constants = constants.size();
+	for (unsigned i = 0; i != n_constants; ++i) {
+		GlslSymbol* s = constants[i];
+		
+		ShUniformInfo info;
+		const std::string& name = s->getName(false);
+		info.name = new char[name.size()+1];
+		strcpy(info.name, name.c_str());
+		
+		if (s->getSemantic() != "") {
+			info.semantic = new char[s->getSemantic().size()+1];
+			strcpy(info.semantic, s->getSemantic().c_str());
+		}
+		else
+			info.semantic = 0;
+		
+		info.type = (EShType)s->getType();
+		info.arraySize = s->getArraySize();
+		info.init = 0;
+		uniforms.push_back(info);
+	}
+}
+
+
 void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
 {
 	std::string name, ctor;
@@ -1041,40 +1086,9 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 
 	emitStructs(compiler);
 	
+	emitOtherGlobals (globalList, constants);
 
-	//
-	// Write global scope
-	//
-	unsigned n_func = globalList.size();
-	for (unsigned i = 0; i != n_func; ++i)
-		shader << globalList[i]->getCode();
-
-	// Write mutable uniform declarations and populate uniform reflection.
-	unsigned n_constants = constants.size();
-	for (unsigned i = 0; i != n_constants; ++i) {
-		GlslSymbol* s = constants[i];
-		if (s->getIsMutable()) {
-			s->writeDecl(shader, true, false);
-			shader << ";\n";	
-		}
-		
-		ShUniformInfo info;
-		const std::string& name = s->getName(false);
-		info.name = new char[name.size()+1];
-		strcpy(info.name, name.c_str());
-		
-		if (s->getSemantic() != "") {
-			info.semantic = new char[s->getSemantic().size()+1];
-			strcpy(info.semantic, s->getSemantic().c_str());
-		}
-		else
-			info.semantic = 0;
-		
-		info.type = (EShType)s->getType();
-		info.arraySize = s->getArraySize();
-		info.init = 0;
-		uniforms.push_back(info);
-	}
+	buildUniformReflection (constants);
 
 	//
 	// Write function declarations and definitions
