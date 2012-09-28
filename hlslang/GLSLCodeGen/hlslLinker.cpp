@@ -596,13 +596,51 @@ void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions
 }
 
 
+void HlslLinker::emitLibraryFunctions(const std::set<TOperator>& libFunctions, EShLanguage lang, bool usePrecision)
+{
+	// library Functions & required extensions
+	std::string shaderExtensions, shaderLibFunctions;
+	if (!libFunctions.empty())
+	{
+		for (std::set<TOperator>::iterator it = libFunctions.begin(); it != libFunctions.end(); it++)
+		{
+			const std::string &func = getHLSLSupportCode(*it, shaderExtensions, lang==EShLangVertex, usePrecision);
+			if (!func.empty())
+			{
+				shaderLibFunctions += func;
+				shaderLibFunctions += '\n';
+			}
+		}
+	}
+	shader << shaderExtensions;
+	shader << shaderLibFunctions;
+}
+
+
+void HlslLinker::emitStructs(HlslCrossCompiler* comp)
+{
+	// Presently, structures are not tracked per function, just dump them all
+	// This could be improved by building a complete list of structures for the
+	// shaders based on the variables in each function.
+	
+	std::vector<GlslStruct*> &sList = comp->structList;
+	if (!sList.empty())
+	{
+		for (std::vector<GlslStruct*>::iterator it = sList.begin(); it < sList.end(); it++)
+		{
+			shader << "\n";
+			OutputLineDirective(shader, (*it)->getLine());
+			shader << (*it)->getDecl() << "\n";
+		}
+	}
+}
+
+
 bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool usePrecision)
 {
 	if (!linkerSanityCheck(compiler, entryFunc))
 		return false;
 	
-	std::map<std::string,GlslSymbol*> globalSymMap;
-
 	EShLanguage lang = compiler->getLanguage();
 	std::string entryPoint = GetEntryName (entryFunc);
 	
@@ -628,45 +666,12 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	// write them to the appropriate code stream. Finally, a main function is
 	// generated that calls the specified entrypoint. That main function uses
 	// semantics on the arguments and return values to connect items appropriately.
+	
 
-	//
-	// Write Library Functions & required extensions
-	std::string shaderExtensions, shaderLibFunctions;
-	if (!libFunctions.empty())
-	{
-		for (std::set<TOperator>::iterator it = libFunctions.begin(); it != libFunctions.end(); it++)
-		{
-			const std::string &func = getHLSLSupportCode(*it, shaderExtensions, lang==EShLangVertex, usePrecision);
-			if (!func.empty())
-			{
-				shaderLibFunctions += func;
-				shaderLibFunctions += '\n';
-			}
-		}
-	}
-	shader << shaderExtensions;
-	shader << shaderLibFunctions;
+	emitLibraryFunctions (libFunctions, lang, usePrecision);
 
-	//
-	// Write structs
-	// Presently, structures are not tracked per function, just dump them all
-	// This could be improved by building a complete list of structures for the
-	// shaders based on the variables in each function
-	//
-	{
-		HlslCrossCompiler *comp = static_cast<HlslCrossCompiler*>(compiler);
-		std::vector<GlslStruct*> &sList = comp->structList;
-
-		if (!sList.empty())
-		{
-			for (std::vector<GlslStruct*>::iterator it = sList.begin(); it < sList.end(); it++)
-			{
-		        shader << "\n";
-		        OutputLineDirective(shader, (*it)->getLine());
-				shader << (*it)->getDecl() << "\n";
-			}
-		}
-	}
+	emitStructs(compiler);
+	
 
 	//
 	// Write global scope
@@ -675,7 +680,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	for (unsigned i = 0; i != n_func; ++i)
 		shader << globalList[i]->getCode();
 
-	// Write mutable uniform declarations and populate unfiform reflection.
+	// Write mutable uniform declarations and populate uniform reflection.
 	unsigned n_constants = constants.size();
 	for (unsigned i = 0; i != n_constants; ++i) {
 		GlslSymbol* s = constants[i];

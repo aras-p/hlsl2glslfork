@@ -95,6 +95,8 @@ private:
 	bool linkerSanityCheck(HlslCrossCompiler* compiler, const char* entryFunc);
 	bool buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, std::vector<GlslFunction*>& globalList, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain);
 	void buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions);
+	void emitLibraryFunctions(const std::set<TOperator>& libFunctions, EShLanguage lang, bool usePrecision);
+	void emitStructs(HlslCrossCompiler* comp);
 };
 
 #endif //HLSL_LINKER_H
