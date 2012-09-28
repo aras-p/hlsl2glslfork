@@ -743,7 +743,7 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 	{
 		emitSymbolWithPad (call, ctor, name, pad);
 	}
-	// For "inout" parameters, declare a temp and initialize the temp
+	// For "inout" parameters, declare a temp and initialize it
 	else
 	{
 		preamble << "    ";
@@ -768,29 +768,30 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, Extensi
 	preamble << tempVar <<";\n";
 	call << tempVar;
 	
+	// process struct members
 	const int elem = str->memberCount();
 	for (int jj=0; jj<elem; jj++)
 	{
 		const GlslStruct::member &current = str->getMember(jj);
 		EAttribSemantic memberSem = parseAttributeSemantic (current.semantic);
-		std::string name, ctor;
-		int pad;
-		int numArrayElements = 1;
-		bool bIsArray = false;
 		
 		addRequiredExtensions(memberSem, extensions);
 		
-		// If it is an array, loop over each member
-		if ( current.arraySize > 0 )
+		// if member of the struct is an array, we have to loop over all array elements
+		int arraySize = 1;
+		bool isArray = false;
+		if (current.arraySize > 0)
 		{
-			numArrayElements = current.arraySize;
-			bIsArray = true;
+			arraySize = current.arraySize;
+			isArray = true;
 		}
 		
-		for ( int arrayIndex = 0; arrayIndex <  numArrayElements; arrayIndex++ )
+		std::string name, ctor;
+		for (int idx = 0; idx < arraySize; ++idx)
 		{
-			if (!getArgumentData2( current.name, current.semantic, current.type,
-								  lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, arrayIndex ))
+			int pad;
+			if (!getArgumentData2 (current.name, current.semantic, current.type,
+								  lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, idx))
 			{
 				//should deal with fall through cases here
 				assert(0);
@@ -802,8 +803,8 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, Extensi
 			preamble << "    ";
 			preamble << tempVar << "." << current.name;
 			
-			if ( bIsArray )
-				preamble << "[" << arrayIndex << "]";
+			if (isArray)
+				preamble << "[" << idx << "]";
 			
 			// In fragment shader, pass zero for POSITION inputs
 			if (lang == EShLangFragment && memberSem == EAttrSemPosition)
@@ -847,10 +848,9 @@ void HlslLinker::emitOutputNonStructParam(GlslSymbol* sym, EShLanguage lang, boo
 		preamble << " xlt_" << sym->getName() << ";\n";                     
 	}
 	
-	if (lang == EShLangVertex) // deal with varyings
-	{
+	// In vertex shader, add to varyings
+	if (lang == EShLangVertex)
 		AddToVaryings (varying, sym->getPrecision(), ctor, name);
-	}
 	
 	call << "xlt_" << sym->getName();
 	
@@ -897,11 +897,10 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 		postamble << name << " = ";
 		emitSymbolWithPad (postamble, ctor, tempVar+"."+current.name, pad);		
 		postamble << ";\n";
-		
-		if (lang == EShLangVertex) // deal with varyings
-		{
+
+		// In vertex shader, add to varyings
+		if (lang == EShLangVertex)
 			AddToVaryings (varying, current.precision, ctor, name);
-		}
 	}
 }
 
@@ -958,10 +957,10 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 		emitSymbolWithPad (postamble, ctor, "xl_retval", pad);		
 		postamble << ";\n";
 		
-		if (lang == EShLangVertex) // deal with varyings
-		{
+		// In vertex shader, add to varyings
+		if (lang == EShLangVertex)
 			AddToVaryings (varying, funcMain->getPrecision(), ctor, name);
-		}
+		
 		return true;
 	}
 	
@@ -976,22 +975,22 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 		const GlslStruct::member &current = retStruct->getMember(ii);
 		std::string name, ctor;
 		int pad;
-		int numArrayElements = 1;
-		bool bIsArray = false;
+		int arraySize = 1;
+		bool isArray = false;
 		
 		if (lang == EShLangVertex) // vertex shader
 		{
 			// If it is an array, loop over each member
 			if ( current.arraySize > 0 )
 			{
-				numArrayElements = current.arraySize;
-				bIsArray = true;
+				arraySize = current.arraySize;
+				isArray = true;
 			}
 		}
 		
-		for ( int arrayIndex = 0; arrayIndex < numArrayElements; arrayIndex++ )
+		for (int idx = 0; idx < arraySize; ++idx)
 		{
-			if (!getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, arrayIndex))
+			if (!getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, idx))
 			{
 				infoSink.info << (lang==EShLangVertex ? "Unsupported element type in struct for shader return value (" : "Unsupported struct element type in return type for shader entry function (");
 				infoSink.info << getTypeString(current.type) << ")\n";
@@ -1001,19 +1000,18 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 			postamble << name;                                                            
 			postamble << " = " << ctor;
 			postamble << "( xl_retval." << current.name;
-			if ( bIsArray )
+			if (isArray)
 			{
-				postamble << "[" << arrayIndex << "]";
+				postamble << "[" << idx << "]";
 			}
 			for (int ii = 0; ii<pad; ii++)
 				postamble << ", 0.0";
 			
 			postamble << ");\n";
 			
-			if (lang == EShLangVertex) // deal with varyings
-			{
+			// In vertex shader, add to varyings
+			if (lang == EShLangVertex)
 				AddToVaryings (varying, current.precision, ctor, name);
-			}
 		}
 	}
 	
