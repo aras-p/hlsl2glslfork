@@ -690,6 +690,33 @@ static void emitSymbolWithPad (std::stringstream& str, const std::string& ctor, 
 }
 
 
+static void emitSingleInputVariable (EShLanguage lang, const std::string& name, const std::string& ctor, EGlslSymbolType type, TPrecision prec, std::stringstream& attrib, std::stringstream& varying)
+{
+	// vertex shader: emit custom attributes
+	if (lang == EShLangVertex && strncmp(name.c_str(), "gl_", 3) != 0)
+	{
+		int typeOffset = 0;
+		
+		// If the type is integer or bool based, we must convert to a float based
+		// type. This is because GLSL does not allow int or bool based vertex attributes.
+		//
+		// NOTE: will need to be updated for more modern GLSL versions to allow this!
+		if (type >= EgstInt && type <= EgstInt4)
+			typeOffset += 4;
+		if (type >= EgstBool && type <= EgstBool4)
+			typeOffset += 8;
+		
+		attrib << "attribute " << getTypeString((EGlslSymbolType)(type + typeOffset)) << " " << name << ";\n";
+	}
+	
+	// fragment shader: emit varying
+	if (lang == EShLangFragment)
+	{
+		AddToVaryings (varying, prec, ctor, name);
+	}
+}
+	
+
 void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
 {
 	std::string name, ctor;
@@ -706,11 +733,10 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 	
 	
 	// In fragment shader, pass zero for POSITION inputs
-	bool ignoredPositionInFragment = false;
 	if (lang == EShLangFragment && attrSem == EAttrSemPosition)
 	{
 		call << ctor << "(0.0)";
-		ignoredPositionInFragment = true;
+		return; // noting more to do
 	}
 	// For "in" parameters, just call directly to the main
 	else if ( sym->getQualifier() != EqtInOut )
@@ -727,29 +753,7 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 		preamble << ";\n";
 	}
 	
-	
-	// vertex shader: emit custom attributes
-	if (lang == EShLangVertex && strncmp(name.c_str(), "gl_", 3) != 0)
-	{
-		int typeOffset = 0;
-		
-		// If the type is integer or bool based, we must convert to a float based
-		// type. This is because GLSL does not allow int or bool based vertex attributes.
-		//
-		// NOTE: will need to be updated for more modern GLSL versions to allow this!
-		if (sym->getType() >= EgstInt && sym->getType() <= EgstInt4)
-			typeOffset += 4;
-		if (sym->getType() >= EgstBool && sym->getType() <= EgstBool4)
-			typeOffset += 8;
-		
-		attrib << "attribute " << getTypeString((EGlslSymbolType)(sym->getType() + typeOffset)) << " " << name << ";\n";
-	}
-
-	// fragment shader: emit varying
-	if (lang == EShLangFragment && !ignoredPositionInFragment)
-	{
-		AddToVaryings (varying, sym->getPrecision(), ctor, name);
-	}
+	emitSingleInputVariable (lang, name, ctor, sym->getType(), sym->getPrecision(), attrib, varying);
 }
 
 
@@ -802,11 +806,10 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, Extensi
 				preamble << "[" << arrayIndex << "]";
 			
 			// In fragment shader, pass zero for POSITION inputs
-			bool ignoredPositionInFragment = false;
 			if (lang == EShLangFragment && memberSem == EAttrSemPosition)
 			{
 				preamble << " = " << ctor << "(0.0);\n";
-				ignoredPositionInFragment = true;
+				continue; // nothing more to do
 			}
 			else
 			{
@@ -814,33 +817,9 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, Extensi
 				emitSymbolWithPad (preamble, ctor, name, pad);
 				preamble << ";\n";
 			}
+
 			
-			// vertex shader: emit custom attributes
-			if (lang == EShLangVertex && strncmp(name.c_str(), "gl_", 3) != 0)
-			{
-				int typeOffset = 0;
-				
-				// If the type is integer or bool based, we must convert to a float based
-				// type.  This is because GLSL does not allow int or bool based vertex attributes.
-				if ( current.type >= EgstInt && current.type <= EgstInt4)
-				{
-					typeOffset += 4;
-				}
-				
-				if ( current.type >= EgstBool && current.type <= EgstBool4)
-				{
-					typeOffset += 8;
-				}
-				
-				// This is an undefined attribute
-				attrib << "attribute " << getTypeString((EGlslSymbolType)(current.type + typeOffset)) << " " << name << ";\n";
-			}
-			
-			// fragment shader: emit varying
-			if (lang == EShLangFragment && !ignoredPositionInFragment)
-			{
-				AddToVaryings (varying, current.precision, ctor, name);
-			}
+			emitSingleInputVariable (lang, name, ctor, current.type, current.precision, attrib, varying);
 		}
 	}
 }
