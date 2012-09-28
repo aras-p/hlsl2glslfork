@@ -24,7 +24,7 @@ struct TParseContext
    TIntermediate& intermediate; // to hold and build a parse tree
    TSymbolTable& symbolTable;   // symbol table that goes with the language currently being parsed
    TInfoSink& infoSink;
-   EShLanguage language;        // vertex or fragment language (future: pack or unpack)
+   EShLanguage language;        // vertex or fragment language
    TIntermNode* treeRoot;       // root of parse tree being created
    bool recoveredFromError;     // true if a parse error has occurred, but we continue to parse
    int numErrors;

@@ -73,10 +73,6 @@ enum TQualifier
    EvqUniform,       // Readonly, vertex and fragment
    EvqMutableUniform, //HLSL uniform value, that is not really uniform
 
-   // pack/unpack input and output
-   EvqInput,
-   EvqOutput,
-
    // parameters
    EvqIn,
    EvqOut,
@@ -118,8 +114,6 @@ __inline const char* getQualifierString(TQualifier q)
    case EvqIn:             return "in";             break;
    case EvqOut:            return "out";            break;
    case EvqInOut:          return "inout";          break;
-   case EvqInput:          return "input";          break;
-   case EvqOutput:         return "output";         break;
    case EvqPosition:       return "Position";       break;
    case EvqPointSize:      return "PointSize";      break;
    case EvqClipVertex:     return "ClipVertex";     break;
