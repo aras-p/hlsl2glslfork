@@ -236,13 +236,44 @@ static bool CheckGLSL (bool vertex, const char* source)
 	return res;
 }
 
-enum TestRun { VERTEX, FRAGMENT, BOTH, VERTEX_FAILURES, FRAGMENT_FAILURES, NUM_RUN_TYPES };
+enum TestRun {
+	VERTEX,
+	FRAGMENT,
+	BOTH,
+	VERTEX_120,
+	FRAGMENT_120,
+	VERTEX_FAILURES,
+	FRAGMENT_FAILURES,
+	NUM_RUN_TYPES
+};
+
+const bool kIsVertexShader[NUM_RUN_TYPES] = {
+	true,
+	false,
+	false,
+	true,
+	false,
+	true,
+	false,
+};
+
+static const char* kTypeName[NUM_RUN_TYPES] = {
+	"vertex",
+	"fragment",
+	"combined",
+	"vertex-120",
+	"fragment-120",
+	"vertex-failures",
+	"fragment-failures",
+};
+
+
 static bool TestFile (TestRun type,
 					  const std::string& inputPath,
 					  const std::string& outputPath,
 					  const char* entryPoint,
 					  bool usePrecision,
-					  bool useGLSL120Arrays,
+					  bool useGLSL120,
 					  bool doCheckGLSL)
 {
 	std::string input;
@@ -265,9 +296,10 @@ static bool TestFile (TestRun type,
 	if (usePrecision)
 		options |= ETranslateOpUsePrecision;
 	
-	if (useGLSL120Arrays)
+	if (useGLSL120)
 	{
 		assert (!usePrecision); // GLES 1.0 can't do that
+		options |= ETranslateOpEmitGLSL120;
 		options |= ETranslateOpEmitGLSL120ArrayInitializers;
 	}
 	
@@ -296,7 +328,7 @@ static bool TestFile (TestRun type,
 		if (translateOk)
 		{
 			std::string text;
-			if (useGLSL120Arrays)
+			if (useGLSL120)
 				text += "#version 120\n\n";
 			text += Hlsl2Glsl_GetShader (parser);
 			
@@ -425,7 +457,7 @@ static bool TestCombinedFile(const std::string& inputPath,
 static bool TestFile (TestRun type,
 					  const std::string& inputPath,
 					  bool usePrecision,
-					  bool useGLSL120Arrays,
+					  bool useGLSL120,
 					  bool checkGL)
 {
 	std::string outname = inputPath.substr (0,inputPath.size()-7);
@@ -434,9 +466,9 @@ static bool TestFile (TestRun type,
 		return TestFileFailure(type==VERTEX_FAILURES, inputPath, outname + "-out.txt");
 	} else {
 		if (usePrecision) {
-			return TestFile(type, inputPath, outname + "-outES.txt", "main", true, useGLSL120Arrays, false);
+			return TestFile(type, inputPath, outname + "-outES.txt", "main", true, useGLSL120, false);
 		} else {
-			return TestFile(type, inputPath, outname + "-out.txt", "main", false, useGLSL120Arrays, checkGL);
+			return TestFile(type, inputPath, outname + "-out.txt", "main", false, useGLSL120, checkGL);
 		}
 	}
 	return false;
@@ -473,12 +505,12 @@ int main (int argc, const char** argv)
 
 	std::string baseFolder = argv[1];
 
-	static const char* kTypeName[NUM_RUN_TYPES] = { "vertex", "fragment", "combined", "vertex-failures", "fragment-failures" };
 	size_t tests = 0;
 	size_t errors = 0;
 	for (int type = 0; type < NUM_RUN_TYPES; ++type)
 	{
-		printf ("testing %s...\n", kTypeName[type]);
+		printf ("TESTING %s...\n", kTypeName[type]);
+		const bool useGLSL120 = (type == VERTEX_120 || type == FRAGMENT_120);
 		std::string testFolder = baseFolder + "/" + kTypeName[type];
 		StringVector inputFiles = GetFiles (testFolder, "-in.txt");
 
@@ -495,9 +527,8 @@ int main (int argc, const char** argv)
 				if (ok)
 					ok = TestCombinedFile(testFolder + "/" + inname, true, false);
 			} else {
-				const bool useGLSL120Arrays = (inname.find("arrayglsl120") != std::string::npos);
-				ok = TestFile(TestRun(type), testFolder + "/" + inname, false, useGLSL120Arrays, hasOpenGL);
-				if (ok && !useGLSL120Arrays)
+				ok = TestFile(TestRun(type), testFolder + "/" + inname, false, useGLSL120, hasOpenGL);
+				if (ok && !useGLSL120)
 					ok = TestFile(TestRun(type), testFolder + "/" + inname, true, false, false);
 			}
 			

@@ -1,4 +1,4 @@
-// "arrayglsl120" in the name will make hlsl2glsl test driver
+// GLSL 1.20 tests will make hlsl2glsl test driver
 // enable "full GLSL 1.20" array printing mode.
 // This is a test to ensure it keeps on working.
 
