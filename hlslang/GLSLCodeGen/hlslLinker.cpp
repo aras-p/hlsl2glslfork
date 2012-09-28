@@ -686,70 +686,69 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 	std::string name, ctor;
 	int pad;
 	
-	if (getArgumentData (sym, lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad))
-	{
-		// In fragment shader, pass zero for POSITION inputs
-		bool ignoredPositionInFragment = false;
-		if (lang == EShLangFragment && attrSem == EAttrSemPosition)
-		{
-			call << ctor << "(0.0)";
-			ignoredPositionInFragment = true;
-		}
-		// For "in" parameters, just call directly to the main
-		else if ( sym->getQualifier() != EqtInOut )
-		{
-			call << ctor << "(" << name;
-			for (int ii = 0; ii<pad; ii++)
-				call << ", 0.0";
-			call << ")";
-		}
-		// For "inout" parameters, declare a temp and initialize the temp
-		else
-		{
-			preamble << "    ";
-			writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
-			preamble << " xlt_" << sym->getName() << " = ";
-			preamble << ctor << "(" << name;
-			for (int ii = 0; ii<pad; ii++)
-				preamble << ", 0.0";
-			preamble << ");\n";
-		}
-		
-		if (lang == EShLangVertex) // vertex shader: deal with gl_ attributes
-		{
-			if ( strncmp( name.c_str(), "gl_", 3))
-			{
-				int typeOffset = 0;
-				
-				// If the type is integer or bool based, we must convert to a float based
-				// type.  This is because GLSL does not allow int or bool based vertex attributes.
-				if ( sym->getType() >= EgstInt && sym->getType() <= EgstInt4)
-				{
-					typeOffset += 4;
-				}
-				
-				if ( sym->getType() >= EgstBool && sym->getType() <= EgstBool4)
-				{
-					typeOffset += 8;
-				}
-				
-				// This is an undefined attribute
-				attrib << "attribute " << getTypeString((EGlslSymbolType)(sym->getType() + typeOffset)) << " " << name << ";\n";
-			}
-		}
-		
-		if (lang == EShLangFragment) // deal with varyings
-		{
-			if (!ignoredPositionInFragment)
-				AddToVaryings (varying, sym->getPrecision(), ctor, name);
-		}
-	}
-	else
+	if (!getArgumentData (sym, lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad))
 	{
 		// should deal with fall through cases here
 		assert(0);
 		infoSink.info << "Unsupported type for shader entry parameter (";
 		infoSink.info << getTypeString(sym->getType()) << ")\n";
+		return;
+	}
+	
+	// In fragment shader, pass zero for POSITION inputs
+	bool ignoredPositionInFragment = false;
+	if (lang == EShLangFragment && attrSem == EAttrSemPosition)
+	{
+		call << ctor << "(0.0)";
+		ignoredPositionInFragment = true;
+	}
+	// For "in" parameters, just call directly to the main
+	else if ( sym->getQualifier() != EqtInOut )
+	{
+		call << ctor << "(" << name;
+		for (int ii = 0; ii<pad; ii++)
+			call << ", 0.0";
+		call << ")";
+	}
+	// For "inout" parameters, declare a temp and initialize the temp
+	else
+	{
+		preamble << "    ";
+		writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
+		preamble << " xlt_" << sym->getName() << " = ";
+		preamble << ctor << "(" << name;
+		for (int ii = 0; ii<pad; ii++)
+			preamble << ", 0.0";
+		preamble << ");\n";
+	}
+	
+	if (lang == EShLangVertex) // vertex shader: deal with gl_ attributes
+	{
+		if ( strncmp( name.c_str(), "gl_", 3))
+		{
+			int typeOffset = 0;
+			
+			// If the type is integer or bool based, we must convert to a float based
+			// type.  This is because GLSL does not allow int or bool based vertex attributes.
+			if ( sym->getType() >= EgstInt && sym->getType() <= EgstInt4)
+			{
+				typeOffset += 4;
+			}
+			
+			if ( sym->getType() >= EgstBool && sym->getType() <= EgstBool4)
+			{
+				typeOffset += 8;
+			}
+			
+			// This is an undefined attribute
+			attrib << "attribute " << getTypeString((EGlslSymbolType)(sym->getType() + typeOffset)) << " " << name << ";\n";
+		}
+	}
+	
+	if (lang == EShLangFragment) // deal with varyings
+	{
+		if (!ignoredPositionInFragment)
+			AddToVaryings (varying, sym->getPrecision(), ctor, name);
 	}
 }
 
@@ -787,68 +786,66 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, Extensi
 		
 		for ( int arrayIndex = 0; arrayIndex <  numArrayElements; arrayIndex++ )
 		{
-			if ( getArgumentData2( current.name, current.semantic, current.type,
-								  lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, arrayIndex ) )
-			{
-				
-				preamble << "    ";
-				preamble << tempVar << "." << current.name;
-				
-				if ( bIsArray )
-					preamble << "[" << arrayIndex << "]";
-				
-				// In fragment shader, pass zero for POSITION inputs
-				bool ignoredPositionInFragment = false;
-				if (lang == EShLangFragment && memberSem == EAttrSemPosition)
-				{
-					preamble << " = " << ctor << "(0.0);\n";
-					ignoredPositionInFragment = true;
-				}
-				else
-				{
-					preamble << " = " << ctor << "( " << name;
-					for (int ii = 0; ii<pad; ii++)
-						preamble << ", 0.0";
-					preamble << ");\n";
-				}
-				
-				if (lang == EShLangVertex) // vertex shader: gl_ attributes
-				{
-					if ( strncmp( name.c_str(), "gl_", 3))
-					{
-						
-						int typeOffset = 0;
-						
-						// If the type is integer or bool based, we must convert to a float based
-						// type.  This is because GLSL does not allow int or bool based vertex attributes.
-						if ( current.type >= EgstInt && current.type <= EgstInt4)
-						{
-							typeOffset += 4;
-						}
-						
-						if ( current.type >= EgstBool && current.type <= EgstBool4)
-						{
-							typeOffset += 8;
-						}
-						
-						// This is an undefined attribute
-						attrib << "attribute " << getTypeString((EGlslSymbolType)(current.type + typeOffset)) << " " << name << ";\n";
-						
-					}
-				}
-				
-				if (lang == EShLangFragment) // deal with varyings
-				{
-					if (!ignoredPositionInFragment)
-						AddToVaryings (varying, current.precision, ctor, name);
-				}
-			}
-			else
+			if (!getArgumentData2( current.name, current.semantic, current.type,
+								  lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, arrayIndex ))
 			{
 				//should deal with fall through cases here
 				assert(0);
 				infoSink.info << "Unsupported type for struct element in shader entry parameter (";
 				infoSink.info << getTypeString(current.type) << ")\n";
+				continue;
+			}
+			
+			preamble << "    ";
+			preamble << tempVar << "." << current.name;
+			
+			if ( bIsArray )
+				preamble << "[" << arrayIndex << "]";
+			
+			// In fragment shader, pass zero for POSITION inputs
+			bool ignoredPositionInFragment = false;
+			if (lang == EShLangFragment && memberSem == EAttrSemPosition)
+			{
+				preamble << " = " << ctor << "(0.0);\n";
+				ignoredPositionInFragment = true;
+			}
+			else
+			{
+				preamble << " = " << ctor << "( " << name;
+				for (int ii = 0; ii<pad; ii++)
+					preamble << ", 0.0";
+				preamble << ");\n";
+			}
+			
+			if (lang == EShLangVertex) // vertex shader: gl_ attributes
+			{
+				if ( strncmp( name.c_str(), "gl_", 3))
+				{
+					
+					int typeOffset = 0;
+					
+					// If the type is integer or bool based, we must convert to a float based
+					// type.  This is because GLSL does not allow int or bool based vertex attributes.
+					if ( current.type >= EgstInt && current.type <= EgstInt4)
+					{
+						typeOffset += 4;
+					}
+					
+					if ( current.type >= EgstBool && current.type <= EgstBool4)
+					{
+						typeOffset += 8;
+					}
+					
+					// This is an undefined attribute
+					attrib << "attribute " << getTypeString((EGlslSymbolType)(current.type + typeOffset)) << " " << name << ";\n";
+					
+				}
+			}
+			
+			if (lang == EShLangFragment) // deal with varyings
+			{
+				if (!ignoredPositionInFragment)
+					AddToVaryings (varying, current.precision, ctor, name);
 			}
 		}
 	}
@@ -860,37 +857,36 @@ void HlslLinker::emitOutputNonStructParam(GlslSymbol* sym, EShLanguage lang, boo
 	std::string name, ctor;
 	int pad;
 	
-	if ( getArgumentData( sym, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad) )
-	{
-		// For "inout" parameters, the preamble was already written so no need to do it here.
-		if ( sym->getQualifier() != EqtInOut )
-		{
-			preamble << "    ";
-			writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
-			preamble << " xlt_" << sym->getName() << ";\n";                     
-		}
-		
-		if (lang == EShLangVertex) // deal with varyings
-		{
-			AddToVaryings (varying, sym->getPrecision(), ctor, name);
-		}
-		
-		call << "xlt_" << sym->getName();
-		
-		postamble << "    ";
-		postamble << name << " = " << ctor << "( xlt_" <<sym->getName();
-		for (int ii = 0; ii<pad; ii++)
-			postamble << ", 0.0";
-		
-		postamble << ");\n";
-	}
-	else
+	if (!getArgumentData( sym, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad))
 	{
 		//should deal with fall through cases here
 		assert(0);
 		infoSink.info << "Unsupported type for shader entry parameter (";
 		infoSink.info << getTypeString(sym->getType()) << ")\n";
+		return;
 	}
+	
+	// For "inout" parameters, the preamble was already written so no need to do it here.
+	if (sym->getQualifier() != EqtInOut)
+	{
+		preamble << "    ";
+		writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
+		preamble << " xlt_" << sym->getName() << ";\n";                     
+	}
+	
+	if (lang == EShLangVertex) // deal with varyings
+	{
+		AddToVaryings (varying, sym->getPrecision(), ctor, name);
+	}
+	
+	call << "xlt_" << sym->getName();
+	
+	postamble << "    ";
+	postamble << name << " = " << ctor << "( xlt_" <<sym->getName();
+	for (int ii = 0; ii<pad; ii++)
+		postamble << ", 0.0";
+	
+	postamble << ");\n";
 }
 
 
@@ -918,27 +914,25 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 		std::string name, ctor;
 		int pad;
 		
-		if ( getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, 0) )
-		{
-			postamble << "    ";
-			postamble << name << " = " << ctor;
-			postamble << "( " << tempVar << "." << current.name;
-			for (int ii = 0; ii<pad; ii++)
-				postamble << ", 0.0";
-			
-			postamble << ");\n";
-			
-			if (lang == EShLangVertex) // deal with varyings
-			{
-				AddToVaryings (varying, current.precision, ctor, name);
-			}
-		}
-		else
+		if (!getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, 0))
 		{
 			//should deal with fall through cases here
 			assert(0);
 			infoSink.info << "Unsupported type in struct element for shader entry parameter (";
 			infoSink.info << getTypeString(current.type) << ")\n";
+			continue;
+		}
+		postamble << "    ";
+		postamble << name << " = " << ctor;
+		postamble << "( " << tempVar << "." << current.name;
+		for (int ii = 0; ii<pad; ii++)
+			postamble << ", 0.0";
+		
+		postamble << ");\n";
+		
+		if (lang == EShLangVertex) // deal with varyings
+		{
+			AddToVaryings (varying, current.precision, ctor, name);
 		}
 	}
 }
@@ -946,20 +940,84 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 
 bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* funcMain, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble)
 {
-	// -------- return value of main entry point
-	if (retType != EgstVoid)
+	// deal with simple void case first
+	if (retType == EgstVoid)
 	{
-		if (retType != EgstStruct)
+		if (lang == EShLangFragment) // fragment shader
 		{
+			// If no return type, close off the output
+			postamble << ";\n";
+		}
+		return true;
+	}
+	
+	if (retType != EgstStruct)
+	{
+		std::string name, ctor;
+		int pad;
+		
+		if (!getArgumentData2( "", funcMain->getSemantic(), retType, lang==EShLangVertex ? EClassVarOut : EClassRes,
+							  name, ctor, pad, 0))
+		{
+			//should deal with fall through cases here
+			assert(0);
+			infoSink.info << (lang==EShLangVertex ? "Unsupported type for shader return value (" : "Unsupported return type for shader entry function (");
+			infoSink.info << getTypeString(retType) << ")\n";
+			return true; //@TODO: real error and return false?
+		}
+		
+		postamble << "    ";
+		postamble << name << " = " << ctor << "( xl_retval";
+		for (int ii = 0; ii<pad; ii++)
+			postamble << ", 0.0";
+		
+		postamble << ");\n";
+		
+		if (lang == EShLangVertex) // deal with varyings
+		{
+			AddToVaryings (varying, funcMain->getPrecision(), ctor, name);
+		}
+	}
+	else
+	{
+		GlslStruct *retStruct = funcMain->getStruct();
+		assert (retStruct);
+		
+		const int elem = retStruct->memberCount();
+		for (int ii=0; ii<elem; ii++)
+		{
+			const GlslStruct::member &current = retStruct->getMember(ii);
 			std::string name, ctor;
 			int pad;
+			int numArrayElements = 1;
+			bool bIsArray = false;
 			
-			if ( getArgumentData2( "", funcMain->getSemantic(), retType, lang==EShLangVertex ? EClassVarOut : EClassRes,
-								  name, ctor, pad, 0) )
+			if (lang == EShLangVertex) // vertex shader
 			{
-				
+				// If it is an array, loop over each member
+				if ( current.arraySize > 0 )
+				{
+					numArrayElements = current.arraySize;
+					bIsArray = true;
+				}
+			}
+			
+			for ( int arrayIndex = 0; arrayIndex < numArrayElements; arrayIndex++ )
+			{
+				if (!getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, arrayIndex))
+				{
+					infoSink.info << (lang==EShLangVertex ? "Unsupported element type in struct for shader return value (" : "Unsupported struct element type in return type for shader entry function (");
+					infoSink.info << getTypeString(current.type) << ")\n";
+					return false;
+				}
 				postamble << "    ";
-				postamble << name << " = " << ctor << "( xl_retval";
+				postamble << name;                                                            
+				postamble << " = " << ctor;
+				postamble << "( xl_retval." << current.name;
+				if ( bIsArray )
+				{
+					postamble << "[" << arrayIndex << "]";
+				}
 				for (int ii = 0; ii<pad; ii++)
 					postamble << ", 0.0";
 				
@@ -967,82 +1025,9 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 				
 				if (lang == EShLangVertex) // deal with varyings
 				{
-					AddToVaryings (varying, funcMain->getPrecision(), ctor, name);
+					AddToVaryings (varying, current.precision, ctor, name);
 				}
 			}
-			else
-			{
-				//should deal with fall through cases here
-				assert(0);
-				infoSink.info << (lang==EShLangVertex ? "Unsupported type for shader return value (" : "Unsupported return type for shader entry function (");
-				infoSink.info << getTypeString(retType) << ")\n";
-			}
-		}
-		else
-		{
-			GlslStruct *retStruct = funcMain->getStruct();
-			assert (retStruct);
-			
-			const int elem = retStruct->memberCount();
-			for (int ii=0; ii<elem; ii++)
-			{
-				const GlslStruct::member &current = retStruct->getMember(ii);
-				std::string name, ctor;
-				int pad;
-				int numArrayElements = 1;
-				bool bIsArray = false;
-				
-				if (lang == EShLangVertex) // vertex shader
-				{
-					// If it is an array, loop over each member
-					if ( current.arraySize > 0 )
-					{
-						numArrayElements = current.arraySize;
-						bIsArray = true;
-					}
-				}
-				
-				for ( int arrayIndex = 0; arrayIndex < numArrayElements; arrayIndex++ )
-				{
-					
-					if ( getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, arrayIndex) )
-					{
-						postamble << "    ";
-						postamble << name;                                                            
-						postamble << " = " << ctor;
-						postamble << "( xl_retval." << current.name;
-						if ( bIsArray )
-						{
-							postamble << "[" << arrayIndex << "]";
-						}
-						for (int ii = 0; ii<pad; ii++)
-							postamble << ", 0.0";
-						
-						postamble << ");\n";
-						
-						if (lang == EShLangVertex) // deal with varyings
-						{
-							AddToVaryings (varying, current.precision, ctor, name);
-						}
-					}
-					else
-					{
-						//should deal with fall through cases here
-						//assert(0);
-						infoSink.info << (lang==EShLangVertex ? "Unsupported element type in struct for shader return value (" : "Unsupported struct element type in return type for shader entry function (");
-						infoSink.info << getTypeString(current.type) << ")\n";
-						return false;
-					}
-				}
-			}
-		}
-	}
-	else
-	{
-		if (lang == EShLangFragment) // fragment shader
-		{
-			// If no return type, close off the output
-			postamble << ";\n";
 		}
 	}
 	
