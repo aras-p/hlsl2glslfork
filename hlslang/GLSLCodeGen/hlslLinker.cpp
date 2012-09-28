@@ -636,7 +636,7 @@ void HlslLinker::emitStructs(HlslCrossCompiler* comp)
 }
 
 
-bool HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
+void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
 {
 	std::string name, ctor;
 	int pad;
@@ -706,12 +706,10 @@ bool HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 		infoSink.info << "Unsupported type for shader entry parameter (";
 		infoSink.info << getTypeString(sym->getType()) << ")\n";
 	}
-	
-	return true;
 }
 
 
-bool HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, ExtensionSet& extensions, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
+void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, ExtensionSet& extensions, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
 {
 	//structs must pass the struct, then process per element
 	GlslStruct *Struct = sym->getStruct();
@@ -807,6 +805,95 @@ bool HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, Extensi
 				infoSink.info << "Unsupported type for struct element in shader entry parameter (";
 				infoSink.info << getTypeString(current.type) << ")\n";
 			}
+		}
+	}
+}
+
+
+void HlslLinker::emitOutputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& varying, std::stringstream& preamble, std::stringstream& postamble, std::stringstream& call)
+{
+	std::string name, ctor;
+	int pad;
+	
+	if ( getArgumentData( sym, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad) )
+	{
+		// For "inout" parameters, the preamble was already written so no need to do it here.
+		if ( sym->getQualifier() != EqtInOut )
+		{
+			preamble << "    ";
+			writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
+			preamble << " xlt_" << sym->getName() << ";\n";                     
+		}
+		
+		if (lang == EShLangVertex) // deal with varyings
+		{
+			AddToVaryings (varying, sym->getPrecision(), ctor, name);
+		}
+		
+		call << "xlt_" << sym->getName();
+		
+		postamble << "    ";
+		postamble << name << " = " << ctor << "( xlt_" <<sym->getName();
+		for (int ii = 0; ii<pad; ii++)
+			postamble << ", 0.0";
+		
+		postamble << ");\n";
+	}
+	else
+	{
+		//should deal with fall through cases here
+		assert(0);
+		infoSink.info << "Unsupported type for shader entry parameter (";
+		infoSink.info << getTypeString(sym->getType()) << ")\n";
+	}
+}
+
+
+void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& varying, std::stringstream& preamble, std::stringstream& postamble, std::stringstream& call)
+{
+	//structs must pass the struct, then process per element
+	GlslStruct *Struct = sym->getStruct();
+	assert(Struct);
+	
+	//first create the temp
+	std::string tempVar = "xlt_" + sym->getName();
+	
+	// For "inout" parmaeters the preamble and call were already written, no need to do it here
+	if ( sym->getQualifier() != EqtInOut )
+	{
+		preamble << "    " << Struct->getName() << " ";
+		preamble << tempVar <<";\n";
+		call << tempVar;
+	}
+	
+	const int elem = Struct->memberCount();
+	for (int ii=0; ii<elem; ii++)
+	{
+		const GlslStruct::member &current = Struct->getMember(ii);
+		std::string name, ctor;
+		int pad;
+		
+		if ( getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, 0) )
+		{
+			postamble << "    ";
+			postamble << name << " = " << ctor;
+			postamble << "( " << tempVar << "." << current.name;
+			for (int ii = 0; ii<pad; ii++)
+				postamble << ", 0.0";
+			
+			postamble << ");\n";
+			
+			if (lang == EShLangVertex) // deal with varyings
+			{
+				AddToVaryings (varying, current.precision, ctor, name);
+			}
+		}
+		else
+		{
+			//should deal with fall through cases here
+			assert(0);
+			infoSink.info << "Unsupported type in struct element for shader entry parameter (";
+			infoSink.info << getTypeString(current.type) << ")\n";
 		}
 	}
 }
@@ -960,88 +1047,11 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 
 			if ( sym->getType() != EgstStruct)
 			{
-				std::string name, ctor;
-				int pad;
-
-				if ( getArgumentData( sym, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad) )
-				{
-					// For "inout" parameters, the preamble was already written so no need to do it here.
-					if ( sym->getQualifier() != EqtInOut )
-					{
-						preamble << "    ";
-						writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
-						preamble << " xlt_" << sym->getName() << ";\n";                     
-					}
-					
-					if (lang == EShLangVertex) // deal with varyings
-					{
-						AddToVaryings (varying, sym->getPrecision(), ctor, name);
-					}
-
-					call << "xlt_" << sym->getName();
-
-					postamble << "    ";
-					postamble << name << " = " << ctor << "( xlt_" <<sym->getName();
-					for (int ii = 0; ii<pad; ii++)
-						postamble << ", 0.0";
-
-					postamble << ");\n";
-				}
-				else
-				{
-					//should deal with fall through cases here
-					assert(0);
-					infoSink.info << "Unsupported type for shader entry parameter (";
-					infoSink.info << getTypeString(sym->getType()) << ")\n";
-				}
+				emitOutputNonStructParam(sym, lang, usePrecision, attrSem, varying, preamble, postamble, call);
 			}
 			else
 			{
-				//structs must pass the struct, then process per element
-				GlslStruct *Struct = sym->getStruct();
-				assert(Struct);
-
-				//first create the temp
-				std::string tempVar = "xlt_" + sym->getName();
-
-				// For "inout" parmaeters the preamble and call were already written, no need to do it here
-				if ( sym->getQualifier() != EqtInOut )
-				{
-					preamble << "    " << Struct->getName() << " ";
-					preamble << tempVar <<";\n";
-					call << tempVar;
-				}
-
-				const int elem = Struct->memberCount();
-				for (int ii=0; ii<elem; ii++)
-				{
-					const GlslStruct::member &current = Struct->getMember(ii);
-					std::string name, ctor;
-					int pad;
-
-					if ( getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, 0) )
-					{
-						postamble << "    ";
-						postamble << name << " = " << ctor;
-						postamble << "( " << tempVar << "." << current.name;
-						for (int ii = 0; ii<pad; ii++)
-							postamble << ", 0.0";
-
-						postamble << ");\n";
-
-						if (lang == EShLangVertex) // deal with varyings
-						{
-							AddToVaryings (varying, current.precision, ctor, name);
-						}
-					}
-					else
-					{
-						//should deal with fall through cases here
-						assert(0);
-						infoSink.info << "Unsupported type in struct element for shader entry parameter (";
-						infoSink.info << getTypeString(current.type) << ")\n";
-					}
-				}
+				emitOutputStructParam(sym, lang, usePrecision, attrSem, varying, preamble, postamble, call);
 			}
 			break;
 
