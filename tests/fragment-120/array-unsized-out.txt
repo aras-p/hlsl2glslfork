@@ -13,9 +13,8 @@ vec4 xlat_main(  ) {
     }
     return c;
 }
-varying vec4 xlv_COLOR0;
 void main() {
     vec4 xl_retval;
     xl_retval = xlat_main( );
-    xlv_COLOR0 = vec4(xl_retval);
+    gl_FragData[0] = vec4(xl_retval);
 }

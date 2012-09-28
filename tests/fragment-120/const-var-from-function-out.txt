@@ -6,17 +6,16 @@ uniform vec4 _Color;
 vec4 xlat_main(  );
 #line 3
 vec4 xlat_main(  ) {
-    #line 7
+    #line 5
     float c1 = max( _Color.x, _Color.y);
     float c2 = (_Color.z * _Color.w);
+    #line 11
     const float c3 = log2(float((4 * 4)));
     const float c4 = (-_Color.x);
-    #line 11
     return vec4( c1, c2, c3, c4);
 }
-varying vec4 xlv_COLOR0;
 void main() {
     vec4 xl_retval;
     xl_retval = xlat_main( );
-    xlv_COLOR0 = vec4(xl_retval);
+    gl_FragData[0] = vec4(xl_retval);
 }

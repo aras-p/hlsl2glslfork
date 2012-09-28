@@ -1260,7 +1260,10 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 	{
 		isConst |= isBranchConstant(initializer);
 		if (isConst)
-			initializer->getTypePointer()->changeQualifier(EvqConst);
+		{
+			initializerQualifier = EvqConst;
+			initializer->getTypePointer()->changeQualifier(initializerQualifier);
+		}
 	}
 	
 	// If we're trying to initialize something marked as const with a non-const initializer,

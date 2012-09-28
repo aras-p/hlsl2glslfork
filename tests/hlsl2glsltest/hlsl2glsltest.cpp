@@ -267,6 +267,16 @@ static const char* kTypeName[NUM_RUN_TYPES] = {
 	"fragment-failures",
 };
 
+static const EShLanguage kTypeLangs[NUM_RUN_TYPES] = {
+	EShLangVertex,
+	EShLangFragment,
+	EShLangCount,
+	EShLangVertex,
+	EShLangFragment,
+	EShLangVertex,
+	EShLangFragment,
+};
+
 
 static bool TestFile (TestRun type,
 					  const std::string& inputPath,
@@ -283,8 +293,7 @@ static bool TestFile (TestRun type,
 		return false;
 	}
 	
-	static const EShLanguage langs[] = {EShLangVertex, EShLangFragment};
-	ShHandle parser = Hlsl2Glsl_ConstructCompiler (langs[type]);
+	ShHandle parser = Hlsl2Glsl_ConstructCompiler (kTypeLangs[type]);
 
 	const char* sourceStr = input.c_str();
 
@@ -355,7 +364,7 @@ static bool TestFile (TestRun type,
 				printf ("  does not match expected output\n");
 				res = false;
 			}
-			if (doCheckGLSL && !CheckGLSL (type == VERTEX, text.c_str()))
+			if (doCheckGLSL && !CheckGLSL (kIsVertexShader[type], text.c_str()))
 			{
 				res = false;
 			}
