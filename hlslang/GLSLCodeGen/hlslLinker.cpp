@@ -938,6 +938,24 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 }
 
 
+void HlslLinker::emitReturnValueDecl(const EGlslSymbolType retType, GlslFunction* funcMain, bool usePrecision, std::stringstream& preamble)
+{
+	preamble << "void main() {\n";
+	if (retType == EgstStruct)
+	{
+		GlslStruct* retStruct = funcMain->getStruct();
+		assert(retStruct);
+		preamble << "    " << retStruct->getName() << " xl_retval;\n";
+	}
+	else if (retType != EgstVoid)
+	{
+		preamble << "    ";
+		writeType (preamble, retType, NULL, usePrecision?funcMain->getPrecision():EbpUndefined);
+		preamble << " xl_retval;\n";
+	}
+}
+
+
 bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* funcMain, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble)
 {
 	// deal with simple void case first
@@ -1058,31 +1076,21 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	std::vector<GlslSymbol*> constants;
 	std::set<TOperator> libFunctions;
 	buildUniformsAndLibFunctions(calledFunctions, constants, libFunctions);
-
-
-	// The following code is what is used to generate the actual shader and "main"
-	// function. The process is to take all the components collected above, and
-	// write them to the appropriate code stream. Finally, a main function is
-	// generated that calls the specified entrypoint. That main function uses
-	// semantics on the arguments and return values to connect items appropriately.
-	
-
-	emitLibraryFunctions (libFunctions, lang, usePrecision);
-
-	emitStructs(compiler);
-	
-	emitOtherGlobals (globalList, constants);
-
 	buildUniformReflection (constants);
 
-	//
-	// Write function declarations and definitions
-	//
+
+	// print all the components collected above.
+
+	emitLibraryFunctions (libFunctions, lang, usePrecision);
+	emitStructs(compiler);
+	emitOtherGlobals (globalList, constants);
 	EmitCalledFunctions (shader, calledFunctions);
 
-	//
-	// Generate the main function
-	//
+	
+	// Generate a main function that calls the specified entrypoint.
+	// That main function uses semantics on the arguments and return values to
+	// connect items appropriately.	
+	
 	ExtensionSet extensions;
 	std::stringstream attrib;
 	std::stringstream uniform;
@@ -1090,33 +1098,21 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	std::stringstream postamble;
 	std::stringstream varying;
 	std::stringstream call;
-	const int pCount = funcMain->getParameterCount();
 
-	preamble << "void main() {\n";
+	// Declare return value
 	const EGlslSymbolType retType = funcMain->getReturnType();
-	if (  retType == EgstStruct)
-	{
-		GlslStruct *retStruct = funcMain->getStruct();
-		assert(retStruct);
-		preamble << "    " << retStruct->getName() << " xl_retval;\n";
-	}
-	else
-	{
-		if ( retType != EgstVoid)
-		{
-			preamble << "    ";
-			writeType (preamble, retType, NULL, usePrecision?funcMain->getPrecision():EbpUndefined);
-			preamble << " xl_retval;\n";
-		}
-	}
+	emitReturnValueDecl(retType, funcMain, usePrecision, preamble);
 	
+
+	// Call the entry point
 	call << "    ";
 	if (retType != EgstVoid)
-		call << "xl_retval = " << funcMain->getName() << "( ";
-	else
-		call << funcMain->getName() << "( ";
+		call << "xl_retval = ";
+	call << funcMain->getName() << "( ";
+	
 
-	// pass main function parameters
+	// Entry point parameters
+	const int pCount = funcMain->getParameterCount();
 	for (int ii=0; ii<pCount; ii++)
 	{
 		GlslSymbol *sym = funcMain->getParameter(ii);
@@ -1180,11 +1176,14 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	call << ");\n";
 
 
+	// Entry point return value
 	if (!emitReturnValue(retType, funcMain, lang, varying, postamble))
 		return false;
 
 	postamble << "}\n\n";
 	
+	
+	// Generate final code of the pieces above.
 	{
 		std::set<const char*>::iterator it = extensions.begin(), end = extensions.end();
 		for (; it != end; ++it)
