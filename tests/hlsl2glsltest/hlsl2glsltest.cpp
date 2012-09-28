@@ -445,6 +445,7 @@ static bool TestFileFailure (bool vertex,
 
 static bool TestCombinedFile(const std::string& inputPath,
 							 bool usePrecision,
+							 bool useGLSL120,
 							 bool checkGL)
 {
 	std::string outname = inputPath.substr (0,inputPath.size()-7);
@@ -458,8 +459,8 @@ static bool TestCombinedFile(const std::string& inputPath,
 		frag_out = outname + "-fragment-out.txt";
 	}
 	
-	bool res = TestFile(VERTEX, inputPath, vert_out, "vs_main", usePrecision, false, !usePrecision && checkGL);
-	return res & TestFile(FRAGMENT, inputPath, frag_out, "ps_main", usePrecision, false, !usePrecision && checkGL);
+	bool res = TestFile(VERTEX, inputPath, vert_out, "vs_main", usePrecision, useGLSL120, !usePrecision && checkGL);
+	return res & TestFile(FRAGMENT, inputPath, frag_out, "ps_main", usePrecision, useGLSL120, !usePrecision && checkGL);
 }
 
 
@@ -519,7 +520,7 @@ int main (int argc, const char** argv)
 	for (int type = 0; type < NUM_RUN_TYPES; ++type)
 	{
 		printf ("TESTING %s...\n", kTypeName[type]);
-		const bool useGLSL120 = (type == VERTEX_120 || type == FRAGMENT_120);
+		const bool useGLSL120 = (type == VERTEX_120 || type == FRAGMENT_120 || type == BOTH);
 		std::string testFolder = baseFolder + "/" + kTypeName[type];
 		StringVector inputFiles = GetFiles (testFolder, "-in.txt");
 
@@ -528,13 +529,15 @@ int main (int argc, const char** argv)
 		for (size_t i = 0; i < n; ++i)
 		{
 			std::string inname = inputFiles[i];
+			//if (inname != "const-var-from-function-in.txt")
+			//	continue;
 			bool ok = true;
 			
 			printf ("test %s\n", inname.c_str());
 			if (type == BOTH) {
-				ok = TestCombinedFile(testFolder + "/" + inname, false, hasOpenGL);
-				if (ok)
-					ok = TestCombinedFile(testFolder + "/" + inname, true, false);
+				ok = TestCombinedFile(testFolder + "/" + inname, false, useGLSL120, hasOpenGL);
+				if (ok && !useGLSL120)
+					ok = TestCombinedFile(testFolder + "/" + inname, true, useGLSL120, false);
 			} else {
 				ok = TestFile(TestRun(type), testFolder + "/" + inname, false, useGLSL120, hasOpenGL);
 				if (ok && !useGLSL120)
