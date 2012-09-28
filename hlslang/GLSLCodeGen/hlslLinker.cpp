@@ -711,6 +711,107 @@ bool HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 }
 
 
+bool HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, ExtensionSet& extensions, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
+{
+	//structs must pass the struct, then process per element
+	GlslStruct *Struct = sym->getStruct();
+	assert(Struct);
+	
+	//first create the temp
+	std::string tempVar = "xlt_" + sym->getName();
+	preamble << "    " << Struct->getName() << " ";
+	preamble << tempVar <<";\n";
+	call << tempVar;
+	
+	const int elem = Struct->memberCount();
+	for (int jj=0; jj<elem; jj++)
+	{
+		const GlslStruct::member &current = Struct->getMember(jj);
+		EAttribSemantic memberSem = parseAttributeSemantic (current.semantic);
+		std::string name, ctor;
+		int pad;
+		int numArrayElements = 1;
+		bool bIsArray = false;
+		
+		addRequiredExtensions(memberSem, extensions);
+		
+		// If it is an array, loop over each member
+		if ( current.arraySize > 0 )
+		{
+			numArrayElements = current.arraySize;
+			bIsArray = true;
+		}
+		
+		for ( int arrayIndex = 0; arrayIndex <  numArrayElements; arrayIndex++ )
+		{
+			if ( getArgumentData2( current.name, current.semantic, current.type,
+								  lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, arrayIndex ) )
+			{
+				
+				preamble << "    ";
+				preamble << tempVar << "." << current.name;
+				
+				if ( bIsArray )
+					preamble << "[" << arrayIndex << "]";
+				
+				// In fragment shader, pass zero for POSITION inputs
+				bool ignoredPositionInFragment = false;
+				if (lang == EShLangFragment && memberSem == EAttrSemPosition)
+				{
+					preamble << " = " << ctor << "(0.0);\n";
+					ignoredPositionInFragment = true;
+				}
+				else
+				{
+					preamble << " = " << ctor << "( " << name;
+					for (int ii = 0; ii<pad; ii++)
+						preamble << ", 0.0";
+					preamble << ");\n";
+				}
+				
+				if (lang == EShLangVertex) // vertex shader: gl_ attributes
+				{
+					if ( strncmp( name.c_str(), "gl_", 3))
+					{
+						
+						int typeOffset = 0;
+						
+						// If the type is integer or bool based, we must convert to a float based
+						// type.  This is because GLSL does not allow int or bool based vertex attributes.
+						if ( current.type >= EgstInt && current.type <= EgstInt4)
+						{
+							typeOffset += 4;
+						}
+						
+						if ( current.type >= EgstBool && current.type <= EgstBool4)
+						{
+							typeOffset += 8;
+						}
+						
+						// This is an undefined attribute
+						attrib << "attribute " << getTypeString((EGlslSymbolType)(current.type + typeOffset)) << " " << name << ";\n";
+						
+					}
+				}
+				
+				if (lang == EShLangFragment) // deal with varyings
+				{
+					if (!ignoredPositionInFragment)
+						AddToVaryings (varying, current.precision, ctor, name);
+				}
+			}
+			else
+			{
+				//should deal with fall through cases here
+				assert(0);
+				infoSink.info << "Unsupported type for struct element in shader entry parameter (";
+				infoSink.info << getTypeString(current.type) << ")\n";
+			}
+		}
+	}
+}
+
+
 bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool usePrecision)
 {
 	if (!linkerSanityCheck(compiler, entryFunc))
@@ -844,109 +945,11 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 			}
 			else
 			{
-				//structs must pass the struct, then process per element
-				GlslStruct *Struct = sym->getStruct();
-				assert(Struct);
-
-				//first create the temp
-				std::string tempVar = "xlt_" + sym->getName();
-				preamble << "    " << Struct->getName() << " ";
-				preamble << tempVar <<";\n";
-				call << tempVar;
-
-				const int elem = Struct->memberCount();
-				for (int jj=0; jj<elem; jj++)
-				{
-					const GlslStruct::member &current = Struct->getMember(jj);
-					EAttribSemantic memberSem = parseAttributeSemantic (current.semantic);
-					std::string name, ctor;
-					int pad;
-					int numArrayElements = 1;
-					bool bIsArray = false;
-					
-					addRequiredExtensions(memberSem, extensions);
-
-					// If it is an array, loop over each member
-					if ( current.arraySize > 0 )
-					{
-						numArrayElements = current.arraySize;
-						bIsArray = true;
-					}
-
-					for ( int arrayIndex = 0; arrayIndex <  numArrayElements; arrayIndex++ )
-					{
-						if ( getArgumentData2( current.name, current.semantic, current.type,
-							lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, arrayIndex ) )
-						{
-
-							preamble << "    ";
-							preamble << tempVar << "." << current.name;
-
-							if ( bIsArray )
-								preamble << "[" << arrayIndex << "]";
-
-							// In fragment shader, pass zero for POSITION inputs
-							bool ignoredPositionInFragment = false;
-							if (lang == EShLangFragment && memberSem == EAttrSemPosition)
-							{
-								preamble << " = " << ctor << "(0.0);\n";
-								ignoredPositionInFragment = true;
-							}
-							else
-							{
-								preamble << " = " << ctor << "( " << name;
-								for (int ii = 0; ii<pad; ii++)
-									preamble << ", 0.0";
-								preamble << ");\n";
-							}
-
-							if (lang == EShLangVertex) // vertex shader: gl_ attributes
-							{
-								if ( strncmp( name.c_str(), "gl_", 3))
-								{
-
-									int typeOffset = 0;
-
-									// If the type is integer or bool based, we must convert to a float based
-									// type.  This is because GLSL does not allow int or bool based vertex attributes.
-									if ( current.type >= EgstInt && current.type <= EgstInt4)
-									{
-										typeOffset += 4;
-									}
-
-									if ( current.type >= EgstBool && current.type <= EgstBool4)
-									{
-										typeOffset += 8;
-									}
-
-									// This is an undefined attribute
-									attrib << "attribute " << getTypeString((EGlslSymbolType)(current.type + typeOffset)) << " " << name << ";\n";
-
-								}
-							}
-							
-							if (lang == EShLangFragment) // deal with varyings
-							{
-								if (!ignoredPositionInFragment)
-									AddToVaryings (varying, current.precision, ctor, name);
-							}
-						}
-						else
-						{
-							//should deal with fall through cases here
-							assert(0);
-							infoSink.info << "Unsupported type for struct element in shader entry parameter (";
-							infoSink.info << getTypeString(current.type) << ")\n";
-						}
-					}
-				}
+				emitInputStructParam(sym, lang, extensions, attrib, varying, preamble, call);
 			}
 
-			//
-			// NOTE: This check only breaks out of the case if we have an "in" parameter, for
-			//       "inout" it will fallthrough to the next case
-			//
-			if ( sym->getQualifier() != EqtInOut )
+			// NOTE: for "inout" parameters need to fallthrough to the next case
+			if (sym->getQualifier() != EqtInOut)
 			{
 				break;
 			}
