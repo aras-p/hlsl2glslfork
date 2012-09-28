@@ -7,8 +7,8 @@ vec4 xlat_main(  ) {
     #line 6
     float c1 = max( _Color.x, _Color.y);
     float c2 = (_Color.z * _Color.w);
-    const float c3 = log2(float((4 * 4)));
-    const float c4 = (-_Color.x);
+    float c3 = log2(float((4 * 4)));
+    float c4 = (-_Color.x);
     #line 10
     return vec4( c1, c2, c3, c4);
 }
