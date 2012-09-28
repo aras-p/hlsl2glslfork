@@ -85,10 +85,10 @@ varying vec2 xlv_TEXCOORD0;
 void main() {
     PS_INPUT xl_retval;
     VS_INPUT xlt_xlat_var_input;
-    xlt_xlat_var_input.position = vec4( gl_Vertex);
-    xlt_xlat_var_input.uv = vec2( gl_MultiTexCoord0);
-    xlt_xlat_var_input.vertex_id = int( gl_VertexID);
-    xlt_xlat_var_input.instance_id = int( gl_InstanceIDARB);
+    xlt_xlat_var_input.position = vec4(gl_Vertex);
+    xlt_xlat_var_input.uv = vec2(gl_MultiTexCoord0);
+    xlt_xlat_var_input.vertex_id = int(gl_VertexID);
+    xlt_xlat_var_input.instance_id = int(gl_InstanceIDARB);
     xl_retval = vs_main( xlt_xlat_var_input);
     gl_Position = vec4( xl_retval.position);
     xlv_TEXCOORD0 = vec2( xl_retval.uv);

@@ -104,7 +104,7 @@ void main() {
     vec4 xl_retval;
     v2f xlt_i;
     xlt_i.pos = vec4(0.0);
-    xlt_i.uv = vec2( xlv_TEXCOORD0);
+    xlt_i.uv = vec2(xlv_TEXCOORD0);
     xl_retval = xlat_main( xlt_i);
-    gl_FragData[0] = vec4( xl_retval);
+    gl_FragData[0] = vec4(xl_retval);
 }

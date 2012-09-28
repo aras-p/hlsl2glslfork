@@ -79,6 +79,6 @@ varying vec3 xlv_TEXCOORD6;
 void main() {
     vec4 xlt_oColour;
     xlat_main( vec3(xlv_TEXCOORD0), vec3(xlv_TEXCOORD1), vec3(xlv_TEXCOORD2), vec4(xlv_TEXCOORD3), vec4(xlv_TEXCOORD4), vec4(xlv_TEXCOORD5), vec3(xlv_TEXCOORD6), xlt_oColour, xlu_invShadowMapSize0, xlu_invShadowMapSize1, xlu_invShadowMapSize2, xlu_pssmSplitPoints, xlu_diffuse, xlu_specular, xlu_normalMap, xlu_shadowMap0, xlu_shadowMap1, xlu_shadowMap2, xlu_lightDiffuse, xlu_lightSpecular, xlu_ambient);
-    gl_FragData[0] = vec4( xlt_oColour);
+    gl_FragData[0] = vec4(xlt_oColour);
 ;
 }

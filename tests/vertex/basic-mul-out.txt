@@ -11,6 +11,6 @@ void main() {
     vec4 xlt_overtex;
     vec3 xlt_onormal;
     xlat_main( vec4(gl_Vertex), xlt_overtex, vec3(gl_Normal), xlt_onormal);
-    gl_Position = vec4( xlt_overtex);
-    xlv_TEXCOORD0 = vec3( xlt_onormal);
+    gl_Position = vec4(xlt_overtex);
+    xlv_TEXCOORD0 = vec3(xlt_onormal);
 }

@@ -20,8 +20,8 @@ void main() {
     vec2 xlt_ouv;
     vec4 xlt_ocolor;
     xlat_main( vec4(gl_Vertex), vec2(gl_MultiTexCoord0), vec3(gl_Normal), vec4(gl_Color), xlt_opos, xlt_ofog, xlt_ouv, xlt_ocolor);
-    gl_Position = vec4( xlt_opos);
-    xlv_FOG = float( xlt_ofog);
-    xlv_TEXCOORD0 = vec2( xlt_ouv);
-    xlv_COLOR = vec4( xlt_ocolor);
+    gl_Position = vec4(xlt_opos);
+    xlv_FOG = float(xlt_ofog);
+    xlv_TEXCOORD0 = vec2(xlt_ouv);
+    xlv_COLOR = vec4(xlt_ocolor);
 }

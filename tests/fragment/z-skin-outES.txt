@@ -75,8 +75,8 @@ void main() {
     highp vec4 xl_retval;
     v2f_withBlurCoords xlt_i;
     xlt_i.pos = vec4(0.0);
-    xlt_i.uv = vec4( xlv_TEXCOORD0);
-    xlt_i.offs = vec2( xlv_TEXCOORD1);
+    xlt_i.uv = vec4(xlv_TEXCOORD0);
+    xlt_i.offs = vec2(xlv_TEXCOORD1);
     xl_retval = xlat_main( xlt_i);
-    gl_FragData[0] = vec4( xl_retval);
+    gl_FragData[0] = vec4(xl_retval);
 }

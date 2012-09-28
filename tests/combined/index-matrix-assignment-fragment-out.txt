@@ -38,7 +38,7 @@ void main() {
     vec4 xl_retval;
     PS_INPUT xlt_xlat_var_input;
     xlt_xlat_var_input.position = vec4(0.0);
-    xlt_xlat_var_input.uv = vec2( xlv_TEXCOORD0);
+    xlt_xlat_var_input.uv = vec2(xlv_TEXCOORD0);
     xl_retval = ps_main( xlt_xlat_var_input, int(gl_PrimitiveID));
-    gl_FragData[0] = vec4( xl_retval);
+    gl_FragData[0] = vec4(xl_retval);
 }

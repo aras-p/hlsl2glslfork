@@ -22,5 +22,5 @@ highp vec4 xlat_main(  ) {
 void main() {
     highp vec4 xl_retval;
     xl_retval = xlat_main( );
-    gl_Position = vec4( xl_retval);
+    gl_Position = vec4(xl_retval);
 }

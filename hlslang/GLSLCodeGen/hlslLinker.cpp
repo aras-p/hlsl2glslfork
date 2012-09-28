@@ -681,6 +681,15 @@ void HlslLinker::buildUniformReflection(const std::vector<GlslSymbol*>& constant
 }
 
 
+static void emitSymbolWithPad (std::stringstream& str, const std::string& ctor, const std::string& name, int pad)
+{
+	str << ctor << "(" << name;
+	for (int i = 0; i < pad; ++i)
+		str << ", 0.0";
+	str << ")";
+}
+
+
 void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
 {
 	std::string name, ctor;
@@ -705,10 +714,7 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 	// For "in" parameters, just call directly to the main
 	else if ( sym->getQualifier() != EqtInOut )
 	{
-		call << ctor << "(" << name;
-		for (int ii = 0; ii<pad; ii++)
-			call << ", 0.0";
-		call << ")";
+		emitSymbolWithPad (call, ctor, name, pad);
 	}
 	// For "inout" parameters, declare a temp and initialize the temp
 	else
@@ -716,10 +722,8 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 		preamble << "    ";
 		writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
 		preamble << " xlt_" << sym->getName() << " = ";
-		preamble << ctor << "(" << name;
-		for (int ii = 0; ii<pad; ii++)
-			preamble << ", 0.0";
-		preamble << ");\n";
+		emitSymbolWithPad (preamble, ctor, name, pad);
+		preamble << ";\n";
 	}
 	
 	if (lang == EShLangVertex) // vertex shader: deal with gl_ attributes
@@ -811,10 +815,9 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, Extensi
 			}
 			else
 			{
-				preamble << " = " << ctor << "( " << name;
-				for (int ii = 0; ii<pad; ii++)
-					preamble << ", 0.0";
-				preamble << ");\n";
+				preamble << " = ";
+				emitSymbolWithPad (preamble, ctor, name, pad);
+				preamble << ";\n";
 			}
 			
 			if (lang == EShLangVertex) // vertex shader: gl_ attributes
@@ -882,11 +885,9 @@ void HlslLinker::emitOutputNonStructParam(GlslSymbol* sym, EShLanguage lang, boo
 	call << "xlt_" << sym->getName();
 	
 	postamble << "    ";
-	postamble << name << " = " << ctor << "( xlt_" <<sym->getName();
-	for (int ii = 0; ii<pad; ii++)
-		postamble << ", 0.0";
-	
-	postamble << ");\n";
+	postamble << name << " = ";
+	emitSymbolWithPad (postamble, ctor, "xlt_"+sym->getName(), pad);
+	postamble << ";\n";
 }
 
 
@@ -923,12 +924,9 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 			continue;
 		}
 		postamble << "    ";
-		postamble << name << " = " << ctor;
-		postamble << "( " << tempVar << "." << current.name;
-		for (int ii = 0; ii<pad; ii++)
-			postamble << ", 0.0";
-		
-		postamble << ");\n";
+		postamble << name << " = ";
+		emitSymbolWithPad (postamble, ctor, tempVar+"."+current.name, pad);		
+		postamble << ";\n";
 		
 		if (lang == EShLangVertex) // deal with varyings
 		{
@@ -958,7 +956,7 @@ void HlslLinker::emitReturnValueDecl(const EGlslSymbolType retType, GlslFunction
 
 bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* funcMain, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble)
 {
-	// deal with simple void case first
+	// void return type
 	if (retType == EgstVoid)
 	{
 		if (lang == EShLangFragment) // fragment shader
@@ -969,15 +967,16 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 		return true;
 	}
 	
+	// non-struct return type
+	assert (retType != EgstVoid);
 	if (retType != EgstStruct)
 	{
 		std::string name, ctor;
 		int pad;
 		
-		if (!getArgumentData2( "", funcMain->getSemantic(), retType, lang==EShLangVertex ? EClassVarOut : EClassRes,
+		if (!getArgumentData2("", funcMain->getSemantic(), retType, lang==EShLangVertex ? EClassVarOut : EClassRes,
 							  name, ctor, pad, 0))
 		{
-			//should deal with fall through cases here
 			assert(0);
 			infoSink.info << (lang==EShLangVertex ? "Unsupported type for shader return value (" : "Unsupported return type for shader entry function (");
 			infoSink.info << getTypeString(retType) << ")\n";
@@ -985,66 +984,65 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 		}
 		
 		postamble << "    ";
-		postamble << name << " = " << ctor << "( xl_retval";
-		for (int ii = 0; ii<pad; ii++)
-			postamble << ", 0.0";
-		
-		postamble << ");\n";
+		postamble << name << " = ";
+		emitSymbolWithPad (postamble, ctor, "xl_retval", pad);		
+		postamble << ";\n";
 		
 		if (lang == EShLangVertex) // deal with varyings
 		{
 			AddToVaryings (varying, funcMain->getPrecision(), ctor, name);
 		}
+		return true;
 	}
-	else
+	
+	// struct return type
+	assert (retType == EgstStruct);
+	GlslStruct *retStruct = funcMain->getStruct();
+	assert (retStruct);
+	
+	const int elem = retStruct->memberCount();
+	for (int ii=0; ii<elem; ii++)
 	{
-		GlslStruct *retStruct = funcMain->getStruct();
-		assert (retStruct);
+		const GlslStruct::member &current = retStruct->getMember(ii);
+		std::string name, ctor;
+		int pad;
+		int numArrayElements = 1;
+		bool bIsArray = false;
 		
-		const int elem = retStruct->memberCount();
-		for (int ii=0; ii<elem; ii++)
+		if (lang == EShLangVertex) // vertex shader
 		{
-			const GlslStruct::member &current = retStruct->getMember(ii);
-			std::string name, ctor;
-			int pad;
-			int numArrayElements = 1;
-			bool bIsArray = false;
-			
-			if (lang == EShLangVertex) // vertex shader
+			// If it is an array, loop over each member
+			if ( current.arraySize > 0 )
 			{
-				// If it is an array, loop over each member
-				if ( current.arraySize > 0 )
-				{
-					numArrayElements = current.arraySize;
-					bIsArray = true;
-				}
+				numArrayElements = current.arraySize;
+				bIsArray = true;
 			}
-			
-			for ( int arrayIndex = 0; arrayIndex < numArrayElements; arrayIndex++ )
+		}
+		
+		for ( int arrayIndex = 0; arrayIndex < numArrayElements; arrayIndex++ )
+		{
+			if (!getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, arrayIndex))
 			{
-				if (!getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, arrayIndex))
-				{
-					infoSink.info << (lang==EShLangVertex ? "Unsupported element type in struct for shader return value (" : "Unsupported struct element type in return type for shader entry function (");
-					infoSink.info << getTypeString(current.type) << ")\n";
-					return false;
-				}
-				postamble << "    ";
-				postamble << name;                                                            
-				postamble << " = " << ctor;
-				postamble << "( xl_retval." << current.name;
-				if ( bIsArray )
-				{
-					postamble << "[" << arrayIndex << "]";
-				}
-				for (int ii = 0; ii<pad; ii++)
-					postamble << ", 0.0";
-				
-				postamble << ");\n";
-				
-				if (lang == EShLangVertex) // deal with varyings
-				{
-					AddToVaryings (varying, current.precision, ctor, name);
-				}
+				infoSink.info << (lang==EShLangVertex ? "Unsupported element type in struct for shader return value (" : "Unsupported struct element type in return type for shader entry function (");
+				infoSink.info << getTypeString(current.type) << ")\n";
+				return false;
+			}
+			postamble << "    ";
+			postamble << name;                                                            
+			postamble << " = " << ctor;
+			postamble << "( xl_retval." << current.name;
+			if ( bIsArray )
+			{
+				postamble << "[" << arrayIndex << "]";
+			}
+			for (int ii = 0; ii<pad; ii++)
+				postamble << ", 0.0";
+			
+			postamble << ");\n";
+			
+			if (lang == EShLangVertex) // deal with varyings
+			{
+				AddToVaryings (varying, current.precision, ctor, name);
 			}
 		}
 	}

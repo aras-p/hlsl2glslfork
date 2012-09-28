@@ -35,6 +35,6 @@ varying highp vec4 xlv_COLOR;
 void main() {
     highp vec4 xlt_oColour;
     xlat_main( vec4(0.0), vec4(xlv_TEXCOORD0), vec3(xlv_TEXCOORD1), vec4(xlv_COLOR), xlt_oColour, xlu_shadowMap, xlu_diffuseMap, xlu_fixedDepthBias, xlu_gradientClamp, xlu_gradientScaleBias);
-    gl_FragData[0] = vec4( xlt_oColour);
+    gl_FragData[0] = vec4(xlt_oColour);
 ;
 }

@@ -18,6 +18,6 @@ varying vec2 xlv_TEXCOORD1;
 void main() {
     vec4 xlt_result;
     xlat_main( vec4(0.0), vec2(xlv_TEXCOORD0), vec2(xlv_TEXCOORD1), xlt_result, xlu_diffuseMap);
-    gl_FragData[0] = vec4( xlt_result);
+    gl_FragData[0] = vec4(xlt_result);
 ;
 }

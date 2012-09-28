@@ -30,9 +30,9 @@ varying vec2 xlv_TEXCOORD0;
 void main() {
     v2f xl_retval;
     appdata_t xlt_v;
-    xlt_v.vertex = vec4( gl_Vertex);
-    xlt_v.color = vec4( gl_Color);
-    xlt_v.texcoord = vec2( gl_MultiTexCoord0);
+    xlt_v.vertex = vec4(gl_Vertex);
+    xlt_v.color = vec4(gl_Color);
+    xlt_v.texcoord = vec2(gl_MultiTexCoord0);
     xl_retval = xlat_main( xlt_v);
     gl_Position = vec4( xl_retval.vertex);
     xlv_COLOR = vec4( xl_retval.color);
