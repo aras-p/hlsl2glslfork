@@ -1,6 +1,6 @@
 #line 1 "tex2dshadow-in.txt" 
 
-sampler2Dshadow shadowmap;
+sampler2DShadow shadowmap;
 
 fixed4 main (float4 uv : TEXCOORD0) : COLOR0
 {
