@@ -15,24 +15,36 @@
 //
 struct TParseContext
 {
-   TParseContext(TSymbolTable& symt, TIntermediate& interm, EShLanguage L, TInfoSink& is) : 
-   intermediate(interm), symbolTable(symt), infoSink(is), language(L), treeRoot(0),
-   recoveredFromError(false), numErrors(0), lexAfterType(false), loopNestingLevel(0), 
-   inTypeParen(false)
-   {
-   }
-   TIntermediate& intermediate; // to hold and build a parse tree
-   TSymbolTable& symbolTable;   // symbol table that goes with the language currently being parsed
-   TInfoSink& infoSink;
-   EShLanguage language;        // vertex or fragment language
-   TIntermNode* treeRoot;       // root of parse tree being created
-   bool recoveredFromError;     // true if a parse error has occurred, but we continue to parse
-   int numErrors;
-   bool lexAfterType;           // true if we've recognized a type, so can only be looking for an identifier
-   int loopNestingLevel;        // 0 if outside all loops
-   bool inTypeParen;            // true if in parentheses, looking only for an identifier
-   const TType* currentFunctionType;  // the return type of the function that's currently being parsed
-   bool functionReturnsValue;   // true if a non-void function has a return
+	TParseContext(TSymbolTable& symt, TIntermediate& interm, EShLanguage L, unsigned opts, TInfoSink& is)
+	: intermediate(interm)
+	, symbolTable(symt)
+	, infoSink(is)
+	, language(L)
+	, options(opts)
+	, treeRoot(0)
+	, recoveredFromError(false)
+	, numErrors(0)
+	, lexAfterType(false)
+	, loopNestingLevel(0)
+	, inTypeParen(false)
+	{
+	}
+	
+	TIntermediate& intermediate; // to hold and build a parse tree
+	TSymbolTable& symbolTable;   // symbol table that goes with the language currently being parsed
+	TInfoSink& infoSink;
+
+	EShLanguage language;        // vertex or fragment language
+	unsigned options;			// TTranslateOptions bitmask
+
+	TIntermNode* treeRoot;       // root of parse tree being created
+	bool recoveredFromError;     // true if a parse error has occurred, but we continue to parse
+	int numErrors;
+	bool lexAfterType;           // true if we've recognized a type, so can only be looking for an identifier
+	int loopNestingLevel;        // 0 if outside all loops
+	bool inTypeParen;            // true if in parentheses, looking only for an identifier
+	const TType* currentFunctionType;  // the return type of the function that's currently being parsed
+	bool functionReturnsValue;   // true if a non-void function has a return
 
    void C_DECL error(TSourceLoc, const char *szReason, const char *szToken, 
                      const char *szExtraInfoFormat, ...);

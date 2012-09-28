@@ -1252,14 +1252,19 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 		return true;
 	}
 	
-	bool isConst = isBranchConstant(initializer);
-	if (isConst)
-		initializer->getTypePointer()->changeQualifier(EvqConst);
-	
+	TQualifier initializerQualifier = initializer->getType().getQualifier();	
+	bool isConst = (initializerQualifier == EvqConst) || (initializerQualifier == EvqStaticConst);
+	// GLSL 1.20+ allows more things in constant initializers;
+	// not so much for earlier GLSL versions.
+	if (!isConst && (options & ETranslateOpEmitGLSL120))
+	{
+		isConst |= isBranchConstant(initializer);
+		if (isConst)
+			initializer->getTypePointer()->changeQualifier(EvqConst);
+	}
 	
 	// If we're trying to initialize something marked as const with a non-const initializer,
 	// change it's type to temporary instead
-	const TQualifier initializerQualifier = initializer->getType().getQualifier();	
 	if ((initializerQualifier != EvqConst) && (initializerQualifier != EvqStaticConst))
 	{
 		qualifier = EvqTemporary;

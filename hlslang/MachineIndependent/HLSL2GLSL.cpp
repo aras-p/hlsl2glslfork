@@ -49,7 +49,7 @@ bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage languag
    else
       symbolTable = &symbolTables[language];
 
-   TParseContext parseContext(*symbolTable, intermediate, language, infoSink);
+   TParseContext parseContext(*symbolTable, intermediate, language, 0, infoSink);
 
    GlobalParseContext = &parseContext;
 
@@ -239,7 +239,7 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 
    GenerateBuiltInSymbolTable(compiler->infoSink, &symbolTable, compiler->getLanguage());
 
-   TParseContext parseContext(symbolTable, intermediate, compiler->getLanguage(), compiler->infoSink);
+   TParseContext parseContext(symbolTable, intermediate, compiler->getLanguage(), options, compiler->infoSink);
 
    GlobalParseContext = &parseContext;
 
