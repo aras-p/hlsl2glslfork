@@ -1256,12 +1256,22 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 	bool isConst = isBranchConstant(initializer);
 	if (isConst)
 		initializer->getTypePointer()->changeQualifier(EvqConst);
+	
+	
+	// If we're trying to initialize something marked as const with a non-const initializer,
+	// change it's type to temporary instead
+	const TQualifier initializerQualifier = initializer->getType().getQualifier();	
+	if ((initializerQualifier != EvqConst) && (initializerQualifier != EvqStaticConst))
+	{
+		qualifier = EvqTemporary;
+		variable->getType().changeQualifier(qualifier);
+	}
 
 	//
 	// test for and propagate constant
 	//
 	
-	if (qualifier == EvqConst)
+	if (qualifier == EvqConst) 
 	{
 		if (type != initializer->getType())
 		{
