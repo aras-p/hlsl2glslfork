@@ -1,13 +1,15 @@
+
+#line 1
 uniform vec4 _Color;
 vec4 xlat_main(  );
 #line 3
 vec4 xlat_main(  ) {
-    vec4 c;
-    c = _Color;
+    #line 5
+    vec4 c = _Color;
     return c;
 }
 void main() {
     vec4 xl_retval;
     xl_retval = xlat_main( );
-    gl_FragData[0] = vec4( xl_retval);
+    gl_FragData[0] = vec4(xl_retval);
 }
