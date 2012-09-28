@@ -636,6 +636,81 @@ void HlslLinker::emitStructs(HlslCrossCompiler* comp)
 }
 
 
+bool HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
+{
+	std::string name, ctor;
+	int pad;
+	
+	if (getArgumentData (sym, lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad))
+	{
+		// In fragment shader, pass zero for POSITION inputs
+		bool ignoredPositionInFragment = false;
+		if (lang == EShLangFragment && attrSem == EAttrSemPosition)
+		{
+			call << ctor << "(0.0)";
+			ignoredPositionInFragment = true;
+		}
+		// For "in" parameters, just call directly to the main
+		else if ( sym->getQualifier() != EqtInOut )
+		{
+			call << ctor << "(" << name;
+			for (int ii = 0; ii<pad; ii++)
+				call << ", 0.0";
+			call << ")";
+		}
+		// For "inout" parameters, declare a temp and initialize the temp
+		else
+		{
+			preamble << "    ";
+			writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
+			preamble << " xlt_" << sym->getName() << " = ";
+			preamble << ctor << "(" << name;
+			for (int ii = 0; ii<pad; ii++)
+				preamble << ", 0.0";
+			preamble << ");\n";
+		}
+		
+		if (lang == EShLangVertex) // vertex shader: deal with gl_ attributes
+		{
+			if ( strncmp( name.c_str(), "gl_", 3))
+			{
+				int typeOffset = 0;
+				
+				// If the type is integer or bool based, we must convert to a float based
+				// type.  This is because GLSL does not allow int or bool based vertex attributes.
+				if ( sym->getType() >= EgstInt && sym->getType() <= EgstInt4)
+				{
+					typeOffset += 4;
+				}
+				
+				if ( sym->getType() >= EgstBool && sym->getType() <= EgstBool4)
+				{
+					typeOffset += 8;
+				}
+				
+				// This is an undefined attribute
+				attrib << "attribute " << getTypeString((EGlslSymbolType)(sym->getType() + typeOffset)) << " " << name << ";\n";
+			}
+		}
+		
+		if (lang == EShLangFragment) // deal with varyings
+		{
+			if (!ignoredPositionInFragment)
+				AddToVaryings (varying, sym->getPrecision(), ctor, name);
+		}
+	}
+	else
+	{
+		// should deal with fall through cases here
+		assert(0);
+		infoSink.info << "Unsupported type for shader entry parameter (";
+		infoSink.info << getTypeString(sym->getType()) << ")\n";
+	}
+	
+	return true;
+}
+
+
 bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool usePrecision)
 {
 	if (!linkerSanityCheck(compiler, entryFunc))
@@ -763,76 +838,9 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 		case EqtIn:
 		case EqtInOut:
 		case EqtConst:
-			if ( sym->getType() != EgstStruct)
+			if (sym->getType() != EgstStruct)
 			{
-				std::string name, ctor;
-				int pad;
-
-				if ( getArgumentData( sym, lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad) )
-				{
-					// In fragment shader, pass zero for POSITION inputs
-					bool ignoredPositionInFragment = false;
-					if (lang == EShLangFragment && attrSem == EAttrSemPosition)
-					{
-						call << ctor << "(0.0)";
-						ignoredPositionInFragment = true;
-					}
-					// For "in" parameters, just call directly to the main
-					else if ( sym->getQualifier() != EqtInOut )
-					{
-						call << ctor << "(" << name;
-						for (int ii = 0; ii<pad; ii++)
-							call << ", 0.0";
-						call << ")";
-					}
-					// For "inout" parameters, declare a temp and initialize the temp
-					else
-					{
-						preamble << "    ";
-						writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
-						preamble << " xlt_" << sym->getName() << " = ";
-						preamble << ctor << "(" << name;
-						for (int ii = 0; ii<pad; ii++)
-							preamble << ", 0.0";
-						preamble << ");\n";
-					}
-
-					if (lang == EShLangVertex) // vertex shader: deal with gl_ attributes
-					{
-						if ( strncmp( name.c_str(), "gl_", 3))
-						{
-							int typeOffset = 0;
-
-							// If the type is integer or bool based, we must convert to a float based
-							// type.  This is because GLSL does not allow int or bool based vertex attributes.
-							if ( sym->getType() >= EgstInt && sym->getType() <= EgstInt4)
-							{
-								typeOffset += 4;
-							}
-
-							if ( sym->getType() >= EgstBool && sym->getType() <= EgstBool4)
-							{
-								typeOffset += 8;
-							}
-
-							// This is an undefined attribute
-							attrib << "attribute " << getTypeString((EGlslSymbolType)(sym->getType() + typeOffset)) << " " << name << ";\n";
-						}
-					}
-
-					if (lang == EShLangFragment) // deal with varyings
-					{
-						if (!ignoredPositionInFragment)
-							AddToVaryings (varying, sym->getPrecision(), ctor, name);
-					}
-				}
-				else
-				{
-					//should deal with fall through cases here
-					assert(0);
-					infoSink.info << "Unsupported type for shader entry parameter (";
-					infoSink.info << getTypeString(sym->getType()) << ")\n";
-				}
+				emitInputNonStructParam(sym, lang, usePrecision, attrSem, attrib, varying, preamble, call);
 			}
 			else
 			{
