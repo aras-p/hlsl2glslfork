@@ -129,6 +129,8 @@ enum TTranslateOptions
 	ETranslateOpIntermediate = (1<<0),
 	ETranslateOpUsePrecision = (1<<1),
 	
+	ETranslateOpEmitGLSL120 = (1<<2),
+	
 	/// Array initializers do not exist on GLSL ES 1.0, and are broken on
 	/// OS X 10.6.x with GLSL 1.20 as well. By default we'll emit code
 	/// that can handle both cases, with "real" initialization path
@@ -153,7 +155,7 @@ enum TTranslateOptions
 	///
 	/// If you don't need GLSL ES 1.0 support, or OS X 10.6.x support,
 	/// then pass this flag to always use "real" array initializers.
-	ETranslateOpEmitGLSL120ArrayInitializers = (1<<2)
+	ETranslateOpEmitGLSL120ArrayInitializers = (1<<3)
 };
 
 
