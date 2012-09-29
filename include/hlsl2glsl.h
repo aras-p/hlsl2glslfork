@@ -122,14 +122,24 @@ typedef struct
 } ShUniformInfo;
 
 
+/// Target language version
+enum ETargetVersion
+{
+	// NOTE: keep ordering roughly in increasing capability set
+	ETargetGLSL_ES_100,
+	ETargetGLSL_110,
+	ETargetGLSL_120,
+	// ETargetGLSL_ES_300,
+	// ETargetGLSL_330,
+	ETargetVersionCount
+};
+
+
 /// Translation options
 enum TTranslateOptions
 {
 	ETranslateOpNone = 0,
 	ETranslateOpIntermediate = (1<<0),
-	ETranslateOpUsePrecision = (1<<1),
-	
-	ETranslateOpEmitGLSL120 = (1<<2),
 	
 	/// Array initializers do not exist on GLSL ES 1.0, and are broken on
 	/// OS X 10.6.x with GLSL 1.20 as well. By default we'll emit code
@@ -155,7 +165,7 @@ enum TTranslateOptions
 	///
 	/// If you don't need GLSL ES 1.0 support, or OS X 10.6.x support,
 	/// then pass this flag to always use "real" array initializers.
-	ETranslateOpEmitGLSL120ArrayInitializers = (1<<3)
+	ETranslateOpEmitGLSL120ArrayInitializers = (1<<1),
 };
 
 
@@ -193,14 +203,20 @@ SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle );
 
 
 /// Parse HLSL shader to prepare it for final translation.
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
-                                             const char* shaderString,
-                                             int option );
+SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse(
+	const ShHandle handle,
+	const char* shaderString,
+	ETargetVersion targetVersion,
+	unsigned options);
 
 
 
 /// After parsing a HLSL shader, do the final translation to GLSL.
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry, int options );
+SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Translate(
+	const ShHandle handle,
+	const char* entry,
+	ETargetVersion targetVersion,
+	unsigned options);
 
 
 /// After translating HLSL shader(s), retrieve the translated GLSL source.
@@ -251,6 +267,8 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_SetUserAttributeNames ( ShHandle handle,
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_UseUserVaryings ( ShHandle handle, 
                                                         bool bUseUserVaryings );
 
+
+SH_IMPORT_EXPORT bool C_DECL Hlsl2Glsl_VersionUsesPrecision (ETargetVersion version);
 
 #ifdef __cplusplus
 }

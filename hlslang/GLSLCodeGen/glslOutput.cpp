@@ -291,13 +291,13 @@ void TGlslOutputTraverser::outputLineDirective (const TSourceLoc& line)
 
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, TTranslateOptions options) :
-	infoSink(i)
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, ETargetVersion version, unsigned options)
+:	infoSink(i)
 	, generatingCode(true)
 	, functionList(funcList)
 	, structList(sList)
 	, swizzleAssignTempCounter(0)
-	, m_UsePrecision(options & ETranslateOpUsePrecision)
+	, m_UsePrecision(Hlsl2Glsl_VersionUsesPrecision(version))
 	, emitGLSL120ArrayInitializers(options & ETranslateOpEmitGLSL120ArrayInitializers)
 {
 	m_LastLineOutput.file = NULL;

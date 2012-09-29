@@ -1256,7 +1256,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 	bool isConst = (initializerQualifier == EvqConst) || (initializerQualifier == EvqStaticConst);
 	// GLSL 1.20+ allows more things in constant initializers;
 	// not so much for earlier GLSL versions.
-	if (!isConst && (options & ETranslateOpEmitGLSL120))
+	if (!isConst && (targetVersion >= ETargetGLSL_120))
 	{
 		/*
 		// isBranchConstant doesn't actually work yet, e.g. it sees "-foobar" and assumes it's

@@ -33,7 +33,7 @@ private:
 	void outputLineDirective (const TSourceLoc& line);
 
 public:
-	TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, TTranslateOptions options);
+	TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, ETargetVersion version, unsigned options);
    GlslStruct *createStructFromType( TType *type );
    bool parseInitializer( TIntermBinary *node );
 

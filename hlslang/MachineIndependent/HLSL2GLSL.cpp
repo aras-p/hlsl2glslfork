@@ -38,7 +38,7 @@ TPoolAllocator* PerProcessGPA = 0;
 ///      Whether to use the global symbol table or the per-language symbol table
 /// \return
 ///      True if succesfully initialized, false otherwise
-bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage language, TInfoSink& infoSink, 
+static bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage language, TInfoSink& infoSink, 
                             TSymbolTable* symbolTables, bool bUseGlobalSymbolTable )
 {
    TIntermediate intermediate(infoSink); 
@@ -49,7 +49,9 @@ bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage languag
    else
       symbolTable = &symbolTables[language];
 
-   TParseContext parseContext(*symbolTable, intermediate, language, 0, infoSink);
+	//@TODO: for now, we use same global symbol table for all target language versions.
+	// This is wrong and will have to be changed at some point.
+	TParseContext parseContext(*symbolTable, intermediate, language, ETargetGLSL_ES_100, 0, infoSink);
 
    GlobalParseContext = &parseContext;
 
@@ -111,7 +113,7 @@ bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage languag
 ///      Shading language to build symbol table for
 /// \return
 ///      True if succesfully built, false otherwise
-bool GenerateBuiltInSymbolTable(TInfoSink& infoSink, TSymbolTable* symbolTables, EShLanguage language)
+static bool GenerateBuiltInSymbolTable(TInfoSink& infoSink, TSymbolTable* symbolTables, EShLanguage language)
 {
    TBuiltIns builtIns;
 
@@ -215,9 +217,11 @@ void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle )
 }
 
 
-int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
-                            const char* shaderString,
-                            int options )
+int C_DECL Hlsl2Glsl_Parse(
+	const ShHandle handle,
+	const char* shaderString,
+	ETargetVersion targetVersion,
+	unsigned options)
 {
    if (!InitThread())
       return 0;
@@ -239,7 +243,7 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 
    GenerateBuiltInSymbolTable(compiler->infoSink, &symbolTable, compiler->getLanguage());
 
-   TParseContext parseContext(symbolTable, intermediate, compiler->getLanguage(), options, compiler->infoSink);
+   TParseContext parseContext(symbolTable, intermediate, compiler->getLanguage(), targetVersion, options, compiler->infoSink);
 
    GlobalParseContext = &parseContext;
 
@@ -272,7 +276,7 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 			intermediate.outputTree(parseContext.treeRoot);
 
 		compiler->TransformAST (parseContext.treeRoot);
-		compiler->ProduceGLSL (parseContext.treeRoot, TTranslateOptions(options));
+		compiler->ProduceGLSL (parseContext.treeRoot, targetVersion, options);
    }
    else if (!success)
    {
@@ -302,7 +306,11 @@ int C_DECL Hlsl2Glsl_Parse( const ShHandle handle,
 }
 
 
-int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry, int options )
+int C_DECL Hlsl2Glsl_Translate(
+	const ShHandle handle,
+	const char* entry,
+	ETargetVersion targetVersion,
+	unsigned options)
 {
    if (handle == 0)
       return 0;
@@ -315,7 +323,7 @@ int C_DECL Hlsl2Glsl_Translate( const ShHandle handle, const char* entry, int op
 		return 0;
 	}
 
-   bool ret = compiler->GetLinker()->link(compiler, entry, (options & ETranslateOpUsePrecision) ? true : false);
+   bool ret = compiler->GetLinker()->link(compiler, entry, targetVersion);
 
    return ret ? 1 : 0;
 }
@@ -392,4 +400,17 @@ int C_DECL Hlsl2Glsl_UseUserVaryings ( ShHandle handle, bool bUseUserVaryings )
 	HlslLinker* linker = handle->GetLinker();
    linker->setUseUserVaryings ( bUseUserVaryings );
    return 1;
+}
+
+
+static bool kVersionUsesPrecision[ETargetVersionCount] = {
+	true,	// ES 1.00
+	false,	// 1.10
+	false,	// 1.20
+};
+
+bool C_DECL Hlsl2Glsl_VersionUsesPrecision (ETargetVersion version)
+{
+	assert (version >= 0 && version < ETargetVersionCount);
+	return kVersionUsesPrecision[version];
 }

@@ -33,8 +33,8 @@ class HlslLinker
 {
 private:
 	// GLSL string for additional extension prepropressor directives.
-	// This is used for extensions that expose built-in variables.
-	std::stringstream additionalExtensions;
+	// This is used for version and extensions that expose built-in variables.
+	std::stringstream shaderPrefix;
 
 	// GLSL string for generated shader
 	std::stringstream shader;
@@ -59,7 +59,7 @@ public:
 	
    TInfoSink& getInfoSink() { return infoSink; }
 
-   bool link(HlslCrossCompiler*, const char* entry, bool usePrecision);
+   bool link(HlslCrossCompiler*, const char* entry, ETargetVersion version);
 
    std::string stripSemanticModifier(const std::string &semantic, bool bWarn);
 

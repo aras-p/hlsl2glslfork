@@ -14,6 +14,13 @@
 #include <string.h>
 #include <set>
 
+static const char* kTargetVersionStrings[ETargetVersionCount] = {
+	"", // ES 1.00
+	"", // 1.10
+	"#version 120\n", // 1.20
+};
+
+
 // String table that maps attribute semantics to built-in GLSL attributes
 static const char attribString[EAttrSemCount][32] = {
 	"",
@@ -1019,10 +1026,12 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 }
 
 
-bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool usePrecision)
+bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETargetVersion targetVersion)
 {
 	if (!linkerSanityCheck(compiler, entryFunc))
 		return false;
+	
+	const bool usePrecision = Hlsl2Glsl_VersionUsesPrecision(targetVersion);
 	
 	EShLanguage lang = compiler->getLanguage();
 	std::string entryPoint = GetEntryName (entryFunc);
@@ -1151,9 +1160,10 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, bool u
 	
 	// Generate final code of the pieces above.
 	{
+		shaderPrefix << kTargetVersionStrings[targetVersion];
 		std::set<const char*>::iterator it = extensions.begin(), end = extensions.end();
 		for (; it != end; ++it)
-			additionalExtensions << "#extension " << *it << " : require" << std::endl;
+			shaderPrefix << "#extension " << *it << " : require" << std::endl;
 	}
 
 	EmitIfNotEmpty (shader, uniform);
@@ -1191,6 +1201,6 @@ static std::string CleanupShaderText (const std::string& prefix, const std::stri
 
 const char* HlslLinker::getShaderText() const 
 {
-	bs = CleanupShaderText (additionalExtensions.str(), shader.str());
+	bs = CleanupShaderText (shaderPrefix.str(), shader.str());
 	return bs.c_str();
 }

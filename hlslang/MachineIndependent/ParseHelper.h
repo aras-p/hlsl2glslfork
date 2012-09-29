@@ -15,11 +15,12 @@
 //
 struct TParseContext
 {
-	TParseContext(TSymbolTable& symt, TIntermediate& interm, EShLanguage L, unsigned opts, TInfoSink& is)
+	TParseContext(TSymbolTable& symt, TIntermediate& interm, EShLanguage L, ETargetVersion ver, unsigned opts, TInfoSink& is)
 	: intermediate(interm)
 	, symbolTable(symt)
 	, infoSink(is)
 	, language(L)
+	, targetVersion(ver)
 	, options(opts)
 	, treeRoot(0)
 	, recoveredFromError(false)
@@ -34,8 +35,9 @@ struct TParseContext
 	TSymbolTable& symbolTable;   // symbol table that goes with the language currently being parsed
 	TInfoSink& infoSink;
 
-	EShLanguage language;        // vertex or fragment language
-	unsigned options;			// TTranslateOptions bitmask
+	EShLanguage language;
+	ETargetVersion targetVersion;
+	unsigned options; // TTranslateOptions bitmask
 
 	TIntermNode* treeRoot;       // root of parse tree being created
 	bool recoveredFromError;     // true if a parse error has occurred, but we continue to parse
