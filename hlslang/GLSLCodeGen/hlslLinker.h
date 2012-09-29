@@ -93,13 +93,13 @@ protected:
 	
 private:
 	bool linkerSanityCheck(HlslCrossCompiler* compiler, const char* entryFunc);
-	bool buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, std::vector<GlslFunction*>& globalList, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain);
+	bool buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, GlslFunction*& globalFunction, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain);
 	void buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions);
 	void buildUniformReflection(const std::vector<GlslSymbol*>& constants);
 	
 	void emitLibraryFunctions(const std::set<TOperator>& libFunctions, EShLanguage lang, bool usePrecision);
 	void emitStructs(HlslCrossCompiler* comp);
-	void emitGlobals(const std::vector<GlslFunction*>& globalList, const std::vector<GlslSymbol*>& constants);
+	void emitGlobals(const GlslFunction* globalFunction, const std::vector<GlslSymbol*>& constants);
 	
 	void emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call);
 	void emitInputStructParam(GlslSymbol* sym, EShLanguage lang, ExtensionSet& extensions, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call);

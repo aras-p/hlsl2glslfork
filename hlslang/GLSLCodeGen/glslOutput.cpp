@@ -312,11 +312,13 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
 	visitBranch = traverseBranch;
 	visitDeclaration = traverseDeclaration;
 	
-   TSourceLoc oneSourceLoc;
-   oneSourceLoc.file=NULL;
-   oneSourceLoc.line=1;
-   
-   global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "", oneSourceLoc);
+	TSourceLoc oneSourceLoc;
+	oneSourceLoc.file=NULL;
+	oneSourceLoc.line=1;
+
+	// Add a fake "global" function for declarations & initializers happening
+	// at global scope.
+	global = new GlslFunction( "__global__", "__global__", EgstVoid, EbpUndefined, "", oneSourceLoc);
 	functionList.push_back(global);
 	current = global;
 }

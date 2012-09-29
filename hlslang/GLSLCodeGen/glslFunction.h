@@ -17,11 +17,13 @@
 class GlslFunction 
 {
 public:
-   GlslFunction (const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision precision, const std::string &s, const TSourceLoc& line);
+   GlslFunction (const std::string& n, const std::string& m, EGlslSymbolType type, TPrecision precision, const std::string &s, const TSourceLoc& line);
    virtual ~GlslFunction();
    
    void addSymbol( GlslSymbol *sym );   
    void addParameter( GlslSymbol *sym );
+	
+	bool isGlobalScopeFunction() const { return name == "__global__"; }
    
    bool hasSymbol( int id );
    GlslSymbol& getSymbol( int id );
@@ -29,7 +31,7 @@ public:
    std::string getPrototype();
 
    /// Returns the active scope
-   std::string getCode() { return active->str(); }
+   std::string getCode() const { return active->str(); }
 
    int getParameterCount() { return (int)parameters.size();}   
    GlslSymbol* getParameter( int i ) { return parameters[i];}

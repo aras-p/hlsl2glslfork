@@ -542,17 +542,20 @@ bool HlslLinker::linkerSanityCheck(HlslCrossCompiler* compiler, const char* entr
 }
 
 
-bool HlslLinker::buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, std::vector<GlslFunction*>& globalList, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain)
+bool HlslLinker::buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, GlslFunction*& globalFunction, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain)
 {
 	// build the list of functions
 	std::vector<GlslFunction*> &fl = comp->functionList;
 	
 	for (std::vector<GlslFunction*>::iterator fit = fl.begin(); fit < fl.end(); ++fit)
 	{
-		if ( (*fit)->getName() == "__global__")
-			globalList.push_back( *fit);
+		if ((*fit)->isGlobalScopeFunction())
+		{
+			assert(!globalFunction);
+			globalFunction = *fit;
+		}
 		else
-			functionList.push_back( *fit);
+			functionList.push_back(*fit);
 		
 		if ((*fit)->getName() == entryPoint)
 		{
@@ -643,12 +646,11 @@ void HlslLinker::emitStructs(HlslCrossCompiler* comp)
 }
 
 
-void HlslLinker::emitGlobals(const std::vector<GlslFunction*>& globalList, const std::vector<GlslSymbol*>& constants)
+void HlslLinker::emitGlobals(const GlslFunction* globalFunction, const std::vector<GlslSymbol*>& constants)
 {
-	// Write global scope
-	unsigned n_func = globalList.size();
-	for (unsigned i = 0; i != n_func; ++i)
-		shader << globalList[i]->getCode();
+	// write global scope declarations (represented as a fake function)
+	assert(globalFunction);
+	shader << globalFunction->getCode();
 	
 	// write mutable uniform declarations
 	const unsigned n_constants = constants.size();
@@ -1038,12 +1040,13 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 	
 	
 	// figure out all relevant functions
-	std::vector<GlslFunction*> globalList;
+	GlslFunction* globalFunction = NULL;
 	std::vector<GlslFunction*> functionList;
 	FunctionSet calledFunctions;
 	GlslFunction* funcMain = NULL;
-	if (!buildFunctionLists(compiler, lang, entryPoint, globalList, functionList, calledFunctions, funcMain))
+	if (!buildFunctionLists(compiler, lang, entryPoint, globalFunction, functionList, calledFunctions, funcMain))
 		return false;
+	assert(globalFunction);
 	assert(funcMain);
 	
 	
@@ -1058,7 +1061,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 
 	emitLibraryFunctions (libFunctions, lang, usePrecision);
 	emitStructs(compiler);
-	emitGlobals (globalList, constants);
+	emitGlobals (globalFunction, constants);
 	EmitCalledFunctions (shader, calledFunctions);
 
 	
