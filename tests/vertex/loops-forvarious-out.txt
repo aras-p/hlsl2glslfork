@@ -60,7 +60,15 @@ v2f xlat_main( in appdata v ) {
         int z = (k + 1);
         k = z;
     }
-    #line 73
+    #line 74
+    int x = 0;
+    for ( ; (x < 3); (++x)) {
+        int y = 0;
+        for ( ; (y < 3); (++y)) {
+            o.color.xy += vec2( float(x), float(y));
+        }
+    }
+    #line 80
     return o;
 }
 varying vec4 xlv_TEXCOORD0;
