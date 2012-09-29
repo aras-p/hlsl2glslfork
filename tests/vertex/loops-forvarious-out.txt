@@ -9,13 +9,13 @@ struct appdata {
     vec4 vertex;
     vec3 normal;
 };
-#line 1
 uniform vec4 unity_LightColor[4];
 uniform vec4 unity_LightPosition[4];
+#line 3
 uniform vec4 unity_LightAtten[4];
-#line 5
 uniform mat4 UNITY_MATRIX_MVP;
 uniform mat4 UNITY_MATRIX_MV;
+#line 7
 uniform mat4 UNITY_MATRIX_IT_MV;
 #line 19
 v2f xlat_main( in appdata v );

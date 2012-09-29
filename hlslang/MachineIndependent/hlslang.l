@@ -336,6 +336,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
     
     yyrestart(0);
     (&parseContextLocal)->AfterEOF = false;
+	lexlineno.file = NULL;
     lexlineno.line = 1;
    
     if (sourceLen >= 0) {

@@ -4,7 +4,6 @@ struct v2f {
     vec4 pos;
     vec2 uv;
 };
-#line 1
 uniform vec4 _ZBufferParams;
 #line 12
 uniform sampler2D _MainTex;
@@ -52,6 +51,7 @@ float cone( in vec2 x, in vec2 y, in vec2 v ) {
 }
 #line 2
 float Linear01Depth( in float z ) {
+    #line 4
     return (1.0 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
 }
 #line 51

@@ -1,11 +1,9 @@
 #version 120
-
-#line 1
 uniform vec4 _Color;
+#line 3
 vec4 xlat_main(  );
 #line 3
 vec4 xlat_main(  ) {
-    #line 5
     float c1 = max( _Color.x, _Color.y);
     float c2 = (_Color.z * _Color.w);
     #line 11

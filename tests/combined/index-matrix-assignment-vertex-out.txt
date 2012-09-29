@@ -48,13 +48,13 @@ struct VS_INPUT {
     int vertex_id;
     int instance_id;
 };
-#line 1
 uniform mat4 world;
 uniform mat4 view;
+#line 3
 uniform mat4 proj;
 uniform mat4 stupid[10];
-#line 6
 uniform sampler2D diffuse_map;
+#line 7
 uniform sampler2DShadow shadow_map;
 #line 21
 #line 41

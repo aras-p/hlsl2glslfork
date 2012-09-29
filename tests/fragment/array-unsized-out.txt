@@ -1,7 +1,6 @@
 vec4 xlat_main(  );
 #line 1
 vec4 xlat_main(  ) {
-    #line 2
     #if !defined(HLSL2GLSL_ENABLE_ARRAY_INIT)
         vec2 lut[3];
         lut[0] = vec2( float((-1)), 0.1);
