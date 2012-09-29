@@ -58,17 +58,19 @@ bool GlslSymbol::isReservedGlslKeyword ( const std::string &name ) const
 }
 
 
-void GlslSymbol::writeDecl (std::stringstream &out, bool local, bool skipUniform)
+void GlslSymbol::writeDecl (std::stringstream& out, unsigned flags)
 {
+	const bool writeMutableUniforms = (flags & WRITE_DECL_MUTABLE_UNIFORMS);
+	
 	switch (qual)
 	{
 	case EqtNone:            break;
 	case EqtUniform:
-		if (!skipUniform)
+		if (writeMutableUniforms)
 			out << "uniform ";
 		break;
 	case EqtMutableUniform:
-		if (!local)
+		if (!writeMutableUniforms)
 			out << "uniform ";
 		break;
 	case EqtConst:           out << "const ";   break;
@@ -79,13 +81,12 @@ void GlslSymbol::writeDecl (std::stringstream &out, bool local, bool skipUniform
 
 	writeType (out, type, structPtr, precision);
 
-	out << " " << (local ? mutableMangledName : mangledName);
+	out << " " << (writeMutableUniforms ? mutableMangledName : mangledName);
 	if (arraySize)
 		out << "[" << arraySize << "]";
 	
-	if (local && qual == EqtMutableUniform)
+	if (writeMutableUniforms && qual == EqtMutableUniform)
 		out << " = " << mangledName;
-
 }
 
 

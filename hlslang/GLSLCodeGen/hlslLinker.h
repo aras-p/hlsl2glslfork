@@ -99,7 +99,7 @@ private:
 	
 	void emitLibraryFunctions(const std::set<TOperator>& libFunctions, EShLanguage lang, bool usePrecision);
 	void emitStructs(HlslCrossCompiler* comp);
-	void emitOtherGlobals(const std::vector<GlslFunction*>& globalList, const std::vector<GlslSymbol*>& constants);
+	void emitGlobals(const std::vector<GlslFunction*>& globalList, const std::vector<GlslSymbol*>& constants);
 	
 	void emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call);
 	void emitInputStructParam(GlslSymbol* sym, EShLanguage lang, ExtensionSet& extensions, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call);

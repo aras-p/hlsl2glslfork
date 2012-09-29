@@ -643,7 +643,7 @@ void HlslLinker::emitStructs(HlslCrossCompiler* comp)
 }
 
 
-void HlslLinker::emitOtherGlobals(const std::vector<GlslFunction*>& globalList, const std::vector<GlslSymbol*>& constants)
+void HlslLinker::emitGlobals(const std::vector<GlslFunction*>& globalList, const std::vector<GlslSymbol*>& constants)
 {
 	// Write global scope
 	unsigned n_func = globalList.size();
@@ -655,7 +655,7 @@ void HlslLinker::emitOtherGlobals(const std::vector<GlslFunction*>& globalList, 
 	for (unsigned i = 0; i != n_constants; ++i) {
 		GlslSymbol* s = constants[i];
 		if (s->getIsMutable()) {
-			s->writeDecl(shader, true, false);
+			s->writeDecl(shader, GlslSymbol::WRITE_DECL_MUTABLE_UNIFORMS);
 			shader << ";\n";	
 		}
 	}	
@@ -1058,7 +1058,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 
 	emitLibraryFunctions (libFunctions, lang, usePrecision);
 	emitStructs(compiler);
-	emitOtherGlobals (globalList, constants);
+	emitGlobals (globalList, constants);
 	EmitCalledFunctions (shader, calledFunctions);
 
 	

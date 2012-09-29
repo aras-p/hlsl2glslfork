@@ -108,14 +108,14 @@ std::string GlslFunction::getPrototype()
 
    if (it != parameters.end())
    {
-      (*it)->writeDecl(out,false,true);
+      (*it)->writeDecl(out,0);
       it++;
    }
 
    while ( it != parameters.end())
    {
       out << ", ";
-      (*it)->writeDecl(out,false,true);
+      (*it)->writeDecl(out,0);
       it++;
    }
 

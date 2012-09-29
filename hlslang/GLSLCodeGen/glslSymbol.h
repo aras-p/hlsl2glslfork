@@ -48,7 +48,10 @@ public:
 	void setInitializer(const std::string& str) { initializerString = str; }
 	const std::string& initializer() const { return initializerString; }
 
-	void writeDecl( std::stringstream &out, bool local, bool skipUniform );
+	enum WriteDeclFlags {
+		WRITE_DECL_MUTABLE_UNIFORMS = (1<<0),
+	};
+	void writeDecl (std::stringstream& out, unsigned flags); // flags = bitmask of WriteDeclFlags
 	void writeInitializer( std::stringstream &out, int element = 0);
 	/// Set the mangled name for the symbol
 	void mangleName();    
