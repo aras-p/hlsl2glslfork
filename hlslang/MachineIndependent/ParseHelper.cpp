@@ -1271,28 +1271,36 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 		 */
 	}
 	
-	// If we're trying to initialize something marked as const with a non-const initializer,
-	// change it's type to temporary instead
-	if ((initializerQualifier != EvqConst) && (initializerQualifier != EvqStaticConst))
+	// Are we trying to initialize a constant?
+	if (qualifier == EvqConst)
 	{
-		qualifier = EvqTemporary;
-		variable->getType().changeQualifier(qualifier);
-	}
-
-	//
-	// test for and propagate constant
-	//
-	
-	if (qualifier == EvqConst) 
-	{
+		// Handle cases where initializer type does not match
 		if (type != initializer->getType())
 		{
-			error(line, " non-matching types for const initializer", variable->getType().getQualifierString(), "");
-			variable->getType().changeQualifier(EvqTemporary);
-			return true;
+			const TBasicType basicType = type.getBasicType();
+			const TBasicType initializerType = initializer->getType().getBasicType();
+			
+			// allow type promotion (eg: const float SCALE = 2;)
+			if ((basicType == EbtFloat) && (initializerType == EbtInt) && (type.getObjectSize() == initializer->getType().getObjectSize()))
+			{
+				// allow this
+			}
+			else
+			{
+				error(line, " non-matching types for const initializer", variable->getType().getQualifierString(), "");
+				variable->getType().changeQualifier(EvqTemporary);
+				return true;				
+			}
 		}
-
-		if (!isConst)
+		
+		// If we're trying to initialize something marked as const with a non-const initializer,
+		// change its type to temporary instead
+		if ((initializerQualifier != EvqConst) && (initializerQualifier != EvqStaticConst))
+		{
+			qualifier = EvqTemporary;
+			variable->getType().changeQualifier(qualifier);
+		}
+		else if (!isConst)
 		{
 			error(line, " Attempting to initialize a const variable with a non-constant initializer", "", "");
 			variable->getType().changeQualifier(EvqTemporary);
@@ -1300,7 +1308,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 		}
 	}
 
-	if (qualifier == EvqUniform )
+	if (qualifier == EvqUniform)
 	{
 		if (!isConst)
 		{
