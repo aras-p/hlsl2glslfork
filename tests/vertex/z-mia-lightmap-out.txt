@@ -152,12 +152,12 @@ varying vec3 xlv_TEXCOORD7;
 void main() {
     v2f_surf xl_retval;
     appdata_full xlt_v;
-    xlt_v.vertex = vec4( gl_Vertex);
-    xlt_v.tangent = vec4( TANGENT);
-    xlt_v.normal = vec3( gl_Normal);
-    xlt_v.texcoord = vec4( gl_MultiTexCoord0);
-    xlt_v.texcoord1 = vec4( gl_MultiTexCoord1);
-    xlt_v.color = vec4( gl_Color);
+    xlt_v.vertex = vec4(gl_Vertex);
+    xlt_v.tangent = vec4(TANGENT);
+    xlt_v.normal = vec3(gl_Normal);
+    xlt_v.texcoord = vec4(gl_MultiTexCoord0);
+    xlt_v.texcoord1 = vec4(gl_MultiTexCoord1);
+    xlt_v.color = vec4(gl_Color);
     xl_retval = xlat_main( xlt_v);
     gl_Position = vec4( xl_retval.pos);
     xlv_TEXCOORD0 = vec4( xl_retval.pack0);

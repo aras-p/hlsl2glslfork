@@ -69,5 +69,5 @@ varying vec2 xlv_TEXCOORD0;
 void main() {
     vec4 xl_retval;
     xl_retval = xlat_main( vec4(0.0), vec2(xlv_TEXCOORD0), xlu_sampleDist, xlu_sampleStrength);
-    gl_FragData[0] = vec4( xl_retval);
+    gl_FragData[0] = vec4(xl_retval);
 }

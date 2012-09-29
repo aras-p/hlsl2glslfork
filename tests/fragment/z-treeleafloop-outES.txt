@@ -70,12 +70,12 @@ varying highp vec3 xlv_TEXCOORD4;
 void main() {
     lowp vec4 xl_retval;
     v2f xlt_i;
-    xlt_i.pos = vec4( xlv_SV_POSITION);
-    xlt_i.uv = vec2( xlv_TEXCOORD0);
-    xlt_i.color = vec3( xlv_TEXCOORD1);
-    xlt_i.backContrib = vec3( xlv_TEXCOORD2);
-    xlt_i.nl = vec3( xlv_TEXCOORD3);
-    xlt_i.nh = vec3( xlv_TEXCOORD4);
+    xlt_i.pos = vec4(xlv_SV_POSITION);
+    xlt_i.uv = vec2(xlv_TEXCOORD0);
+    xlt_i.color = vec3(xlv_TEXCOORD1);
+    xlt_i.backContrib = vec3(xlv_TEXCOORD2);
+    xlt_i.nl = vec3(xlv_TEXCOORD3);
+    xlt_i.nh = vec3(xlv_TEXCOORD4);
     xl_retval = xlat_main( xlt_i);
-    gl_FragData[0] = vec4( xl_retval);
+    gl_FragData[0] = vec4(xl_retval);
 }

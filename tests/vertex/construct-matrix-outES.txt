@@ -45,5 +45,5 @@ highp vec4 xlat_main( in highp vec4 pos ) {
 void main() {
     highp vec4 xl_retval;
     xl_retval = xlat_main( vec4(gl_Vertex));
-    gl_Position = vec4( xl_retval);
+    gl_Position = vec4(xl_retval);
 }

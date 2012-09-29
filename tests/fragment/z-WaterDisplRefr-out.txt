@@ -51,12 +51,10 @@ vec4 ExtinctColor( in vec4 baseColor, in float extinctionAmount );
 vec4 xlat_main( in v2f i );
 #line 18
 vec3 PerPixelNormal( in sampler2D bumpMap, in vec4 coords, in vec3 vertexNormal, in float bumpStrength ) {
-    vec4 bump;
-    vec3 worldNormal;
-    bump = (texture2D( bumpMap, coords.xy) + texture2D( bumpMap, coords.zw));
+    vec4 bump = (texture2D( bumpMap, coords.xy) + texture2D( bumpMap, coords.zw));
     bump.xy = (bump.wy - vec2( 1.0, 1.0));
     #line 22
-    worldNormal = (vertexNormal + ((bump.xxy * bumpStrength) * vec3( 1.0, 0.0, 1.0)));
+    vec3 worldNormal = (vertexNormal + ((bump.xxy * bumpStrength) * vec3( 1.0, 0.0, 1.0)));
     return normalize(worldNormal);
 }
 #line 12
@@ -66,18 +64,15 @@ float LinearEyeDepth( in float z ) {
 }
 #line 55
 float Fresnel( in vec3 viewVector, in vec3 worldNormal, in float bias, in float power ) {
-    float facing;
-    float refl2Refr;
     #line 57
-    facing = clamp( (1.0 - max( dot( (-viewVector), worldNormal), 0.0)), 0.0, 1.0);
-    refl2Refr = xll_saturate((bias + ((1.0 - bias) * pow( facing, power))));
+    float facing = clamp( (1.0 - max( dot( (-viewVector), worldNormal), 0.0)), 0.0, 1.0);
+    float refl2Refr = xll_saturate((bias + ((1.0 - bias) * pow( facing, power))));
     return refl2Refr;
 }
 #line 50
 vec4 Foam( in sampler2D shoreTex, in vec4 coords ) {
-    vec4 foam;
     #line 52
-    foam = ((texture2D( shoreTex, coords.xy) * texture2D( shoreTex, coords.zw)) - 0.125);
+    vec4 foam = ((texture2D( shoreTex, coords.xy) * texture2D( shoreTex, coords.zw)) - 0.125);
     return foam;
 }
 #line 68
@@ -153,11 +148,11 @@ void main() {
     vec4 xl_retval;
     v2f xlt_i;
     xlt_i.pos = vec4(0.0);
-    xlt_i.normalInterpolator = vec4( xlv_TEXCOORD0);
-    xlt_i.viewInterpolator = vec4( xlv_TEXCOORD1);
-    xlt_i.bumpCoords = vec4( xlv_TEXCOORD2);
-    xlt_i.screenPos = vec4( xlv_TEXCOORD3);
-    xlt_i.grabPassPos = vec4( xlv_TEXCOORD4);
+    xlt_i.normalInterpolator = vec4(xlv_TEXCOORD0);
+    xlt_i.viewInterpolator = vec4(xlv_TEXCOORD1);
+    xlt_i.bumpCoords = vec4(xlv_TEXCOORD2);
+    xlt_i.screenPos = vec4(xlv_TEXCOORD3);
+    xlt_i.grabPassPos = vec4(xlv_TEXCOORD4);
     xl_retval = xlat_main( xlt_i);
-    gl_FragData[0] = vec4( xl_retval);
+    gl_FragData[0] = vec4(xl_retval);
 }
