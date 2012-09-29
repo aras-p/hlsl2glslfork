@@ -1,5 +1,4 @@
 #version 120
-
 #extension GL_EXT_gpu_shader4 : require
 #extension GL_ARB_draw_instanced : require
 mat2 xll_transpose(mat2 m) {

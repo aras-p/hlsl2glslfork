@@ -1,5 +1,4 @@
 #version 120
-
 vec4 xlat_main(  );
 #line 5
 vec4 xlat_main(  ) {

@@ -216,10 +216,46 @@ static bool InitializeOpenGL ()
 	return hasGLSL;
 }
 
-static bool CheckGLSL (bool vertex, const char* source)
+
+static void replace_string (std::string& target, const std::string& search, const std::string& replace, size_t startPos)
 {
+	if (search.empty())
+		return;
+	
+	std::string::size_type p = startPos;
+	while ((p = target.find (search, p)) != std::string::npos)
+	{
+		target.replace (p, search.size (), replace);
+		p += replace.size ();
+	}
+}
+
+
+static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& source)
+{
+	const char* sourcePtr = source.c_str();
+	std::string newSrc;
+	if (version == ETargetGLSL_ES_100)
+	{
+		newSrc.reserve(source.size());
+		newSrc += "#define lowp\n";
+		newSrc += "#define mediump\n";
+		newSrc += "#define highp\n";
+		newSrc += "#define texture2DLodEXT texture2DLod\n";
+		newSrc += "#define texture2DProjLodEXT texture2DProjLod\n";
+		newSrc += "#define texture2DGradEXT texture2DGradARB\n";
+		newSrc += "float shadow2DEXT (sampler2DShadow s, vec3 p) { return shadow2D(s,p).r; }\n";
+		newSrc += "float shadow2DProjEXT (sampler2DShadow s, vec4 p) { return shadow2DProj(s,p).r; }\n";
+		newSrc += source;
+		replace_string (newSrc, "GL_EXT_shader_texture_lod", "GL_ARB_shader_texture_lod", 0);
+		replace_string (newSrc, "#extension GL_OES_standard_derivatives : require", "", 0);
+		replace_string (newSrc, "#extension GL_EXT_shadow_samplers : require", "", 0);
+					   
+		sourcePtr = newSrc.c_str();
+	}
+	
 	GLhandleARB shader = glCreateShaderObjectARB (vertex ? GL_VERTEX_SHADER_ARB : GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB (shader, 1, &source, NULL);
+	glShaderSourceARB (shader, 1, &sourcePtr, NULL);
 	glCompileShaderARB (shader);
 	GLint status;
 	glGetObjectParameterivARB (shader, GL_OBJECT_COMPILE_STATUS_ARB, &status);
@@ -277,15 +313,35 @@ static const EShLanguage kTypeLangs[NUM_RUN_TYPES] = {
 	EShLangFragment,
 };
 
+static const ETargetVersion kTargets1[NUM_RUN_TYPES] = {
+	ETargetGLSL_110,
+	ETargetGLSL_110,
+	ETargetGLSL_120,
+	ETargetGLSL_120,
+	ETargetGLSL_120,
+	ETargetGLSL_110,
+	ETargetGLSL_110,
+};
+static const ETargetVersion kTargets2[NUM_RUN_TYPES] = {
+	ETargetGLSL_ES_100,
+	ETargetGLSL_ES_100,
+	ETargetVersionCount,
+	ETargetVersionCount,
+	ETargetVersionCount,
+	ETargetVersionCount,
+	ETargetVersionCount,
+};
+
 
 static bool TestFile (TestRun type,
 					  const std::string& inputPath,
 					  const std::string& outputPath,
 					  const char* entryPoint,
-					  bool usePrecision,
-					  bool useGLSL120,
+					  ETargetVersion version,
 					  bool doCheckGLSL)
 {
+	assert(version != ETargetVersionCount);
+	
 	std::string input;
 	if (!ReadStringFromFile (inputPath.c_str(), input))
 	{
@@ -299,20 +355,14 @@ static bool TestFile (TestRun type,
 
 	bool res = true;
 
-	int options = 0;
+	unsigned options = 0;
 	if (kDumpShaderAST)
 		options |= ETranslateOpIntermediate;
-	if (usePrecision)
-		options |= ETranslateOpUsePrecision;
 	
-	if (useGLSL120)
-	{
-		assert (!usePrecision); // GLES 1.0 can't do that
-		options |= ETranslateOpEmitGLSL120;
+	if (version >= ETargetGLSL_120)
 		options |= ETranslateOpEmitGLSL120ArrayInitializers;
-	}
 	
-	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, options);
+	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, options);
 	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 	if (kDumpShaderAST)
 	{
@@ -332,14 +382,11 @@ static bool TestFile (TestRun type,
 		Hlsl2Glsl_SetUserAttributeNames (parser, kAttribSemantic, kAttribString, 1);
 		Hlsl2Glsl_UseUserVaryings (parser, true);
 		
-		int translateOk = Hlsl2Glsl_Translate (parser, entryPoint, options);
+		int translateOk = Hlsl2Glsl_Translate (parser, entryPoint, version, options);
 		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 		if (translateOk)
 		{
-			std::string text;
-			if (useGLSL120)
-				text += "#version 120\n\n";
-			text += Hlsl2Glsl_GetShader (parser);
+			std::string text = Hlsl2Glsl_GetShader (parser);
 			
 			for (size_t i = 0, n = text.size(); i != n; ++i)
 			{
@@ -364,7 +411,7 @@ static bool TestFile (TestRun type,
 				printf ("  does not match expected output\n");
 				res = false;
 			}
-			if (doCheckGLSL && !CheckGLSL (kIsVertexShader[type], text.c_str()))
+			if (doCheckGLSL && !CheckGLSL (kIsVertexShader[type], version, text))
 			{
 				res = false;
 			}
@@ -387,7 +434,7 @@ static bool TestFile (TestRun type,
 }
 
 
-static bool TestFileFailure (bool vertex,
+static bool TestFileFailure (TestRun type,
 	const std::string& inputPath,
 	const std::string& outputPath)
 {
@@ -398,20 +445,21 @@ static bool TestFileFailure (bool vertex,
 		return false;
 	}
 
-	ShHandle parser = Hlsl2Glsl_ConstructCompiler (vertex ? EShLangVertex : EShLangFragment);
+	ShHandle parser = Hlsl2Glsl_ConstructCompiler (kTypeLangs[type]);
+	const ETargetVersion version = kTargets1[type];
 
 	const char* sourceStr = input.c_str();
 
 	bool res = true;
 
-	int options = 0;
+	unsigned options = 0;
 	if (kDumpShaderAST)
 		options |= ETranslateOpIntermediate;
-	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, options);
+	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, options);
 	
 	if (parseOk)
 	{
-		int translateOk = Hlsl2Glsl_Translate (parser, "main", options);
+		int translateOk = Hlsl2Glsl_Translate (parser, "main", version, options);
 		
 		if (translateOk) 
 		{
@@ -443,15 +491,12 @@ static bool TestFileFailure (bool vertex,
 	return res;
 }
 
-static bool TestCombinedFile(const std::string& inputPath,
-							 bool usePrecision,
-							 bool useGLSL120,
-							 bool checkGL)
+static bool TestCombinedFile(const std::string& inputPath, ETargetVersion version, bool checkGL)
 {
 	std::string outname = inputPath.substr (0,inputPath.size()-7);
 	std::string frag_out, vert_out;
 	
-	if (usePrecision) {
+	if (version == ETargetGLSL_ES_100) {
 		vert_out = outname + "-vertex-outES.txt";
 		frag_out = outname + "-fragment-outES.txt";
 	} else {
@@ -459,26 +504,25 @@ static bool TestCombinedFile(const std::string& inputPath,
 		frag_out = outname + "-fragment-out.txt";
 	}
 	
-	bool res = TestFile(VERTEX, inputPath, vert_out, "vs_main", usePrecision, useGLSL120, !usePrecision && checkGL);
-	return res & TestFile(FRAGMENT, inputPath, frag_out, "ps_main", usePrecision, useGLSL120, !usePrecision && checkGL);
+	bool res = TestFile(VERTEX, inputPath, vert_out, "vs_main", version, checkGL);
+	return res & TestFile(FRAGMENT, inputPath, frag_out, "ps_main", version, checkGL);
 }
 
 
 static bool TestFile (TestRun type,
 					  const std::string& inputPath,
-					  bool usePrecision,
-					  bool useGLSL120,
+					  ETargetVersion version,
 					  bool checkGL)
 {
 	std::string outname = inputPath.substr (0,inputPath.size()-7);
 
 	if (type == VERTEX_FAILURES || type == FRAGMENT_FAILURES) {
-		return TestFileFailure(type==VERTEX_FAILURES, inputPath, outname + "-out.txt");
+		return TestFileFailure(type, inputPath, outname + "-out.txt");
 	} else {
-		if (usePrecision) {
-			return TestFile(type, inputPath, outname + "-outES.txt", "main", true, useGLSL120, false);
+		if (version == ETargetGLSL_ES_100) {
+			return TestFile(type, inputPath, outname + "-outES.txt", "main", version, checkGL);
 		} else {
-			return TestFile(type, inputPath, outname + "-out.txt", "main", false, useGLSL120, checkGL);
+			return TestFile(type, inputPath, outname + "-out.txt", "main", version, checkGL);
 		}
 	}
 	return false;
@@ -520,7 +564,8 @@ int main (int argc, const char** argv)
 	for (int type = 0; type < NUM_RUN_TYPES; ++type)
 	{
 		printf ("TESTING %s...\n", kTypeName[type]);
-		const bool useGLSL120 = (type == VERTEX_120 || type == FRAGMENT_120 || type == BOTH);
+		const ETargetVersion version1 = kTargets1[type];
+		const ETargetVersion version2 = kTargets2[type];
 		std::string testFolder = baseFolder + "/" + kTypeName[type];
 		StringVector inputFiles = GetFiles (testFolder, "-in.txt");
 
@@ -529,19 +574,19 @@ int main (int argc, const char** argv)
 		for (size_t i = 0; i < n; ++i)
 		{
 			std::string inname = inputFiles[i];
-			//if (inname != "const-var-from-function-in.txt")
+			//if (inname != "non-matching-type-init-in.txt")
 			//	continue;
 			bool ok = true;
 			
 			printf ("test %s\n", inname.c_str());
 			if (type == BOTH) {
-				ok = TestCombinedFile(testFolder + "/" + inname, false, useGLSL120, hasOpenGL);
-				if (ok && !useGLSL120)
-					ok = TestCombinedFile(testFolder + "/" + inname, true, useGLSL120, false);
+				ok = TestCombinedFile(testFolder + "/" + inname, version1, hasOpenGL);
+				if (ok && version2 != ETargetVersionCount)
+					ok = TestCombinedFile(testFolder + "/" + inname, version2, hasOpenGL);
 			} else {
-				ok = TestFile(TestRun(type), testFolder + "/" + inname, false, useGLSL120, hasOpenGL);
-				if (ok && !useGLSL120)
-					ok = TestFile(TestRun(type), testFolder + "/" + inname, true, false, false);
+				ok = TestFile(TestRun(type), testFolder + "/" + inname, version1, hasOpenGL);
+				if (ok && version2 != ETargetVersionCount)
+					ok = TestFile(TestRun(type), testFolder + "/" + inname, version2, hasOpenGL);
 			}
 			
 			if (!ok)
