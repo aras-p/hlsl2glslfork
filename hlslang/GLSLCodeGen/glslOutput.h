@@ -18,48 +18,48 @@
 class TGlslOutputTraverser : public TIntermTraverser 
 {
 private:
-   static void traverseSymbol(TIntermSymbol*, TIntermTraverser*);
-   static void traverseParameterSymbol(TIntermSymbol *node, TIntermTraverser *it);
+	static void traverseSymbol(TIntermSymbol*, TIntermTraverser*);
+	static void traverseParameterSymbol(TIntermSymbol *node, TIntermTraverser *it);
 	static void traverseConstantUnion(TIntermConstant*, TIntermTraverser*);
 	static void traverseImmediateConstant( TIntermConstant *node, TIntermTraverser *it);
-   static bool traverseBinary(bool preVisit, TIntermBinary*, TIntermTraverser*);
-   static bool traverseUnary(bool preVisit, TIntermUnary*, TIntermTraverser*);
-   static bool traverseSelection(bool preVisit, TIntermSelection*, TIntermTraverser*);
-   static bool traverseAggregate(bool preVisit, TIntermAggregate*, TIntermTraverser*);
-   static bool traverseLoop(bool preVisit, TIntermLoop*, TIntermTraverser*);
-   static bool traverseBranch(bool preVisit, TIntermBranch*,  TIntermTraverser*);
+	static bool traverseBinary(bool preVisit, TIntermBinary*, TIntermTraverser*);
+	static bool traverseUnary(bool preVisit, TIntermUnary*, TIntermTraverser*);
+	static bool traverseSelection(bool preVisit, TIntermSelection*, TIntermTraverser*);
+	static bool traverseAggregate(bool preVisit, TIntermAggregate*, TIntermTraverser*);
+	static bool traverseLoop(bool preVisit, TIntermLoop*, TIntermTraverser*);
+	static bool traverseBranch(bool preVisit, TIntermBranch*,  TIntermTraverser*);
 	static bool traverseDeclaration(bool preVisit, TIntermDeclaration*, TIntermTraverser*);
-	
+
 	void outputLineDirective (const TSourceLoc& line);
 
 public:
 	TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, ETargetVersion version, unsigned options);
-   GlslStruct *createStructFromType( TType *type );
-   bool parseInitializer( TIntermBinary *node );
+	GlslStruct *createStructFromType( TType *type );
+	bool parseInitializer( TIntermBinary *node );
 
-   // Info Sink
-   TInfoSink& infoSink;
+	// Info Sink
+	TInfoSink& infoSink;
 
-   // Global function
-   GlslFunction *global;
+	// Global function
+	GlslFunction *global;
 
-   // Current function
-   GlslFunction *current;
+	// Current function
+	GlslFunction *current;
 
-   // Are we currently generating code?
-   bool generatingCode;
+	// Are we currently generating code?
+	bool generatingCode;
 
-   // List of functions
-   std::vector<GlslFunction*> &functionList;
+	// List of functions
+	std::vector<GlslFunction*> &functionList;
 
-   // List of structures
-   std::vector<GlslStruct*> &structList;
+	// List of structures
+	std::vector<GlslStruct*> &structList;
 
-   // Map of structure names to GLSL structures
-   std::map<std::string,GlslStruct*> structMap;
+	// Map of structure names to GLSL structures
+	std::map<std::string,GlslStruct*> structMap;
 
-   // Persistent data for collecting indices
-   std::vector<int> indexList;
+	// Persistent data for collecting indices
+	std::vector<int> indexList;
 
 	TSourceLoc m_LastLineOutput;
 	unsigned swizzleAssignTempCounter;

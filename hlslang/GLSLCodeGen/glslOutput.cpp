@@ -292,13 +292,13 @@ void TGlslOutputTraverser::outputLineDirective (const TSourceLoc& line)
 
 
 TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, ETargetVersion version, unsigned options)
-:	infoSink(i)
-	, generatingCode(true)
-	, functionList(funcList)
-	, structList(sList)
-	, swizzleAssignTempCounter(0)
-	, m_UsePrecision(Hlsl2Glsl_VersionUsesPrecision(version))
-	, emitGLSL120ArrayInitializers(options & ETranslateOpEmitGLSL120ArrayInitializers)
+: infoSink(i)
+, generatingCode(true)
+, functionList(funcList)
+, structList(sList)
+, swizzleAssignTempCounter(0)
+, m_UsePrecision(Hlsl2Glsl_VersionUsesPrecision(version))
+, emitGLSL120ArrayInitializers(options & ETranslateOpEmitGLSL120ArrayInitializers)
 {
 	m_LastLineOutput.file = NULL;
 	m_LastLineOutput.line = -1;
@@ -356,7 +356,7 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 		writeType(out, symbol_type, NULL, goit->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
 		out << " " << sym->getSymbol() << "[" << type.getArraySize() << "]";
 		current->endStatement();
-		
+
 		unsigned n_vals = init.size();
 		for (unsigned i = 0; i != n_vals; ++i) {
 			current->beginStatement();
