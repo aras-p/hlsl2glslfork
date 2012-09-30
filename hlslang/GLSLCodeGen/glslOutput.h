@@ -64,6 +64,7 @@ public:
 
 	TSourceLoc m_LastLineOutput;
 	unsigned swizzleAssignTempCounter;
+	ETargetVersion m_TargetVersion;
 	bool m_UsePrecision;
 	bool emitGLSL120ArrayInitializers;
 };

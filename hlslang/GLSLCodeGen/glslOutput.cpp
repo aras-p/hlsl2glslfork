@@ -297,6 +297,7 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
 , functionList(funcList)
 , structList(sList)
 , swizzleAssignTempCounter(0)
+, m_TargetVersion(version)
 , m_UsePrecision(Hlsl2Glsl_VersionUsesPrecision(version))
 , emitGLSL120ArrayInitializers(options & ETranslateOpEmitGLSL120ArrayInitializers)
 {
@@ -333,14 +334,20 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 	TType& type = *decl->getTypePointer();
 	EGlslSymbolType symbol_type = translateType(decl->getTypePointer());
 	
-	const bool emit_pre_glsl_120_arrays = !this->emitGLSL120ArrayInitializers;
+	const bool emit_120_arrays = (m_TargetVersion >= ETargetGLSL_120);
+	const bool emit_old_arrays = !emit_120_arrays || !this->emitGLSL120ArrayInitializers;
+	const bool emit_both = emit_120_arrays && emit_old_arrays;
 	
-	if (emit_pre_glsl_120_arrays) {
-		assert(decl->isSingleInitialization() && "Emission of multiple in-line array declarations isn't supported when running in pre-GLSL1.20 compatible mode.");
-		
+	if (emit_both)
+	{
 		current->indent(out);
 		out << "#if !defined(HLSL2GLSL_ENABLE_ARRAY_INIT)" << std::endl;
 		current->increaseDepth();
+	}
+	
+	if (emit_old_arrays)
+	{
+		assert(decl->isSingleInitialization() && "Emission of multiple in-line array declarations isn't supported when running in pre-GLSL1.20 mode.");
 		
 		TQualifier q = type.getQualifier();
 		if (q == EvqConst)
@@ -365,36 +372,41 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 			out << "[" << i << "] = ";
 			init[i]->traverse(this);
 			current->endStatement();
-		}
-		
+		}		
+	}
+	
+	if (emit_both)
+	{
 		current->decreaseDepth();
 		current->indent(out);
 		out << "#else" << std::endl;
 		current->increaseDepth();
 	}
 	
-	current->beginStatement();
+	if (emit_120_arrays)
+	{	
+		current->beginStatement();
+		
+		if (type.getQualifier() != EvqTemporary && type.getQualifier() != EvqGlobal)
+			out << type.getQualifierString() << " ";
+		
+		if (type.getBasicType() == EbtStruct)
+			out << type.getTypeName();
+		else
+			writeType(out, symbol_type, NULL, this->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
+		
+		if (type.isArray())
+			out << "[" << type.getArraySize() << "]";
+		
+		out << " ";
+		
+		decl->getDeclaration()->traverse(this);
+		
+		current->endStatement();
+	}
 	
-	if (type.getQualifier() != EvqTemporary && type.getQualifier() != EvqGlobal)
-		out << type.getQualifierString() << " ";
-	
-	if (type.getBasicType() == EbtStruct)
-		out << type.getTypeName();
-	else
-		writeType(out, symbol_type, NULL, this->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
-	
-	// If we're emitting GLSL 1.20+ code with array initializer,
-	// we need to emit size here.
-	if (type.isArray())
-		out << "[" << type.getArraySize() << "]";
-	
-	out << " ";
-	
-	decl->getDeclaration()->traverse(this);
-	
-	current->endStatement();
-	
-	if (emit_pre_glsl_120_arrays) {
+	if (emit_both)
+	{
 		current->decreaseDepth();
 		current->indent(out);
 		out << "#endif" << std::endl;

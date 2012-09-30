@@ -35,18 +35,14 @@ highp vec4 xlat_main( in v2f_withBlurCoords i );
 highp vec4 xlat_main( in v2f_withBlurCoords i ) {
     highp vec2 uv = i.uv.xy;
     #line 21
-    #if !defined(HLSL2GLSL_ENABLE_ARRAY_INIT)
-        highp float curve[7];
-        curve[0] = 0.006;
-        curve[1] = 0.061;
-        curve[2] = 0.242;
-        curve[3] = 0.383;
-        curve[4] = 0.242;
-        curve[5] = 0.061;
-        curve[6] = 0.006;
-    #else
-        const highp float[7] curve = float[7]( 0.006, 0.061, 0.242, 0.383, 0.242, 0.061, 0.006);
-    #endif
+    highp float curve[7];
+    curve[0] = 0.006;
+    curve[1] = 0.061;
+    curve[2] = 0.242;
+    curve[3] = 0.383;
+    curve[4] = 0.242;
+    curve[5] = 0.061;
+    curve[6] = 0.006;
     highp vec2 stretch = ((texture2D( _SssStretch, uv).xy * _SssStretch_AddMul.yy) + _SssStretch_AddMul.xx);
     highp vec2 netFilterWidth = (stretch * i.offs);
     highp vec2 coords = (uv - (netFilterWidth * 3.0));
