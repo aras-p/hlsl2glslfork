@@ -140,11 +140,11 @@ enum TTranslateOptions
 {
 	ETranslateOpNone = 0,
 	ETranslateOpIntermediate = (1<<0),
-	
-	/// Array initializers do not exist on GLSL ES 1.0, and are broken on
-	/// OS X 10.6.x with GLSL 1.20 as well. By default we'll emit code
-	/// that can handle both cases, with "real" initialization path
-	/// kicking in only when you've defined HLSL2GLSL_ENABLE_ARRAY_INIT.
+
+	/// Some drivers (e.g. OS X 10.6.x) have bugs with GLSL 1.20 array
+	/// initializer syntax. If you need to support this configuration,
+	/// use this flag to generate compatible syntax. You'll need
+	/// to prepend HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND to the shader.
 	///
 	/// Example of emitted code for a simple array declaration:
 	/// (HLSL Source)
@@ -154,18 +154,15 @@ enum TTranslateOptions
 	///			float2(1, 0.1)
 	///		};
 	/// (GLSL Emitted result)
-	///		#if defined(HLSL2GLSL_ENABLE_ARRAY_INIT)
-	///			const vec2 samples[] = vec2[](vec2(-1.0, 0.1), vec2(0.0, 0.5), vec2(1.0, 0.1)); 
-	///		#else
+	///		#if defined(HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND)
 	///			vec2 samples[];
 	///			samples[0] = vec2(-1.0, 0.1);
 	///			samples[1] = vec2(0.0, 0.5);
 	///			samples[2] = vec2(1.0, 0.1);
+	///		#else
+	///			const vec2 samples[] = vec2[](vec2(-1.0, 0.1), vec2(0.0, 0.5), vec2(1.0, 0.1)); 
 	///		#endif
-	///
-	/// If you don't need GLSL ES 1.0 support, or OS X 10.6.x support,
-	/// then pass this flag to always use "real" array initializers.
-	ETranslateOpEmitGLSL120ArrayInitializers = (1<<1),
+	ETranslateOpEmitGLSL120ArrayInitWorkaround = (1<<1),
 };
 
 

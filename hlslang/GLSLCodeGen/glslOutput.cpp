@@ -299,7 +299,7 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
 , swizzleAssignTempCounter(0)
 , m_TargetVersion(version)
 , m_UsePrecision(Hlsl2Glsl_VersionUsesPrecision(version))
-, emitGLSL120ArrayInitializers(options & ETranslateOpEmitGLSL120ArrayInitializers)
+, m_ArrayInitWorkaround(options & ETranslateOpEmitGLSL120ArrayInitWorkaround)
 {
 	m_LastLineOutput.file = NULL;
 	m_LastLineOutput.line = -1;
@@ -335,13 +335,13 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 	EGlslSymbolType symbol_type = translateType(decl->getTypePointer());
 	
 	const bool emit_120_arrays = (m_TargetVersion >= ETargetGLSL_120);
-	const bool emit_old_arrays = !emit_120_arrays || !this->emitGLSL120ArrayInitializers;
+	const bool emit_old_arrays = !emit_120_arrays || m_ArrayInitWorkaround;
 	const bool emit_both = emit_120_arrays && emit_old_arrays;
 	
 	if (emit_both)
 	{
 		current->indent(out);
-		out << "#if !defined(HLSL2GLSL_ENABLE_ARRAY_INIT)" << std::endl;
+		out << "#if defined(HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND)" << std::endl;
 		current->increaseDepth();
 	}
 	

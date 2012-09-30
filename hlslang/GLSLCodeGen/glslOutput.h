@@ -66,7 +66,7 @@ public:
 	unsigned swizzleAssignTempCounter;
 	ETargetVersion m_TargetVersion;
 	bool m_UsePrecision;
-	bool emitGLSL120ArrayInitializers;
+	bool m_ArrayInitWorkaround;
 };
 
 #endif //GLSL_OUTPUT_H

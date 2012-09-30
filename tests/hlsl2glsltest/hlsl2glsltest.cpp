@@ -517,7 +517,7 @@ static bool TestFile (TestRun type,
 	const char* suffix = "-out.txt";
 	if (version == ETargetGLSL_ES_100)
 		suffix = "-outES.txt";
-	else if (options & ETranslateOpEmitGLSL120ArrayInitializers)
+	else if (options & ETranslateOpEmitGLSL120ArrayInitWorkaround)
 		suffix = "-out120arr.txt";
 	
 	if (type == VERTEX_FAILURES || type == FRAGMENT_FAILURES) {
@@ -586,7 +586,7 @@ int main (int argc, const char** argv)
 			} else {
 				ok = TestFile(TestRun(type), testFolder + "/" + inname, version1, 0, hasOpenGL);
 				if (ok && version2 != ETargetVersionCount)
-					ok = TestFile(TestRun(type), testFolder + "/" + inname, version2, ETranslateOpEmitGLSL120ArrayInitializers, hasOpenGL);
+					ok = TestFile(TestRun(type), testFolder + "/" + inname, version2, ETranslateOpEmitGLSL120ArrayInitWorkaround, hasOpenGL);
 			}
 			
 			if (!ok)
