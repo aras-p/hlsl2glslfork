@@ -324,15 +324,16 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
 }
 
 
-bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration* decl, TIntermTraverser* it) {
-	TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
-	GlslFunction *current = goit->current;
-	std::stringstream& out = current->getActiveOutput();
-	EGlslSymbolType symbol_type = translateType(decl->getTypePointer());
-	TType& type = *decl->getTypePointer();
+
+void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* decl)
+{
+	assert(decl->containsArrayInitialization());
 	
-	const bool emit_pre_glsl_120_arrays = !goit->emitGLSL120ArrayInitializers
-		&& decl->containsArrayInitialization();
+	std::stringstream& out = current->getActiveOutput();
+	TType& type = *decl->getTypePointer();
+	EGlslSymbolType symbol_type = translateType(decl->getTypePointer());
+	
+	const bool emit_pre_glsl_120_arrays = !this->emitGLSL120ArrayInitializers;
 	
 	if (emit_pre_glsl_120_arrays) {
 		assert(decl->isSingleInitialization() && "Emission of multiple in-line array declarations isn't supported when running in pre-GLSL1.20 compatible mode.");
@@ -353,16 +354,16 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 		TIntermSymbol* sym = assign->getLeft()->getAsSymbolNode();
 		TIntermSequence& init = assign->getRight()->getAsAggregate()->getSequence();
 		
-		writeType(out, symbol_type, NULL, goit->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
+		writeType(out, symbol_type, NULL, this->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
 		out << " " << sym->getSymbol() << "[" << type.getArraySize() << "]";
 		current->endStatement();
-
+		
 		unsigned n_vals = init.size();
 		for (unsigned i = 0; i != n_vals; ++i) {
 			current->beginStatement();
-			sym->traverse(goit);
+			sym->traverse(this);
 			out << "[" << i << "] = ";
-			init[i]->traverse(goit);
+			init[i]->traverse(this);
 			current->endStatement();
 		}
 		
@@ -380,21 +381,16 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 	if (type.getBasicType() == EbtStruct)
 		out << type.getTypeName();
 	else
-		writeType(out, symbol_type, NULL, goit->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
-
+		writeType(out, symbol_type, NULL, this->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
+	
 	// If we're emitting GLSL 1.20+ code with array initializer,
 	// we need to emit size here.
-	if (type.isArray() && decl->containsArrayInitialization())
+	if (type.isArray())
 		out << "[" << type.getArraySize() << "]";
 	
 	out << " ";
 	
-	decl->getDeclaration()->traverse(goit);
-	
-	// Otherwise it's just array decl without initializer,
-	// so emit array size here.
-	if (type.isArray() && !decl->containsArrayInitialization())
-		out << "[" << type.getArraySize() << "]";
+	decl->getDeclaration()->traverse(this);
 	
 	current->endStatement();
 	
@@ -403,7 +399,43 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 		current->indent(out);
 		out << "#endif" << std::endl;
 	}
+}
+
+
+
+bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration* decl, TIntermTraverser* it) {
+	TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
+	GlslFunction *current = goit->current;
+	std::stringstream& out = current->getActiveOutput();
 	
+	if (decl->containsArrayInitialization())
+	{
+		goit->traverseArrayDeclarationWithInit (decl);
+		return false;
+	}
+
+	current->beginStatement();
+	
+	TType& type = *decl->getTypePointer();
+	if (type.getQualifier() != EvqTemporary && type.getQualifier() != EvqGlobal)
+		out << type.getQualifierString() << " ";
+	
+	if (type.getBasicType() == EbtStruct)
+		out << type.getTypeName();
+	else
+	{
+		EGlslSymbolType symbol_type = translateType(decl->getTypePointer());
+		writeType(out, symbol_type, NULL, goit->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
+	}
+
+	out << " ";
+	
+	decl->getDeclaration()->traverse(goit);
+	
+	if (type.isArray())
+		out << "[" << type.getArraySize() << "]";
+	
+	current->endStatement();
 	return false;
 }
 
