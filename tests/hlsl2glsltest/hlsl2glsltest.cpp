@@ -326,8 +326,8 @@ static const ETargetVersion kTargets2[NUM_RUN_TYPES] = {
 	ETargetGLSL_ES_100,
 	ETargetGLSL_ES_100,
 	ETargetVersionCount,
-	ETargetVersionCount,
-	ETargetVersionCount,
+	ETargetGLSL_120,
+	ETargetGLSL_120,
 	ETargetVersionCount,
 	ETargetVersionCount,
 };
@@ -338,6 +338,7 @@ static bool TestFile (TestRun type,
 					  const std::string& outputPath,
 					  const char* entryPoint,
 					  ETargetVersion version,
+					  unsigned options,
 					  bool doCheckGLSL)
 {
 	assert(version != ETargetVersionCount);
@@ -355,13 +356,9 @@ static bool TestFile (TestRun type,
 
 	bool res = true;
 
-	unsigned options = 0;
 	if (kDumpShaderAST)
 		options |= ETranslateOpIntermediate;
-	
-	if (version >= ETargetGLSL_120)
-		options |= ETranslateOpEmitGLSL120ArrayInitializers;
-	
+		
 	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, options);
 	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 	if (kDumpShaderAST)
@@ -504,26 +501,29 @@ static bool TestCombinedFile(const std::string& inputPath, ETargetVersion versio
 		frag_out = outname + "-fragment-out.txt";
 	}
 	
-	bool res = TestFile(VERTEX, inputPath, vert_out, "vs_main", version, checkGL);
-	return res & TestFile(FRAGMENT, inputPath, frag_out, "ps_main", version, checkGL);
+	bool res = TestFile(VERTEX, inputPath, vert_out, "vs_main", version, 0, checkGL);
+	return res & TestFile(FRAGMENT, inputPath, frag_out, "ps_main", version, 0, checkGL);
 }
 
 
 static bool TestFile (TestRun type,
 					  const std::string& inputPath,
 					  ETargetVersion version,
+					  unsigned options,
 					  bool checkGL)
 {
 	std::string outname = inputPath.substr (0,inputPath.size()-7);
 
+	const char* suffix = "-out.txt";
+	if (version == ETargetGLSL_ES_100)
+		suffix = "-outES.txt";
+	else if (options & ETranslateOpEmitGLSL120ArrayInitializers)
+		suffix = "-out120arr.txt";
+	
 	if (type == VERTEX_FAILURES || type == FRAGMENT_FAILURES) {
-		return TestFileFailure(type, inputPath, outname + "-out.txt");
+		return TestFileFailure(type, inputPath, outname + suffix);
 	} else {
-		if (version == ETargetGLSL_ES_100) {
-			return TestFile(type, inputPath, outname + "-outES.txt", "main", version, checkGL);
-		} else {
-			return TestFile(type, inputPath, outname + "-out.txt", "main", version, checkGL);
-		}
+		return TestFile(type, inputPath, outname + suffix, "main", version, options, checkGL);
 	}
 	return false;
 }
@@ -584,9 +584,9 @@ int main (int argc, const char** argv)
 				if (ok && version2 != ETargetVersionCount)
 					ok = TestCombinedFile(testFolder + "/" + inname, version2, hasOpenGL);
 			} else {
-				ok = TestFile(TestRun(type), testFolder + "/" + inname, version1, hasOpenGL);
+				ok = TestFile(TestRun(type), testFolder + "/" + inname, version1, 0, hasOpenGL);
 				if (ok && version2 != ETargetVersionCount)
-					ok = TestFile(TestRun(type), testFolder + "/" + inname, version2, hasOpenGL);
+					ok = TestFile(TestRun(type), testFolder + "/" + inname, version2, ETranslateOpEmitGLSL120ArrayInitializers, hasOpenGL);
 			}
 			
 			if (!ok)
