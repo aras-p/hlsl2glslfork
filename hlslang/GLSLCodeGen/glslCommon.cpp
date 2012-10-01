@@ -175,19 +175,6 @@ EGlslQualifier translateQualifier( TQualifier qual )
    case EvqInOut:         return EqtInOut;
    case EvqConstReadOnly: return EqtConst;
 
-      // built-ins written by vertex shader
-   case EvqPosition:      return EqtNone;
-   case EvqPointSize:     return EqtNone;
-   case EvqClipVertex:    return EqtNone;
-
-      // built-ins read by fragment shader
-   case EvqFace:          return EqtNone;
-   case EvqFragCoord:     return EqtNone;
-
-      // built-ins written by fragment shader
-   case EvqFragColor:     return EqtNone;
-   case EvqFragDepth:     return EqtNone;
-
    }
 
    return EqtNone;

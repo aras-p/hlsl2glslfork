@@ -79,19 +79,6 @@ enum TQualifier
    EvqInOut,
    EvqConstReadOnly,
 
-   // built-ins written by vertex shader
-   EvqPosition,
-   EvqPointSize,
-   EvqClipVertex,
-
-   // built-ins read by fragment shader
-   EvqFace,
-   EvqFragCoord,
-
-   // built-ins written by fragment shader
-   EvqFragColor,
-   EvqFragDepth,
-
    // end of list
    EvqLast,
 };
@@ -114,13 +101,6 @@ __inline const char* getQualifierString(TQualifier q)
    case EvqIn:             return "in";             break;
    case EvqOut:            return "out";            break;
    case EvqInOut:          return "inout";          break;
-   case EvqPosition:       return "Position";       break;
-   case EvqPointSize:      return "PointSize";      break;
-   case EvqClipVertex:     return "ClipVertex";     break;
-   case EvqFace:           return "Face";           break;
-   case EvqFragCoord:      return "FragCoord";      break;
-   case EvqFragColor:      return "FragColor";      break;
-   case EvqFragDepth:      return "FragDepth";      break;
    default:                return "unknown qualifier";
    }
 }

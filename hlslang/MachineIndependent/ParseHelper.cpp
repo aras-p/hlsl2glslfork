@@ -456,8 +456,6 @@ bool TParseContext::lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTy
 			node->getTypePointer()->changeQualifier( EvqMutableUniform);
 			break;
 		case EvqVaryingIn:      message = "can't modify a varying";      break;
-		case EvqFace:           message = "can't modify gl_FrontFacing";   break;
-		case EvqFragCoord:      message = "can't modify gl_FragCoord";   break;
 		default:
 			
 			//
