@@ -4,6 +4,7 @@
 
 
 #include "SymbolTable.h"
+#include <list>
 
 TString* TParameter::NullSemantic = 0;
 

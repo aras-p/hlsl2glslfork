@@ -26,7 +26,6 @@
 #include <set>
 #include <vector>
 #include <map>
-#include <list>
 #include <string>
 #include <stdio.h>
 #include <sstream>
@@ -49,9 +48,6 @@
     void operator delete[](void*) { }                                 \
     void operator delete[](void *, void *) { }
 
-#define TBaseMap std::map
-#define TBaseList std::list
-#define TBaseSet std::set
 
 //
 // Pool version of string.
@@ -65,7 +61,7 @@ inline TString* NewPoolTString(const char* s)
 }
 
 //
-// Pool allocator versions of vectors, lists, and maps
+// Pool allocator versions of containers
 //
 template <class T> class TVector : public std::vector<T, pool_allocator<T> >
 {
@@ -82,35 +78,6 @@ public:
    }
 };
 
-template <class T> class TList   : public TBaseList  <T, pool_allocator<T> >
-{
-public:
-   typedef typename TBaseList<T, pool_allocator<T> >::size_type size_type;
-   TList() : TBaseList<T, pool_allocator<T> >()
-   {
-   }
-   TList(const pool_allocator<T>& a) : TBaseList<T, pool_allocator<T> >(a)
-   {
-   }
-   TList(size_type i): TBaseList<T, pool_allocator<T> >(i)
-   {
-   }
-};
-
-template <class K, class D, class CMP = std::less<K> > 
-class TMap : public TBaseMap<K, D, CMP, pool_allocator<std::pair<K, D> > >
-{
-public:
-   typedef pool_allocator<std::pair <K, D> > tAllocator;
-
-   TMap() : TBaseMap<K, D, CMP, tAllocator >()
-   {
-   }
-   // use correct two-stage name lookup supported in gcc 3.4 and above
-   TMap(const tAllocator& a) : TBaseMap<K, D, CMP, tAllocator>(TBaseMap<K, D, CMP, tAllocator >::key_compare(), a)
-   {
-   }
-};
 
 //
 // Persistent string memory.  Should only be used for strings that survive
