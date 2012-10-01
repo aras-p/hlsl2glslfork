@@ -230,15 +230,15 @@ static TSourceLoc lexlineno = { 0, 0 };
 "<<"            {  pyylval->lex.line = lexlineno; return(LEFT_OP); }
 ">>"            {  pyylval->lex.line = lexlineno; return(RIGHT_OP); }
 ";"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = false; return(SEMICOLON); }
-("{"|"<%")      {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = false; return(LEFT_BRACE); }
-("}"|"%>")      {  pyylval->lex.line = lexlineno; return(RIGHT_BRACE); }
+"{"      {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = false; return(LEFT_BRACE); }
+"}"      {  pyylval->lex.line = lexlineno; return(RIGHT_BRACE); }
 ","         {  pyylval->lex.line = lexlineno; if (parseContext.inTypeParen) parseContext.lexAfterType = false; return(COMMA); }
 ":"         {  pyylval->lex.line = lexlineno; return(COLON); }
 "="         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = false; return(EQUAL); }
 "("         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = false; parseContext.inTypeParen = true; return(LEFT_PAREN); }
 ")"         {  pyylval->lex.line = lexlineno; parseContext.inTypeParen = false; return(RIGHT_PAREN); }
-("["|"<:")      {  pyylval->lex.line = lexlineno; return(LEFT_BRACKET); }
-("]"|":>")      {  pyylval->lex.line = lexlineno; return(RIGHT_BRACKET); }
+"["      {  pyylval->lex.line = lexlineno; return(LEFT_BRACKET); }
+"]"      {  pyylval->lex.line = lexlineno; return(RIGHT_BRACKET); }
 "."         { BEGIN(FIELDS);  return(DOT); }
 "!"         {  pyylval->lex.line = lexlineno; return(BANG); }
 "-"         {  pyylval->lex.line = lexlineno; return(DASH); }
