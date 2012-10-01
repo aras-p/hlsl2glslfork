@@ -37,7 +37,7 @@ struct TSamplerTraverser : public TIntermTraverser
 	TSamplerTraverser(TInfoSink &is) : infoSink(is), abort(false), typing(false), id(0), sampType(EbtSamplerGeneric) 
 	{
 		visitSymbol = traverseSymbol;
-		//visitConstantUnion = traverseConstantUnion;
+		//visitConstant = traverseConstant;
 		visitBinary = traverseBinary;
 		visitUnary = traverseUnary;
 		visitSelection = traverseSelection;

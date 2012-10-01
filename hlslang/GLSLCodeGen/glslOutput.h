@@ -20,7 +20,7 @@ class TGlslOutputTraverser : public TIntermTraverser
 private:
 	static void traverseSymbol(TIntermSymbol*, TIntermTraverser*);
 	static void traverseParameterSymbol(TIntermSymbol *node, TIntermTraverser *it);
-	static void traverseConstantUnion(TIntermConstant*, TIntermTraverser*);
+	static void traverseConstant(TIntermConstant*, TIntermTraverser*);
 	static void traverseImmediateConstant( TIntermConstant *node, TIntermTraverser *it);
 	static bool traverseBinary(bool preVisit, TIntermBinary*, TIntermTraverser*);
 	static bool traverseUnary(bool preVisit, TIntermUnary*, TIntermTraverser*);

@@ -675,7 +675,7 @@ public:
 
 	TIntermTraverser() : 
 		visitSymbol(0), 
-		visitConstantUnion(0),
+		visitConstant(0),
 		visitBinary(0),
 		visitUnary(0),
 		visitSelection(0),
@@ -691,7 +691,7 @@ public:
 
 	bool (*visitDeclaration)(bool preVisit, TIntermDeclaration*, TIntermTraverser*);
 	void (*visitSymbol)(TIntermSymbol*, TIntermTraverser*);
-	void (*visitConstantUnion)(TIntermConstant*, TIntermTraverser*);
+	void (*visitConstant)(TIntermConstant*, TIntermTraverser*);
 	bool (*visitBinary)(bool preVisit, TIntermBinary*, TIntermTraverser*);
 	bool (*visitUnary)(bool preVisit, TIntermUnary*, TIntermTraverser*);
 	bool (*visitSelection)(bool preVisit, TIntermSelection*, TIntermTraverser*);

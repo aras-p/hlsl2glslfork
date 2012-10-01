@@ -305,7 +305,7 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
 	m_LastLineOutput.file = NULL;
 	m_LastLineOutput.line = -1;
 	visitSymbol = traverseSymbol;
-	visitConstantUnion = traverseConstantUnion;
+	visitConstant = traverseConstant;
 	visitBinary = traverseBinary;
 	visitUnary = traverseUnary;
 	visitSelection = traverseSelection;
@@ -531,7 +531,7 @@ void TGlslOutputTraverser::traverseParameterSymbol(TIntermSymbol *node, TIntermT
 }
 
 
-void TGlslOutputTraverser::traverseConstantUnion( TIntermConstant *node, TIntermTraverser *it )
+void TGlslOutputTraverser::traverseConstant( TIntermConstant *node, TIntermTraverser *it )
 {
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
    GlslFunction *current = goit->current;
@@ -673,14 +673,14 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          if (left->isVector() && !left->isArray() && right->getAsConstant())
          {
             char swiz[] = "xyzw";
-            goit->visitConstantUnion = TGlslOutputTraverser::traverseImmediateConstant;
+            goit->visitConstant = TGlslOutputTraverser::traverseImmediateConstant;
             goit->generatingCode = false;
             right->traverse(goit);
             assert( goit->indexList.size() == 1);
             assert( goit->indexList[0] < 4);
             out << "." << swiz[goit->indexList[0]];
             goit->indexList.clear();
-            goit->visitConstantUnion = TGlslOutputTraverser::traverseConstantUnion;
+            goit->visitConstant = TGlslOutputTraverser::traverseConstant;
             goit->generatingCode = true;
          }
          else
@@ -744,7 +744,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 
          // The right child is always an offset into the struct, switch to get an
          // immediate constant, and put it back afterwords
-         goit->visitConstantUnion = TGlslOutputTraverser::traverseImmediateConstant;
+         goit->visitConstant = TGlslOutputTraverser::traverseImmediateConstant;
          goit->generatingCode = false;
 
          if (node->getRight())
@@ -757,7 +757,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          }
 
          goit->indexList.clear();
-         goit->visitConstantUnion = TGlslOutputTraverser::traverseConstantUnion;
+         goit->visitConstant = TGlslOutputTraverser::traverseConstant;
          goit->generatingCode = true;
       }
       return false;
@@ -766,7 +766,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
       current->beginStatement();
       if (node->getLeft())
          node->getLeft()->traverse(goit);
-      goit->visitConstantUnion = TGlslOutputTraverser::traverseImmediateConstant;
+      goit->visitConstant = TGlslOutputTraverser::traverseImmediateConstant;
       goit->generatingCode = false;
       if (node->getRight())
       {
@@ -783,7 +783,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          }
       }
       goit->indexList.clear();
-      goit->visitConstantUnion = TGlslOutputTraverser::traverseConstantUnion;
+      goit->visitConstant = TGlslOutputTraverser::traverseConstant;
       goit->generatingCode = true;
       return false;
 
@@ -791,12 +791,12 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 		// This presently only works for swizzles as rhs operators
 		if (node->getRight())
 		{
-			goit->visitConstantUnion = TGlslOutputTraverser::traverseImmediateConstant;
+			goit->visitConstant = TGlslOutputTraverser::traverseImmediateConstant;
 			goit->generatingCode = false;
 
 			node->getRight()->traverse(goit);
 
-			goit->visitConstantUnion = TGlslOutputTraverser::traverseConstantUnion;
+			goit->visitConstant = TGlslOutputTraverser::traverseConstant;
 			goit->generatingCode = true;
 
 			std::vector<int> elements = goit->indexList;
@@ -917,12 +917,12 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 			   TIntermTyped* rval = node->getRight();
 			   TIntermTyped* lexp = lval->getLeft();
 			   
-			   goit->visitConstantUnion = TGlslOutputTraverser::traverseImmediateConstant;
+			   goit->visitConstant = TGlslOutputTraverser::traverseImmediateConstant;
 			   goit->generatingCode = false;
 			   
 			   lval->getRight()->traverse(goit);
 			   
-			   goit->visitConstantUnion = TGlslOutputTraverser::traverseConstantUnion;
+			   goit->visitConstant = TGlslOutputTraverser::traverseConstant;
 			   goit->generatingCode = true;
 			   
 			   std::vector<int> swizzles = goit->indexList;

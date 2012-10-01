@@ -367,7 +367,7 @@ bool OutputSelection(bool, /* preVisit */ TIntermSelection* node, TIntermTravers
    return false;
 }
 
-void OutputConstantUnion(TIntermConstant* node, TIntermTraverser* it)
+void OutputConstant(TIntermConstant* node, TIntermTraverser* it)
 {
    TOutputTraverser* oit = static_cast<TOutputTraverser*>(it);
    TInfoSink& out = oit->infoSink;
@@ -499,7 +499,7 @@ void TIntermediate::outputTree(TIntermNode* root)
 
    it.visitAggregate = OutputAggregate;
    it.visitBinary = OutputBinary;
-   it.visitConstantUnion = OutputConstantUnion;
+   it.visitConstant = OutputConstant;
    it.visitSelection = OutputSelection;
    it.visitSymbol = OutputSymbol;
    it.visitUnary = OutputUnary;

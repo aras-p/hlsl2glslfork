@@ -41,8 +41,8 @@ void TIntermDeclaration::traverse(TIntermTraverser* it)
 
 void TIntermConstant::traverse(TIntermTraverser* it)
 {
-   if (it->visitConstantUnion)
-      it->visitConstantUnion(this, it);
+   if (it->visitConstant)
+      it->visitConstant(this, it);
 }
 
 //
