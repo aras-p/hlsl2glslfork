@@ -77,7 +77,6 @@ enum TQualifier
    EvqIn,
    EvqOut,
    EvqInOut,
-   EvqConstReadOnly,
 
    // end of list
    EvqLast,
@@ -93,7 +92,6 @@ __inline const char* getQualifierString(TQualifier q)
    case EvqTemporary:      return "Temporary";      break;
    case EvqGlobal:         return "Global";         break;
    case EvqConst:          return "const";          break;
-   case EvqConstReadOnly:  return "const";          break;
    case EvqAttribute:      return "attribute";      break;
    case EvqVaryingIn:      return "varying";        break;
    case EvqVaryingOut:     return "varying";        break;

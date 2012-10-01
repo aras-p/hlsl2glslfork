@@ -449,7 +449,6 @@ bool TParseContext::lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTy
 	switch (node->getQualifier())
 	{
 		case EvqConst:          message = "can't modify a const";        break;
-		case EvqConstReadOnly:  message = "can't modify a const";        break;
 		case EvqAttribute:      message = "can't modify an attribute";   break;
 		case EvqUniform:
 			// mark this uniform as mutable
@@ -1124,7 +1123,7 @@ bool TParseContext::paramErrorCheck(const TSourceLoc& line, TQualifier qualifier
    if (qualifier == EvqUniform)
       type->changeQualifier(EvqUniform);
    else if (qualifier == EvqConst)
-      type->changeQualifier(EvqConstReadOnly);
+      type->changeQualifier(EvqConst);
    else
       type->changeQualifier(paramQualifier);
 

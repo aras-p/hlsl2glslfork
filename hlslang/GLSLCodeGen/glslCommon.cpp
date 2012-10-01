@@ -167,13 +167,9 @@ EGlslQualifier translateQualifier( TQualifier qual )
    case EvqVaryingOut:    return EqtNone;
    case EvqUniform:       return EqtUniform;
    case EvqMutableUniform: return EqtMutableUniform;
-
-
-      // parameters
    case EvqIn:            return EqtIn;
    case EvqOut:           return EqtOut;
    case EvqInOut:         return EqtInOut;
-   case EvqConstReadOnly: return EqtConst;
 
    }
 
