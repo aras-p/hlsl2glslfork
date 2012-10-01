@@ -90,11 +90,6 @@ void GlslSymbol::writeDecl (std::stringstream& out, unsigned flags)
 }
 
 
-void GlslSymbol::writeInitializer( std::stringstream &out, int element )
-{
-	out << initializerString;
-}
-
 // two requirements here:
 // 1) We always need a decimal-point so that the GLSL output is clearly a float
 // 2) We want to have reasonably consistent behaviour between MacOS & Windows (so tests are consistent)
