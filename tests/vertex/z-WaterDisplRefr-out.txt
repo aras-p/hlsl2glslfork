@@ -35,21 +35,45 @@ struct appdata_full {
     vec3 normal;
     vec4 texcoord;
 };
-uniform vec4 _BumpDirection;
-uniform vec4 _BumpTiling;
-uniform vec4 _GAmplitude;
-uniform vec4 _GDirectionAB;
-uniform vec4 _GDirectionCD;
-uniform vec4 _GFrequency;
-uniform vec4 _GSpeed;
-uniform vec4 _GSteepness;
-uniform float _GerstnerIntensity;
-uniform mat4 _Object2World;
-uniform vec4 _ProjectionParams;
 uniform vec4 _Time;
+uniform vec4 _SinTime;
+#line 3
+uniform vec4 _CosTime;
 uniform vec3 _WorldSpaceCameraPos;
+uniform vec4 _ProjectionParams;
+uniform vec4 _ScreenParams;
+#line 7
+uniform vec4 _ZBufferParams;
 uniform mat4 glstate_matrix_mvp;
+uniform mat4 glstate_matrix_modelview0;
+uniform mat4 glstate_matrix_invtrans_modelview0;
+#line 11
+uniform mat4 _Object2World;
+uniform mat4 _World2Object;
 uniform vec4 unity_Scale;
+uniform mat4 glstate_matrix_transpose_modelview0;
+#line 15
+uniform mat4 glstate_matrix_projection;
+#line 24
+#line 42
+#line 46
+#line 50
+uniform float _GerstnerIntensity;
+#line 65
+#line 93
+#line 114
+#line 130
+uniform vec4 _DistortParams;
+uniform vec4 _BumpTiling;
+uniform vec4 _BumpDirection;
+uniform vec4 _GAmplitude;
+#line 134
+uniform vec4 _GFrequency;
+uniform vec4 _GSteepness;
+uniform vec4 _GSpeed;
+uniform vec4 _GDirectionAB;
+#line 138
+uniform vec4 _GDirectionCD;
 vec3 GerstnerOffset4( in vec2 xzVtx, in vec4 steepness, in vec4 amp, in vec4 freq, in vec4 speed, in vec4 dirAB, in vec4 dirCD );
 vec3 GerstnerNormal4( in vec2 xzVtx, in vec4 amp, in vec4 freq, in vec4 speed, in vec4 dirAB, in vec4 dirCD );
 void Gerstner( out vec3 offs, out vec3 nrml, in vec3 vtx, in vec3 tileableVtx, in vec4 amplitude, in vec4 frequency, in vec4 steepness, in vec4 speed, in vec4 directionAB, in vec4 directionCD );
@@ -58,95 +82,79 @@ void ComputeScreenAndGrabPassPos( in vec4 pos, out vec4 screenPos, out vec4 grab
 v2f xlat_main( in appdata_full v );
 #line 79
 vec3 GerstnerOffset4( in vec2 xzVtx, in vec4 steepness, in vec4 amp, in vec4 freq, in vec4 speed, in vec4 dirAB, in vec4 dirCD ) {
-    vec4 AB;
-    vec4 CD;
-    vec4 dotABCD;
-    vec4 TIME;
-    vec4 COS;
-    vec4 SIN;
+    #line 81
     vec3 offsets;
-    AB = ((steepness.xxyy * amp.xxyy) * dirAB.xyzw);
-    #line 83
-    CD = ((steepness.zzww * amp.zzww) * dirCD.xyzw);
-    dotABCD = (freq.xyzw * vec4( dot( dirAB.xy, xzVtx), dot( dirAB.zw, xzVtx), dot( dirCD.xy, xzVtx), dot( dirCD.zw, xzVtx)));
-    TIME = (_Time.yyyy * speed);
-    COS = cos((dotABCD + TIME));
-    #line 87
-    SIN = sin((dotABCD + TIME));
+    vec4 AB = ((steepness.xxyy * amp.xxyy) * dirAB.xyzw);
+    vec4 CD = ((steepness.zzww * amp.zzww) * dirCD.xyzw);
+    vec4 dotABCD = (freq.xyzw * vec4( dot( dirAB.xy, xzVtx), dot( dirAB.zw, xzVtx), dot( dirCD.xy, xzVtx), dot( dirCD.zw, xzVtx)));
+    #line 85
+    vec4 TIME = (_Time.yyyy * speed);
+    vec4 COS = cos((dotABCD + TIME));
+    vec4 SIN = sin((dotABCD + TIME));
     offsets.x = dot( COS, vec4( AB.xz, CD.xz));
+    #line 89
     offsets.z = dot( COS, vec4( AB.yw, CD.yw));
     offsets.y = dot( SIN, amp);
-    #line 91
     return offsets;
 }
 #line 100
 vec3 GerstnerNormal4( in vec2 xzVtx, in vec4 amp, in vec4 freq, in vec4 speed, in vec4 dirAB, in vec4 dirCD ) {
-    vec3 nrml = vec3(0.0, 2.0, 0.0);
-    vec4 AB;
-    vec4 CD;
-    vec4 dotABCD;
-    vec4 TIME;
-    vec4 COS;
-    AB = ((freq.xxyy * amp.xxyy) * dirAB.xyzw);
-    #line 104
-    CD = ((freq.zzww * amp.zzww) * dirCD.xyzw);
-    dotABCD = (freq.xyzw * vec4( dot( dirAB.xy, xzVtx), dot( dirAB.zw, xzVtx), dot( dirCD.xy, xzVtx), dot( dirCD.zw, xzVtx)));
-    TIME = (_Time.yyyy * speed);
-    COS = cos((dotABCD + TIME));
-    #line 108
+    #line 102
+    vec3 nrml = vec3( 0.0, 2.0, 0.0);
+    vec4 AB = ((freq.xxyy * amp.xxyy) * dirAB.xyzw);
+    vec4 CD = ((freq.zzww * amp.zzww) * dirCD.xyzw);
+    vec4 dotABCD = (freq.xyzw * vec4( dot( dirAB.xy, xzVtx), dot( dirAB.zw, xzVtx), dot( dirCD.xy, xzVtx), dot( dirCD.zw, xzVtx)));
+    #line 106
+    vec4 TIME = (_Time.yyyy * speed);
+    vec4 COS = cos((dotABCD + TIME));
     nrml.x -= dot( COS, vec4( AB.xz, CD.xz));
     nrml.z -= dot( COS, vec4( AB.yw, CD.yw));
+    #line 110
     nrml.xz *= _GerstnerIntensity;
     nrml = normalize(nrml);
-    #line 112
     return nrml;
 }
 #line 114
 void Gerstner( out vec3 offs, out vec3 nrml, in vec3 vtx, in vec3 tileableVtx, in vec4 amplitude, in vec4 frequency, in vec4 steepness, in vec4 speed, in vec4 directionAB, in vec4 directionCD ) {
-    #line 116
     offs = GerstnerOffset4( tileableVtx.xz, steepness, amplitude, frequency, speed, directionAB, directionCD);
     nrml = GerstnerNormal4( (tileableVtx.xz + offs.xz), amplitude, frequency, speed, directionAB, directionCD);
 }
 #line 35
 vec4 ComputeScreenPos( in vec4 pos ) {
-    vec4 o;
     #line 37
-    o = (pos * 0.5);
+    vec4 o = (pos * 0.5);
     o.xy = (vec2( o.x, (o.y * _ProjectionParams.x)) + o.w);
     o.zw = pos.zw;
     return o;
 }
 #line 57
 void ComputeScreenAndGrabPassPos( in vec4 pos, out vec4 screenPos, out vec4 grabPassPos ) {
+    #line 59
     float scale = 1.0;
     screenPos = ComputeScreenPos( pos);
-    #line 61
     grabPassPos.xy = ((vec2( pos.x, (pos.y * scale)) + pos.w) * 0.5);
     grabPassPos.zw = pos.zw;
 }
 #line 140
 v2f xlat_main( in appdata_full v ) {
-    vec3 worldSpaceVertex;
-    vec3 vtxForAni;
-    vec3 offsets;
-    vec3 nrml;
-    vec2 tileableUv;
+    #line 142
     v2f o;
-    worldSpaceVertex = (_Object2World * v.vertex).xyz;
-    #line 144
-    vtxForAni = (worldSpaceVertex.xzz * unity_Scale.w);
+    vec3 worldSpaceVertex = (_Object2World * v.vertex).xyz;
+    vec3 vtxForAni = (worldSpaceVertex.xzz * unity_Scale.w);
+    vec3 nrml;
+    #line 146
+    vec3 offsets;
     Gerstner( offsets, nrml, v.vertex.xyz, vtxForAni, _GAmplitude, _GFrequency, _GSteepness, _GSpeed, _GDirectionAB, _GDirectionCD);
-    #line 148
     v.vertex.xyz += offsets;
-    tileableUv = (_Object2World * v.vertex).xz;
+    vec2 tileableUv = (_Object2World * v.vertex).xz;
+    #line 150
     o.bumpCoords.xyzw = ((tileableUv.xyxy + (_Time.xxxx * _BumpDirection.xyzw)) * _BumpTiling.xyzw);
     o.viewInterpolator.xyz = (worldSpaceVertex - _WorldSpaceCameraPos);
-    #line 152
     o.pos = (glstate_matrix_mvp * v.vertex);
     ComputeScreenAndGrabPassPos( o.pos, o.screenPos, o.grabPassPos);
+    #line 154
     o.normalInterpolator.xyz = nrml;
     o.viewInterpolator.w = xll_saturate(offsets.y);
-    #line 156
     o.normalInterpolator.w = 1.0;
     return o;
 }

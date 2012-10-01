@@ -47,16 +47,25 @@ struct v2f_surf {
     vec3 viewDir;
     vec2 _LightCoord;
 };
-uniform sampler2D _BumpSpecMap;
-uniform vec4 _Color;
-uniform float _Cutoff;
+#line 1
 uniform vec4 _LightColor0;
+#line 9
+uniform vec4 _SpecColor;
 uniform sampler2D _LightTexture0;
-uniform sampler2D _MainTex;
-uniform float _ShadowStrength;
+uniform mat4 _LightMatrix0;
+uniform vec4 _Color;
+#line 13
 uniform vec3 _TranslucencyColor;
-uniform sampler2D _TranslucencyMap;
 uniform float _TranslucencyViewDependency;
+uniform float _ShadowStrength;
+#line 28
+#line 44
+uniform sampler2D _MainTex;
+uniform sampler2D _BumpSpecMap;
+uniform sampler2D _TranslucencyMap;
+#line 53
+#line 76
+uniform float _Cutoff;
 vec4 UnpackNormal( in vec4 packednormal );
 void surf( in Input IN, inout LeafSurfaceOutput o );
 vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in vec3 lightDir, in vec3 viewDir, in float atten );
@@ -71,41 +80,32 @@ vec4 UnpackNormal( in vec4 packednormal ) {
 }
 #line 53
 void surf( in Input IN, inout LeafSurfaceOutput o ) {
-    vec4 c;
-    vec4 trngls;
-    vec4 norspc;
-    c = texture2D( _MainTex, IN.uv_MainTex);
+    vec4 c = texture2D( _MainTex, IN.uv_MainTex);
     o.Albedo = ((c.xyz * _Color.xyz) * IN.color.w);
     #line 57
-    trngls = texture2D( _TranslucencyMap, IN.uv_MainTex);
+    vec4 trngls = texture2D( _TranslucencyMap, IN.uv_MainTex);
     o.Translucency = trngls.z;
     o.Gloss = (trngls.w * _Color.x);
     o.Alpha = c.w;
     #line 61
-    norspc = texture2D( _BumpSpecMap, IN.uv_MainTex);
+    vec4 norspc = texture2D( _BumpSpecMap, IN.uv_MainTex);
     o.Specular = norspc.x;
     o.ShadowOffset = norspc.z;
     o.Normal = vec3( UnpackNormal( norspc));
 }
 #line 28
 vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in vec3 lightDir, in vec3 viewDir, in float atten ) {
-    vec3 h;
-    float nl;
-    float nh;
-    float spec;
-    float backContrib;
-    vec3 translucencyColor;
-    vec4 c;
-    h = normalize((lightDir + viewDir));
-    nl = dot( s.Normal, lightDir);
+    vec3 h = normalize((lightDir + viewDir));
+    float nl = dot( s.Normal, lightDir);
     #line 32
-    nh = max( 0.0, dot( s.Normal, h));
-    spec = (pow( nh, (s.Specular * 128.0)) * s.Gloss);
-    backContrib = xll_saturate(dot( viewDir, (-lightDir)));
+    float nh = max( 0.0, dot( s.Normal, h));
+    float spec = (pow( nh, (s.Specular * 128.0)) * s.Gloss);
+    float backContrib = xll_saturate(dot( viewDir, (-lightDir)));
     backContrib = mix( xll_saturate((-nl)), backContrib, _TranslucencyViewDependency);
     #line 36
-    translucencyColor = ((backContrib * s.Translucency) * _TranslucencyColor);
+    vec3 translucencyColor = ((backContrib * s.Translucency) * _TranslucencyColor);
     nl = max( 0.0, ((nl * 0.6) + 0.4));
+    vec4 c;
     c.xyz = (s.Albedo * ((translucencyColor * 2.0) + nl));
     #line 40
     c.xyz = ((c.xyz * _LightColor0.xyz) + spec);
@@ -115,23 +115,22 @@ vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in vec3 lightDir, in vec3 viewDir
 #line 77
 vec4 xlat_main( in v2f_surf IN ) {
     Input surfIN;
-    LeafSurfaceOutput o;
-    vec3 lightDir;
-    vec4 c;
+    #line 80
     surfIN.uv_MainTex = IN.hip_pack0.xy;
-    #line 81
     surfIN.color = IN.lop_color;
+    LeafSurfaceOutput o;
     o.Albedo = vec3( 0.0);
+    #line 84
     o.Emission = vec3( 0.0);
-    #line 85
     o.Specular = 0.0;
     o.Alpha = 0.0;
     surf( surfIN, o);
+    #line 88
     xll_clip((o.Alpha - _Cutoff));
-    #line 89
-    lightDir = IN.lightDir;
-    c = LightingTreeLeaf( o, lightDir, normalize(IN.viewDir), (texture2D( _LightTexture0, IN._LightCoord).w * 1.0));
+    vec3 lightDir = IN.lightDir;
+    vec4 c = LightingTreeLeaf( o, lightDir, normalize(IN.viewDir), (texture2D( _LightTexture0, IN._LightCoord).w * 1.0));
     c.w = o.Alpha;
+    #line 92
     return c;
 }
 varying vec2 xlv_TEXCOORD0;

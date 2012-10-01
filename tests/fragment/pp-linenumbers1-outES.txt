@@ -5,6 +5,8 @@ struct v2f {
     lowp vec4 color;
     mediump vec2 texcoord;
 };
+#line 16
+uniform lowp vec4 _TintColor;
 uniform sampler2D _MainTex;
 mediump vec4 xlat_main( in v2f i );
 #line 18

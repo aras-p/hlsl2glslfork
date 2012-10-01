@@ -28,21 +28,36 @@ struct v2f {
     vec4 screenPos;
     vec4 grabPassPos;
 };
-uniform vec4 _BaseColor;
+uniform vec4 _ProjectionParams;
+uniform vec4 _ScreenParams;
+#line 3
+uniform vec4 _ZBufferParams;
+#line 12
+#line 18
+#line 44
+#line 61
+#line 83
 uniform sampler2D _BumpMap;
-uniform sampler2D _CameraDepthTexture;
-uniform vec4 _DistortParams;
-uniform vec4 _Foam;
-uniform float _FresnelScale;
-uniform vec4 _InvFadeParemeter;
-uniform vec4 _ReflectionColor;
 uniform sampler2D _ReflectionTex;
 uniform sampler2D _RefractionTex;
-uniform float _Shininess;
 uniform sampler2D _ShoreTex;
+#line 87
+uniform sampler2D _CameraDepthTexture;
+uniform vec4 _RefrColorDepth;
 uniform vec4 _SpecularColor;
+uniform vec4 _BaseColor;
+#line 91
+uniform vec4 _ReflectionColor;
+uniform vec4 _InvFadeParemeter;
+uniform float _Shininess;
 uniform vec4 _WorldLightDir;
-uniform vec4 _ZBufferParams;
+#line 95
+uniform vec4 _DistortParams;
+uniform float _FresnelScale;
+uniform vec4 _BumpTiling;
+uniform vec4 _BumpDirection;
+#line 99
+uniform vec4 _Foam;
 vec3 PerPixelNormal( in sampler2D bumpMap, in vec4 coords, in vec3 vertexNormal, in float bumpStrength );
 float LinearEyeDepth( in float z );
 float Fresnel( in vec3 viewVector, in vec3 worldNormal, in float bias, in float power );
@@ -59,7 +74,6 @@ vec3 PerPixelNormal( in sampler2D bumpMap, in vec4 coords, in vec3 vertexNormal,
 }
 #line 12
 float LinearEyeDepth( in float z ) {
-    #line 14
     return (1.0 / ((_ZBufferParams.z * z) + _ZBufferParams.w));
 }
 #line 55
@@ -82,61 +96,44 @@ vec4 ExtinctColor( in vec4 baseColor, in float extinctionAmount ) {
 }
 #line 101
 vec4 xlat_main( in v2f i ) {
-    vec3 worldNormal;
-    vec3 viewVector;
-    vec4 distortOffset;
-    vec4 screenWithOffset;
-    vec4 grabWithOffset;
-    vec4 rtRefractionsNoDistort;
-    float refrFix;
-    vec4 rtRefractions;
-    vec4 rtReflections;
-    vec3 reflectVector;
-    vec3 h;
-    float nh;
-    float spec;
-    vec4 edgeBlendFactors = vec4(1.0, 0.0, 0.0, 0.0);
-    float depth;
-    float refl2Refr;
-    vec4 baseColor;
-    vec4 reflectionColor;
-    vec4 foam;
-    worldNormal = PerPixelNormal( _BumpMap, i.bumpCoords, i.normalInterpolator.xyz, _DistortParams.x);
-    viewVector = normalize(i.viewInterpolator.xyz);
-    #line 105
-    distortOffset = vec4( ((worldNormal.xz * _DistortParams.y) * 10.0), 0.0, 0.0);
-    screenWithOffset = (i.screenPos + distortOffset);
-    grabWithOffset = (i.grabPassPos + distortOffset);
-    rtRefractionsNoDistort = texture2DProj( _RefractionTex, i.grabPassPos);
-    #line 109
-    refrFix = texture2DProj( _CameraDepthTexture, grabWithOffset).x;
-    rtRefractions = texture2DProj( _RefractionTex, grabWithOffset);
-    rtReflections = texture2DProj( _ReflectionTex, screenWithOffset);
+    #line 103
+    vec3 worldNormal = PerPixelNormal( _BumpMap, i.bumpCoords, i.normalInterpolator.xyz, _DistortParams.x);
+    vec3 viewVector = normalize(i.viewInterpolator.xyz);
+    vec4 distortOffset = vec4( ((worldNormal.xz * _DistortParams.y) * 10.0), 0.0, 0.0);
+    vec4 screenWithOffset = (i.screenPos + distortOffset);
+    #line 107
+    vec4 grabWithOffset = (i.grabPassPos + distortOffset);
+    vec4 rtRefractionsNoDistort = texture2DProj( _RefractionTex, i.grabPassPos);
+    float refrFix = texture2DProj( _CameraDepthTexture, grabWithOffset).x;
+    vec4 rtRefractions = texture2DProj( _RefractionTex, grabWithOffset);
+    #line 111
+    vec4 rtReflections = texture2DProj( _ReflectionTex, screenWithOffset);
     if ((LinearEyeDepth( refrFix) < i.screenPos.z)){
         rtRefractions = rtRefractionsNoDistort;
     }
-    #line 113
-    reflectVector = normalize(reflect( viewVector, worldNormal));
-    h = normalize((_WorldLightDir.xyz + viewVector.xyz));
-    nh = max( 0.0, dot( worldNormal, (-h)));
-    spec = max( 0.0, pow( nh, _Shininess));
-    #line 117
-    depth = texture2DProj( _CameraDepthTexture, i.screenPos).x;
+    vec3 reflectVector = normalize(reflect( viewVector, worldNormal));
+    vec3 h = normalize((_WorldLightDir.xyz + viewVector.xyz));
+    #line 115
+    float nh = max( 0.0, dot( worldNormal, (-h)));
+    float spec = max( 0.0, pow( nh, _Shininess));
+    vec4 edgeBlendFactors = vec4( 1.0, 0.0, 0.0, 0.0);
+    float depth = texture2DProj( _CameraDepthTexture, i.screenPos).x;
+    #line 119
     depth = LinearEyeDepth( depth);
     edgeBlendFactors = xll_saturate((_InvFadeParemeter * (depth - i.screenPos.w)));
-    #line 121
     edgeBlendFactors.y = (1.0 - edgeBlendFactors.y);
     worldNormal.xz *= _FresnelScale;
-    refl2Refr = Fresnel( viewVector, worldNormal, _DistortParams.w, _DistortParams.z);
-    baseColor = ExtinctColor( _BaseColor, (i.viewInterpolator.w * _InvFadeParemeter.w));
-    #line 125
-    reflectionColor = mix( rtReflections, _ReflectionColor, vec4( _ReflectionColor.w));
+    #line 123
+    float refl2Refr = Fresnel( viewVector, worldNormal, _DistortParams.w, _DistortParams.z);
+    vec4 baseColor = ExtinctColor( _BaseColor, (i.viewInterpolator.w * _InvFadeParemeter.w));
+    vec4 reflectionColor = mix( rtReflections, _ReflectionColor, vec4( _ReflectionColor.w));
     baseColor = mix( mix( rtRefractions, baseColor, vec4( baseColor.w)), reflectionColor, vec4( refl2Refr));
+    #line 127
     baseColor = (baseColor + (spec * _SpecularColor));
-    foam = Foam( _ShoreTex, (i.bumpCoords * 2.0));
-    #line 129
+    vec4 foam = Foam( _ShoreTex, (i.bumpCoords * 2.0));
     baseColor.xyz += ((foam.xyz * _Foam.x) * (edgeBlendFactors.y + xll_saturate((i.viewInterpolator.w - _Foam.y))));
     baseColor.w = edgeBlendFactors.x;
+    #line 131
     return baseColor;
 }
 varying vec4 xlv_TEXCOORD0;

@@ -47,16 +47,25 @@ struct v2f_surf {
     vec3 viewDir;
     vec2 _LightCoord;
 };
-uniform sampler2D _BumpSpecMap;
-uniform vec4 _Color;
-uniform float _Cutoff;
+#line 101
 uniform vec4 _LightColor0;
+#line 109
+uniform vec4 _SpecColor;
 uniform sampler2D _LightTexture0;
-uniform sampler2D _MainTex;
-uniform float _ShadowStrength;
+uniform mat4 _LightMatrix0;
+#line 1014
+uniform vec4 _Color;
 uniform vec3 _TranslucencyColor;
-uniform sampler2D _TranslucencyMap;
 uniform float _TranslucencyViewDependency;
+uniform float _ShadowStrength;
+#line 1030
+#line 10048
+uniform sampler2D _MainTex;
+uniform sampler2D _BumpSpecMap;
+uniform sampler2D _TranslucencyMap;
+#line 10057
+#line 10080
+uniform float _Cutoff;
 vec4 UnpackNormal( in vec4 packednormal );
 void surf( in Input IN, inout LeafSurfaceOutput o );
 vec4 LightingTreeLeaf( in LeafSurfaceOutput s, in vec3 lightDir, in vec3 viewDir, in float atten );

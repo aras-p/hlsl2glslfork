@@ -45,11 +45,107 @@ struct appdata_full {
     highp vec4 texcoord1;
     lowp vec4 color;
 };
-uniform lowp vec4 _Color;
-uniform lowp vec4 _LightColor0;
-uniform sampler2D _MainTex;
-uniform sampler2D _ShadowMapTexture;
+#line 59
+uniform highp mat4 glstate_matrix_mvp;
+uniform highp mat4 glstate_matrix_modelview0;
+uniform highp mat4 glstate_matrix_projection;
+uniform highp mat4 glstate_matrix_transpose_modelview0;
+#line 63
+uniform highp mat4 glstate_matrix_invtrans_modelview0;
+#line 67
+uniform highp mat4 glstate_matrix_texture0;
+uniform highp mat4 glstate_matrix_texture1;
+uniform highp mat4 glstate_matrix_texture2;
+uniform highp mat4 glstate_matrix_texture3;
+#line 71
+uniform highp vec4 glstate_lightmodel_ambient;
+#line 154
+uniform highp vec4 _Time;
+uniform highp vec4 _SinTime;
+uniform highp vec4 _CosTime;
+#line 162
+uniform highp vec4 _ProjectionParams;
+#line 168
+uniform highp vec4 _ScreenParams;
+uniform highp vec4 unity_Scale;
+#line 173
+uniform highp vec3 _WorldSpaceCameraPos;
 uniform lowp vec4 _WorldSpaceLightPos0;
+#line 180
+uniform highp mat4 _Object2World, _World2Object;
+uniform highp vec4 _LightPositionRange;
+#line 191
+uniform lowp vec4 unity_ColorSpaceGrey;
+#line 226
+#line 241
+#line 256
+#line 262
+#line 274
+uniform highp vec4 unity_4LightPosX0;
+uniform highp vec4 unity_4LightPosY0;
+uniform highp vec4 unity_4LightPosZ0;
+uniform highp vec4 unity_4LightAtten0;
+#line 279
+uniform highp vec4 unity_LightColor[4];
+uniform highp vec4 unity_LightPosition[4];
+uniform highp vec4 unity_LightAtten[4];
+#line 283
+uniform highp vec3 unity_LightColor0, unity_LightColor1, unity_LightColor2, unity_LightColor3;
+#line 290
+#line 322
+#line 340
+uniform highp vec4 unity_SHAr;
+uniform highp vec4 unity_SHAg;
+uniform highp vec4 unity_SHAb;
+uniform highp vec4 unity_SHBr;
+#line 344
+uniform highp vec4 unity_SHBg;
+uniform highp vec4 unity_SHBb;
+uniform highp vec4 unity_SHC;
+#line 349
+#line 384
+#line 395
+#line 405
+#line 413
+#line 437
+#line 443
+#line 453
+#line 462
+#line 469
+#line 478
+#line 486
+#line 495
+#line 514
+#line 520
+#line 528
+#line 540
+uniform highp vec4 _ZBufferParams;
+#line 570
+#line 581
+#line 594
+#line 598
+#line 607
+uniform highp vec4 unity_LightShadowBias;
+#line 727
+#line 746
+uniform lowp vec4 _LightColor0;
+uniform lowp vec4 _SpecColor;
+#line 760
+#line 768
+#line 781
+#line 796
+#line 806
+#line 838
+uniform highp vec4 _ShadowOffsets[4];
+#line 842
+uniform sampler2D _ShadowMapTexture;
+#line 15
+uniform sampler2D _MainTex;
+uniform lowp vec4 _Color;
+#line 22
+#line 48
+uniform highp vec4 _MainTex_ST;
+#line 80
 lowp float unitySampleShadow( in highp vec4 shadowCoord );
 void surf( in Input IN, inout SurfaceOutput o );
 lowp vec4 LightingLambert( in SurfaceOutput s, in lowp vec3 lightDir, in lowp float atten );
