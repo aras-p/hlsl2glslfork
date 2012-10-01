@@ -14,7 +14,6 @@ class GlslSymbol
 {
 public:
 	GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, TPrecision precision, EGlslQualifier q, int as = 0 );
-	virtual ~GlslSymbol();
 
 	bool getIsParameter() const { return isParameter; }
 	void setIsParameter( bool param ) { isParameter = param; }
@@ -59,9 +58,6 @@ public:
 	static void writeFloat(std::stringstream &out, float f);
    
 private:
-	/// Is the variable name a reserved GLSL keyword that could have passed through the lexer?
-	bool isReservedGlslKeyword ( const std::string &name ) const;
-
 	std::string name;
 	std::string mangledName;
 	std::string mutableMangledName;

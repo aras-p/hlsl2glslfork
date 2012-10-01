@@ -4,12 +4,19 @@
 
 
 #include "glslSymbol.h"
-
 #include <float.h>
 
-static void writeBool( std::stringstream &out, bool b )
+
+// Check against names that are keywords in GLSL, but not HLSL
+static bool IsReservedGlslKeyword (const std::string& name)
 {
-   out << ((b) ? "true" : "false");
+	if ((name == "input") ||
+        (name == "output"))
+	{
+		return true;
+	}
+	
+	return false;
 }
 
 
@@ -25,37 +32,22 @@ GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGls
    isParameter(false),
    refCount(0)
 {
-   if ( isReservedGlslKeyword ( n ) )
-   {
-      name = "xlat_var_" + n;
-   }
-   else
-   {
-      name = n;
-   }
-   mangledName = name;
+	if (IsReservedGlslKeyword(n))
+	{
+		name = "xlat_var_" + n;
+	}
+	else
+	{
+		name = n;
+	}
+	mangledName = name;
 
-   if ( qual == EqtMutableUniform)
-      mutableMangledName = "xlat_mutable_" + mangledName;
-   else
-      mutableMangledName = mangledName;   
+	if (qual == EqtMutableUniform)
+		mutableMangledName = "xlat_mutable_" + mangledName;
+	else
+		mutableMangledName = mangledName;   
 }
 
-GlslSymbol::~GlslSymbol() 
-{
-}  
-
-bool GlslSymbol::isReservedGlslKeyword ( const std::string &name ) const
-{
-   // Check against names that are keywords in GLSL, but not HLSL
-   if ( (name == "input") ||
-        (name == "output") )
-   {
-      return true;
-   }
-
-   return false;
-}
 
 
 void GlslSymbol::writeDecl (std::stringstream& out, unsigned flags)
