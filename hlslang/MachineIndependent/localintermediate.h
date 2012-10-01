@@ -55,7 +55,7 @@ public:
 	void remove(TIntermNode*);
 	void outputTree(TIntermNode*);
 
-protected:
+private:
 	TInfoSink& infoSink;
 
 private:

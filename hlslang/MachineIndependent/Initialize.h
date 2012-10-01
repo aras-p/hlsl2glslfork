@@ -21,8 +21,8 @@ public:
    {
       return builtInStrings;
    }
-protected:
-
+	
+private:
 
    TBuiltInStrings builtInStrings[EShLangCount];
 };

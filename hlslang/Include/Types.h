@@ -75,7 +75,8 @@ public:
 };
 
 typedef std::map<TTypeList*, TTypeList*> TStructureMap;
-typedef std::map<TTypeList*, TTypeList*>::iterator TStructureMapIterator;
+
+
 //
 // Base class for things that have a type.
 //
@@ -133,7 +134,7 @@ public:
       arraySize = copyOf.arraySize;
 	   line = copyOf.line;
 
-      TStructureMapIterator iter;
+      TStructureMap::iterator iter;
       if (copyOf.structure)
       {
          if ((iter = remapper.find(structure)) == remapper.end())
@@ -344,65 +345,42 @@ private:
    TString *semantic; //for semantics on structure fields
 };
 
-//
-// Class to hold Annotation
-//
+
 class TAnnotation
 {
 public:
-   POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
-   TAnnotation()
-   {
-   }
-   virtual ~TAnnotation()
-   {
-   }
+	POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
+	TAnnotation() { }
 
-   size_t getKeyCount() const
-   {
-      return keys.size();
-   }
-   const TString& getKey( int i) const
-   {
-      return keys[i];
-   }
-   void addKey( const TString& key)
-   {
-      keys.push_back(key);
-   }
+	size_t getKeyCount() const { return keys.size(); }
+	const TString& getKey(size_t i) const { return keys[i]; }
+	void addKey(const TString& key) { keys.push_back(key); }
 
-protected:
-
-   TVector<TString> keys;
+private:
+	TVector<TString> keys;
 };
 
-//
-// Class for extended type information
-//
+
+
 class TTypeInfo
 {
 public:
-   POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
-   TTypeInfo( const TString &s, TAnnotation *ann) : semantic(s), annotation(ann)
-   {
-   }
-   virtual ~TTypeInfo() { } //deallocation should be handled by the pool
+	POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
+	TTypeInfo( const TString &s, TAnnotation *ann) : semantic(s), annotation(ann)
+	{
+	}
+	~TTypeInfo() { } // deallocation should be handled by the pool
 
-   const TString& getSemantic() const { return semantic; }
-   const TAnnotation* getAnnotation() const
-   {
-      return annotation;
-   }
+	const TString& getSemantic() const { return semantic; }
+	const TAnnotation* getAnnotation() const { return annotation; }
 
-protected:
-   //forbid these
-   TTypeInfo() { }
-   TTypeInfo( const TTypeInfo &) { }
+private:
+	// forbid copying
+	TTypeInfo();
+	TTypeInfo(const TTypeInfo &);
 
-   TString semantic;
-   TAnnotation *annotation;
-
+	TString semantic;
+	TAnnotation *annotation;
 };
 
 #endif // _TYPES_INCLUDED_
-

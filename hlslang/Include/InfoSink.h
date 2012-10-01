@@ -136,7 +136,7 @@ public:
       append("\n");
    }
 
-protected:
+private:
    void append(const char *s); 
 
    void append(int count, char c);
