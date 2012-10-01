@@ -4,7 +4,6 @@
 
 
 #include "SymbolTable.h"
-#include <list>
 
 TString* TParameter::NullSemantic = 0;
 
@@ -287,7 +286,7 @@ TSymbol* TSymbolTableLevel::findCompatible( const TFunction *call, bool &ambiguo
 	ambiguous = false;
 	
 	const TString &name = call->getName();   
-	std::list<TFunction*> funcList;
+	std::vector<TFunction*> funcList;
 	
 	// 1. Add all functions with matching names to the set to consider
 	tLevel::const_iterator it = level.begin();
@@ -301,7 +300,7 @@ TSymbol* TSymbolTableLevel::findCompatible( const TFunction *call, bool &ambiguo
 	}
 	
 	// 2. Eliminate candidates with the wrong number of parameters
-	std::list<TFunction*>::iterator funcIter = funcList.begin();
+	std::vector<TFunction*>::iterator funcIter = funcList.begin();
 	while ( funcIter != funcList.end() )
 	{
 		const TFunction* curFunc = *(funcIter);
