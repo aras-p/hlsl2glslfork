@@ -281,40 +281,26 @@ TSymbolTableLevel* TSymbolTableLevel::clone(TStructureMap& remapper)
 
 // This function uses the matching rules as described in the Cg language doc (the closest
 // thing we have to HLSL function matching description) to find a matching compatible function.  
-TSymbol* TSymbolTableLevel::findCompatible( const TFunction *call, bool &ambiguous) const
+TSymbol* TSymbolTableLevel::findCompatible (const TFunction *call, bool &ambiguous) const
 {
 	ambiguous = false;
 	
 	const TString &name = call->getName();   
 	std::vector<TFunction*> funcList;
 	
-	// 1. Add all functions with matching names to the set to consider
+	// 1 and 2. Add all functions with matching names and argument count to the set to consider
 	tLevel::const_iterator it = level.begin();
-	while ( it != level.end() )
+	while (it != level.end())
 	{
-		if ( it->second->getName() == name && it->second->isFunction() )
+		if (it->second->getName() == name && it->second->isFunction())
 		{
-			funcList.push_back ( (TFunction*) it->second );
+			TFunction* func = (TFunction*)it->second;
+			if (call->getParamCount() == func->getParamCount())
+				funcList.push_back (func);
 		}
-		it++;
+		++it;
 	}
-	
-	// 2. Eliminate candidates with the wrong number of parameters
-	std::vector<TFunction*>::iterator funcIter = funcList.begin();
-	while ( funcIter != funcList.end() )
-	{
-		const TFunction* curFunc = *(funcIter);
 		
-		if ( call->getParamCount() != curFunc->getParamCount() )
-		{
-			funcIter = funcList.erase ( funcIter );         
-		}
-		else
-		{
-			funcIter++;
-		}
-	}
-	
 	// For each actual parameter expression, in the sequence:   
 	for ( int nParam = 0; nParam < call->getParamCount() ; nParam++ )
 	{
@@ -357,8 +343,8 @@ TSymbol* TSymbolTableLevel::findCompatible( const TFunction *call, bool &ambiguo
 			// Grab the compatibility type for the test
 			TType::ECompatibility eCompatibility = eCompatType[nIter];
 			
-			funcIter = funcList.begin();
-			while ( funcIter != funcList.end() )
+			std::vector<TFunction*>::iterator funcIter = funcList.begin();
+			while (funcIter != funcList.end())
 			{
 				const TFunction* curFunc = *(funcIter);
 				const TType* type1 = (*curFunc)[nParam].type;
