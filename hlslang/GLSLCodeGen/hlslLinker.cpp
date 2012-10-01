@@ -22,7 +22,7 @@ static const char* kTargetVersionStrings[ETargetVersionCount] = {
 
 
 // String table that maps attribute semantics to built-in GLSL attributes
-static const char attribString[EAttrSemCount][32] = {
+static const char* attribString[EAttrSemCount] = {
 	"",
 	"gl_Vertex",
 	"",
@@ -54,7 +54,7 @@ static const char attribString[EAttrSemCount][32] = {
 };
 
 // String table that maps attribute semantics to built-in GLSL output varyings
-static const char varOutString[EAttrSemCount][32] = {
+static const char* varOutString[EAttrSemCount] = {
 	"",
 	"gl_Position",
 	"",
@@ -86,7 +86,7 @@ static const char varOutString[EAttrSemCount][32] = {
 };
 
 // String table that maps attribute semantics to built-in GLSL input varyings
-static const char varInString[EAttrSemCount][32] = {
+static const char* varInString[EAttrSemCount] = {
 	"",
 	"",
 	"gl_FragCoord",
@@ -118,7 +118,7 @@ static const char varInString[EAttrSemCount][32] = {
 };
 
 // String table that maps attribute semantics to built-in GLSL fragment shader outputs
-static const char resultString[EAttrSemCount][32] = {
+static const char* resultString[EAttrSemCount] = {
 	"",
 	"",
 	"",
