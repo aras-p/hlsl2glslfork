@@ -55,167 +55,168 @@ TIntermSymbol* TIntermediate::addSymbol(int id, const TString& name, const TType
 //
 TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line)
 {
-   if ( !left || !right)
-      return 0;
-
-   switch (op)
-   {
-   case EOpLessThan:
-   case EOpGreaterThan:
-   case EOpLessThanEqual:
-   case EOpGreaterThanEqual:
-      if (left->getType().isMatrix() || left->getType().isArray() || left->getType().getBasicType() == EbtStruct)
-      {
-         return 0;
-      }
-      break;
-   case EOpLogicalOr:
-   case EOpLogicalXor:
-   case EOpLogicalAnd:
-      if (left->getType().isMatrix() || left->getType().isArray())
-         return 0;
-
-      if ( left->getBasicType() != EbtBool )
-      {
-         if ( left->getType().getBasicType() != EbtInt && left->getType().getBasicType() != EbtFloat )
-            return 0;
-         else
-         {
-            // If the left is a float or int, convert to a bool.  This is the conversion that HLSL
-            // does
-            left = addConversion( EOpConstructBool, 
-                                  TType ( EbtBool, left->getPrecision(), left->getQualifier(),
-                                          left->getNominalSize(), left->isMatrix(), left->isArray()), 
-                                  left );
-
-            if ( left == 0 )
-               return 0;
-         }
-
-      }
-
-      if (right->getType().isMatrix() || right->getType().isArray() || right->getType().isVector())
-         return 0;
-
-      if ( right->getBasicType() != EbtBool )
-      {
-         if ( right->getType().getBasicType() != EbtInt && right->getType().getBasicType() != EbtFloat )
-            return 0;
-         else
-         {
-            // If the right is a float or int, convert to a bool.  This is the conversion that HLSL
-            // does
-            right = addConversion( EOpConstructBool, 
-                                   TType ( EbtBool, right->getPrecision(), right->getQualifier(),
-                                           right->getNominalSize(), right->isMatrix(), right->isArray()), 
-                                   right );
-
-            if ( right == 0 )
-               return 0;
-         }
-
-      }
-      break;
-   case EOpAdd:
-   case EOpSub:
-   case EOpDiv:
-   case EOpMul:
-   case EOpMod:
-      if (left->getType().getBasicType() == EbtStruct)
-		  return 0;
-	  // If left or right type is a bool, convert to a float.
-	  if (left->getType().getBasicType() == EbtBool)
-	  {
-		  left = addConversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getNominalSize(), left->isMatrix(), left->isArray()), left);
-		  if (left == 0)
-			  return 0;
-	  }
-	  if (right->getType().getBasicType() == EbtBool)
-	  {
-		  right = addConversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getNominalSize(), right->isMatrix(), right->isArray()), right);
-		  if (right == 0)
-			  return 0;
-	  }
-   default: break; 
-   }
-
-   // 
-   // First try converting the children to compatible types.
-   //
-
-   if (!(left->getType().getStruct() && right->getType().getStruct()))
-   {
-      TIntermTyped* child = 0;
-      bool useLeft = true; //default to using the left child as the type to promote to
-
-      //need to always convert up
-      if ( left->getType().getBasicType() != EbtFloat)
-      {
-         if ( right->getType().getBasicType() == EbtFloat)
-         {
-            useLeft = false;
-         }
-         else
-         {
-            if ( left->getType().getBasicType() != EbtInt)
-            {
-               if ( right->getType().getBasicType() == EbtInt)
-                  useLeft = false;
-            }
-         }
-      }
-
-      if (useLeft)
-      {
-         child = addConversion(op, left->getType(), right);
-         if (child)
-            right = child;
-         else
-         {
-            child = addConversion(op, right->getType(), left);
-            if (child)
-               left = child;
-            else
-               return 0;
-         }
-      }
-      else
-      {
-         child = addConversion(op, right->getType(), left);
-         if (child)
-            left = child;
-         else
-         {
-            child = addConversion(op, left->getType(), right);
-            if (child)
-               right = child;
-            else
-               return 0;
-         }
-      }
-
-   }
-   else
-   {
-      if (left->getType() != right->getType())
-         return 0;
-   }
-
-
-   //
-   // Need a new node holding things together then.  Make
-   // one and promote it to the right type.
-   //
-   TIntermBinary* node = new TIntermBinary(op);
-   if (line.line == 0)
-      line = right->getLine();
-   node->setLine(line);
-
-   node->setLeft(left);
-   node->setRight(right);
-   if (! node->promote(infoSink))
-      return 0;
-
+	if (!left || !right)
+		return 0;
+	
+	switch (op)
+	{
+	case EOpLessThan:
+	case EOpGreaterThan:
+	case EOpLessThanEqual:
+	case EOpGreaterThanEqual:
+		if (left->getType().isMatrix() || left->getType().isArray() || left->getType().getBasicType() == EbtStruct)
+		{
+			return 0;
+		}
+		break;
+	case EOpLogicalOr:
+	case EOpLogicalXor:
+	case EOpLogicalAnd:
+		if (left->getType().isMatrix() || left->getType().isArray())
+			return 0;
+		
+		if ( left->getBasicType() != EbtBool )
+		{
+			if ( left->getType().getBasicType() != EbtInt && left->getType().getBasicType() != EbtFloat )
+				return 0;
+			else
+			{
+				// If the left is a float or int, convert to a bool.  This is the conversion that HLSL
+				// does
+				left = addConversion( EOpConstructBool, 
+									 TType ( EbtBool, left->getPrecision(), left->getQualifier(),
+											left->getNominalSize(), left->isMatrix(), left->isArray()), 
+									 left );
+				
+				if ( left == 0 )
+					return 0;
+			}
+			
+		}
+		
+		if (right->getType().isMatrix() || right->getType().isArray() || right->getType().isVector())
+			return 0;
+		
+		if ( right->getBasicType() != EbtBool )
+		{
+			if ( right->getType().getBasicType() != EbtInt && right->getType().getBasicType() != EbtFloat )
+				return 0;
+			else
+			{
+				// If the right is a float or int, convert to a bool.  This is the conversion that HLSL
+				// does
+				right = addConversion( EOpConstructBool, 
+									  TType ( EbtBool, right->getPrecision(), right->getQualifier(),
+											 right->getNominalSize(), right->isMatrix(), right->isArray()), 
+									  right );
+				
+				if ( right == 0 )
+					return 0;
+			}
+			
+		}
+		break;
+	case EOpAdd:
+	case EOpSub:
+	case EOpDiv:
+	case EOpMul:
+	case EOpMod:
+		if (left->getType().getBasicType() == EbtStruct)
+			return 0;
+		// If left or right type is a bool, convert to a float.
+		if (left->getType().getBasicType() == EbtBool)
+		{
+			left = addConversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getNominalSize(), left->isMatrix(), left->isArray()), left);
+			if (left == 0)
+				return 0;
+		}
+		if (right->getType().getBasicType() == EbtBool)
+		{
+			right = addConversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getNominalSize(), right->isMatrix(), right->isArray()), right);
+			if (right == 0)
+				return 0;
+		}
+	default:
+		break;
+	}
+	
+	// 
+	// First try converting the children to compatible types.
+	//
+	
+	if (!(left->getType().getStruct() && right->getType().getStruct()))
+	{
+		TIntermTyped* child = 0;
+		bool useLeft = true; //default to using the left child as the type to promote to
+		
+		//need to always convert up
+		if ( left->getType().getBasicType() != EbtFloat)
+		{
+			if ( right->getType().getBasicType() == EbtFloat)
+			{
+				useLeft = false;
+			}
+			else
+			{
+				if ( left->getType().getBasicType() != EbtInt)
+				{
+					if ( right->getType().getBasicType() == EbtInt)
+						useLeft = false;
+				}
+			}
+		}
+		
+		if (useLeft)
+		{
+			child = addConversion(op, left->getType(), right);
+			if (child)
+				right = child;
+			else
+			{
+				child = addConversion(op, right->getType(), left);
+				if (child)
+					left = child;
+				else
+					return 0;
+			}
+		}
+		else
+		{
+			child = addConversion(op, right->getType(), left);
+			if (child)
+				left = child;
+			else
+			{
+				child = addConversion(op, left->getType(), right);
+				if (child)
+					right = child;
+				else
+					return 0;
+			}
+		}
+		
+	}
+	else
+	{
+		if (left->getType() != right->getType())
+			return 0;
+	}
+	
+	
+	//
+	// Need a new node holding things together then.  Make
+	// one and promote it to the right type.
+	//
+	TIntermBinary* node = new TIntermBinary(op);
+	if (line.line == 0)
+		line = right->getLine();
+	node->setLine(line);
+	
+	node->setLeft(left);
+	node->setRight(right);
+	if (! node->promote(infoSink))
+		return 0;
+	
 	return node;
 }
 
