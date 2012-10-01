@@ -1,18 +1,31 @@
 #line 1 "intrinsics-in.txt" 
 half4 main (float4 uv:TEXCOORD0) : COLOR0 {
 	half4 c = 0;
+
 	// fmod() in HLSL different from mod() in GLSL
 	c.x += fmod(uv.x, 2.0);
 	c.xy += fmod(uv.xy, 2.0);
 	c.xyz += fmod(uv.xyz, 2.0);
 	c.xyzw += fmod(uv.xyzw, 2.0);
+
 	// modf() in HLSL different from frac() in GLSL
 	half4 d;
 	c.x += modf (uv.x, d.x);
 	c.xy += modf (uv.xy, d.xy);
 	c.xyz += modf (uv.xyz, d.xyz);
 	c.xyzw += modf (uv.xyzw, d.xyzw);
+
+	// operator %, floats
+	c.x += uv.x % d.x;
+	c.xy += uv.xy % d.xy;
+
+	// operator %, integers
+	int2 ii = int2(1,2);
+	int2 jj = int2(3,4);
+	c.x += ii.x % jj.x;
+	c.xy += ii.xy % jj.xy;
 	
+	// other intrinsics
 	c += lit(c.x, 0.2, 0.3);
 
 	c.x += round(2.5);
