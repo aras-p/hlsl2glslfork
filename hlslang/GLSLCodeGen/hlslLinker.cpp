@@ -781,7 +781,7 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, Extensi
 	const int elem = str->memberCount();
 	for (int jj=0; jj<elem; jj++)
 	{
-		const GlslStruct::member &current = str->getMember(jj);
+		const GlslStruct::StructMember &current = str->getMember(jj);
 		EAttribSemantic memberSem = parseAttributeSemantic (current.semantic);
 		
 		addRequiredExtensions(memberSem, extensions);
@@ -890,7 +890,7 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 	const int elem = Struct->memberCount();
 	for (int ii=0; ii<elem; ii++)
 	{
-		const GlslStruct::member &current = Struct->getMember(ii);
+		const GlslStruct::StructMember &current = Struct->getMember(ii);
 		std::string name, ctor;
 		int pad;
 		
@@ -996,7 +996,7 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 	const int elem = retStruct->memberCount();
 	for (int ii=0; ii<elem; ii++)
 	{
-		const GlslStruct::member &current = retStruct->getMember(ii);
+		const GlslStruct::StructMember &current = retStruct->getMember(ii);
 		std::string name, ctor;
 		int pad;
 		int arraySize = 1;

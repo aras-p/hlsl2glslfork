@@ -11,31 +11,30 @@
 class GlslStruct 
 {
 public:
-   // Struct member description, presently does not handle structs of structs
-   struct member    
-   {
-      std::string name;
-      std::string semantic;
-      EGlslSymbolType type;
-      GlslStruct*     structType; // NULL if type != EgstStruct
-      int arraySize;
-	  TPrecision precision;
-   };
+	// Struct member description, presently does not handle structs of structs
+	struct StructMember    
+	{
+		std::string name;
+		std::string semantic;
+		EGlslSymbolType type;
+		GlslStruct*     structType; // NULL if type != EgstStruct
+		int arraySize;
+		TPrecision precision;
+	};
 
-   GlslStruct (const std::string &n, const TSourceLoc& line) : name(n), m_Line(line) {}
-   virtual ~GlslStruct() {}
+	GlslStruct (const std::string &n, const TSourceLoc& line) : name(n), m_Line(line) {}
 
 	const std::string& getName() const { return name; }
 	const TSourceLoc& getLine() const { return m_Line; }
 
-   void addMember( const member& m ) { memberList.push_back(m); }
-   const member& getMember( int which ) const { return memberList[which]; }
-   int memberCount() const { return int(memberList.size()); }
+	void addMember(const StructMember& m) { memberList.push_back(m); }
+	const StructMember& getMember( int which ) const { return memberList[which]; }
+	int memberCount() const { return int(memberList.size()); }
 
-   std::string getDecl() const;
+	std::string getDecl() const;
 
 private:
-	std::vector<member> memberList;
+	std::vector<StructMember> memberList;
 	std::string name;
 	TSourceLoc m_Line;
 };

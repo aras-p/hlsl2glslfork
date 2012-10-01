@@ -76,7 +76,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 		// compound type
 		unsigned n_members = structure->memberCount();
 		for (unsigned i = 0; i != n_members; ++i) {
-			const GlslStruct::member &m = structure->getMember(i);
+			const GlslStruct::StructMember &m = structure->getMember(i);
 			if (construct && i > 0)
 				out << ", ";
 			writeConstantConstructor (out, m.type, m.precision, c);
@@ -1702,7 +1702,7 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
 
       for (TTypeList::iterator it = tList.begin(); it != tList.end(); it++)
       {
-         GlslStruct::member m;
+         GlslStruct::StructMember m;
          m.name = it->type->getFieldName().c_str();
 
          if (it->type->hasSemantic())

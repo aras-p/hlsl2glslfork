@@ -7,23 +7,23 @@
 
 std::string GlslStruct::getDecl() const
 {
-   std::stringstream out;
-
-   out << "struct " << name << " {\n";
-
-   for (std::vector<member>::const_iterator it = memberList.begin(); it != memberList.end(); it++) 
-   {
-      out << "    ";
-      writeType (out, it->type, it->structType, it->precision);
-      out << " " << it->name;
-
-      if (it->arraySize > 0)
-         out << "[" << it->arraySize << "]";
-
-      out << ";\n";
-   }
-
-   out << "};\n";
-
-   return out.str();
+	std::stringstream out;
+	
+	out << "struct " << name << " {\n";
+	
+	for (std::vector<StructMember>::const_iterator it = memberList.begin(); it != memberList.end(); ++it) 
+	{
+		out << "    ";
+		writeType (out, it->type, it->structType, it->precision);
+		out << " " << it->name;
+		
+		if (it->arraySize > 0)
+			out << "[" << it->arraySize << "]";
+		
+		out << ";\n";
+	}
+	
+	out << "};\n";
+	
+	return out.str();
 }
