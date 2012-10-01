@@ -1,23 +1,17 @@
 #version 120
 #if defined(HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND)
     float lut1[3];
-    lut1[0] = 0.1;
-    lut1[1] = 0.2;
-    lut1[2] = 0.3;
 #else
     const float[3] lut1 = float[3]( 0.1, 0.2, 0.3);
 #endif
 #if defined(HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND)
     vec2 lut2[2];
-    lut2[0] = vec2( 0.1, 0.2);
-    lut2[1] = vec2( 0.2, 0.3);
 #else
     const vec2[2] lut2 = vec2[2]( vec2( 0.1, 0.2), vec2( 0.2, 0.3));
 #endif
 #line 3
 #if defined(HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND)
     vec4 lut4[1];
-    lut4[0] = vec4( 0.1, 0.2, 0.3, 0.4);
 #else
     const vec4[1] lut4 = vec4[1]( vec4( 0.1, 0.2, 0.3, 0.4));
 #endif
@@ -39,6 +33,14 @@ vec4 xlat_main(  ) {
     return c;
 }
 void main() {
+#if defined(HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND)
+lut1[0] = 0.1;
+lut1[1] = 0.2;
+lut1[2] = 0.3;
+lut2[0] = vec2( 0.1, 0.2);
+lut2[1] = vec2( 0.2, 0.3);
+lut4[0] = vec4( 0.1, 0.2, 0.3, 0.4);
+#endif
     vec4 xl_retval;
     xl_retval = xlat_main( );
     gl_FragData[0] = vec4(xl_retval);

@@ -43,6 +43,6 @@ void HlslCrossCompiler::TransformAST (TIntermNode *root)
 void HlslCrossCompiler::ProduceGLSL (TIntermNode *root, ETargetVersion version, unsigned options)
 {
 	m_GlslProduced = true;
-	TGlslOutputTraverser glslTraverse (infoSink, functionList, structList, version, options);
+	TGlslOutputTraverser glslTraverse (infoSink, functionList, structList, m_DeferredArrayInit, version, options);
 	root->traverse(&glslTraverse);
 }

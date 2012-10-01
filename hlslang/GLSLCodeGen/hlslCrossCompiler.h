@@ -40,6 +40,7 @@ public:
 	TInfoSink infoSink;
 	std::vector<GlslFunction*> functionList;
 	std::vector<GlslStruct*> structList;
+	std::stringstream m_DeferredArrayInit;
 };
 
 #endif //HLSL_CROSS_COMPILER_H

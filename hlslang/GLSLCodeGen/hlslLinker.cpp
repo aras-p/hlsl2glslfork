@@ -914,9 +914,24 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 }
 
 
-void HlslLinker::emitReturnValueDecl(const EGlslSymbolType retType, GlslFunction* funcMain, bool usePrecision, std::stringstream& preamble)
+void HlslLinker::emitMainStart(const HlslCrossCompiler* compiler, const EGlslSymbolType retType, GlslFunction* funcMain, ETargetVersion version, unsigned options, bool usePrecision, std::stringstream& preamble)
 {
 	preamble << "void main() {\n";
+	
+	std::string arrayInit = compiler->m_DeferredArrayInit.str();
+	if (!arrayInit.empty())
+	{
+		const bool emit_120_arrays = (version >= ETargetGLSL_120);
+		const bool emit_old_arrays = !emit_120_arrays || (options & ETranslateOpEmitGLSL120ArrayInitWorkaround);
+		const bool emit_both = emit_120_arrays && emit_old_arrays;
+		
+		if (emit_both)
+			preamble << "#if defined(HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND)" << std::endl;
+		preamble << arrayInit;
+		if (emit_both)
+			preamble << "\n#endif" << std::endl;
+	}
+	
 	if (retType == EgstStruct)
 	{
 		GlslStruct* retStruct = funcMain->getStruct();
@@ -1028,7 +1043,7 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 }
 
 
-bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETargetVersion targetVersion)
+bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETargetVersion targetVersion, unsigned options)
 {
 	if (!linkerSanityCheck(compiler, entryFunc))
 		return false;
@@ -1079,7 +1094,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 
 	// Declare return value
 	const EGlslSymbolType retType = funcMain->getReturnType();
-	emitReturnValueDecl(retType, funcMain, usePrecision, preamble);
+	emitMainStart(compiler, retType, funcMain, targetVersion, options, usePrecision, preamble);
 	
 
 	// Call the entry point

@@ -323,7 +323,7 @@ int C_DECL Hlsl2Glsl_Translate(
 		return 0;
 	}
 
-   bool ret = compiler->GetLinker()->link(compiler, entry, targetVersion);
+   bool ret = compiler->GetLinker()->link(compiler, entry, targetVersion, options);
 
    return ret ? 1 : 0;
 }

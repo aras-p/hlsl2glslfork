@@ -34,7 +34,7 @@ private:
 	void traverseArrayDeclarationWithInit(TIntermDeclaration* decl);
 
 public:
-	TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, ETargetVersion version, unsigned options);
+	TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, std::stringstream& deferredArrayInit, ETargetVersion version, unsigned options);
 	GlslStruct *createStructFromType( TType *type );
 	bool parseInitializer( TIntermBinary *node );
 
@@ -61,6 +61,9 @@ public:
 
 	// Persistent data for collecting indices
 	std::vector<int> indexList;
+	
+	// Code to initialize global arrays when we can't use GLSL 1.20+ syntax
+	std::stringstream& m_DeferredArrayInit;
 
 	TSourceLoc m_LastLineOutput;
 	unsigned swizzleAssignTempCounter;

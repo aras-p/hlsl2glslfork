@@ -291,11 +291,12 @@ void TGlslOutputTraverser::outputLineDirective (const TSourceLoc& line)
 
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, ETargetVersion version, unsigned options)
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, std::stringstream& deferredArrayInit, ETargetVersion version, unsigned options)
 : infoSink(i)
 , generatingCode(true)
 , functionList(funcList)
 , structList(sList)
+, m_DeferredArrayInit(deferredArrayInit)
 , swizzleAssignTempCounter(0)
 , m_TargetVersion(version)
 , m_UsePrecision(Hlsl2Glsl_VersionUsesPrecision(version))
@@ -330,7 +331,7 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 {
 	assert(decl->containsArrayInitialization());
 	
-	std::stringstream& out = current->getActiveOutput();
+	std::stringstream* out = &current->getActiveOutput();
 	TType& type = *decl->getTypePointer();
 	EGlslSymbolType symbol_type = translateType(decl->getTypePointer());
 	
@@ -340,8 +341,8 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 	
 	if (emit_both)
 	{
-		current->indent(out);
-		out << "#if defined(HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND)" << std::endl;
+		current->indent(*out);
+		(*out) << "#if defined(HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND)" << std::endl;
 		current->increaseDepth();
 	}
 	
@@ -355,31 +356,46 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 		
 		current->beginStatement();
 		if (q != EvqTemporary && q != EvqGlobal)
-			out << type.getQualifierString() << " ";
+			(*out) << type.getQualifierString() << " ";
 		
 		TIntermBinary* assign = decl->getDeclaration()->getAsBinaryNode();
 		TIntermSymbol* sym = assign->getLeft()->getAsSymbolNode();
 		TIntermSequence& init = assign->getRight()->getAsAggregate()->getSequence();
 		
-		writeType(out, symbol_type, NULL, this->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
-		out << " " << sym->getSymbol() << "[" << type.getArraySize() << "]";
+		writeType(*out, symbol_type, NULL, this->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
+		(*out) << " " << sym->getSymbol() << "[" << type.getArraySize() << "]";
 		current->endStatement();
+
+		std::stringstream* oldOut = out;
+		if (sym->isGlobal())
+		{
+			current->pushDepth(0);
+			out = &m_DeferredArrayInit;
+			current->setActiveOutput(out);
+		}
 		
 		unsigned n_vals = init.size();
 		for (unsigned i = 0; i != n_vals; ++i) {
 			current->beginStatement();
 			sym->traverse(this);
-			out << "[" << i << "] = ";
+			(*out) << "[" << i << "] = ";
 			init[i]->traverse(this);
 			current->endStatement();
-		}		
+		}
+		
+		if (sym->isGlobal())
+		{
+			out = oldOut;
+			current->setActiveOutput(oldOut);
+			current->popDepth();
+		}
 	}
 	
 	if (emit_both)
 	{
 		current->decreaseDepth();
-		current->indent(out);
-		out << "#else" << std::endl;
+		current->indent(*out);
+		(*out) << "#else" << std::endl;
 		current->increaseDepth();
 	}
 	
@@ -388,17 +404,17 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 		current->beginStatement();
 		
 		if (type.getQualifier() != EvqTemporary && type.getQualifier() != EvqGlobal)
-			out << type.getQualifierString() << " ";
+			(*out) << type.getQualifierString() << " ";
 		
 		if (type.getBasicType() == EbtStruct)
-			out << type.getTypeName();
+			(*out) << type.getTypeName();
 		else
-			writeType(out, symbol_type, NULL, this->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
+			writeType(*out, symbol_type, NULL, this->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
 		
 		if (type.isArray())
-			out << "[" << type.getArraySize() << "]";
+			(*out) << "[" << type.getArraySize() << "]";
 		
-		out << " ";
+		(*out) << " ";
 		
 		decl->getDeclaration()->traverse(this);
 		
@@ -408,8 +424,8 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 	if (emit_both)
 	{
 		current->decreaseDepth();
-		current->indent(out);
-		out << "#endif" << std::endl;
+		current->indent(*out);
+		(*out) << "#endif" << std::endl;
 	}
 }
 
