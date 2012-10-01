@@ -83,22 +83,34 @@ mediump vec4 xlat_main( in highp vec4 uv ) {
     #line 2
     mediump vec4 c = vec4( 0.0);
     c.x += xll_mod( uv.x, 2.0);
-    c.xy += xll_mod( uv.xy, vec2( 2.0));
     #line 6
+    c.xy += xll_mod( uv.xy, vec2( 2.0));
     c.xyz += xll_mod( uv.xyz, vec3( 2.0));
     c.xyzw += xll_mod( uv.xyzw, vec4( 2.0));
+    #line 11
     mediump vec4 d;
-    #line 10
     c.x += xll_modf( uv.x, d.x);
     c.xy += xll_modf( uv.xy, d.xy);
     c.xyz += xll_modf( uv.xyz, d.xyz);
-    c.xyzw += xll_modf( uv.xyzw, d.xyzw);
     #line 15
+    c.xyzw += xll_modf( uv.xyzw, d.xyzw);
+    highp ivec2 ii = ivec2( 1, 2);
+    #line 19
+    highp ivec2 jj = ivec2( 3, 4);
+    c.x += mod(float(ii.x), float(jj.x));
+    c.xy += mod(vec2(ii.xy), vec2(jj.xy));
+    highp int kk = int(mod(float(ii.x), float(ii.y)));
+    #line 23
+    c.z += float(kk);
+    c.x += mod(uv.x, uv.y);
+    #line 27
+    c.xy += mod(uv.xy, uv.zw);
     c += xll_lit( c.x, 0.2, 0.3);
+    #line 32
     c.x += xll_round(2.5);
     c.xy += xll_round(vec2( 2.5, 3.5));
-    #line 20
     c.x += xll_trunc(2.5);
+    #line 36
     c.xy += xll_trunc(vec2( 2.5, 3.5));
     return c;
 }

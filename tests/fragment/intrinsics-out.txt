@@ -97,14 +97,20 @@ vec4 xlat_main( in vec4 uv ) {
     ivec2 ii = ivec2( 1, 2);
     #line 19
     ivec2 jj = ivec2( 3, 4);
-    c.x += mod(ii.x, jj.x);
-    c.xy += mod(ii.xy, jj.xy);
-    #line 24
+    c.x += mod(float(ii.x), float(jj.x));
+    c.xy += mod(vec2(ii.xy), vec2(jj.xy));
+    int kk = int(mod(float(ii.x), float(ii.y)));
+    #line 23
+    c.z += float(kk);
+    c.x += mod(uv.x, uv.y);
+    #line 27
+    c.xy += mod(uv.xy, uv.zw);
     c += xll_lit( c.x, 0.2, 0.3);
+    #line 32
     c.x += xll_round(2.5);
     c.xy += xll_round(vec2( 2.5, 3.5));
-    #line 29
     c.x += xll_trunc(2.5);
+    #line 36
     c.xy += xll_trunc(vec2( 2.5, 3.5));
     return c;
 }

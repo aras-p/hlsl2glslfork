@@ -121,21 +121,36 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
 	case EOpDiv:
 	case EOpMul:
 	case EOpMod:
-		if (left->getType().getBasicType() == EbtStruct)
-			return 0;
-		// If left or right type is a bool, convert to a float.
-		if (left->getType().getBasicType() == EbtBool)
 		{
-			left = addConversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getNominalSize(), left->isMatrix(), left->isArray()), left);
-			if (left == 0)
+			TBasicType ltype = left->getType().getBasicType();
+			TBasicType rtype = right->getType().getBasicType();
+			if (ltype == EbtStruct)
 				return 0;
+			
+			// If left or right type is a bool, convert to float.
+			bool leftToFloat = (ltype == EbtBool);
+			bool rightToFloat = (rtype == EbtBool);
+			// For modulus, if either is an integer, convert to float as well.
+			if (op == EOpMod)
+			{
+				leftToFloat |= (ltype == EbtInt);
+				rightToFloat |= (rtype == EbtInt);
+			}
+				
+			if (leftToFloat)
+			{
+				left = addConversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getNominalSize(), left->isMatrix(), left->isArray()), left);
+				if (left == 0)
+					return 0;
+			}
+			if (rightToFloat)
+			{
+				right = addConversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getNominalSize(), right->isMatrix(), right->isArray()), right);
+				if (right == 0)
+					return 0;
+			}
 		}
-		if (right->getType().getBasicType() == EbtBool)
-		{
-			right = addConversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getNominalSize(), right->isMatrix(), right->isArray()), right);
-			if (right == 0)
-				return 0;
-		}
+		break;
 	default:
 		break;
 	}
@@ -1069,8 +1084,6 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          //
          // Check for integer only operands.
          //
-      case EOpMod:
-          setType(TType(EbtFloat, EbpUndefined));
       case EOpRightShift:
       case EOpLeftShift:
       case EOpAnd:

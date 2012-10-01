@@ -20,6 +20,12 @@ half4 main (float4 uv:TEXCOORD0) : COLOR0 {
 	int2 jj = int2(3,4);
 	c.x += ii.x % jj.x;
 	c.xy += ii.xy % jj.xy;
+	int kk = ii.x % ii.y;
+	c.z += kk;
+
+	// operator % on floats
+	c.x += uv.x % uv.y;
+	c.xy += uv.xy % uv.zw;	
 	
 	// other intrinsics
 	c += lit(c.x, 0.2, 0.3);
