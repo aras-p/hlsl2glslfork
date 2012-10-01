@@ -118,7 +118,6 @@ typedef struct
 	EShType type;
 	int arraySize;
 	float *init;
-	void *annt;
 } ShUniformInfo;
 
 
