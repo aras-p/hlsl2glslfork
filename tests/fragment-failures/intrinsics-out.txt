@@ -1,0 +1,3 @@
+6: ERROR: '%' :  wrong operand types  no operation '%' exists that takes a left-hand operand of type 'float' and a right operand of type 'float' (or there is no acceptable conversion)
+ERROR: 1 compilation errors.  No code generated.
+

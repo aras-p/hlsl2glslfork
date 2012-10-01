@@ -83,21 +83,27 @@ vec4 xlat_main( in vec4 uv ) {
     #line 2
     vec4 c = vec4( 0.0);
     c.x += xll_mod( uv.x, 2.0);
-    c.xy += xll_mod( uv.xy, vec2( 2.0));
     #line 6
+    c.xy += xll_mod( uv.xy, vec2( 2.0));
     c.xyz += xll_mod( uv.xyz, vec3( 2.0));
     c.xyzw += xll_mod( uv.xyzw, vec4( 2.0));
+    #line 11
     vec4 d;
-    #line 10
     c.x += xll_modf( uv.x, d.x);
     c.xy += xll_modf( uv.xy, d.xy);
     c.xyz += xll_modf( uv.xyz, d.xyz);
-    c.xyzw += xll_modf( uv.xyzw, d.xyzw);
     #line 15
+    c.xyzw += xll_modf( uv.xyzw, d.xyzw);
+    ivec2 ii = ivec2( 1, 2);
+    #line 19
+    ivec2 jj = ivec2( 3, 4);
+    c.x += mod(ii.x, jj.x);
+    c.xy += mod(ii.xy, jj.xy);
+    #line 24
     c += xll_lit( c.x, 0.2, 0.3);
     c.x += xll_round(2.5);
     c.xy += xll_round(vec2( 2.5, 3.5));
-    #line 20
+    #line 29
     c.x += xll_trunc(2.5);
     c.xy += xll_trunc(vec2( 2.5, 3.5));
     return c;

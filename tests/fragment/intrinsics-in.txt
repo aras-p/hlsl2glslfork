@@ -15,11 +15,7 @@ half4 main (float4 uv:TEXCOORD0) : COLOR0 {
 	c.xyz += modf (uv.xyz, d.xyz);
 	c.xyzw += modf (uv.xyzw, d.xyzw);
 
-	// operator %, floats
-	c.x += uv.x % d.x;
-	c.xy += uv.xy % d.xy;
-
-	// operator %, integers
+	// operator % on integers
 	int2 ii = int2(1,2);
 	int2 jj = int2(3,4);
 	c.x += ii.x % jj.x;
