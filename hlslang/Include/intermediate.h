@@ -3,14 +3,12 @@
 // found in the LICENSE.txt file.
 
 
-//
 // Definition of the in-memory high-level intermediate representation
 // of shaders.  This is a tree that parser creates.
 //
 // Nodes in the tree are defined as a hierarchy of classes derived from 
 // TIntermNode. Each is a node in a tree.  There is no preset branching factor;
 // each node can have it's own type of list of children.
-//
 
 #ifndef __INTERMEDIATE_H
 #define __INTERMEDIATE_H
@@ -137,12 +135,11 @@ enum TOperator
 
 	EOpLit,
 
-	EOpDPdx,            // Fragment only
-	EOpDPdy,            // Fragment only
-	EOpFwidth,          // Fragment only
-	EOpFclip,		   // Framgent only
+	EOpDPdx,
+	EOpDPdy,
+	EOpFwidth,
+	EOpFclip,
 
-	//Added for HLSL support
 	EOpTex1D,
 	EOpTex1DProj,
 	EOpTex1DLod,
@@ -181,19 +178,13 @@ enum TOperator
 	EOpAny,
 	EOpAll,
 
-	//
-	// Branch
-	//
-
-	EOpKill,            // Fragment only
+	// Branches
+	EOpKill,
 	EOpReturn,
 	EOpBreak,
 	EOpContinue,
 
-	//
 	// Constructors
-	//
-
 	EOpConstructInt,
 	EOpConstructBool,
 	EOpConstructFloat,
@@ -212,17 +203,14 @@ enum TOperator
 	EOpConstructStruct,
 	EOpConstructArray,
 
-	//HLSL matrix/matrix constructors
+	// HLSL matrix/matrix constructors
 	EOpConstructMat2FromMat,
 	EOpConstructMat3FromMat,
 
 	EOpMatrixIndex,
 	EOpMatrixIndexDynamic,
 
-	//
-	// moves
-	//
-
+	// Assignments
 	EOpAssign,
 	EOpAddAssign,
 	EOpSubAssign,
@@ -239,20 +227,13 @@ enum TOperator
 	EOpLeftShiftAssign,
 	EOpRightShiftAssign,
 
-	//
 	// Array operators
-	//
-
 	EOpArrayLength,
 
-	//
 	// Special HLSL functions
-	//
 	EOpD3DCOLORtoUBYTE4,
 
-	//
 	// Ternary selection on vector
-	//
 	EOpVecTernarySel,
 };
 
