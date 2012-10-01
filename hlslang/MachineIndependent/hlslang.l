@@ -177,16 +177,6 @@ static TSourceLoc lexlineno = { 0, 0 };
 "double"       {  PaReservedWord(); return 0; }
 "unsigned"     {  PaReservedWord(); return 0; }
 
-"hvec2"        {  PaReservedWord(); return 0; }
-"hvec3"        {  PaReservedWord(); return 0; }
-"hvec4"        {  PaReservedWord(); return 0; }
-"fvec2"        {  PaReservedWord(); return 0; }
-"fvec3"        {  PaReservedWord(); return 0; }
-"fvec4"        {  PaReservedWord(); return 0; }
-"dvec2"        {  PaReservedWord(); return 0; }
-"dvec3"        {  PaReservedWord(); return 0; }
-"dvec4"        {  PaReservedWord(); return 0; }
-
 "sampler3DRect"        {  PaReservedWord(); return 0; }
 
 "sizeof"       {  PaReservedWord(); return 0; }
