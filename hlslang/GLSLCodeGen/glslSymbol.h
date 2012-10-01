@@ -71,7 +71,7 @@ private:
 	EGlslQualifier qual;
 	TPrecision precision;
 	int arraySize;
-	int mangle;
+	int mangleCounter;
 	GlslStruct *structPtr;
 	bool isParameter;
 	int refCount;

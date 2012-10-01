@@ -28,7 +28,7 @@ public:
 	bool hasSymbol( int id );
 	GlslSymbol& getSymbol( int id );
 
-	std::string getPrototype();
+	std::string getPrototype() const;
 
 	/// Returns the active scope
 	std::string getCode() const { return active->str(); }
@@ -70,7 +70,10 @@ public:
 	void setActiveOutput(std::stringstream* output) { active = output; }
 	std::stringstream& getActiveOutput () { return *active; }
 	const TSourceLoc& getLine() const { return line; }
-   
+
+private:
+	void mangleSymbolName (GlslSymbol *sym);
+	
 private:
 
 	// Function info

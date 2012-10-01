@@ -59,65 +59,56 @@ GlslSymbol& GlslFunction::getSymbol( int id )
 	return *symbolIdMap[id];
 }
 
-void GlslFunction::addSymbol( GlslSymbol *sym )
+
+void GlslFunction::mangleSymbolName (GlslSymbol *sym)
 {
-   // Add a reference count to the symbol
-   sym->addRef();
-
-   // mangle the name to avoid conflicts
-   while ( symbolNameMap.find(sym->getName()) != symbolNameMap.end())
-   {
-      sym->mangleName();
-   }
-
-   symbols.push_back( sym);
-   symbolNameMap[sym->getName()] = sym;
-   symbolIdMap[sym->getId()] = sym;
+	while (!symbolNameMap.empty() && symbolNameMap.find(sym->getName()) != symbolNameMap.end())
+	{
+		sym->mangleName();
+	}
+	symbolNameMap[sym->getName()] = sym;
 }
 
 
-void GlslFunction::addParameter( GlslSymbol *sym )
+void GlslFunction::addSymbol (GlslSymbol *sym)
 {
-   // Add a reference count to the symbol
-   sym->addRef();
+	sym->addRef();
 
-   sym->setIsParameter(true);
+	mangleSymbolName(sym);
 
-   //mangle the name to avoid conflicts
-   while ( symbolNameMap.size() > 0 && symbolNameMap.find(sym->getName()) != symbolNameMap.end() )
-   {
-      sym->mangleName();
-   }
-
-   symbols.push_back( sym);
-   symbolNameMap[sym->getName()] = sym;
-   symbolIdMap[sym->getId()] = sym;
-   parameters.push_back( sym);
+	symbols.push_back( sym);
+	symbolIdMap[sym->getId()] = sym;
 }
 
 
-std::string GlslFunction::getPrototype()
+void GlslFunction::addParameter (GlslSymbol *sym)
+{
+	sym->addRef();
+
+	sym->setIsParameter(true);
+
+	mangleSymbolName(sym);
+
+	symbols.push_back( sym);
+	symbolIdMap[sym->getId()] = sym;
+	parameters.push_back( sym);
+}
+
+
+std::string GlslFunction::getPrototype() const
 {
 	std::stringstream out;
 
 	writeType (out, returnType, structPtr, precision);
 	out << " " << name << "( ";
-
-	std::vector<GlslSymbol*>::iterator it = parameters.begin();
-
-	if (it != parameters.end())
+	
+	for (std::vector<GlslSymbol*>::const_iterator it = parameters.begin(), itEnd = parameters.end(); it != itEnd; ++it)
 	{
+		if (it != parameters.begin())
+			out << ", ";
 		(*it)->writeDecl(out,0);
-		it++;
 	}
-
-	while ( it != parameters.end())
-	{
-		out << ", ";
-		(*it)->writeDecl(out,0);
-		it++;
-	}
-
+	
 	out << " )";
 
 	return out.str();

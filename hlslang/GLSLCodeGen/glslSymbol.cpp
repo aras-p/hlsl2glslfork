@@ -20,7 +20,7 @@ GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGls
    precision(prec),
    qual(q),
    arraySize(as),
-   mangle(0),
+   mangleCounter(0),
    structPtr(0),
    isParameter(false),
    refCount(0)
@@ -112,14 +112,14 @@ void GlslSymbol::writeFloat(std::stringstream &out, float f)
 	out << buffer;
 }
 
-void GlslSymbol::mangleName() 
+void GlslSymbol::mangleName()
 {
-   std::stringstream s;
-   mangle++;
-   s << "_" << mangle;
-   mangledName = name + s.str();
-   if ( qual == EqtMutableUniform) 
-      mutableMangledName = "xlat_mutable_" + mangledName;
-   else
-      mutableMangledName = mangledName;
+	std::stringstream s;
+	mangleCounter++;
+	s << "_" << mangleCounter;
+	mangledName = name + s.str();
+	if ( qual == EqtMutableUniform) 
+		mutableMangledName = "xlat_mutable_" + mangledName;
+	else
+		mutableMangledName = mangledName;
 }
