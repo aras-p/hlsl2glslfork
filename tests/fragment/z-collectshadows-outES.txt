@@ -84,3 +84,15 @@ void main() {
     xl_retval = xlat_main( xlt_i);
     gl_FragData[0] = vec4(xl_retval);
 }
+
+// uniforms:
+// _CameraDepthTexture:<none> type 19 arrsize 0
+// _ZBufferParams:<none> type 12 arrsize 0
+// _View2Shadow:<none> type 15 arrsize 0
+// _View2Shadow1:<none> type 15 arrsize 0
+// _View2Shadow2:<none> type 15 arrsize 0
+// _View2Shadow3:<none> type 15 arrsize 0
+// _LightSplitsNear:<none> type 12 arrsize 0
+// _LightSplitsFar:<none> type 12 arrsize 0
+// _ShadowMapTexture:<none> type 19 arrsize 0
+// _LightShadowData:<none> type 12 arrsize 0

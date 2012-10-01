@@ -15,3 +15,6 @@ void main() {
     xl_retval = xlat_main( vec4(xlv_TEXCOORD0));
     gl_FragData[0] = vec4(xl_retval);
 }
+
+// uniforms:
+// tex:<none> type 19 arrsize 0

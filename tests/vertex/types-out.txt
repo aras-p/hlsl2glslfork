@@ -66,3 +66,12 @@ void main() {
     xlv_TEXCOORD0 = vec2( xl_retval.uv);
     xlv_COLOR = vec4( xl_retval.color);
 }
+
+// uniforms:
+// mvp:<none> type 15 arrsize 0
+// hmat4:<none> type 15 arrsize 0
+// hmat3:<none> type 14 arrsize 0
+// hmat2:<none> type 13 arrsize 0
+// fmat4:<none> type 15 arrsize 0
+// fmat3:<none> type 14 arrsize 0
+// fmat2:<none> type 13 arrsize 0

@@ -47,3 +47,8 @@ void main() {
     xlv_TEXCOORD0 = vec4( xl_retval.uv);
     xlv_TEXCOORD1 = vec3( xl_retval.ray);
 }
+
+// uniforms:
+// glstate_matrix_mvp:<none> type 15 arrsize 0
+// glstate_matrix_modelview0:<none> type 15 arrsize 0
+// _ProjectionParams:<none> type 12 arrsize 0

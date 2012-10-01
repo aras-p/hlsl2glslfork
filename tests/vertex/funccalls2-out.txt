@@ -54,3 +54,8 @@ void main() {
     gl_Position = vec4( xl_retval.pos);
     xlv_COLOR = vec4( xl_retval.color);
 }
+
+// uniforms:
+// mvp:<none> type 15 arrsize 0
+// _LightColor:<none> type 12 arrsize 0
+// _LightPos:<none> type 11 arrsize 0

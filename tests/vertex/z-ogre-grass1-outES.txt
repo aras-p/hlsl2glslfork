@@ -30,3 +30,10 @@ void main() {
     xlv_TEXCOORD0 = vec2(xlt_oUv);
     xlv_COLOR = vec4(xlt_oColour);
 }
+
+// uniforms:
+// worldViewProj:<none> type 15 arrsize 0
+// ambient:<none> type 12 arrsize 0
+// objSpaceLight:<none> type 12 arrsize 0
+// lightColour:<none> type 12 arrsize 0
+// offset:<none> type 12 arrsize 0

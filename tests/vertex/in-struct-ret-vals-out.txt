@@ -37,3 +37,6 @@ void main() {
     xlv_TEXCOORD0 = vec2(xlt_ouv);
     xlv_COLOR = vec4(xlt_ocolor);
 }
+
+// uniforms:
+// mvp:<none> type 15 arrsize 0

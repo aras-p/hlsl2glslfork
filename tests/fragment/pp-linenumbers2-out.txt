@@ -150,3 +150,15 @@ void main() {
     xl_retval = xlat_main( xlt_IN);
     gl_FragData[0] = vec4(xl_retval);
 }
+
+// uniforms:
+// _Cutoff:<none> type 9 arrsize 0
+// _LightTexture0:<none> type 19 arrsize 0
+// _TranslucencyViewDependency:<none> type 9 arrsize 0
+// _TranslucencyColor:<none> type 11 arrsize 0
+// _LightColor0:<none> type 12 arrsize 0
+// _ShadowStrength:<none> type 9 arrsize 0
+// _MainTex:<none> type 19 arrsize 0
+// _Color:<none> type 12 arrsize 0
+// _TranslucencyMap:<none> type 19 arrsize 0
+// _BumpSpecMap:<none> type 19 arrsize 0

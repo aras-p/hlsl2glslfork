@@ -14,3 +14,6 @@ void main() {
     gl_Position = vec4(xlt_overtex);
     xlv_TEXCOORD0 = vec3(xlt_onormal);
 }
+
+// uniforms:
+// matrix_mvp:<none> type 15 arrsize 0

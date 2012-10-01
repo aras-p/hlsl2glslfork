@@ -97,3 +97,6 @@ void main() {
     xl_retval = xlat_main( vec4(xlv_COLOR), vec2(xlv_TEXCOORD0));
     gl_FragData[0] = vec4(xl_retval);
 }
+
+// uniforms:
+// _FlareTexture:<none> type 19 arrsize 0

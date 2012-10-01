@@ -49,3 +49,11 @@ void main() {
     xlv_TEXCOORD5 = vec4(xlt_oLightPosition2);
     xlv_TEXCOORD6 = vec3(xlt_oNormal);
 }
+
+// uniforms:
+// lightPosition:<none> type 12 arrsize 0
+// eyePosition:<none> type 11 arrsize 0
+// worldViewProjMatrix:<none> type 15 arrsize 0
+// texWorldViewProjMatrix0:<none> type 15 arrsize 0
+// texWorldViewProjMatrix1:<none> type 15 arrsize 0
+// texWorldViewProjMatrix2:<none> type 15 arrsize 0

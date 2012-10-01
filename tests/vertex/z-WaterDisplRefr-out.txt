@@ -179,3 +179,22 @@ void main() {
     xlv_TEXCOORD3 = vec4( xl_retval.screenPos);
     xlv_TEXCOORD4 = vec4( xl_retval.grabPassPos);
 }
+
+// uniforms:
+// _Object2World:<none> type 15 arrsize 0
+// unity_Scale:<none> type 12 arrsize 0
+// _GAmplitude:<none> type 12 arrsize 0
+// _GFrequency:<none> type 12 arrsize 0
+// _GSteepness:<none> type 12 arrsize 0
+// _GSpeed:<none> type 12 arrsize 0
+// _GDirectionAB:<none> type 12 arrsize 0
+// _GDirectionCD:<none> type 12 arrsize 0
+// _Time:<none> type 12 arrsize 0
+// _BumpDirection:<none> type 12 arrsize 0
+// _BumpTiling:<none> type 12 arrsize 0
+// _WorldSpaceCameraPos:<none> type 11 arrsize 0
+// glstate_matrix_mvp:<none> type 15 arrsize 0
+// _ProjectionParams:<none> type 12 arrsize 0
+// _Time:<none> type 12 arrsize 0
+// _GerstnerIntensity:<none> type 9 arrsize 0
+// _Time:<none> type 12 arrsize 0

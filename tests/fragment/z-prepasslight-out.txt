@@ -157,3 +157,21 @@ void main() {
     xl_retval = xlat_main( xlt_i);
     gl_FragData[0] = vec4(xl_retval);
 }
+
+// uniforms:
+// _ProjectionParams:<none> type 12 arrsize 0
+// _CameraNormalsTexture:<none> type 19 arrsize 0
+// _CameraDepthTexture:<none> type 19 arrsize 0
+// _CameraToWorld:<none> type 15 arrsize 0
+// _LightPos:<none> type 12 arrsize 0
+// _LightTextureB0:<none> type 19 arrsize 0
+// _LightTexture0:<none> type 22 arrsize 0
+// _LightMatrix0:<none> type 15 arrsize 0
+// _WorldSpaceCameraPos:<none> type 11 arrsize 0
+// _LightColor:<none> type 12 arrsize 0
+// unity_LightmapFade:<none> type 12 arrsize 0
+// _LightShadowData:<none> type 12 arrsize 0
+// _LightPositionRange:<none> type 12 arrsize 0
+// _LightShadowData:<none> type 12 arrsize 0
+// _ShadowMapTexture:<none> type 22 arrsize 0
+// _ZBufferParams:<none> type 12 arrsize 0

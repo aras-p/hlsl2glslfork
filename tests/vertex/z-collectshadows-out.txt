@@ -37,3 +37,6 @@ void main() {
     xlv_TEXCOORD0 = vec2( xl_retval.uv);
     xlv_TEXCOORD1 = vec3( xl_retval.ray);
 }
+
+// uniforms:
+// glstate_matrix_mvp:<none> type 15 arrsize 0

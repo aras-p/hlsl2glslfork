@@ -39,3 +39,6 @@ void main() {
     gl_Position = vec4( xl_retval.pos);
     xlv_COLOR = vec4( xl_retval.color);
 }
+
+// uniforms:
+// mvp:<none> type 15 arrsize 0

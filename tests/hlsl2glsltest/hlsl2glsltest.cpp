@@ -56,6 +56,8 @@ static void logf(const char* format, ...)
 }
 
 #define printf logf
+#define snprintf _snprintf
+
 
 #else
 #include <OpenGL/OpenGL.h>
@@ -333,6 +335,27 @@ static const ETargetVersion kTargets2[NUM_RUN_TYPES] = {
 };
 
 
+static std::string GetCompiledShaderText(ShHandle parser)
+{
+	std::string txt = Hlsl2Glsl_GetShader (parser);
+	
+	int count = Hlsl2Glsl_GetUniformCount (parser);
+	if (count > 0)
+	{
+		const ShUniformInfo* uni = Hlsl2Glsl_GetUniformInfo(parser);
+		txt += "\n// uniforms:\n";
+		for (int i = 0; i < count; ++i)
+		{
+			char buf[1000];
+			snprintf(buf,1000,"// %s:%s type %d arrsize %d\n", uni[i].name, uni[i].semantic?uni[i].semantic:"<none>", uni[i].type, uni[i].arraySize);
+			txt += buf;
+		}
+	}
+	
+	return txt;
+}
+
+
 static bool TestFile (TestRun type,
 					  const std::string& inputPath,
 					  const std::string& outputPath,
@@ -383,7 +406,7 @@ static bool TestFile (TestRun type,
 		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 		if (translateOk)
 		{
-			std::string text = Hlsl2Glsl_GetShader (parser);
+			std::string text = GetCompiledShaderText(parser);
 			
 			for (size_t i = 0, n = text.size(); i != n; ++i)
 			{

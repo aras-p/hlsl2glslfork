@@ -47,3 +47,12 @@ void main() {
     xlv_TEXCOORD1 = vec3(xlt_oUv);
     xlv_COLOR = vec4(xlt_oColour);
 }
+
+// uniforms:
+// world:<none> type 15 arrsize 0
+// worldViewProj:<none> type 15 arrsize 0
+// texViewProj:<none> type 15 arrsize 0
+// camObjPos:<none> type 12 arrsize 0
+// objSpaceLight:<none> type 12 arrsize 0
+// lightColour:<none> type 12 arrsize 0
+// offset:<none> type 12 arrsize 0

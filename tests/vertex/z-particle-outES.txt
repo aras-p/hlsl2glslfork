@@ -38,3 +38,7 @@ void main() {
     xlv_COLOR = vec4( xl_retval.color);
     xlv_TEXCOORD0 = vec2( xl_retval.texcoord);
 }
+
+// uniforms:
+// glstate_matrix_mvp:<none> type 15 arrsize 0
+// _MainTex_ST:<none> type 12 arrsize 0

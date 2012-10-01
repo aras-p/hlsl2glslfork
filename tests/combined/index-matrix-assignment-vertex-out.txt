@@ -94,3 +94,9 @@ void main() {
     gl_Position = vec4( xl_retval.position);
     xlv_TEXCOORD0 = vec2( xl_retval.uv);
 }
+
+// uniforms:
+// world:<none> type 15 arrsize 0
+// stupid:<none> type 15 arrsize 10
+// view:<none> type 15 arrsize 0
+// proj:<none> type 15 arrsize 0

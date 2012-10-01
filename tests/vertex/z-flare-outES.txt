@@ -114,3 +114,7 @@ void main() {
     xlv_COLOR = vec4(xlt_ocolor);
     xlv_TEXCOORD0 = vec2(xlt_otexcoord);
 }
+
+// uniforms:
+// glstate_matrix_mvp:<none> type 15 arrsize 0
+// _FlareTexture_ST:<none> type 12 arrsize 0
