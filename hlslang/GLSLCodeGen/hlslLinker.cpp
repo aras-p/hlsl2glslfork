@@ -285,7 +285,7 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 			if ( (bUserVaryings && sem != EAttrSemVPos && sem != EAttrSemVFace && sem != EAttrSemPrimitiveID) || varInString[sem][0] == 0 )
 			{
 				outName = kUserVaryingPrefix;
-				outName += stripSemanticModifier ( semantic, false );
+				outName += stripSemanticModifier (semantic, false);
 				// If an array element, add the semantic offset to the name
 				if ( semanticOffset != 0 )
 				{
@@ -363,19 +363,17 @@ bool HlslLinker::setUserAttribName ( EAttribSemantic eSemantic, const char *pNam
 
 
 
-// Strip the semantic string of any modifiers (e.g. _centroid)
-std::string HlslLinker::stripSemanticModifier( const std::string &semantic, bool bWarn ) 
+// Strip the semantic string of any modifiers
+std::string HlslLinker::stripSemanticModifier(const std::string &semantic, bool warn)
 {
 	std::string newSemantic = semantic;
 
-	size_t nCentroidLoc = semantic.find ( "_centroid" );
-	if ( nCentroidLoc != std::string::npos )
+	size_t centroidLoc = semantic.find ("_centroid");
+	if (centroidLoc != std::string::npos)
 	{
-		if ( bWarn )
-		{
+		if (warn)
 			infoSink.info << "Warning: '" << semantic << "' contains centroid modifier.  Modifier ignored because GLSL v1.10 does not support centroid\n";       
-		}
-		newSemantic = semantic.substr ( 0, nCentroidLoc );
+		newSemantic = semantic.substr (0, centroidLoc);
 	}
 
 	return newSemantic;
@@ -425,7 +423,7 @@ static AttrSemanticMapping kAttributeSemantic[] = {
 };
 
 // Determine the GLSL attribute semantic for a given HLSL semantic
-EAttribSemantic HlslLinker::parseAttributeSemantic( const std::string &semantic )
+EAttribSemantic HlslLinker::parseAttributeSemantic (const std::string &semantic)
 {
 	std::string curSemantic = stripSemanticModifier (semantic, true);
 	for (size_t i = 0; i < sizeof(kAttributeSemantic)/sizeof(kAttributeSemantic[0]); ++i)

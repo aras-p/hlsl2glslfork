@@ -31,27 +31,6 @@ enum EClassifier
 
 class HlslLinker
 {
-private:
-	// GLSL string for additional extension prepropressor directives.
-	// This is used for version and extensions that expose built-in variables.
-	std::stringstream shaderPrefix;
-
-	// GLSL string for generated shader
-	std::stringstream shader;
-   
-   // Uniform list
-   std::vector<ShUniformInfo> uniforms;
-
-   // Helper string to store shader text
-   mutable std::string bs;
-
-   // Table holding the list of user attribute names per semantic
-   char userAttribString[EAttrSemCount][MAX_ATTRIB_NAME];
-
-   // For varyings, determines whether the linker attempts to use user or built-in varyings
-   bool bUserVaryings;
-
-
 public:
 
    HlslLinker(TInfoSink& infoSink);
@@ -61,37 +40,29 @@ public:
 
    bool link(HlslCrossCompiler*, const char* entry, ETargetVersion version, unsigned options);
 
-   std::string stripSemanticModifier(const std::string &semantic, bool bWarn);
+   bool setUserAttribName (EAttribSemantic eSemantic, const char *pName);
 
-   EAttribSemantic parseAttributeSemantic(const std::string &semantic);
-
-   bool setUserAttribName ( EAttribSemantic eSemantic, const char *pName );
-
-   void setUseUserVaryings ( bool bUseUserVaryings ) { bUserVaryings = bUseUserVaryings; }
+   void setUseUserVaryings (bool v) { bUserVaryings = v; }
 
    const char* getShaderText() const;
       
    int getUniformCount() const { return (int)uniforms.size(); }
-
-   const ShUniformInfo* getUniformInfo() const  { return ( ( uniforms.size() ) ? &uniforms[0] : 0 ); }
+   const ShUniformInfo* getUniformInfo() const  { return (!uniforms.empty()) ? &uniforms[0] : 0; }
    
-   TInfoSink& infoSink;
-
-protected:
+private:
 	typedef std::vector<GlslFunction*> FunctionSet;
-
-   bool addCalledFunctions( GlslFunction *func, FunctionSet& funcSet, std::vector<GlslFunction*> &funcList);
-
-   bool getArgumentData2( const std::string &name, const std::string &semantic, EGlslSymbolType type,
-                               EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset);
-
-   bool getArgumentData( GlslSymbol* sym, EClassifier c, std::string &outName,
-                  std::string &ctor, int &pad);
-	
 	typedef std::set<const char*> ExtensionSet;
+
+	std::string stripSemanticModifier(const std::string &semantic, bool warn);
+	EAttribSemantic parseAttributeSemantic(const std::string &semantic);
+	
+	bool addCalledFunctions( GlslFunction *func, FunctionSet& funcSet, std::vector<GlslFunction*> &funcList);
+	bool getArgumentData2( const std::string &name, const std::string &semantic, EGlslSymbolType type,
+							   EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset);
+	bool getArgumentData( GlslSymbol* sym, EClassifier c, std::string &outName,
+				  std::string &ctor, int &pad);
 	void addRequiredExtensions(EAttribSemantic sem, ExtensionSet& extensions);
 	
-private:
 	bool linkerSanityCheck(HlslCrossCompiler* compiler, const char* entryFunc);
 	bool buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, GlslFunction*& globalFunction, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain);
 	void buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions);
@@ -107,6 +78,28 @@ private:
 	void emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& varying, std::stringstream& preamble, std::stringstream& postamble, std::stringstream& call);
 	void emitMainStart(const HlslCrossCompiler* compiler, const EGlslSymbolType retType, GlslFunction* funcMain, ETargetVersion version, unsigned options, bool usePrecision, std::stringstream& preamble);
 	bool emitReturnValue(const EGlslSymbolType retType, GlslFunction* funcMain, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble);
+	
+private:
+	TInfoSink& infoSink;
+	
+	// GLSL string for additional extension prepropressor directives.
+	// This is used for version and extensions that expose built-in variables.
+	std::stringstream shaderPrefix;
+	
+	// GLSL string for generated shader
+	std::stringstream shader;
+	
+	// Uniform list
+	std::vector<ShUniformInfo> uniforms;
+	
+	// Helper string to store shader text
+	mutable std::string bs;
+	
+	// Table holding the list of user attribute names per semantic
+	char userAttribString[EAttrSemCount][MAX_ATTRIB_NAME];
+	
+	// For varyings, determines whether the linker attempts to use user or built-in varyings
+	bool bUserVaryings;
 };
 
 #endif //HLSL_LINKER_H
