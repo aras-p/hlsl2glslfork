@@ -114,16 +114,16 @@ protected:
 //
 struct TParameter 
 {
-   TString *name;
-   const TTypeInfo *info;
-   TType* type;
-   void copyParam(const TParameter& param, TStructureMap& remapper) 
-   {
-      name = NewPoolTString(param.name->c_str());      
-      info = param.info; //sharing
+	TString *name;
+	const TTypeInfo *info;
+	TType* type;
+	void copyParam(const TParameter& param, TStructureMap& remapper) 
+	{
+		name = NewPoolTString(param.name->c_str());      
+		info = param.info; //sharing
 		type = param.type->clone(remapper);
-   }
-   static TString* NullSemantic;
+	}
+	static TString* NullSemantic;
 };
 
 //
@@ -132,89 +132,90 @@ struct TParameter
 class TFunction : public TSymbol 
 {
 public:
-   TFunction(TOperator o) :
-        TSymbol(0),
-        returnType(TType(EbtVoid, EbpUndefined)),
-        op(o),
-        defined(false) { }
-   TFunction(const TString *name, TType& retType, TOperator tOp = EOpNull) : 
-        TSymbol(name), 
-        returnType(retType),
-        mangledName(*name + '('),
-        op(tOp),
-        defined(false) { }
-   TFunction(const TString *name, const TTypeInfo* info, TType& retType, TOperator tOp = EOpNull) : 
-        TSymbol(name, info), 
-        returnType(retType),
-        mangledName(*name + '('),
-        op(tOp),
-        defined(false) { }
-   virtual ~TFunction();
-   virtual bool isFunction() const { return true; }    
+	TFunction(TOperator o) :
+	TSymbol(0),
+	returnType(TType(EbtVoid, EbpUndefined)),
+	op(o),
+	defined(false) { }
+	TFunction(const TString *name, TType& retType, TOperator tOp = EOpNull) : 
+	TSymbol(name), 
+	returnType(retType),
+	mangledName(*name + '('),
+	op(tOp),
+	defined(false) { }
+	TFunction(const TString *name, const TTypeInfo* info, TType& retType, TOperator tOp = EOpNull) : 
+	TSymbol(name, info), 
+	returnType(retType),
+	mangledName(*name + '('),
+	op(tOp),
+	defined(false) { }
+	virtual ~TFunction();
+	virtual bool isFunction() const { return true; }    
     
-   void addParameter(TParameter& p) 
-   { 
-      parameters.push_back(p);
-      mangledName += p.type->getMangledName();
-   }
+	void addParameter(TParameter& p) 
+	{ 
+		parameters.push_back(p);
+		mangledName += p.type->getMangledName();
+	}
     
-   const TString& getMangledName() const { return mangledName; }
-   const TType& getReturnType() const { return returnType; }
-   void relateToOperator(TOperator o) { op = o; }
-   TOperator getBuiltInOp() const { return op; }
-   void setDefined() { defined = true; }
-   bool isDefined() const { return defined; }
-
-   int getParamCount() const { return static_cast<int>(parameters.size()); }    
-   TParameter& operator [](int i)       { return parameters[i]; }
-   const TParameter& operator [](int i) const { return parameters[i]; }
+	const TString& getMangledName() const { return mangledName; }
+	const TType& getReturnType() const { return returnType; }
+	void relateToOperator(TOperator o) { op = o; }
+	TOperator getBuiltInOp() const { return op; }
+	void setDefined() { defined = true; }
+	bool isDefined() const { return defined; }
+	
+	int getParamCount() const { return static_cast<int>(parameters.size()); }    
+	TParameter& operator [](int i)       { return parameters[i]; }
+	const TParameter& operator [](int i) const { return parameters[i]; }
     
-   virtual void dump(TInfoSink &infoSink) const;
-   TFunction(const TFunction&, TStructureMap& remapper);
-   virtual TFunction* clone(TStructureMap& remapper);
+	virtual void dump(TInfoSink &infoSink) const;
+	TFunction(const TFunction&, TStructureMap& remapper);
+	virtual TFunction* clone(TStructureMap& remapper);
     
 protected:
-   typedef TVector<TParameter> TParamList;
-   TParamList parameters;
-   TType returnType;
-   TString mangledName;
-   TOperator op;
-   bool defined;
+	typedef TVector<TParameter> TParamList;
+	TParamList parameters;
+	TType returnType;
+	TString mangledName;
+	TOperator op;
+	bool defined;
 };
 
 
 class TSymbolTableLevel 
 {
 public:
-   POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
-   TSymbolTableLevel() { }
-   ~TSymbolTableLevel();
+	POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
+	TSymbolTableLevel() { }
+	~TSymbolTableLevel();
     
 	bool insert(TSymbol& symbol);
-
-   TSymbol* find(const TString& name) const
-   {
-      tLevel::const_iterator it = level.find(name);
-      if (it == level.end())
-         return 0;
-      else
-         return (*it).second;
-   }
-
-   // vector might be best switched to a special allocator
-   TSymbol* findCompatible( const TFunction *call, bool &ambiguous) const;
-
-   void relateToOperator(const char* name, TOperator op);
-   void dump(TInfoSink &infoSink) const;
-   TSymbolTableLevel* clone(TStructureMap& remapper);
+	
+	TSymbol* find(const TString& name) const
+	{
+		tLevel::const_iterator it = level.find(name);
+		if (it == level.end())
+			return 0;
+		else
+			return (*it).second;
+	}
+	
+	// vector might be best switched to a special allocator
+	TSymbol* findCompatible( const TFunction *call, bool &ambiguous) const;
+	
+	void relateToOperator(const char* name, TOperator op);
+	void dump(TInfoSink &infoSink) const;
+	TSymbolTableLevel* clone(TStructureMap& remapper);
     
 protected:
-   typedef std::map<TString, TSymbol*, std::less<TString>, pool_allocator<std::pair<const TString, TSymbol*> > > tLevel;
-   typedef const tLevel::value_type tLevelPair;
-   typedef std::pair<tLevel::iterator, bool> tInsertResult;
-
-   tLevel level;
+	typedef std::map<TString, TSymbol*, std::less<TString>, pool_allocator<std::pair<const TString, TSymbol*> > > tLevel;
+	typedef const tLevel::value_type tLevelPair;
+	typedef std::pair<tLevel::iterator, bool> tInsertResult;
+	
+	tLevel level;
 };
+
 
 class TSymbolTable {
 public:

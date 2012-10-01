@@ -123,98 +123,98 @@ namespace {
 //
 bool TParseContext::parseVectorFields(const TString& compString, int vecSize, TVectorFields& fields, const TSourceLoc& line)
 {
-   fields.num = (int) compString.size();
-   if (fields.num > 4)
-   {
-      error(line, "illegal vector field selection", compString.c_str(), "");
-      return false;
-   }
-
-   enum
-   {
-      exyzw,
-      ergba,
-      estpq,
-   } fieldSet[4];
-
-   for (int i = 0; i < fields.num; ++i)
-   {
-      switch (compString[i])
-      {
-      case 'x': 
-         fields.offsets[i] = 0;
-         fieldSet[i] = exyzw;
-         break;
-      case 'r': 
-         fields.offsets[i] = 0;
-         fieldSet[i] = ergba;
-         break;
-      case 's':
-         fields.offsets[i] = 0;
-         fieldSet[i] = estpq;
-         break;
-      case 'y': 
-         fields.offsets[i] = 1;
-         fieldSet[i] = exyzw;
-         break;
-      case 'g': 
-         fields.offsets[i] = 1;
-         fieldSet[i] = ergba;
-         break;
-      case 't':
-         fields.offsets[i] = 1;
-         fieldSet[i] = estpq;
-         break;
-      case 'z': 
-         fields.offsets[i] = 2;
-         fieldSet[i] = exyzw;
-         break;
-      case 'b': 
-         fields.offsets[i] = 2;
-         fieldSet[i] = ergba;
-         break;
-      case 'p':
-         fields.offsets[i] = 2;
-         fieldSet[i] = estpq;
-         break;
-
-      case 'w': 
-         fields.offsets[i] = 3;
-         fieldSet[i] = exyzw;
-         break;
-      case 'a': 
-         fields.offsets[i] = 3;
-         fieldSet[i] = ergba;
-         break;
-      case 'q':
-         fields.offsets[i] = 3;
-         fieldSet[i] = estpq;
-         break;
-      default:
-         error(line, "illegal vector field selection", compString.c_str(), "");
-         return false;
-      }
-   }
-
-   for (int i = 0; i < fields.num; ++i)
-   {
-      if (fields.offsets[i] >= vecSize)
-      {
-         error(line, "vector field selection out of range",  compString.c_str(), "");
-         return false;
-      }
-
-      if (i > 0)
-      {
-         if (fieldSet[i] != fieldSet[i-1])
-         {
-            error(line, "illegal - vector component fields not from the same set", compString.c_str(), "");
-            return false;
-         }
-      }
-   }
-
-   return true;
+	fields.num = (int) compString.size();
+	if (fields.num > 4)
+	{
+		error(line, "illegal vector field selection", compString.c_str(), "");
+		return false;
+	}
+	
+	enum
+	{
+		exyzw,
+		ergba,
+		estpq,
+	} fieldSet[4];
+	
+	for (int i = 0; i < fields.num; ++i)
+	{
+		switch (compString[i])
+		{
+		case 'x': 
+			fields.offsets[i] = 0;
+			fieldSet[i] = exyzw;
+			break;
+		case 'r': 
+			fields.offsets[i] = 0;
+			fieldSet[i] = ergba;
+			break;
+		case 's':
+			fields.offsets[i] = 0;
+			fieldSet[i] = estpq;
+			break;
+		case 'y': 
+			fields.offsets[i] = 1;
+			fieldSet[i] = exyzw;
+			break;
+		case 'g': 
+			fields.offsets[i] = 1;
+			fieldSet[i] = ergba;
+			break;
+		case 't':
+			fields.offsets[i] = 1;
+			fieldSet[i] = estpq;
+			break;
+		case 'z': 
+			fields.offsets[i] = 2;
+			fieldSet[i] = exyzw;
+			break;
+		case 'b': 
+			fields.offsets[i] = 2;
+			fieldSet[i] = ergba;
+			break;
+		case 'p':
+			fields.offsets[i] = 2;
+			fieldSet[i] = estpq;
+			break;
+			
+		case 'w': 
+			fields.offsets[i] = 3;
+			fieldSet[i] = exyzw;
+			break;
+		case 'a': 
+			fields.offsets[i] = 3;
+			fieldSet[i] = ergba;
+			break;
+		case 'q':
+			fields.offsets[i] = 3;
+			fieldSet[i] = estpq;
+			break;
+		default:
+			error(line, "illegal vector field selection", compString.c_str(), "");
+			return false;
+		}
+	}
+	
+	for (int i = 0; i < fields.num; ++i)
+	{
+		if (fields.offsets[i] >= vecSize)
+		{
+			error(line, "vector field selection out of range",  compString.c_str(), "");
+			return false;
+		}
+		
+		if (i > 0)
+		{
+			if (fieldSet[i] != fieldSet[i-1])
+			{
+				error(line, "illegal - vector component fields not from the same set", compString.c_str(), "");
+				return false;
+			}
+		}
+	}
+	
+	return true;
 }
 
 
@@ -224,81 +224,81 @@ bool TParseContext::parseVectorFields(const TString& compString, int vecSize, TV
 //
 bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TVectorFields& fields, const TSourceLoc& line)
 {
-   fields.num = 1;
-   fields.offsets[0] = 0;
-
-   if (compString.size() < 3  || compString[0] != '_')
-   {
-      error(line, "illegal matrix field selection", compString.c_str(), "");
-      return false;
-   }
-
-   if (compString[1] == 'm')
-   {
-      //The selection is 0 based with the syntax _m## 
-      if ( (compString.size() % 4) != 0 || compString.size() > 16)
-      {
-         error(line, "illegal matrix field selection", compString.c_str(), "");
-         return false;
-      }
-      for (int ii = 0; ii < (int)compString.size(); ii+=4)
-      {
-         if (compString[ii] != '_' || compString[ii + 1] != 'm')
-         {
-            error(line, "illegal matrix field selection", compString.c_str(), "");
-            return false;
-         }
-         if (compString[ii + 2] < '0' || compString[ii + 2] > '3' ||
-             compString[ii + 3] < '0' || compString[ii + 3] > '3')
-         {
-            error(line, "illegal matrix field selection", compString.c_str(), "");
-            return false;
-         }
-         int row = compString[ii + 2] - '0';
-         int collumn = compString[ii + 3] - '0';
-         if ( row >= matSize || collumn >= matSize)
-         {
-            error(line, "matrix field selection out of range", compString.c_str(), "");
-            return false;
-         }
-         fields.offsets[ii/4] =  row * 4 + collumn;
-      }
-      fields.num = static_cast<int>(compString.size())/4;
-   }
-   else
-   {
-      //The selection is 1 based with the syntax _##
-      if ( (compString.size() % 3) != 0 || compString.size() > 12)
-      {
-         error(line, "illegal matrix field selection", compString.c_str(), "");
-         return false;
-      }
-      for (int ii = 0; ii < (int)compString.size(); ii += 3)
-      {
-         if (compString[ii] != '_')
-         {
-            error(line, "illegal matrix field selection", compString.c_str(), "");
-            return false;
-         }
-         if (compString[ii + 1] < '1' || compString[ii + 1] > '4' ||
-             compString[ii + 2] < '1' || compString[ii + 2] > '4')
-         {
-            error(line, "illegal matrix field selection", compString.c_str(), "");
-            return false;
-         }
-         int row = compString[ii + 1] - '1';
-         int collumn = compString[ii + 2] - '1';
-         if ( row >= matSize || collumn >= matSize)
-         {
-            error(line, "matrix field selection out of range", compString.c_str(), "");
-            return false;
-         }
-         fields.offsets[ii/3] =  row * 4 + collumn;
-      }
-      fields.num = static_cast<int>(compString.size())/3;
-   }
-
-   return true;
+	fields.num = 1;
+	fields.offsets[0] = 0;
+	
+	if (compString.size() < 3  || compString[0] != '_')
+	{
+		error(line, "illegal matrix field selection", compString.c_str(), "");
+		return false;
+	}
+	
+	if (compString[1] == 'm')
+	{
+		//The selection is 0 based with the syntax _m## 
+		if ( (compString.size() % 4) != 0 || compString.size() > 16)
+		{
+			error(line, "illegal matrix field selection", compString.c_str(), "");
+			return false;
+		}
+		for (int ii = 0; ii < (int)compString.size(); ii+=4)
+		{
+			if (compString[ii] != '_' || compString[ii + 1] != 'm')
+			{
+				error(line, "illegal matrix field selection", compString.c_str(), "");
+				return false;
+			}
+			if (compString[ii + 2] < '0' || compString[ii + 2] > '3' ||
+				compString[ii + 3] < '0' || compString[ii + 3] > '3')
+			{
+				error(line, "illegal matrix field selection", compString.c_str(), "");
+				return false;
+			}
+			int row = compString[ii + 2] - '0';
+			int collumn = compString[ii + 3] - '0';
+			if ( row >= matSize || collumn >= matSize)
+			{
+				error(line, "matrix field selection out of range", compString.c_str(), "");
+				return false;
+			}
+			fields.offsets[ii/4] =  row * 4 + collumn;
+		}
+		fields.num = static_cast<int>(compString.size())/4;
+	}
+	else
+	{
+		//The selection is 1 based with the syntax _##
+		if ( (compString.size() % 3) != 0 || compString.size() > 12)
+		{
+			error(line, "illegal matrix field selection", compString.c_str(), "");
+			return false;
+		}
+		for (int ii = 0; ii < (int)compString.size(); ii += 3)
+		{
+			if (compString[ii] != '_')
+			{
+				error(line, "illegal matrix field selection", compString.c_str(), "");
+				return false;
+			}
+			if (compString[ii + 1] < '1' || compString[ii + 1] > '4' ||
+				compString[ii + 2] < '1' || compString[ii + 2] > '4')
+			{
+				error(line, "illegal matrix field selection", compString.c_str(), "");
+				return false;
+			}
+			int row = compString[ii + 1] - '1';
+			int collumn = compString[ii + 2] - '1';
+			if ( row >= matSize || collumn >= matSize)
+			{
+				error(line, "matrix field selection out of range", compString.c_str(), "");
+				return false;
+			}
+			fields.offsets[ii/3] =  row * 4 + collumn;
+		}
+		fields.num = static_cast<int>(compString.size())/3;
+	}
+	
+	return true;
 }
 
 // ------------------------------------------------------------------
@@ -373,140 +373,140 @@ void TParseContext::binaryOpError(const TSourceLoc& line, char* op, TString left
 //
 bool TParseContext::lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTyped* node)
 {
-   TIntermSymbol* symNode = node->getAsSymbolNode();
-   TIntermBinary* binaryNode = node->getAsBinaryNode();
-
-   if (binaryNode)
-   {
-      bool errorReturn;
-
-      switch (binaryNode->getOp())
-      {
-      case EOpIndexDirect:
-      case EOpIndexIndirect:
-      case EOpIndexDirectStruct:
-         return lValueErrorCheck(line, op, binaryNode->getLeft());
-      case EOpVectorSwizzle:
-         errorReturn = lValueErrorCheck(line, op, binaryNode->getLeft());
-         if (!errorReturn)
-         {
-            int offset[4] = {0,0,0,0};
-
-            TIntermTyped* rightNode = binaryNode->getRight();
-            TIntermAggregate *aggrNode = rightNode->getAsAggregate();
-
-            for (TIntermSequence::iterator p = aggrNode->getSequence().begin(); 
-                p != aggrNode->getSequence().end(); p++)
-            {
-               int value = (*p)->getAsTyped()->getAsConstant()->toInt();
-               offset[value]++;     
-               if (offset[value] > 1)
-               {
-                  error(line, " l-value of swizzle cannot have duplicate components", op, "", "");
-
-                  return true;
-               }
-            }
-         }
-      case EOpMatrixSwizzle:
-         errorReturn = lValueErrorCheck(line, op, binaryNode->getLeft());
-         if (!errorReturn)
-         {
-            int offset[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
-            TIntermTyped* rightNode = binaryNode->getRight();
-            TIntermAggregate *aggrNode = rightNode->getAsAggregate();
-
-            for (TIntermSequence::iterator p = aggrNode->getSequence().begin(); 
-                p != aggrNode->getSequence().end(); p++)
-            {
-               int value = (*p)->getAsTyped()->getAsConstant()->toInt();
-               offset[value]++;     
-               if (offset[value] > 1)
-               {
-                  error(line, " l-value of swizzle cannot have duplicate components", op, "", "");
-
-                  return true;
-               }
-            }
-         }
-
-         return errorReturn;
-      default: 
-         break;
-      }
-      error(line, " l-value required", op, "", "");
-
-      return true;
-   }
-
-
-   const char* symbol = 0;
-   if (symNode != 0)
-      symbol = symNode->getSymbol().c_str();
-
-   const char* message = 0;
-   switch (node->getQualifier())
-   {
-   case EvqConst:          message = "can't modify a const";        break;
-   case EvqConstReadOnly:  message = "can't modify a const";        break;
-   case EvqAttribute:      message = "can't modify an attribute";   break;
-   case EvqUniform:
-      // mark this uniform as mutable
-      node->getTypePointer()->changeQualifier( EvqMutableUniform);
-      break;
-   case EvqVaryingIn:      message = "can't modify a varying";      break;
-   case EvqFace:           message = "can't modify gl_FrontFacing";   break;
-   case EvqFragCoord:      message = "can't modify gl_FragCoord";   break;
-   default:
-
-      //
-      // Type that can't be written to?
-      //
-      switch (node->getBasicType())
-      {
-      case EbtSamplerGeneric:
-      case EbtSampler1D:
-      case EbtSampler2D:
-      case EbtSampler3D:
-      case EbtSamplerCube:
-      case EbtSampler1DShadow:
-      case EbtSampler2DShadow:
-      case EbtSamplerRect:       // ARB_texture_rectangle
-      case EbtSamplerRectShadow: // ARB_texture_rectangle
-         message = "can't modify a sampler";
-         break;
-      case EbtVoid:
-         message = "can't modify void";
-         break;
-      default: 
-         break;
-      }
-   }
-
-   if (message == 0 && binaryNode == 0 && symNode == 0)
-   {
-      error(line, " l-value required", op, "", "");
-
-      return true;
-   }
-
-
-   //
-   // Everything else is okay, no error.
-   //
-   if (message == 0)
-      return false;
-
-   //
-   // If we get here, we have an error and a message.
-   //
-   if (symNode)
-      error(line, " l-value required", op, "\"%s\" (%s)", symbol, message);
-   else
-      error(line, " l-value required", op, "(%s)", message);
-
-   return true;
+	TIntermSymbol* symNode = node->getAsSymbolNode();
+	TIntermBinary* binaryNode = node->getAsBinaryNode();
+	
+	if (binaryNode)
+	{
+		bool errorReturn;
+		
+		switch (binaryNode->getOp())
+		{
+			case EOpIndexDirect:
+			case EOpIndexIndirect:
+			case EOpIndexDirectStruct:
+				return lValueErrorCheck(line, op, binaryNode->getLeft());
+			case EOpVectorSwizzle:
+				errorReturn = lValueErrorCheck(line, op, binaryNode->getLeft());
+				if (!errorReturn)
+				{
+					int offset[4] = {0,0,0,0};
+					
+					TIntermTyped* rightNode = binaryNode->getRight();
+					TIntermAggregate *aggrNode = rightNode->getAsAggregate();
+					
+					for (TIntermSequence::iterator p = aggrNode->getSequence().begin(); 
+						 p != aggrNode->getSequence().end(); p++)
+					{
+						int value = (*p)->getAsTyped()->getAsConstant()->toInt();
+						offset[value]++;     
+						if (offset[value] > 1)
+						{
+							error(line, " l-value of swizzle cannot have duplicate components", op, "", "");
+							
+							return true;
+						}
+					}
+				}
+			case EOpMatrixSwizzle:
+				errorReturn = lValueErrorCheck(line, op, binaryNode->getLeft());
+				if (!errorReturn)
+				{
+					int offset[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+					
+					TIntermTyped* rightNode = binaryNode->getRight();
+					TIntermAggregate *aggrNode = rightNode->getAsAggregate();
+					
+					for (TIntermSequence::iterator p = aggrNode->getSequence().begin(); 
+						 p != aggrNode->getSequence().end(); p++)
+					{
+						int value = (*p)->getAsTyped()->getAsConstant()->toInt();
+						offset[value]++;     
+						if (offset[value] > 1)
+						{
+							error(line, " l-value of swizzle cannot have duplicate components", op, "", "");
+							
+							return true;
+						}
+					}
+				}
+				
+				return errorReturn;
+			default: 
+				break;
+		}
+		error(line, " l-value required", op, "", "");
+		
+		return true;
+	}
+	
+	
+	const char* symbol = 0;
+	if (symNode != 0)
+		symbol = symNode->getSymbol().c_str();
+	
+	const char* message = 0;
+	switch (node->getQualifier())
+	{
+		case EvqConst:          message = "can't modify a const";        break;
+		case EvqConstReadOnly:  message = "can't modify a const";        break;
+		case EvqAttribute:      message = "can't modify an attribute";   break;
+		case EvqUniform:
+			// mark this uniform as mutable
+			node->getTypePointer()->changeQualifier( EvqMutableUniform);
+			break;
+		case EvqVaryingIn:      message = "can't modify a varying";      break;
+		case EvqFace:           message = "can't modify gl_FrontFacing";   break;
+		case EvqFragCoord:      message = "can't modify gl_FragCoord";   break;
+		default:
+			
+			//
+			// Type that can't be written to?
+			//
+			switch (node->getBasicType())
+			{
+				case EbtSamplerGeneric:
+				case EbtSampler1D:
+				case EbtSampler2D:
+				case EbtSampler3D:
+				case EbtSamplerCube:
+				case EbtSampler1DShadow:
+				case EbtSampler2DShadow:
+				case EbtSamplerRect:       // ARB_texture_rectangle
+				case EbtSamplerRectShadow: // ARB_texture_rectangle
+					message = "can't modify a sampler";
+					break;
+				case EbtVoid:
+					message = "can't modify void";
+					break;
+				default: 
+					break;
+			}
+	}
+	
+	if (message == 0 && binaryNode == 0 && symNode == 0)
+	{
+		error(line, " l-value required", op, "", "");
+		
+		return true;
+	}
+	
+	
+	//
+	// Everything else is okay, no error.
+	//
+	if (message == 0)
+		return false;
+	
+	//
+	// If we get here, we have an error and a message.
+	//
+	if (symNode)
+		error(line, " l-value required", op, "\"%s\" (%s)", symbol, message);
+	else
+		error(line, " l-value required", op, "(%s)", message);
+	
+	return true;
 }
 
 //
