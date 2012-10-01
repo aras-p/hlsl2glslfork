@@ -860,7 +860,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    case EOpSub:    op = "-"; infix = true; break;
    case EOpMul:    op = "*"; infix = true; break;
    case EOpDiv:    op = "/"; infix = true; break;
-   case EOpMod:    op = "%"; infix = true; break;
+   case EOpMod:    op = "mod"; infix = false; break;
    case EOpRightShift:  op = "<<"; infix = true; break;
    case EOpLeftShift:   op = ">>"; infix = true; break;
    case EOpAnd:         op = "&"; infix = true; break;
