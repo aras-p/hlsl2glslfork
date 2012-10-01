@@ -36,7 +36,7 @@ private:
 public:
 	TGlslOutputTraverser (TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, std::stringstream& deferredArrayInit, ETargetVersion version, unsigned options);
 	GlslStruct *createStructFromType( TType *type );
-
+	
 	// Info Sink
 	TInfoSink& infoSink;
 

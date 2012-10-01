@@ -6,16 +6,16 @@
 #include "glslFunction.h"
 
 
-GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision prec, const std::string &s, const TSourceLoc& l) :
-      name(n),
-      mangledName(m),
-      returnType(type),
-	  precision(prec)
+GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSymbolType type, TPrecision prec, const std::string &s, const TSourceLoc& l)
+: name(n)
+, mangledName(m)
+, returnType(type)
+, precision(prec)
 , semantic(s)
 , line(l)
-, structPtr(0),
-      depth(0),
-      inStatement(false)
+, structPtr(0)
+, depth(0)
+, inStatement(false)
 { 
 	active = new std::stringstream();
 	active->setf ( std::stringstream::showpoint );
@@ -28,16 +28,16 @@ GlslFunction::GlslFunction( const std::string &n, const std::string &m, EGlslSym
 
 GlslFunction::~GlslFunction()
 {
-   popDepth();
-   delete active;
-   for (std::vector<GlslSymbol*>::iterator it = symbols.begin(); it < symbols.end(); it++)
-   {
-      (*it)->releaseRef ();
-      if ( (*it)->getRef() == 0 )
-      {
-         delete *it;
-      }
-   }
+	popDepth();
+	delete active;
+	for (std::vector<GlslSymbol*>::iterator it = symbols.begin(); it < symbols.end(); it++)
+	{
+		(*it)->releaseRef ();
+		if ((*it)->getRef() == 0)
+		{
+			delete *it;
+		}
+	}
 }
 
 void GlslFunction::pushDepth(int depth) { this->depth.push_back(depth); }
@@ -45,19 +45,18 @@ void GlslFunction::popDepth() { depth.pop_back(); }
 
 bool GlslFunction::hasSymbol( int id )
 {
+	if (symbolIdMap.find(id) != symbolIdMap.end())
+	{
+		return true;
+	}
 
-   if (symbolIdMap.find(id) != symbolIdMap.end())
-   {
-      return true;
-   }
-
-   return false;
+	return false;
 }
 
 
 GlslSymbol& GlslFunction::getSymbol( int id )
 {
-   return *symbolIdMap[id];
+	return *symbolIdMap[id];
 }
 
 void GlslFunction::addSymbol( GlslSymbol *sym )
@@ -99,28 +98,27 @@ void GlslFunction::addParameter( GlslSymbol *sym )
 
 std::string GlslFunction::getPrototype()
 {
-   std::stringstream out;
+	std::stringstream out;
 
-   writeType (out, returnType, structPtr, precision);
-   out << " " << name << "( ";
+	writeType (out, returnType, structPtr, precision);
+	out << " " << name << "( ";
 
-   std::vector<GlslSymbol*>::iterator it = parameters.begin();
+	std::vector<GlslSymbol*>::iterator it = parameters.begin();
 
-   if (it != parameters.end())
-   {
-      (*it)->writeDecl(out,0);
-      it++;
-   }
+	if (it != parameters.end())
+	{
+		(*it)->writeDecl(out,0);
+		it++;
+	}
 
-   while ( it != parameters.end())
-   {
-      out << ", ";
-      (*it)->writeDecl(out,0);
-      it++;
-   }
+	while ( it != parameters.end())
+	{
+		out << ", ";
+		(*it)->writeDecl(out,0);
+		it++;
+	}
 
-   out << " )";
+	out << " )";
 
-   return out.str();
+	return out.str();
 }
-
