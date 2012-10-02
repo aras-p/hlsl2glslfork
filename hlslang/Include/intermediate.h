@@ -576,7 +576,8 @@ protected:
    TIntermTyped* operand;
 };
 
-typedef TVector<TIntermNode*> TIntermSequence;
+typedef TVector<TIntermNode*> TNodeArray;
+
 
 //
 // Nodes that operate on an arbitrary sized set of children.
@@ -598,7 +599,7 @@ public:
    }
 
    void setOperator(TOperator o) { op = o; }
-   TIntermSequence& getSequence() { return sequence; }
+   TNodeArray& getNodes() { return nodes; }
    void setName(const TString& n) { name = n; }
    void setPlainName(const TString& n) { plainName = n; }
    void setSemantic(const TString& s) { semantic = s; }
@@ -611,7 +612,7 @@ public:
 protected:
    TIntermAggregate(const TIntermAggregate&); // disallow copy constructor
    TIntermAggregate& operator=(const TIntermAggregate&); // disallow assignment operator
-   TIntermSequence sequence;
+   TNodeArray nodes;
    TString name;
    TString plainName;
    TString semantic;

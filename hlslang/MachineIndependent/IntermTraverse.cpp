@@ -114,8 +114,8 @@ void TIntermAggregate::traverse(TIntermTraverser* it)
    {
       ++it->depth;
 
-      TIntermSequence::iterator sit;
-      for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+      TNodeArray::iterator sit;
+      for (sit = nodes.begin(); sit != nodes.end(); ++sit)
          (*sit)->traverse(it);
 
       --it->depth;

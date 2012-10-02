@@ -30,7 +30,7 @@ struct TSamplerTraverser : public TIntermTraverser
 	int id;
 	TBasicType sampType;
 	
-	std::map<std::string,TIntermSequence* > functionMap;
+	std::map<std::string,TNodeArray* > functionMap;
 	
 	std::string currentFunction;
 	
@@ -132,7 +132,7 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
 
       case EOpParameters:
          // Store the parameters to the function in the map
-         sit->functionMap[sit->currentFunction.c_str()] = &(node->getSequence());
+         sit->functionMap[sit->currentFunction.c_str()] = &(node->getNodes());
          break;
 
       case EOpFunctionCall:
@@ -143,19 +143,19 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
             if ( sit->functionMap.find ( node->getName().c_str() ) != sit->functionMap.end() )
             {
                // Get the sequence of function parameters
-               TIntermSequence *funcSequence = sit->functionMap[node->getName().c_str()];
+               TNodeArray *funcSequence = sit->functionMap[node->getName().c_str()];
                
                // Get the sequence of parameters being passed to function
-               TIntermSequence &sequence = node->getSequence();
+               TNodeArray& nodes = node->getNodes();
 
                // Grab iterators to both sequences
-               TIntermSequence::iterator it = sequence.begin();
-               TIntermSequence::iterator funcIt = funcSequence->begin();
+               TNodeArray::iterator it = nodes.begin();
+               TNodeArray::iterator funcIt = funcSequence->begin();
 
-               assert ( sequence.size() == funcSequence->size() );
-               if ( sequence.size() == funcSequence->size() )
+               assert (nodes.size() == funcSequence->size());
+               if (nodes.size() == funcSequence->size())
                {
-                  while ( it != sequence.end() )
+                  while (it != nodes.end())
                   {
                      TIntermSymbol *sym = (*it)->getAsSymbolNode();
                      TIntermSymbol *funcSym = (*funcIt)->getAsSymbolNode();
@@ -186,9 +186,9 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
       case EOpTex1DBias:
       case EOpTex1DGrad:
          {
-            TIntermSequence &sequence = node->getSequence();
-            assert( sequence.size());
-            TIntermTyped *sampArg = sequence[0]->getAsTyped();
+            TNodeArray& nodes = node->getNodes();
+            assert(nodes.size());
+            TIntermTyped *sampArg = nodes[0]->getAsTyped();
             if ( sampArg)
             {
                if (sampArg->getBasicType() == EbtSamplerGeneric)
@@ -218,9 +218,9 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
       case EOpTex2DBias:
       case EOpTex2DGrad:
          {
-            TIntermSequence &sequence = node->getSequence();
-            assert( sequence.size());
-            TIntermTyped *sampArg = sequence[0]->getAsTyped();
+            TNodeArray& nodes = node->getNodes();
+            assert(nodes.size());
+            TIntermTyped *sampArg = nodes[0]->getAsTyped();
             if ( sampArg)
             {
                if (sampArg->getBasicType() == EbtSamplerGeneric)
@@ -246,9 +246,9 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
 		case EOpShadow2D:
 		case EOpShadow2DProj:
 		{
-			TIntermSequence &sequence = node->getSequence();
-			assert(sequence.size());
-			TIntermTyped *sampArg = sequence[0]->getAsTyped();
+			TNodeArray& nodes = node->getNodes();
+			assert(nodes.size());
+			TIntermTyped *sampArg = nodes[0]->getAsTyped();
 			if (sampArg)
 			{
 				if (sampArg->getBasicType() == EbtSamplerGeneric)
@@ -267,9 +267,9 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
 	  case EOpTexRect:
 	  case EOpTexRectProj:
 		  {
-			  TIntermSequence &sequence = node->getSequence();
-			  assert( sequence.size());
-			  TIntermTyped *sampArg = sequence[0]->getAsTyped();
+			  TNodeArray& nodes = node->getNodes();
+			  assert(nodes.size());
+			  TIntermTyped *sampArg = nodes[0]->getAsTyped();
 			  if ( sampArg)
 			  {
 				  if (sampArg->getBasicType() == EbtSamplerGeneric)
@@ -299,9 +299,9 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
       case EOpTex3DBias:
       case EOpTex3DGrad:
          {
-            TIntermSequence &sequence = node->getSequence();
-            assert( sequence.size());
-            TIntermTyped *sampArg = sequence[0]->getAsTyped();
+            TNodeArray& nodes = node->getNodes();
+            assert(nodes.size());
+            TIntermTyped *sampArg = nodes[0]->getAsTyped();
             if ( sampArg)
             {
                if (sampArg->getBasicType() == EbtSamplerGeneric)
@@ -330,9 +330,9 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
       case EOpTexCubeBias:
       case EOpTexCubeGrad:
          {
-            TIntermSequence &sequence = node->getSequence();
-            assert( sequence.size());
-            TIntermTyped *sampArg = sequence[0]->getAsTyped();
+            TNodeArray& nodes = node->getNodes();
+            assert(nodes.size());
+            TIntermTyped *sampArg = nodes[0]->getAsTyped();
             if ( sampArg)
             {
                if (sampArg->getBasicType() == EbtSamplerGeneric)

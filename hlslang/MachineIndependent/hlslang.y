@@ -527,7 +527,7 @@ function_call
                     for (int i = 0; i < fnCandidate->getParamCount(); ++i) {
                         qual = (*fnCandidate)[i].type->getQualifier();
                         if (qual == EvqOut || qual == EvqInOut) {
-                            if (parseContext.lValueErrorCheck($$->getLine(), "assign", $$->getAsAggregate()->getSequence()[i]->getAsTyped())) {
+                            if (parseContext.lValueErrorCheck($$->getLine(), "assign", $$->getAsAggregate()->getNodes()[i]->getAsTyped())) {
                                 parseContext.error($1.intermNode->getLine(), "Constant value cannot be passed for 'out' or 'inout' parameters.", "Error", "");
                                 parseContext.recover();
                             }

@@ -401,7 +401,7 @@ TIntermAggregate* TIntermediate::setAggregateOperator(TIntermNode* node, TOperat
          // Make an aggregate containing this node.
          //
          aggNode = new TIntermAggregate();
-         aggNode->getSequence().push_back(node);
+         aggNode->getNodes().push_back(node);
          if (line.line == 0)
             line = node->getLine();
       }
@@ -608,7 +608,7 @@ bool TIntermDeclaration::containsArrayInitialization() {
 		return true;
 	
 	if (t.isArray() && isMultipleDeclaration()) {
-		TIntermSequence& decls = _declaration->getAsAggregate()->getSequence();
+		TNodeArray& decls = _declaration->getAsAggregate()->getNodes();
 		unsigned n_decls = decls.size();
 		for (unsigned i = 0; i != n_decls; ++i) {
 			if (decls[i]->getAsBinaryNode())
@@ -638,11 +638,11 @@ TIntermAggregate* TIntermediate::growAggregate(TIntermNode* left, TIntermNode* r
    {
       aggNode = new TIntermAggregate;
       if (left)
-         aggNode->getSequence().push_back(left);
+         aggNode->getNodes().push_back(left);
    }
 
    if (right)
-      aggNode->getSequence().push_back(right);
+      aggNode->getNodes().push_back(right);
 
    if (line.line != 0)
       aggNode->setLine(line);
@@ -664,7 +664,7 @@ TIntermAggregate* TIntermediate::makeAggregate(TIntermNode* node, TSourceLoc lin
 	if (node->getAsTyped())
 		aggNode->setType(*node->getAsTyped()->getTypePointer());
 	
-	aggNode->getSequence().push_back(node);
+	aggNode->getNodes().push_back(node);
 
 	if (line.line != 0)
 		aggNode->setLine(line);
@@ -824,13 +824,13 @@ TIntermTyped* TIntermediate::addSwizzle(TVectorFields& fields, TSourceLoc line)
 
 	node->setLine(line);
 	TIntermConstant* constIntNode;
-	TIntermSequence &sequenceVector = node->getSequence();
+	TNodeArray& nodes = node->getNodes();
 
 	for (int i = 0; i < fields.num; i++)
 	{
 		TIntermConstant* constant = addConstant(TType(EbtInt, EbpUndefined, EvqConst), line);
 		constant->setValue(fields.offsets[i]);
-		sequenceVector.push_back(constant);
+		nodes.push_back(constant);
 	}
 
 	return node;
@@ -1158,7 +1158,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          TIntermAggregate *node = new TIntermAggregate(convert);
          node->setLine(left->getLine());
          node->setType(TType(left->getBasicType(), left->getPrecision(), EvqTemporary, right->getNominalSize(), left->isMatrix()));
-         node->getSequence().push_back(left);
+         node->getNodes().push_back(left);
          left = node;
          //now reset this node's type
          setType(TType(left->getBasicType(), left->getPrecision(), EvqTemporary, right->getNominalSize(), left->isMatrix()));
@@ -1192,7 +1192,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          TIntermAggregate *node = new TIntermAggregate(convert);
          node->setLine(right->getLine());
          node->setType(TType(right->getBasicType(), right->getPrecision(), EvqTemporary, left->getNominalSize(), right->isMatrix()));
-         node->getSequence().push_back(right);
+         node->getNodes().push_back(right);
          right = node;
       }
    }
@@ -1331,7 +1331,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          TIntermAggregate *node = new TIntermAggregate(convert);
          node->setLine(right->getLine());
          node->setType(TType(left->getBasicType(), left->getPrecision(), right->getQualifier() == EvqConst ? EvqConst : EvqTemporary, left->getNominalSize(), left->isMatrix()));
-         node->getSequence().push_back(right);
+         node->getNodes().push_back(right);
          right = node;
          size = right->getNominalSize();
       }
@@ -1421,7 +1421,7 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 		TIntermAggregate *node = new TIntermAggregate(convert);
 		node->setLine(trueb->getLine());
 		node->setType(TType(condition->getBasicType(), higherPrecision, trueb->getQualifier() == EvqConst ? EvqConst : EvqTemporary, size, condition->isMatrix()));
-		node->getSequence().push_back(trueb);
+		node->getNodes().push_back(trueb);
 		trueBlock = node;
 	}
 	{
@@ -1429,7 +1429,7 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 		TIntermAggregate *node = new TIntermAggregate(convert);
 		node->setLine(falseb->getLine());
 		node->setType(TType(condition->getBasicType(), higherPrecision, falseb->getQualifier() == EvqConst ? EvqConst : EvqTemporary, size, condition->isMatrix()));
-		node->getSequence().push_back(falseb);
+		node->getNodes().push_back(falseb);
 		falseBlock = node;
 	}
 	

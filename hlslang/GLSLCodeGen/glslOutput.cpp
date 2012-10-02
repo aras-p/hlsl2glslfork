@@ -184,8 +184,8 @@ void writeComparison( const TString &compareOp, const TString &compareCall, TInt
 
 void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTraverser* goit, bool bGenMatrix = false )
 {
-   TIntermSequence::iterator sit;
-   TIntermSequence &sequence = node->getSequence(); 
+   TNodeArray::iterator sit;
+   TNodeArray& nodes = node->getNodes(); 
    GlslFunction *current = goit->current;
    std::stringstream& out = current->getActiveOutput();
 
@@ -202,9 +202,9 @@ void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTrav
 
    out << name << "( ";
 
-	for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+	for (sit = nodes.begin(); sit != nodes.end(); ++sit)
 	{
-		if (sit !=sequence.begin())
+		if (sit !=nodes.begin())
 			out << ", ";
 		(*sit)->traverse(goit);
 	}
@@ -235,8 +235,8 @@ void setupUnaryBuiltInFuncCall( const TString &name, TIntermUnary *node, TString
 
 void writeTex( const TString &name, TIntermAggregate *node, TGlslOutputTraverser* goit )
 {
-	TIntermSequence &sequence = node->getSequence(); 
-	TBasicType sampler_type = (*sequence.begin())->getAsTyped()->getBasicType();
+	TNodeArray& nodes = node->getNodes(); 
+	TBasicType sampler_type = (*nodes.begin())->getAsTyped()->getBasicType();
 	TString new_name;
 	
 	if (isShadowSampler(sampler_type)) {
@@ -360,7 +360,7 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 		
 		TIntermBinary* assign = decl->getDeclaration()->getAsBinaryNode();
 		TIntermSymbol* sym = assign->getLeft()->getAsSymbolNode();
-		TIntermSequence& init = assign->getRight()->getAsAggregate()->getSequence();
+		TNodeArray& init = assign->getRight()->getAsAggregate()->getNodes();
 		
 		writeType(*out, symbol_type, NULL, this->m_UsePrecision ? decl->getPrecision() : EbpUndefined);
 		(*out) << " " << sym->getSymbol() << "[" << type.getArraySize() << "]";
@@ -1263,7 +1263,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
    GlslFunction *current = goit->current;
    std::stringstream& out = current->getActiveOutput();
-   int argCount = (int) node->getSequence().size();
+   int argCount = (int) node->getNodes().size();
 
    if (node->getOp() == EOpNull)
    {
@@ -1278,9 +1278,9 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       if (goit->generatingCode)
       {
 		  goit->outputLineDirective (node->getLine());
-         TIntermSequence::iterator sit;
-         TIntermSequence &sequence = node->getSequence(); 
-		 for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+         TNodeArray::iterator sit;
+         TNodeArray& nodes = node->getNodes(); 
+		 for (sit = nodes.begin(); sit != nodes.end(); ++sit)
 		 {
 		   goit->outputLineDirective((*sit)->getLine());
 		   (*sit)->traverse(it);
@@ -1290,9 +1290,9 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       }
       else
       {
-         TIntermSequence::iterator sit;
-         TIntermSequence &sequence = node->getSequence(); 
-		  for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+         TNodeArray::iterator sit;
+         TNodeArray& nodes = node->getNodes(); 
+		  for (sit = nodes.begin(); sit != nodes.end(); ++sit)
 		  {
 		    (*sit)->traverse(it);
 		  }
@@ -1313,9 +1313,9 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
          goit->functionList.push_back( func);
          goit->current = func;
          goit->current->beginBlock( false);
-         TIntermSequence::iterator sit;
-         TIntermSequence &sequence = node->getSequence(); 
-		 for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+         TNodeArray::iterator sit;
+         TNodeArray& nodes = node->getNodes(); 
+		 for (sit = nodes.begin(); sit != nodes.end(); ++sit)
 		 {
 			 (*sit)->traverse(it);
 		 }
@@ -1327,9 +1327,9 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpParameters:
       it->visitSymbol = traverseParameterSymbol;
       {
-         TIntermSequence::iterator sit;
-         TIntermSequence &sequence = node->getSequence(); 
-		 for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+         TNodeArray::iterator sit;
+         TNodeArray& nodes = node->getNodes(); 
+		 for (sit = nodes.begin(); sit != nodes.end(); ++sit)
            (*sit)->traverse(it);
       }
       it->visitSymbol = traverseSymbol;
@@ -1367,12 +1367,12 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpComma:
       {
-         TIntermSequence::iterator sit;
-         TIntermSequence &sequence = node->getSequence(); 
-         for (sit = sequence.begin(); sit != sequence.end(); ++sit)
+         TNodeArray::iterator sit;
+         TNodeArray& nodes = node->getNodes(); 
+         for (sit = nodes.begin(); sit != nodes.end(); ++sit)
          {
             (*sit)->traverse(it);
-            if ( sit+1 != sequence.end())
+            if ( sit+1 != nodes.end())
                out << ", ";
          }
       }
@@ -1415,13 +1415,13 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpMul:
       {
          //This should always have two arguments
-         assert(node->getSequence().size() == 2);
+         assert(node->getNodes().size() == 2);
          current->beginStatement();                     
 
          out << '(';
-         node->getSequence()[0]->traverse(goit);
+         node->getNodes()[0]->traverse(goit);
          out << " * ";
-         node->getSequence()[1]->traverse(goit);
+         node->getNodes()[1]->traverse(goit);
          out << ')';
 
          return false;

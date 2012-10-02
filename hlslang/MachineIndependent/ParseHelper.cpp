@@ -83,9 +83,9 @@ namespace {
 	
 	bool isBranchConstant(TIntermNode* node);
 	
-	bool isBranchConstant(TIntermSequence& seq)
+	bool isBranchConstant(TNodeArray& seq)
 	{
-		TIntermSequence::iterator it = seq.begin(), end = seq.end();
+		TNodeArray::iterator it = seq.begin(), end = seq.end();
 		for (; it != end; ++it) {
 			if (!isBranchConstant(*it))
 				return false;
@@ -97,7 +97,7 @@ namespace {
 	{
 		Nodes n;
 		if ((n.a = node->getAsAggregate()))
-			return isConst(n.a->getOp()) && isBranchConstant(n.a->getSequence());			
+			return isConst(n.a->getOp()) && isBranchConstant(n.a->getNodes());			
 		else if ((n.b = node->getAsBinaryNode()))
 			return isBranchConstant(n.b->getLeft()) && isBranchConstant(n.b->getRight());
 		else if ((n.c = node->getAsConstant()))
@@ -395,8 +395,8 @@ bool TParseContext::lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTy
 					TIntermTyped* rightNode = binaryNode->getRight();
 					TIntermAggregate *aggrNode = rightNode->getAsAggregate();
 					
-					for (TIntermSequence::iterator p = aggrNode->getSequence().begin(); 
-						 p != aggrNode->getSequence().end(); p++)
+					for (TNodeArray::iterator p = aggrNode->getNodes().begin(); 
+						 p != aggrNode->getNodes().end(); p++)
 					{
 						int value = (*p)->getAsTyped()->getAsConstant()->toInt();
 						offset[value]++;     
@@ -417,8 +417,8 @@ bool TParseContext::lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTy
 					TIntermTyped* rightNode = binaryNode->getRight();
 					TIntermAggregate *aggrNode = rightNode->getAsAggregate();
 					
-					for (TIntermSequence::iterator p = aggrNode->getSequence().begin(); 
-						 p != aggrNode->getSequence().end(); p++)
+					for (TNodeArray::iterator p = aggrNode->getNodes().begin(); 
+						 p != aggrNode->getNodes().end(); p++)
 					{
 						int value = (*p)->getAsTyped()->getAsConstant()->toInt();
 						offset[value]++;     
@@ -1223,7 +1223,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 	if (agg && agg->getOp() == EOpNull)
 	{	
 		if (type.isArray() && type.getArraySize() == 0)
-			variable->getType().setArraySize(agg->getSequence().size());
+			variable->getType().setArraySize(agg->getNodes().size());
 		
 		if (type.getStruct())
 			variable->getType().setStruct(type.getStruct());
@@ -1322,7 +1322,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 }
 
 // Returns false if this was a matrix that still needs a transpose
-static bool TransposeMatrixConstructorArgs (const TType* type, TIntermSequence& args)
+static bool TransposeMatrixConstructorArgs (const TType* type, TNodeArray& args)
 {
 	if (!type->isMatrix())
 		return true;
@@ -1365,7 +1365,7 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 		TType element_type = *type;
 		element_type.clearArrayness();
 		
-		TIntermSequence &params = aggregate->getSequence();
+		TNodeArray &params = aggregate->getNodes();
 		unsigned n_params = params.size();
 		for (unsigned i = 0; i != n_params; ++i) {
 			TIntermNode* p = params[i];
@@ -1465,12 +1465,12 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
    if (aggNode)
    {
       //This is a function call with multiple arguments
-      TIntermSequence &seq = aggNode->getSequence();
+      TNodeArray &seq = aggNode->getNodes();
       int paramNum = 0;
 
       assert( (int)seq.size() == func->getParamCount());
 
-      for ( TIntermSequence::iterator it = seq.begin(); it != seq.end(); it++, paramNum++)
+      for ( TNodeArray::iterator it = seq.begin(); it != seq.end(); it++, paramNum++)
       { 
          tNode = (*it)->getAsTyped();
 
@@ -1672,8 +1672,8 @@ TIntermTyped* TParseContext::constructArray(TIntermAggregate* aggNode, const TTy
 
    elementType.clearArrayness();
 
-   TIntermSequence &seq = aggNode->getSequence();
-   TIntermSequence::iterator sit = seq.begin();
+   TNodeArray &seq = aggNode->getNodes();
+   TNodeArray::iterator sit = seq.begin();
 
    // Count the total size of the initializer sequence and make sure it matches the array size
    int nInitializerSize = 0;
@@ -1741,9 +1741,9 @@ TIntermAggregate* TParseContext::mergeAggregates( TIntermAggregate *left, TInter
 
    if (right)
    {
-      TIntermSequence &seq = right->getSequence();
+      TNodeArray &seq = right->getNodes();
 
-      for ( TIntermSequence::iterator it = seq.begin(); it != seq.end(); it++)
+      for ( TNodeArray::iterator it = seq.begin(); it != seq.end(); it++)
       {
          node = intermediate.growAggregate( node, *it, right->getLine());
       }
