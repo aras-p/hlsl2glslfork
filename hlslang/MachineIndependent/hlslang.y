@@ -258,7 +258,7 @@ postfix_expression
 						parseContext.recover();
 					}
 				}
-				$$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, $3, $2.line);
+				$$ = ir_add_index(EOpIndexDirect, $1, $3, $2.line);
 			}
 		} else {
 			if ($1->isArray() && $1->getType().getArraySize() == 0) {
@@ -266,7 +266,7 @@ postfix_expression
 				parseContext.recover();
 			}
 			
-			$$ = parseContext.intermediate.addIndex(EOpIndexIndirect, $1, $3, $2.line);
+			$$ = ir_add_index(EOpIndexIndirect, $1, $3, $2.line);
 		}
         if ($$ == 0) {
             TIntermConstant* constant = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), $2.line);
@@ -315,12 +315,12 @@ postfix_expression
 			if (fields.num == 1) {
 				TIntermConstant* index = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
 				index->setValue(fields.offsets[0]);
-				$$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, index, $2.line);
+				$$ = ir_add_index(EOpIndexDirect, $1, index, $2.line);
 				$$->setType(TType($1->getBasicType(), $1->getPrecision()));
 			} else {
 				TString vectorString = *$3.string;
 				TIntermTyped* index = parseContext.intermediate.addSwizzle(fields, $3.line);                
-				$$ = parseContext.intermediate.addIndex(EOpVectorSwizzle, $1, index, $2.line);
+				$$ = ir_add_index(EOpVectorSwizzle, $1, index, $2.line);
 				$$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, (int) vectorString.size()));  
 			}
         } else if ($1->isMatrix()) {
@@ -333,7 +333,7 @@ postfix_expression
 
             TString vectorString = *$3.string;
             TIntermTyped* index = parseContext.intermediate.addSwizzle(fields, $3.line);                
-            $$ = parseContext.intermediate.addIndex(EOpMatrixSwizzle, $1, index, $2.line);
+            $$ = ir_add_index(EOpMatrixSwizzle, $1, index, $2.line);
             $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, fields.num));
                     
         } else if ($1->getBasicType() == EbtStruct) {
@@ -354,7 +354,7 @@ postfix_expression
                 if (fieldFound) {
 					TIntermConstant* index = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
 					index->setValue(i);
-					$$ = parseContext.intermediate.addIndex(EOpIndexDirectStruct, $1, index, $2.line);                
+					$$ = ir_add_index(EOpIndexDirectStruct, $1, index, $2.line);                
 					$$->setType(*(*fields)[i].type);
                 } else {
                     parseContext.error($2.line, " no such field in structure", $3.string->c_str(), "");
@@ -593,7 +593,7 @@ function_call_header_with_parameters
         TParameter param = { 0, 0, new TType($3->getType()) };
         $1.function->addParameter(param);
         $$.function = $1.function;
-        $$.intermNode = parseContext.intermediate.growAggregate($1.intermNode, $3, $2.line);
+        $$.intermNode = ir_grow_aggregate($1.intermNode, $3, $2.line);
     }
     ;
 
@@ -1081,7 +1081,7 @@ expression
         $$ = $1;
     }
     | expression COMMA assignment_expression {
-        $$ = parseContext.intermediate.addComma($1, $3, $2.line);
+        $$ = ir_add_comma($1, $3, $2.line);
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, ",", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
@@ -2144,7 +2144,7 @@ statement_list
         $$ = parseContext.intermediate.makeAggregate($1, gNullSourceLoc); 
     }
     | statement_list statement { 
-        $$ = parseContext.intermediate.growAggregate($1, $2, gNullSourceLoc);
+        $$ = ir_grow_aggregate($1, $2, gNullSourceLoc);
     }
     ;
 
@@ -2213,7 +2213,7 @@ iteration_statement
     | FOR LEFT_PAREN { parseContext.symbolTable.push(); ++parseContext.loopNestingLevel; } for_init_statement for_rest_statement RIGHT_PAREN statement_no_new_scope {
         parseContext.symbolTable.pop();
         $$ = parseContext.intermediate.makeAggregate($4, $2.line);
-        $$ = parseContext.intermediate.growAggregate(
+        $$ = ir_grow_aggregate(
                 $$,
                 parseContext.intermediate.addLoop(ELoopFor, reinterpret_cast<TIntermTyped*>($5.node1), reinterpret_cast<TIntermTyped*>($5.node2), $7, $1.line),
                 $1.line);
@@ -2309,7 +2309,7 @@ translation_unit
         parseContext.treeRoot = $$; 
     }
     | translation_unit external_declaration {
-        $$ = parseContext.intermediate.growAggregate($1, $2, gNullSourceLoc);
+        $$ = ir_grow_aggregate($1, $2, gNullSourceLoc);
         parseContext.treeRoot = $$;
     }
     ;
@@ -2382,7 +2382,7 @@ function_definition
                 //
                 // Add the parameter to the HIL
                 //                
-                paramNodes = parseContext.intermediate.growAggregate(
+                paramNodes = ir_grow_aggregate(
                                                paramNodes, 
                                                ir_add_symbol(variable->getUniqueId(),
                                                                        variable->getName(),
@@ -2390,7 +2390,7 @@ function_definition
                                                                        variable->getType(), $1.line), 
                                                $1.line);
             } else {
-                paramNodes = parseContext.intermediate.growAggregate(paramNodes, ir_add_symbol(0, "", param.info, *param.type, $1.line), $1.line);
+                paramNodes = ir_grow_aggregate(paramNodes, ir_add_symbol(0, "", param.info, *param.type, $1.line), $1.line);
             }
         }
         parseContext.intermediate.setAggregateOperator(paramNodes, EOpParameters, $1.line);
@@ -2405,7 +2405,7 @@ function_definition
             parseContext.recover();
         }
         parseContext.symbolTable.pop();
-        $$ = parseContext.intermediate.growAggregate($1.intermAggregate, $3, gNullSourceLoc);
+        $$ = ir_grow_aggregate($1.intermAggregate, $3, gNullSourceLoc);
         parseContext.intermediate.setAggregateOperator($$, EOpFunction, $1.line);
         $$->getAsAggregate()->setName($1.function->getMangledName().c_str());
         $$->getAsAggregate()->setPlainName($1.function->getName().c_str());
@@ -2437,7 +2437,7 @@ initializer_list
     }
     | initializer_list COMMA assignment_expression {
         // append to the aggNode
-       $$ = parseContext.intermediate.growAggregate( $1, $3, $3->getLine());       
+       $$ = ir_grow_aggregate( $1, $3, $3->getLine());       
     }
     | initializer_list COMMA initialization_list {
        // append all children or $3 to $1 

@@ -1485,7 +1485,7 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
 				TIntermAggregate *tempAgg = 0;
 
 				// Add the vector being uprward promoted
-				tempAgg = intermediate.growAggregate ( tempAgg, tNode, node->getLine() );                   
+				tempAgg = ir_grow_aggregate ( tempAgg, tNode, node->getLine() );                   
 
 				// Determine the number of trailing 0's required
 				int nNumZerosToPad = (*func)[paramNum].type->getNominalSize() - tNode->getNominalSize();
@@ -1494,7 +1494,7 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
 					// Create a new constant with value 0.0 and add the constant to the aggregrate node
 					TIntermConstant *constant = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());
 					constant->setValue(0.f);
-					tempAgg = intermediate.growAggregate (tempAgg, constant, tNode->getLine()); 
+					tempAgg = ir_grow_aggregate (tempAgg, constant, tNode->getLine()); 
 				}
 
 				// Construct the built-in with padding
@@ -1513,7 +1513,7 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
             break;
          }
 
-         ret = intermediate.growAggregate( ret, tNode, node->getLine());
+         ret = ir_grow_aggregate( ret, tNode, node->getLine());
       }
    }
    else
@@ -1702,7 +1702,7 @@ TIntermTyped* TParseContext::constructArray(TIntermAggregate* aggNode, const TTy
       int nInitSize = 0;
       while ( nInitSize < elementType.getObjectSize() )
       {
-         tempAgg = intermediate.growAggregate( tempAgg, *sit, line);
+         tempAgg = ir_grow_aggregate( tempAgg, *sit, line);
          nInitSize += (*sit)->getAsTyped()->getNominalSize();
          sit++;
       }
@@ -1717,7 +1717,7 @@ TIntermTyped* TParseContext::constructArray(TIntermAggregate* aggNode, const TTy
          recover();
          return 0;           
       }
-      newAgg = intermediate.growAggregate( newAgg, addConstructor( tempAgg, &elementType, op, 0, line), line);
+      newAgg = ir_grow_aggregate( newAgg, addConstructor( tempAgg, &elementType, op, 0, line), line);
    }*/
 
    return addConstructor( newAgg, type, op, 0, line);
@@ -1727,7 +1727,7 @@ TIntermTyped* TParseContext::constructArray(TIntermAggregate* aggNode, const TTy
 
 
 // This function takes two aggragates, and merges them into a single one
-// It does not nest the right inside the left, as growAggregate would
+// It does not nest the right inside the left, as ir_grow_aggregate would
 TIntermAggregate* TParseContext::mergeAggregates( TIntermAggregate *left, TIntermAggregate *right)
 {
    TIntermAggregate *node = left;
@@ -1740,7 +1740,7 @@ TIntermAggregate* TParseContext::mergeAggregates( TIntermAggregate *left, TInter
 
       for ( TNodeArray::iterator it = seq.begin(); it != seq.end(); it++)
       {
-         node = intermediate.growAggregate( node, *it, right->getLine());
+         node = ir_grow_aggregate( node, *it, right->getLine());
       }
    }
 

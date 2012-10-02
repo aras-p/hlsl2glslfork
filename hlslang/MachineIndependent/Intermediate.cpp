@@ -253,25 +253,23 @@ TIntermTyped* TIntermediate::addAssign(TOperator op, TIntermTyped* left, TInterm
    return node;
 }
 
-//
+
 // Connect two nodes through an index operator, where the left node is the base
 // of an array or struct, and the right node is a direct or indirect offset.
 //
-// Returns the added node.
 // The caller should set the type of the returned node.
-//
-TIntermTyped* TIntermediate::addIndex(TOperator op, TIntermTyped* base, TIntermTyped* index, TSourceLoc line)
+TIntermTyped* ir_add_index(TOperator op, TIntermTyped* base, TIntermTyped* index, TSourceLoc line)
 {
-   TIntermBinary* node = new TIntermBinary(op);
-   if (line.line == 0)
-      line = index->getLine();
-   node->setLine(line);
-   node->setLeft(base);
-   node->setRight(index);
+	TIntermBinary* node = new TIntermBinary(op);
+	if (line.line == 0)
+		line = index->getLine();
+	node->setLine(line);
+	node->setLeft(base);
+	node->setRight(index);
 
-   // caller should set the type
+	// caller should set the type
 
-   return node;
+	return node;
 }
 
 //
@@ -581,7 +579,7 @@ TIntermDeclaration* TIntermediate::growDeclaration(TIntermDeclaration* declarati
 		declaration->getDeclaration() = aggregate;
 	}
 		
-	TIntermAggregate* aggregate = growAggregate(declaration->getDeclaration(), added_decl, added_decl->getLine());
+	TIntermAggregate* aggregate = ir_grow_aggregate(declaration->getDeclaration(), added_decl, added_decl->getLine());
 	aggregate->setOperator(EOpComma);
 	declaration->getDeclaration() = aggregate;
 	
@@ -605,14 +603,13 @@ bool TIntermDeclaration::containsArrayInitialization() {
 	return false;
 }
 
-//
+
 // Safe way to combine two nodes into an aggregate.  Works with null pointers, 
 // a node that's not a aggregate yet, etc.
 //
 // Returns the resulting aggregate, unless 0 was passed in for 
 // both existing nodes.
-//
-TIntermAggregate* TIntermediate::growAggregate(TIntermNode* left, TIntermNode* right, TSourceLoc line)
+TIntermAggregate* ir_grow_aggregate(TIntermNode* left, TIntermNode* right, TSourceLoc line)
 {
    if (left == 0 && right == 0)
       return 0;
@@ -690,20 +687,20 @@ TIntermNode* TIntermediate::addSelection(TIntermTyped* cond, TIntermNodePair nod
 }
 
 
-TIntermTyped* TIntermediate::addComma(TIntermTyped* left, TIntermTyped* right, TSourceLoc line)
+TIntermTyped* ir_add_comma(TIntermTyped* left, TIntermTyped* right, TSourceLoc line)
 {
-   if (left->getType().getQualifier() == EvqConst && right->getType().getQualifier() == EvqConst)
-   {
-      return right;
-   }
-   else
-   {
-      TIntermTyped *commaAggregate = growAggregate(left, right, line);
-      commaAggregate->getAsAggregate()->setOperator(EOpComma);    
-      commaAggregate->setType(right->getType());
-      commaAggregate->getTypePointer()->changeQualifier(EvqTemporary);
-      return commaAggregate;
-   }
+	if (left->getType().getQualifier() == EvqConst && right->getType().getQualifier() == EvqConst)
+	{
+		return right;
+	}
+	else
+	{
+		TIntermTyped *commaAggregate = ir_grow_aggregate(left, right, line);
+		commaAggregate->getAsAggregate()->setOperator(EOpComma);    
+		commaAggregate->setType(right->getType());
+		commaAggregate->getTypePointer()->changeQualifier(EvqTemporary);
+		return commaAggregate;
+	}
 }
 
 //
