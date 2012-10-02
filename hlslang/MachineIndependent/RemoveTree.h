@@ -3,4 +3,4 @@
 // found in the LICENSE.txt file.
 
 
-void RemoveAllTreeNodes(TIntermNode*);
+void ir_remove_tree(TIntermNode*);

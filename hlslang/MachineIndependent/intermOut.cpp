@@ -485,12 +485,8 @@ bool OutputBranch(bool, /* previsit*/ TIntermBranch* node, TIntermTraverser* it)
    return false;
 }
 
-//
-// This function is the one to call externally to start the traversal.
-// Individual functions can be initialized to 0 to skip processing of that
-// type of node.  It's children will still be processed.
-//
-void TIntermediate::outputTree(TIntermNode* root)
+
+void ir_output_tree(TIntermNode* root, TInfoSink& infoSink)
 {
    if (root == 0)
       return;

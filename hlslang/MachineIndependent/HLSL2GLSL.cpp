@@ -5,6 +5,7 @@
 
 #include "SymbolTable.h"
 #include "ParseHelper.h"
+#include "RemoveTree.h"
 
 #include "InitializeDll.h"
 
@@ -273,7 +274,7 @@ int C_DECL Hlsl2Glsl_Parse(
 			aggRoot->setOperator(EOpSequence);
 
 		if (options & ETranslateOpIntermediate)
-			intermediate.outputTree(parseContext.treeRoot);
+			ir_output_tree(parseContext.treeRoot, parseContext.infoSink);
 
 		compiler->TransformAST (parseContext.treeRoot);
 		compiler->ProduceGLSL (parseContext.treeRoot, targetVersion, options);
@@ -284,10 +285,10 @@ int C_DECL Hlsl2Glsl_Parse(
       parseContext.infoSink.info << parseContext.numErrors << " compilation errors.  No code generated.\n\n";
       success = false;
 	  if (options & ETranslateOpIntermediate)
-         intermediate.outputTree(parseContext.treeRoot);
+         ir_output_tree(parseContext.treeRoot, parseContext.infoSink);
    }
 
-   intermediate.remove(parseContext.treeRoot);
+	ir_remove_tree(parseContext.treeRoot);
 
    //
    // Ensure symbol table is returned to the built-in level,

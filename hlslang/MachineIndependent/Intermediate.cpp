@@ -822,14 +822,6 @@ TIntermBranch* ir_add_branch(TOperator branchOp, TIntermTyped* expression, TSour
 	return node;
 }
 
-//
-// This deletes the tree.
-//
-void TIntermediate::remove(TIntermNode* root)
-{
-   if (root)
-      RemoveAllTreeNodes(root);
-}
 
 
 // ------------------------------------------------------------------

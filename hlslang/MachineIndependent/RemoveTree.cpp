@@ -42,8 +42,11 @@ static void RemoveConstant(TIntermConstant* node, TIntermTraverser*)
    delete node;
 }
 
-void RemoveAllTreeNodes(TIntermNode* root)
+void ir_remove_tree(TIntermNode* root)
 {
+	if (!root)
+		return;
+	
    TIntermTraverser it;
 
    it.visitAggregate     = RemoveAggregate;

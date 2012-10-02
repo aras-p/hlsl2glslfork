@@ -48,6 +48,8 @@ TIntermAggregate* ir_set_aggregate_op(TIntermNode*, TOperator, TSourceLoc);
 TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TIntermSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink);
 TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink);
 
+void ir_output_tree(TIntermNode* root, TInfoSink& infoSink);
+
 
 class TIntermediate
 {
@@ -57,9 +59,6 @@ public:
 	TIntermediate(TInfoSink& i) : infoSink(i)
 	{
 	}
-
-	void remove(TIntermNode*);
-	void outputTree(TIntermNode*);
 
 private:
 	TInfoSink& infoSink;
