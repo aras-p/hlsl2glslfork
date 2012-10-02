@@ -1753,7 +1753,7 @@ type_qualifier
         $$.setBasic(EbtVoid, EvqStatic, $1.line);
     }
     | STATIC_QUAL CONST_QUAL {
-        $$.setBasic(EbtVoid, EvqStaticConst, $1.line);
+        $$.setBasic(EbtVoid, EvqConst, $1.line); // same as "const" really
     }
     | UNIFORM {
         if (parseContext.globalErrorCheck($1.line, parseContext.symbolTable.atGlobalLevel(), "uniform"))

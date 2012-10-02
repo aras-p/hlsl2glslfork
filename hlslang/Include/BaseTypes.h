@@ -41,7 +41,6 @@ enum TBasicType
    EbtGuardSamplerEnd,    // non type:  see implementation of IsSampler()
    EbtTexture,            // HLSL Texture variable (presently just a dummy) 
    EbtStruct,
-   EbtAddress,            // should be deprecated??
 };
 
 __inline bool IsSampler(TBasicType type)
@@ -66,7 +65,6 @@ enum TQualifier
    EvqGlobal,        // For globals read/write
    EvqConst,         // User defined constants and non-output parameters in functions
    EvqStatic,        // Static variables
-   EvqStaticConst,   // Static Readonly variables
    EvqAttribute,     // Readonly 
    EvqUniform,       // Readonly, vertex and fragment
    EvqMutableUniform, //HLSL uniform value, that is not really uniform

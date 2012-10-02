@@ -95,7 +95,7 @@ public:
 	void updateArrayInformationType(TType *t) { arrayInformationType = t; }
 	TType* getArrayInformationType() { return arrayInformationType; }
 	
-	bool isConstant() const { return type.getQualifier() == EvqConst || type.getQualifier() == EvqStaticConst; }
+	bool isConstant() const { return type.getQualifier() == EvqConst; }
 	virtual void dump(TInfoSink &infoSink) const;
 
 	TVariable(const TVariable&, TStructureMap& remapper); // copy constructor

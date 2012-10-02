@@ -23,7 +23,7 @@ namespace {
 	
 	inline bool isConst(TQualifier q)
 	{
-		return q == EvqConst || q == EvqStaticConst;
+		return q == EvqConst;
 	}
 	
 	inline bool isConst(TOperator op)
@@ -936,7 +936,6 @@ bool TParseContext::arrayErrorCheck(const TSourceLoc& line, TString& identifier,
    {
    case EvqGlobal: type.qualifier = EvqUniform; break; // according to hlsl, non static globals are uniforms
    case EvqStatic: type.qualifier = EvqGlobal; break;
-   case EvqStaticConst: type.qualifier = EvqConst; break;
    }
 
    bool builtIn = false; 
@@ -1050,7 +1049,7 @@ bool TParseContext::nonInitConstErrorCheck(const TSourceLoc& line, TString& iden
    //
    // Make the qualifier make sense.
    //
-   if (type.qualifier == EvqConst || type.qualifier == EvqStaticConst)
+   if (type.qualifier == EvqConst)
    {
       type.qualifier = EvqTemporary;
       error(line, "variables with qualifier 'const' must be initialized", identifier.c_str(), "");
@@ -1087,7 +1086,6 @@ bool TParseContext::nonInitErrorCheck(const TSourceLoc& line, TString& identifie
    {
    case EvqGlobal: type.qualifier = EvqUniform; break; // according to hlsl, non static globals are uniforms
    case EvqStatic: type.qualifier = EvqGlobal; break;
-   case EvqStaticConst: type.qualifier = EvqConst; break;
    }
 
    TVariable* variable = new TVariable(&identifier, info, TType(type));
@@ -1192,7 +1190,6 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 	{
 		case EvqGlobal: pType.qualifier = EvqUniform; break; // according to hlsl, non static globals are uniforms
 		case EvqStatic: pType.qualifier = EvqGlobal; break;
-		case EvqStaticConst: pType.qualifier = EvqConst; break;
 	}
 
 	TType type = TType(pType);
@@ -1248,7 +1245,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 	}
 	
 	TQualifier initializerQualifier = initializer->getType().getQualifier();	
-	bool isConst = (initializerQualifier == EvqConst) || (initializerQualifier == EvqStaticConst);
+	bool isConst = (initializerQualifier == EvqConst);
 	// GLSL 1.20+ allows more things in constant initializers;
 	// not so much for earlier GLSL versions.
 	if (!isConst && (targetVersion >= ETargetGLSL_120))
@@ -1290,7 +1287,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 		
 		// If we're trying to initialize something marked as const with a non-const initializer,
 		// change its type to temporary instead
-		if ((initializerQualifier != EvqConst) && (initializerQualifier != EvqStaticConst))
+		if (initializerQualifier != EvqConst)
 		{
 			qualifier = EvqTemporary;
 			variable->getType().changeQualifier(qualifier);
