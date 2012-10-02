@@ -125,12 +125,12 @@ Jutta Degener, 1995
 
 %type <interm> assignment_operator unary_operator
 %type <interm.intermTypedNode> variable_identifier primary_expression postfix_expression
-%type <interm.intermTypedNode> expression integer_expression assignment_expression
-%type <interm.intermTypedNode> unary_expression multiplicative_expression additive_expression
-%type <interm.intermTypedNode> relational_expression equality_expression 
-%type <interm.intermTypedNode> conditional_expression constant_expression
-%type <interm.intermTypedNode> logical_or_expression logical_xor_expression logical_and_expression
-%type <interm.intermTypedNode> shift_expression and_expression exclusive_or_expression inclusive_or_expression
+%type <interm.intermTypedNode> expression int_expression assign_expression
+%type <interm.intermTypedNode> unary_expression mul_expression add_expression
+%type <interm.intermTypedNode> rel_expression eq_expression 
+%type <interm.intermTypedNode> cond_expression const_expression
+%type <interm.intermTypedNode> log_or_expression log_xor_expression log_and_expression
+%type <interm.intermTypedNode> shift_expression and_expression xor_expression or_expression
 %type <interm.intermTypedNode> function_call initializer condition conditionopt
 
 %type <interm.intermTypedNode> initialization_list sampler_initializer
@@ -227,7 +227,7 @@ postfix_expression
     : primary_expression { 
         $$ = $1;
     } 
-    | postfix_expression LEFT_BRACKET integer_expression RIGHT_BRACKET {
+    | postfix_expression LEFT_BRACKET int_expression RIGHT_BRACKET {
         if (!$1) {
             parseContext.error($2.line, " left of '[' is null ", "expression", "");
             YYERROR;
@@ -409,7 +409,7 @@ postfix_expression
     }
     ;
 
-integer_expression 
+int_expression 
     : expression {
         if (parseContext.integerErrorCheck($1, "[]"))
             parseContext.recover();
@@ -577,7 +577,7 @@ function_call_header_no_parameters
     ;
 
 function_call_header_with_parameters
-    : function_call_header assignment_expression {
+    : function_call_header assign_expression {
 		if (!$2) {
           YYERROR;
 		}
@@ -586,7 +586,7 @@ function_call_header_with_parameters
         $$.function = $1;
         $$.intermNode = $2;
     }
-    | function_call_header_with_parameters COMMA assignment_expression {
+    | function_call_header_with_parameters COMMA assign_expression {
 		if (!$3) {
           YYERROR;
 		}
@@ -810,115 +810,115 @@ unary_operator
     ;
 // Grammar Note:  No '*' or '&' unary ops.  Pointers are not supported.
 
-multiplicative_expression
+mul_expression
     : unary_expression { $$ = $1; }
-    | multiplicative_expression STAR unary_expression {
+    | mul_expression STAR unary_expression {
 		$$ = parseContext.add_binary(EOpMul, $1, $3, $2.line, "*", false);
     }
-    | multiplicative_expression SLASH unary_expression {
+    | mul_expression SLASH unary_expression {
 		$$ = parseContext.add_binary(EOpDiv, $1, $3, $2.line, "/", false);
     }
-    | multiplicative_expression PERCENT unary_expression {
+    | mul_expression PERCENT unary_expression {
 		$$ = parseContext.add_binary(EOpMod, $1, $3, $2.line, "%", false);
     }
     ;
 
-additive_expression
-    : multiplicative_expression { $$ = $1; }
-    | additive_expression PLUS multiplicative_expression {  
+add_expression
+    : mul_expression { $$ = $1; }
+    | add_expression PLUS mul_expression {  
 		$$ = parseContext.add_binary(EOpAdd, $1, $3, $2.line, "+", false);
     }
-    | additive_expression DASH multiplicative_expression {
+    | add_expression DASH mul_expression {
 		$$ = parseContext.add_binary(EOpSub, $1, $3, $2.line, "-", false);
     }
     ;
 
 shift_expression
-    : additive_expression { $$ = $1; }
-    | shift_expression LEFT_OP additive_expression {
+    : add_expression { $$ = $1; }
+    | shift_expression LEFT_OP add_expression {
         UNSUPPORTED_FEATURE("<<", $2.line);
 		$$ = parseContext.add_binary(EOpLeftShift, $1, $3, $2.line, "<<", false);
     }
-    | shift_expression RIGHT_OP additive_expression {
+    | shift_expression RIGHT_OP add_expression {
         UNSUPPORTED_FEATURE(">>", $2.line);
 		$$ = parseContext.add_binary(EOpRightShift, $1, $3, $2.line, ">>", false);
     }
     ;
 
-relational_expression
+rel_expression
     : shift_expression { $$ = $1; }
-    | relational_expression LEFT_ANGLE shift_expression { 
+    | rel_expression LEFT_ANGLE shift_expression { 
 		$$ = parseContext.add_binary(EOpLessThan, $1, $3, $2.line, "<", true);
     }
-    | relational_expression RIGHT_ANGLE shift_expression  { 
+    | rel_expression RIGHT_ANGLE shift_expression  { 
 		$$ = parseContext.add_binary(EOpGreaterThan, $1, $3, $2.line, ">", true);
     }
-    | relational_expression LE_OP shift_expression  { 
+    | rel_expression LE_OP shift_expression  { 
 		$$ = parseContext.add_binary(EOpLessThanEqual, $1, $3, $2.line, "<=", true);
     }
-    | relational_expression GE_OP shift_expression  { 
+    | rel_expression GE_OP shift_expression  { 
 		$$ = parseContext.add_binary(EOpGreaterThanEqual, $1, $3, $2.line, ">=", true);
     }
     ;
 
-equality_expression
-    : relational_expression { $$ = $1; }
-    | equality_expression EQ_OP relational_expression  {
+eq_expression
+    : rel_expression { $$ = $1; }
+    | eq_expression EQ_OP rel_expression  {
 		$$ = parseContext.add_binary(EOpEqual, $1, $3, $2.line, "==", true);
     }
-    | equality_expression NE_OP relational_expression { 
+    | eq_expression NE_OP rel_expression { 
 		$$ = parseContext.add_binary(EOpNotEqual, $1, $3, $2.line, "!=", true);
     }
     ;
 
 and_expression
-    : equality_expression { $$ = $1; }
-    | and_expression AMPERSAND equality_expression {
+    : eq_expression { $$ = $1; }
+    | and_expression AMPERSAND eq_expression {
         UNSUPPORTED_FEATURE("&", $2.line);
 		$$ = parseContext.add_binary(EOpAnd, $1, $3, $2.line, "&", false);
     }
     ;
 
-exclusive_or_expression
+xor_expression
     : and_expression { $$ = $1; }
-    | exclusive_or_expression CARET and_expression {
+    | xor_expression CARET and_expression {
         UNSUPPORTED_FEATURE("^", $2.line);
 		$$ = parseContext.add_binary(EOpExclusiveOr, $1, $3, $2.line, "^", false);
     }
     ;
 
-inclusive_or_expression
-    : exclusive_or_expression { $$ = $1; }
-    | inclusive_or_expression VERTICAL_BAR exclusive_or_expression {
+or_expression
+    : xor_expression { $$ = $1; }
+    | or_expression VERTICAL_BAR xor_expression {
         UNSUPPORTED_FEATURE("|", $2.line);
 		$$ = parseContext.add_binary(EOpInclusiveOr, $1, $3, $2.line, "|", false);
     }
     ;
 
-logical_and_expression
-    : inclusive_or_expression { $$ = $1; }
-    | logical_and_expression AND_OP inclusive_or_expression {
+log_and_expression
+    : or_expression { $$ = $1; }
+    | log_and_expression AND_OP or_expression {
 		$$ = parseContext.add_binary(EOpLogicalAnd, $1, $3, $2.line, "&&", true);
     }
     ;
 
-logical_xor_expression
-    : logical_and_expression { $$ = $1; }
-    | logical_xor_expression XOR_OP logical_and_expression  { 
+log_xor_expression
+    : log_and_expression { $$ = $1; }
+    | log_xor_expression XOR_OP log_and_expression  { 
 		$$ = parseContext.add_binary(EOpLogicalXor, $1, $3, $2.line, "^^", true);
     }
     ;
 
-logical_or_expression
-    : logical_xor_expression { $$ = $1; }
-    | logical_or_expression OR_OP logical_xor_expression  { 
+log_or_expression
+    : log_xor_expression { $$ = $1; }
+    | log_or_expression OR_OP log_xor_expression  { 
 		$$ = parseContext.add_binary(EOpLogicalOr, $1, $3, $2.line, "||", true);
     }
     ;
 
-conditional_expression
-    : logical_or_expression { $$ = $1; }
-    | logical_or_expression QUESTION expression COLON assignment_expression {
+cond_expression
+    : log_or_expression { $$ = $1; }
+    | log_or_expression QUESTION expression COLON assign_expression {
        if (parseContext.boolOrVectorErrorCheck($2.line, $1))
             parseContext.recover();
        
@@ -932,9 +932,9 @@ conditional_expression
     }
     ;
 
-assignment_expression
-    : conditional_expression { $$ = $1; }
-    | unary_expression assignment_operator assignment_expression {        
+assign_expression
+    : cond_expression { $$ = $1; }
+    | unary_expression assignment_operator assign_expression {        
         if (parseContext.lValueErrorCheck($2.line, "assign", $1))
             parseContext.recover();
         $$ = parseContext.addAssign($2.op, $1, $3, $2.line);
@@ -962,10 +962,10 @@ assignment_operator
     ;
 
 expression
-    : assignment_expression {
+    : assign_expression {
         $$ = $1;
     }
-    | expression COMMA assignment_expression {
+    | expression COMMA assign_expression {
         $$ = ir_add_comma($1, $3, $2.line);
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, ",", $1->getCompleteString(), $3->getCompleteString());
@@ -975,8 +975,8 @@ expression
     }
     ;
 
-constant_expression
-    : conditional_expression {
+const_expression
+    : cond_expression {
         if (parseContext.constErrorCheck($1))
             parseContext.recover();
         $$ = $1;
@@ -1171,7 +1171,7 @@ parameter_declarator
         $$.line = $2.line;
         $$.param = param; 
     }
-    | type_specifier IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET {
+    | type_specifier IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET {
         // Check that we can make an array out of this type
         if (parseContext.arrayTypeErrorCheck($3.line, $1))
             parseContext.recover();
@@ -1189,7 +1189,7 @@ parameter_declarator
         $$.line = $2.line;
         $$.param = param;
     }
-    | type_specifier IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET COLON IDENTIFIER {
+    | type_specifier IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET COLON IDENTIFIER {
         // Check that we can make an array out of this type
         if (parseContext.arrayTypeErrorCheck($3.line, $1))
             parseContext.recover();
@@ -1315,7 +1315,7 @@ init_declarator_list
 			}
         }
     }
-    | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info {
+    | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET type_info {
 		TPublicType type = $1->getPublicType();
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
@@ -1372,7 +1372,7 @@ init_declarator_list
             }
         }
     }
-    | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info EQUAL initializer {
+    | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET type_info EQUAL initializer {
 		TPublicType type = $1->getPublicType();
 		int array_size;
 		
@@ -1485,7 +1485,7 @@ single_declaration
 			$$ = 0;
 		}
     }
-    | fully_specified_type IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info {
+    | fully_specified_type IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET type_info {
         if (parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
 
@@ -1537,7 +1537,7 @@ single_declaration
 			}
 		}
     }
-    | fully_specified_type IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET type_info EQUAL initializer {
+    | fully_specified_type IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET type_info EQUAL initializer {
         if (parseContext.structQualifierErrorCheck($2.line, $1))
             parseContext.recover();
 
@@ -1651,7 +1651,7 @@ type_specifier
     : type_specifier_nonarray {
         $$ = $1;
     }
-    | type_specifier_nonarray LEFT_BRACKET constant_expression RIGHT_BRACKET {
+    | type_specifier_nonarray LEFT_BRACKET const_expression RIGHT_BRACKET {
         $$ = $1;
         
         if (parseContext.arrayTypeErrorCheck($2.line, $1))
@@ -1948,7 +1948,7 @@ struct_declarator
         $$.type->setFieldName(*$1.string);
         $$.type->setSemantic(*$3.string);
     }
-    | IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET {
+    | IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET {
         $$.type = new TType(EbtVoid, EbpUndefined);
         $$.line = $1.line;
         $$.type->setFieldName(*$1.string);
@@ -1958,7 +1958,7 @@ struct_declarator
             parseContext.recover();
         $$.type->setArraySize(size);
     }
-    | IDENTIFIER LEFT_BRACKET constant_expression RIGHT_BRACKET COLON IDENTIFIER {
+    | IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET COLON IDENTIFIER {
         $$.type = new TType(EbtVoid, EbpUndefined);
         $$.line = $1.line;
         $$.type->setFieldName(*$1.string);
@@ -1974,7 +1974,7 @@ struct_declarator
 
 
 initializer
-    : assignment_expression { $$ = $1; }
+    : assign_expression { $$ = $1; }
     | initialization_list { $$ = $1; }
     | sampler_initializer { $$ = $1; }
     ;
@@ -2312,7 +2312,7 @@ initialization_list
 
     
 initializer_list
-    : assignment_expression {
+    : assign_expression {
         //create a new aggNode
        $$ = ir_make_aggregate( $1, $1->getLine());       
     }
@@ -2320,7 +2320,7 @@ initializer_list
        //take the inherited aggNode and return it
        $$ = $1->getAsAggregate();       
     }
-    | initializer_list COMMA assignment_expression {
+    | initializer_list COMMA assign_expression {
         // append to the aggNode
        $$ = ir_grow_aggregate( $1, $3, $3->getLine());       
     }
