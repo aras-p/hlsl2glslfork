@@ -1037,7 +1037,7 @@ conditional_expression
        if (parseContext.boolOrVectorErrorCheck($2.line, $1))
             parseContext.recover();
        
-		$$ = parseContext.intermediate.addSelection($1, $3, $5, $2.line);
+		$$ = ir_add_selection($1, $3, $5, $2.line, parseContext.infoSink);
            
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, ":", $3->getCompleteString(), $5->getCompleteString());
@@ -2157,7 +2157,7 @@ selection_statement
     : IF LEFT_PAREN expression RIGHT_PAREN selection_rest_statement { 
         if (parseContext.boolErrorCheck($1.line, $3))
             parseContext.recover();
-        $$ = parseContext.intermediate.addSelection($3, $5, $1.line);
+        $$ = ir_add_selection($3, $5, $1.line, parseContext.infoSink);
     }
     ;
 

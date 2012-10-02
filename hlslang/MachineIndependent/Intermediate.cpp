@@ -653,14 +653,11 @@ TIntermAggregate* ir_make_aggregate(TIntermNode* node, TSourceLoc line)
 	return aggNode;
 }
 
-//
+
 // For "if" test nodes.  There are three children; a condition,
 // a true path, and a false path.  The two paths are in the
 // nodePair.
-//
-// Returns the selection node created.
-//
-TIntermNode* TIntermediate::addSelection(TIntermTyped* cond, TIntermNodePair nodePair, TSourceLoc line)
+TIntermNode* ir_add_selection(TIntermTyped* cond, TIntermNodePair nodePair, TSourceLoc line, TInfoSink& infoSink)
 {   
    // Convert float/int to bool
    switch ( cond->getBasicType() )
@@ -699,14 +696,10 @@ TIntermTyped* ir_add_comma(TIntermTyped* left, TIntermTyped* right, TSourceLoc l
 	}
 }
 
-//
 // For "?:" test nodes.  There are three children; a condition,
 // a true path, and a false path.  The two paths are specified
 // as separate parameters.
-//
-// Returns the selection node created, or 0 if one could not be.
-//
-TIntermTyped* TIntermediate::addSelection(TIntermTyped* cond, TIntermTyped* trueBlock, TIntermTyped* falseBlock, TSourceLoc line)
+TIntermTyped* ir_add_selection(TIntermTyped* cond, TIntermTyped* trueBlock, TIntermTyped* falseBlock, TSourceLoc line, TInfoSink& infoSink)
 {
    bool bPromoteFromTrueBlockType = true;
 

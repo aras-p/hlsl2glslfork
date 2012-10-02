@@ -26,8 +26,11 @@ TIntermSymbol* ir_add_symbol(int id, const TString& name, const TTypeInfo *info,
 TIntermConstant* ir_add_constant(const TType&, TSourceLoc);
 TIntermTyped* ir_add_index(TOperator op, TIntermTyped* base, TIntermTyped* index, TSourceLoc);
 TIntermTyped* ir_add_comma(TIntermTyped* left, TIntermTyped* right, TSourceLoc);
+TIntermNode*  ir_add_selection(TIntermTyped* cond, TIntermNodePair code, TSourceLoc, TInfoSink& infoSink);
+TIntermTyped* ir_add_selection(TIntermTyped* cond, TIntermTyped* trueBlock, TIntermTyped* falseBlock, TSourceLoc, TInfoSink& infoSink);
 
 TIntermTyped* ir_add_conversion(TOperator, const TType&, TIntermTyped*, TInfoSink& infoSink);
+
 TIntermTyped* ir_promote_constant(TBasicType, TIntermConstant*, TInfoSink& infoSink);
 TIntermAggregate* ir_grow_aggregate(TIntermNode* left, TIntermNode* right, TSourceLoc);
 TIntermAggregate* ir_make_aggregate(TIntermNode* node, TSourceLoc);
@@ -50,8 +53,6 @@ public:
 	TIntermDeclaration* addDeclaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line);
 	TIntermDeclaration* growDeclaration(TIntermDeclaration* declaration, TIntermSymbol* symbol, TIntermTyped* initializer = 0);
 	TIntermDeclaration* growDeclaration(TIntermDeclaration* declaration, TSymbol* symbol, TIntermTyped* initializer = 0);
-	TIntermNode*  addSelection(TIntermTyped* cond, TIntermNodePair code, TSourceLoc);
-	TIntermTyped* addSelection(TIntermTyped* cond, TIntermTyped* trueBlock, TIntermTyped* falseBlock, TSourceLoc);
 	TIntermNode* addLoop(TLoopType type, TIntermTyped* cond, TIntermTyped* expr, TIntermNode* body, TSourceLoc line);
 	TIntermBranch* addBranch(TOperator, TSourceLoc);
 	TIntermBranch* addBranch(TOperator, TIntermTyped*, TSourceLoc);
