@@ -225,12 +225,8 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
 }
 
 
-//
 // Connect two nodes through an assignment.
-//
-// Returns the added node.
-//
-TIntermTyped* TIntermediate::addAssign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line)
+TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TInfoSink& infoSink)
 {
    //
    // Like adding binary math, except the conversion can only go
@@ -545,7 +541,7 @@ TIntermDeclaration* TIntermediate::addDeclaration(TIntermSymbol* symbol, TInterm
 	if (!initializer)
 		decl->getDeclaration() = symbol;
 	else
-		decl->getDeclaration() = addAssign(EOpAssign, symbol, initializer, line);
+		decl->getDeclaration() = ir_add_assign(EOpAssign, symbol, initializer, line, infoSink);
 	
 	return decl;
 }
@@ -558,18 +554,21 @@ TIntermDeclaration* TIntermediate::addDeclaration(TSymbol* symbol, TIntermTyped*
 	return addDeclaration(sym, initializer, line);
 }
 
-TIntermDeclaration* TIntermediate::growDeclaration(TIntermDeclaration* declaration, TSymbol* symbol, TIntermTyped* initializer) {
+
+TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink)
+{
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = ir_add_symbol(var->getUniqueId(), var->getName(), var->getType(), var->getType().getLine());
 	sym->setGlobal(symbol->isGlobal());
 	
-	return growDeclaration(declaration, sym, initializer);
+	return ir_grow_declaration(declaration, sym, initializer, infoSink);
 }
 
-TIntermDeclaration* TIntermediate::growDeclaration(TIntermDeclaration* declaration, TIntermSymbol *symbol, TIntermTyped *initializer) {
+TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TIntermSymbol *symbol, TIntermTyped *initializer, TInfoSink& infoSink)
+{
 	TIntermTyped* added_decl = symbol;
 	if (initializer)
-		added_decl = addAssign(EOpAssign, symbol, initializer, symbol->getLine());
+		added_decl = ir_add_assign(EOpAssign, symbol, initializer, symbol->getLine(), infoSink);
 	
 	if (declaration->isSingleDeclaration()) {
 		TIntermTyped* current = declaration->getDeclaration();
@@ -810,25 +809,21 @@ TIntermNode* ir_add_loop(TLoopType type, TIntermTyped* cond, TIntermTyped* expr,
 {
 	TIntermNode* node = new TIntermLoop(type, cond, expr, body);
 	node->setLine(line);
-
 	return node;
 }
 
 
-//
 // Add branches.
-//
-TIntermBranch* TIntermediate::addBranch(TOperator branchOp, TSourceLoc line)
+TIntermBranch* ir_add_branch(TOperator branchOp, TSourceLoc line)
 {
-   return addBranch(branchOp, 0, line);
+   return ir_add_branch(branchOp, 0, line);
 }
 
-TIntermBranch* TIntermediate::addBranch(TOperator branchOp, TIntermTyped* expression, TSourceLoc line)
+TIntermBranch* ir_add_branch(TOperator branchOp, TIntermTyped* expression, TSourceLoc line)
 {
-   TIntermBranch* node = new TIntermBranch(branchOp, expression);
-   node->setLine(line);
-
-   return node;
+	TIntermBranch* node = new TIntermBranch(branchOp, expression);
+	node->setLine(line);
+	return node;
 }
 
 //

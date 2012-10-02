@@ -1404,7 +1404,7 @@ init_declarator_list
 		if (!sym)
 			$$ = $1;
 		else
-			$$ = parseContext.intermediate.growDeclaration($1, sym, NULL);
+			$$ = ir_grow_declaration($1, sym, NULL, parseContext.infoSink);
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info {
 		TPublicType type = $1->getPublicType();
@@ -1426,7 +1426,7 @@ init_declarator_list
 				$$ = $1;
 			else {
 				variable->getType().setArray(true);
-				$$ = parseContext.intermediate.growDeclaration($1, variable, NULL);
+				$$ = ir_grow_declaration($1, variable, NULL, parseContext.infoSink);
 			}
         }
     }
@@ -1455,7 +1455,7 @@ init_declarator_list
 			else {
 				variable->getType().setArray(true);
 				variable->getType().setArraySize(size);
-				$$ = parseContext.intermediate.growDeclaration($1, variable, NULL);
+				$$ = ir_grow_declaration($1, variable, NULL, parseContext.infoSink);
 			}
         }
     }
@@ -1479,7 +1479,7 @@ init_declarator_list
 				else {
 					variable->getType().setArray(true);
 					variable->getType().setArraySize($8->getType().getArraySize());
-					$$ = parseContext.intermediate.growDeclaration($1, variable, $8);
+					$$ = ir_grow_declaration($1, variable, $8, parseContext.infoSink);
 				}
             } else {
                 parseContext.recover();
@@ -1514,7 +1514,7 @@ init_declarator_list
 					variable->getType().setArray(true);
 					variable->getType().setArraySize(array_size);
 					
-					$$ = parseContext.intermediate.growDeclaration($1, variable, $9);
+					$$ = ir_grow_declaration($1, variable, $9, parseContext.infoSink);
 				}
             } else {
                 parseContext.recover();
@@ -1535,7 +1535,7 @@ init_declarator_list
 				if (!variable)
 					$$ = $1;
 				else 				
-					$$ = parseContext.intermediate.growDeclaration($1, variable, $6);
+					$$ = ir_grow_declaration($1, variable, $6, parseContext.infoSink);
 			} else {
 				parseContext.recover();
 				$$ = 0;
@@ -2257,17 +2257,17 @@ jump_statement
             parseContext.error($1.line, "continue statement only allowed in loops", "", "");
             parseContext.recover();
         }        
-        $$ = parseContext.intermediate.addBranch(EOpContinue, $1.line);
+        $$ = ir_add_branch(EOpContinue, $1.line);
     }
     | BREAK SEMICOLON {
         if (parseContext.loopNestingLevel <= 0) {
             parseContext.error($1.line, "break statement only allowed in loops", "", "");
             parseContext.recover();
         }        
-        $$ = parseContext.intermediate.addBranch(EOpBreak, $1.line);
+        $$ = ir_add_branch(EOpBreak, $1.line);
     }
     | RETURN SEMICOLON {
-        $$ = parseContext.intermediate.addBranch(EOpReturn, $1.line);
+        $$ = ir_add_branch(EOpReturn, $1.line);
         if (parseContext.currentFunctionType->getBasicType() != EbtVoid) {
             parseContext.error($1.line, "non-void function must return a value", "return", "");
             parseContext.recover();
@@ -2290,14 +2290,14 @@ jump_statement
                 temp = $2;
             }
         }
-        $$ = parseContext.intermediate.addBranch(EOpReturn, temp, $1.line);
+        $$ = ir_add_branch(EOpReturn, temp, $1.line);
         parseContext.functionReturnsValue = true;
     }
     | DISCARD SEMICOLON {
 		// Jim: using discard when compiling vertex shaders should not be considered a syntactic error, instead,
 		// we should issue a semantic error only if the code path is actually executed. (Not yet implemented)
         //FRAG_ONLY("discard", $1.line);
-        $$ = parseContext.intermediate.addBranch(EOpKill, $1.line);
+        $$ = ir_add_branch(EOpKill, $1.line);
     }
     ;
 

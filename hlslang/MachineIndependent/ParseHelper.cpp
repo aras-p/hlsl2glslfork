@@ -1531,13 +1531,13 @@ TIntermTyped* TParseContext::addAssign(TOperator op, TIntermTyped* left, TInterm
    TIntermTyped *tNode;
 
 
-   if ( (tNode = intermediate.addAssign(op,left,right,loc)) == 0)
+   if ( (tNode = ir_add_assign(op,left,right,loc, infoSink)) == 0)
    {
       //need to convert
       TOperator cop = getConstructorOp( left->getType());
       TType type = left->getType();
       tNode = constructBuiltIn( &type, cop, right, loc, false);
-      tNode = intermediate.addAssign( op, left, tNode, loc);
+      tNode = ir_add_assign(op, left, tNode, loc, infoSink);
    }
 
    return tNode;
