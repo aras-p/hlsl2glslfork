@@ -1375,7 +1375,7 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 				params[i] = p;
 		}
 		
-		TIntermTyped* constructor = intermediate.setAggregateOperator(aggregate, op, line);
+		TIntermTyped* constructor = ir_set_aggregate_op(aggregate, op, line);
 		constructor->setType(*type);
 		if (!TransposeMatrixConstructorArgs (type, params))
 			constructor = intermediate.addUnaryMath (EOpTranspose, constructor, line);
@@ -1626,8 +1626,8 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
 	  }
 	}
 
-	// setAggregateOperator will insert a new node for the constructor, as needed.
-	newNode = intermediate.setAggregateOperator(newNode, op, line);
+	// will insert a new node for the constructor, as needed.
+	newNode = ir_set_aggregate_op(newNode, op, line);
 	newNode->setType(*type);
 	return newNode;
 }
@@ -1641,7 +1641,7 @@ TIntermTyped* TParseContext::constructStruct(TIntermNode* node, TType* type, int
 {
 	TIntermTyped* result = 0;
 	if (*type == node->getAsTyped()->getType())
-		result = subset ? node->getAsTyped() : intermediate.setAggregateOperator(node->getAsTyped(), EOpConstructStruct, line);
+		result = subset ? node->getAsTyped() : ir_set_aggregate_op(node->getAsTyped(), EOpConstructStruct, line);
 	else if (node->getAsConstant())
 		result = ir_promote_constant(type->getBasicType(), node->getAsConstant(), infoSink);
 	else if (node->getAsTyped())

@@ -449,7 +449,7 @@ function_call
             
             if ($$ == 0) {        
                 parseContext.recover();
-                $$ = parseContext.intermediate.setAggregateOperator(0, op, $1.line);
+                $$ = ir_set_aggregate_op(0, op, $1.line);
 				$$->setType(type);
             }
         } else {
@@ -495,13 +495,13 @@ function_call
                             YYERROR;
                         }
                     } else {
-                        $$ = parseContext.intermediate.setAggregateOperator($1.intermAggregate, op, $1.line);
+                        $$ = ir_set_aggregate_op($1.intermAggregate, op, $1.line);
 						$$->setType(fnCandidate->getReturnType());
                     }
                 } else {
                     // This is a real function call
                     
-                    $$ = parseContext.intermediate.setAggregateOperator($1.intermAggregate, EOpFunctionCall, $1.line);
+                    $$ = ir_set_aggregate_op($1.intermAggregate, EOpFunctionCall, $1.line);
                     $$->setType(fnCandidate->getReturnType());                   
                     
                     $$->getAsAggregate()->setName(fnCandidate->getMangledName());
@@ -793,7 +793,7 @@ unary_expression
         
         if ($$ == 0) {        
             parseContext.recover();
-            $$ = parseContext.intermediate.setAggregateOperator(0, op, $2.line);
+            $$ = ir_set_aggregate_op(0, op, $2.line);
         } else {
 			$$->setType(type2);
 		}
@@ -2141,7 +2141,7 @@ compound_statement_no_new_scope
 
 statement_list
     : statement {
-        $$ = parseContext.intermediate.makeAggregate($1, gNullSourceLoc); 
+        $$ = ir_make_aggregate($1, gNullSourceLoc); 
     }
     | statement_list statement { 
         $$ = ir_grow_aggregate($1, $2, gNullSourceLoc);
@@ -2212,7 +2212,7 @@ iteration_statement
     }
     | FOR LEFT_PAREN { parseContext.symbolTable.push(); ++parseContext.loopNestingLevel; } for_init_statement for_rest_statement RIGHT_PAREN statement_no_new_scope {
         parseContext.symbolTable.pop();
-        $$ = parseContext.intermediate.makeAggregate($4, $2.line);
+        $$ = ir_make_aggregate($4, $2.line);
         $$ = ir_grow_aggregate(
                 $$,
                 parseContext.intermediate.addLoop(ELoopFor, reinterpret_cast<TIntermTyped*>($5.node1), reinterpret_cast<TIntermTyped*>($5.node2), $7, $1.line),
@@ -2393,7 +2393,7 @@ function_definition
                 paramNodes = ir_grow_aggregate(paramNodes, ir_add_symbol(0, "", param.info, *param.type, $1.line), $1.line);
             }
         }
-        parseContext.intermediate.setAggregateOperator(paramNodes, EOpParameters, $1.line);
+        ir_set_aggregate_op(paramNodes, EOpParameters, $1.line);
         $1.intermAggregate = paramNodes;
         parseContext.loopNestingLevel = 0;
     }
@@ -2406,7 +2406,7 @@ function_definition
         }
         parseContext.symbolTable.pop();
         $$ = ir_grow_aggregate($1.intermAggregate, $3, gNullSourceLoc);
-        parseContext.intermediate.setAggregateOperator($$, EOpFunction, $1.line);
+        ir_set_aggregate_op($$, EOpFunction, $1.line);
         $$->getAsAggregate()->setName($1.function->getMangledName().c_str());
         $$->getAsAggregate()->setPlainName($1.function->getName().c_str());
         $$->getAsAggregate()->setType($1.function->getReturnType());
@@ -2429,7 +2429,7 @@ initialization_list
 initializer_list
     : assignment_expression {
         //create a new aggNode
-       $$ = parseContext.intermediate.makeAggregate( $1, $1->getLine());       
+       $$ = ir_make_aggregate( $1, $1->getLine());       
     }
     | initialization_list {
        //take the inherited aggNode and return it

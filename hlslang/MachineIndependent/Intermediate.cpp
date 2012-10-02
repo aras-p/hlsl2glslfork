@@ -362,7 +362,7 @@ TIntermTyped* TIntermediate::addUnaryMath(TOperator op, TIntermNode* childNode, 
    return node;
 }
 
-//
+
 // This is the safe way to change the operator on an aggregate, as it
 // does lots of error checking and fixing.  Especially for establishing
 // a function call's operation on it's set of parameters.  Sequences
@@ -371,8 +371,7 @@ TIntermTyped* TIntermediate::addUnaryMath(TOperator op, TIntermNode* childNode, 
 //
 // Returns an aggregate node, which could be the one passed in if
 // it was already an aggregate.
-//
-TIntermAggregate* TIntermediate::setAggregateOperator(TIntermNode* node, TOperator op, TSourceLoc line)
+TIntermAggregate* ir_set_aggregate_op(TIntermNode* node, TOperator op, TSourceLoc line)
 {
    TIntermAggregate* aggNode;
 
@@ -574,7 +573,7 @@ TIntermDeclaration* TIntermediate::growDeclaration(TIntermDeclaration* declarati
 	
 	if (declaration->isSingleDeclaration()) {
 		TIntermTyped* current = declaration->getDeclaration();
-		TIntermAggregate* aggregate = makeAggregate(current, current->getLine());
+		TIntermAggregate* aggregate = ir_make_aggregate(current, current->getLine());
 		aggregate->setOperator(EOpComma);
 		declaration->getDeclaration() = aggregate;
 	}
@@ -633,12 +632,9 @@ TIntermAggregate* ir_grow_aggregate(TIntermNode* left, TIntermNode* right, TSour
    return aggNode;
 }
 
-//
+
 // Turn an existing node into an aggregate.
-//
-// Returns an aggregate, unless 0 was passed in for the existing node.
-//
-TIntermAggregate* TIntermediate::makeAggregate(TIntermNode* node, TSourceLoc line)
+TIntermAggregate* ir_make_aggregate(TIntermNode* node, TSourceLoc line)
 {
 	if (node == 0)
 		return 0;
