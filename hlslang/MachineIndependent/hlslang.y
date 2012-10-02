@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE.txt file.
 
-/**
- * This is bison grammar and production code for parsing the OpenGL 2.0 shading
- * languages.
- */
+// Bison grammar and production code for parsing HLSL
+
 %{
 
 /* Based on:
@@ -39,14 +37,6 @@ Jutta Degener, 1995
     #define YYLEX_PARAM (void*)(parseContextLocal)
     extern void yyerror(char*);
 #endif
-
-#define FRAG_VERT_ONLY(S, L) {                                                  \
-    if (parseContext.language != EShLangFragment &&                             \
-        parseContext.language != EShLangVertex) {                               \
-        parseContext.error(L, " supported in vertex/fragment shaders only ", S, "", "");   \
-        parseContext.recover();                                                            \
-    }                                                                           \
-}
 
 #define VERTEX_ONLY(S, L) {                                                     \
     if (parseContext.language != EShLangVertex) {                               \
@@ -641,33 +631,33 @@ function_identifier
             case EbtFloat:
                 if ($1.matrix) {
                     switch($1.size) {
-                    case 2:                                     op = EOpConstructMat2;  break;
-                    case 3:                                     op = EOpConstructMat3;  break;
-                    case 4:                                     op = EOpConstructMat4;  break;
+                    case 2: op = EOpConstructMat2;  break;
+                    case 3: op = EOpConstructMat3;  break;
+                    case 4: op = EOpConstructMat4;  break;
                     }         
                 } else {      
                     switch($1.size) {
-                    case 1:                                     op = EOpConstructFloat; break;
-                    case 2:                                     op = EOpConstructVec2;  break;
-                    case 3:                                     op = EOpConstructVec3;  break;
-                    case 4:                                     op = EOpConstructVec4;  break;
+                    case 1: op = EOpConstructFloat; break;
+                    case 2: op = EOpConstructVec2;  break;
+                    case 3: op = EOpConstructVec3;  break;
+                    case 4: op = EOpConstructVec4;  break;
                     }       
                 }  
                 break;               
             case EbtInt:
                 switch($1.size) {
-                case 1:                                         op = EOpConstructInt;   break;
-                case 2:       FRAG_VERT_ONLY("ivec2", $1.line); op = EOpConstructIVec2; break;
-                case 3:       FRAG_VERT_ONLY("ivec3", $1.line); op = EOpConstructIVec3; break;
-                case 4:       FRAG_VERT_ONLY("ivec4", $1.line); op = EOpConstructIVec4; break;
+                case 1: op = EOpConstructInt;   break;
+                case 2: op = EOpConstructIVec2; break;
+                case 3: op = EOpConstructIVec3; break;
+                case 4: op = EOpConstructIVec4; break;
                 }         
                 break;    
             case EbtBool:
                 switch($1.size) {
-                case 1:                                         op = EOpConstructBool;  break;
-                case 2:       FRAG_VERT_ONLY("bvec2", $1.line); op = EOpConstructBVec2; break;
-                case 3:       FRAG_VERT_ONLY("bvec3", $1.line); op = EOpConstructBVec3; break;
-                case 4:       FRAG_VERT_ONLY("bvec4", $1.line); op = EOpConstructBVec4; break;
+                case 1: op = EOpConstructBool;  break;
+                case 2: op = EOpConstructBVec2; break;
+                case 3: op = EOpConstructBVec3; break;
+                case 4: op = EOpConstructBVec4; break;
                 }         
                 break;
             }
@@ -753,33 +743,33 @@ unary_expression
         case EbtFloat:
             if ($2.matrix) {
                 switch($2.size) {
-                case 2:                                     op = EOpConstructMat2;  break;
-                case 3:                                     op = EOpConstructMat3;  break;
-                case 4:                                     op = EOpConstructMat4;  break;
+                case 2: op = EOpConstructMat2;  break;
+                case 3: op = EOpConstructMat3;  break;
+                case 4: op = EOpConstructMat4;  break;
                 }         
             } else {      
                 switch($2.size) {
-                case 1:                                     op = EOpConstructFloat; break;
-                case 2:                                     op = EOpConstructVec2;  break;
-                case 3:                                     op = EOpConstructVec3;  break;
-                case 4:                                     op = EOpConstructVec4;  break;
+                case 1: op = EOpConstructFloat; break;
+                case 2: op = EOpConstructVec2;  break;
+                case 3: op = EOpConstructVec3;  break;
+                case 4: op = EOpConstructVec4;  break;
                 }       
             }  
             break;               
         case EbtInt:
             switch($2.size) {
-            case 1:                                         op = EOpConstructInt;   break;
-            case 2:       FRAG_VERT_ONLY("ivec2", $2.line); op = EOpConstructIVec2; break;
-            case 3:       FRAG_VERT_ONLY("ivec3", $2.line); op = EOpConstructIVec3; break;
-            case 4:       FRAG_VERT_ONLY("ivec4", $2.line); op = EOpConstructIVec4; break;
+            case 1: op = EOpConstructInt;   break;
+            case 2: op = EOpConstructIVec2; break;
+            case 3: op = EOpConstructIVec3; break;
+            case 4: op = EOpConstructIVec4; break;
             }         
             break;    
         case EbtBool:
             switch($2.size) {
-            case 1:                                         op = EOpConstructBool;  break;
-            case 2:       FRAG_VERT_ONLY("bvec2", $2.line); op = EOpConstructBVec2; break;
-            case 3:       FRAG_VERT_ONLY("bvec3", $2.line); op = EOpConstructBVec3; break;
-            case 4:       FRAG_VERT_ONLY("bvec4", $2.line); op = EOpConstructBVec4; break;
+            case 1: op = EOpConstructBool;  break;
+            case 2: op = EOpConstructBVec2; break;
+            case 3: op = EOpConstructBVec3; break;
+            case 4: op = EOpConstructBVec4; break;
             }         
             break;
         case EbtStruct:
@@ -829,7 +819,6 @@ unary_operator
 multiplicative_expression
     : unary_expression { $$ = $1; }
     | multiplicative_expression STAR unary_expression {
-        FRAG_VERT_ONLY("*", $2.line);
         $$ = parseContext.intermediate.addBinaryMath(EOpMul, $1, $3, $2.line);
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "*", $1->getCompleteString(), $3->getCompleteString());
@@ -838,7 +827,6 @@ multiplicative_expression
         }
     }
     | multiplicative_expression SLASH unary_expression {
-        FRAG_VERT_ONLY("/", $2.line); 
         $$ = parseContext.intermediate.addBinaryMath(EOpDiv, $1, $3, $2.line);
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "/", $1->getCompleteString(), $3->getCompleteString());
@@ -1081,17 +1069,17 @@ assignment_expression
     ;
 
 assignment_operator
-    : EQUAL        {                                    $$.line = $1.line; $$.op = EOpAssign; }
-    | MUL_ASSIGN   { FRAG_VERT_ONLY("*=", $1.line);     $$.line = $1.line; $$.op = EOpMulAssign; }
-    | DIV_ASSIGN   { FRAG_VERT_ONLY("/=", $1.line);     $$.line = $1.line; $$.op = EOpDivAssign; }
-    | MOD_ASSIGN   { UNSUPPORTED_FEATURE("%=", $1.line);   $$.line = $1.line; $$.op = EOpModAssign; }
-    | ADD_ASSIGN   {                                    $$.line = $1.line; $$.op = EOpAddAssign; }
-    | SUB_ASSIGN   {                                    $$.line = $1.line; $$.op = EOpSubAssign; }
-    | LEFT_ASSIGN  { UNSUPPORTED_FEATURE("<<=", $1.line);  $$.line = $1.line; $$.op = EOpLeftShiftAssign; }
-    | RIGHT_ASSIGN { UNSUPPORTED_FEATURE("<<=", $1.line);  $$.line = $1.line; $$.op = EOpRightShiftAssign; }
-    | AND_ASSIGN   { UNSUPPORTED_FEATURE("&=",  $1.line);  $$.line = $1.line; $$.op = EOpAndAssign; }
-    | XOR_ASSIGN   { UNSUPPORTED_FEATURE("^=",  $1.line);  $$.line = $1.line; $$.op = EOpExclusiveOrAssign; }
-    | OR_ASSIGN    { UNSUPPORTED_FEATURE("|=",  $1.line);  $$.line = $1.line; $$.op = EOpInclusiveOrAssign; }
+    : EQUAL        { $$.line = $1.line; $$.op = EOpAssign; }
+    | MUL_ASSIGN   { $$.line = $1.line; $$.op = EOpMulAssign; }
+    | DIV_ASSIGN   { $$.line = $1.line; $$.op = EOpDivAssign; }
+    | MOD_ASSIGN   { UNSUPPORTED_FEATURE("%=", $1.line);  $$.line = $1.line; $$.op = EOpModAssign; }
+    | ADD_ASSIGN   { $$.line = $1.line; $$.op = EOpAddAssign; }
+    | SUB_ASSIGN   { $$.line = $1.line; $$.op = EOpSubAssign; }
+    | LEFT_ASSIGN  { UNSUPPORTED_FEATURE("<<=", $1.line); $$.line = $1.line; $$.op = EOpLeftShiftAssign; }
+    | RIGHT_ASSIGN { UNSUPPORTED_FEATURE("<<=", $1.line); $$.line = $1.line; $$.op = EOpRightShiftAssign; }
+    | AND_ASSIGN   { UNSUPPORTED_FEATURE("&=",  $1.line); $$.line = $1.line; $$.op = EOpAndAssign; }
+    | XOR_ASSIGN   { UNSUPPORTED_FEATURE("^=",  $1.line); $$.line = $1.line; $$.op = EOpExclusiveOrAssign; }
+    | OR_ASSIGN    { UNSUPPORTED_FEATURE("|=",  $1.line); $$.line = $1.line; $$.op = EOpInclusiveOrAssign; }
     ;
 
 expression
@@ -1930,92 +1918,72 @@ type_specifier_nonarray
         $$.setAggregate(4);
     }
     | MATRIX2 {
-        FRAG_VERT_ONLY("mat2", $1.line); 
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setAggregate(2, true);
     }
     | MATRIX3 { 
-        FRAG_VERT_ONLY("mat3", $1.line); 
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setAggregate(3, true);
     }
     | MATRIX4 { 
-        FRAG_VERT_ONLY("mat4", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setAggregate(4, true);
     }
 	| HMATRIX2 {
-		FRAG_VERT_ONLY("mat2", $1.line);
 		SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
 		$$.setAggregate(2, true);
 	}
 	| HMATRIX3 { 
-		FRAG_VERT_ONLY("mat3", $1.line);
 		SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
 		$$.setAggregate(3, true);
 	}
 	| HMATRIX4 { 
-		FRAG_VERT_ONLY("mat4", $1.line);
 		SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
 		$$.setAggregate(4, true);
 	}
 	| FMATRIX2 {
-		FRAG_VERT_ONLY("mat2", $1.line);
 		SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
 		$$.setAggregate(2, true);
 	}
 	| FMATRIX3 { 
-		FRAG_VERT_ONLY("mat3", $1.line);
 		SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
 		$$.setAggregate(3, true);
 	}
 	| FMATRIX4 { 
-		FRAG_VERT_ONLY("mat4", $1.line);
 		SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
 		$$.setAggregate(4, true);
 	}
 	| TEXTURE {
-        FRAG_VERT_ONLY("texture", $1.line);
         SET_BASIC_TYPE($$,$1,EbtTexture,EbpUndefined);
     }  
     | SAMPLERGENERIC {
-        FRAG_VERT_ONLY("sampler", $1.line);
         SET_BASIC_TYPE($$,$1,EbtSamplerGeneric,EbpUndefined);
     }  
     | SAMPLER1D {
-        FRAG_VERT_ONLY("sampler1D", $1.line);
         SET_BASIC_TYPE($$,$1,EbtSampler1D,EbpUndefined);
     } 
     | SAMPLER2D {
-        FRAG_VERT_ONLY("sampler2D", $1.line);
         SET_BASIC_TYPE($$,$1,EbtSampler2D,EbpUndefined);
     } 
     | SAMPLER3D {
-        FRAG_VERT_ONLY("sampler3D", $1.line);
         SET_BASIC_TYPE($$,$1,EbtSampler3D,EbpUndefined);
     } 
     | SAMPLERCUBE {
-        FRAG_VERT_ONLY("samplerCube", $1.line);
         SET_BASIC_TYPE($$,$1,EbtSamplerCube,EbpUndefined);
     } 
     | SAMPLERRECT {
-        FRAG_VERT_ONLY("samplerRECT", $1.line);
         SET_BASIC_TYPE($$,$1,EbtSamplerRect,EbpUndefined);
     }
     | SAMPLERRECTSHADOW {
-        FRAG_VERT_ONLY("samplerRECTShadow", $1.line);
         SET_BASIC_TYPE($$,$1,EbtSamplerRectShadow,EbpUndefined);
     } 
     | SAMPLER1DSHADOW {
-        FRAG_VERT_ONLY("sampler1DShadow", $1.line);
         SET_BASIC_TYPE($$,$1,EbtSampler1DShadow,EbpUndefined);
     } 
     | SAMPLER2DSHADOW {
-        FRAG_VERT_ONLY("sampler2DShadow", $1.line);
         SET_BASIC_TYPE($$,$1,EbtSampler2DShadow,EbpUndefined);
     }     
     | struct_specifier {
-        FRAG_VERT_ONLY("struct", $1.line);
         $$ = $1;
         $$.qualifier = parseContext.getDefaultQualifier();
     }
