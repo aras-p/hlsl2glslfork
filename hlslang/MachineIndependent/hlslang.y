@@ -812,108 +812,65 @@ unary_operator
 
 mul_expression
     : unary_expression { $$ = $1; }
-    | mul_expression STAR unary_expression {
-		$$ = parseContext.add_binary(EOpMul, $1, $3, $2.line, "*", false);
-    }
-    | mul_expression SLASH unary_expression {
-		$$ = parseContext.add_binary(EOpDiv, $1, $3, $2.line, "/", false);
-    }
-    | mul_expression PERCENT unary_expression {
-		$$ = parseContext.add_binary(EOpMod, $1, $3, $2.line, "%", false);
-    }
+    | mul_expression STAR unary_expression		{ $$ = parseContext.add_binary(EOpMul, $1, $3, $2.line, "*", false); }
+    | mul_expression SLASH unary_expression		{ $$ = parseContext.add_binary(EOpDiv, $1, $3, $2.line, "/", false); }
+    | mul_expression PERCENT unary_expression	{ $$ = parseContext.add_binary(EOpMod, $1, $3, $2.line, "%", false); }
     ;
 
 add_expression
     : mul_expression { $$ = $1; }
-    | add_expression PLUS mul_expression {  
-		$$ = parseContext.add_binary(EOpAdd, $1, $3, $2.line, "+", false);
-    }
-    | add_expression DASH mul_expression {
-		$$ = parseContext.add_binary(EOpSub, $1, $3, $2.line, "-", false);
-    }
+    | add_expression PLUS mul_expression		{ $$ = parseContext.add_binary(EOpAdd, $1, $3, $2.line, "+", false); }
+    | add_expression DASH mul_expression		{ $$ = parseContext.add_binary(EOpSub, $1, $3, $2.line, "-", false); }
     ;
 
 shift_expression
     : add_expression { $$ = $1; }
-    | shift_expression LEFT_OP add_expression {
-        UNSUPPORTED_FEATURE("<<", $2.line);
-		$$ = parseContext.add_binary(EOpLeftShift, $1, $3, $2.line, "<<", false);
-    }
-    | shift_expression RIGHT_OP add_expression {
-        UNSUPPORTED_FEATURE(">>", $2.line);
-		$$ = parseContext.add_binary(EOpRightShift, $1, $3, $2.line, ">>", false);
-    }
+    | shift_expression LEFT_OP add_expression	{ UNSUPPORTED_FEATURE("<<", $2.line); $$ = parseContext.add_binary(EOpLeftShift, $1, $3, $2.line, "<<", false); }
+    | shift_expression RIGHT_OP add_expression	{ UNSUPPORTED_FEATURE(">>", $2.line); $$ = parseContext.add_binary(EOpRightShift, $1, $3, $2.line, ">>", false); }
     ;
 
 rel_expression
     : shift_expression { $$ = $1; }
-    | rel_expression LEFT_ANGLE shift_expression { 
-		$$ = parseContext.add_binary(EOpLessThan, $1, $3, $2.line, "<", true);
-    }
-    | rel_expression RIGHT_ANGLE shift_expression  { 
-		$$ = parseContext.add_binary(EOpGreaterThan, $1, $3, $2.line, ">", true);
-    }
-    | rel_expression LE_OP shift_expression  { 
-		$$ = parseContext.add_binary(EOpLessThanEqual, $1, $3, $2.line, "<=", true);
-    }
-    | rel_expression GE_OP shift_expression  { 
-		$$ = parseContext.add_binary(EOpGreaterThanEqual, $1, $3, $2.line, ">=", true);
-    }
+    | rel_expression LEFT_ANGLE shift_expression	{ $$ = parseContext.add_binary(EOpLessThan, $1, $3, $2.line, "<", true); }
+    | rel_expression RIGHT_ANGLE shift_expression	{ $$ = parseContext.add_binary(EOpGreaterThan, $1, $3, $2.line, ">", true); }
+    | rel_expression LE_OP shift_expression			{ $$ = parseContext.add_binary(EOpLessThanEqual, $1, $3, $2.line, "<=", true); }
+    | rel_expression GE_OP shift_expression			{ $$ = parseContext.add_binary(EOpGreaterThanEqual, $1, $3, $2.line, ">=", true); }
     ;
 
 eq_expression
     : rel_expression { $$ = $1; }
-    | eq_expression EQ_OP rel_expression  {
-		$$ = parseContext.add_binary(EOpEqual, $1, $3, $2.line, "==", true);
-    }
-    | eq_expression NE_OP rel_expression { 
-		$$ = parseContext.add_binary(EOpNotEqual, $1, $3, $2.line, "!=", true);
-    }
+    | eq_expression EQ_OP rel_expression		{ $$ = parseContext.add_binary(EOpEqual, $1, $3, $2.line, "==", true); }
+    | eq_expression NE_OP rel_expression		{ $$ = parseContext.add_binary(EOpNotEqual, $1, $3, $2.line, "!=", true); }
     ;
 
 and_expression
     : eq_expression { $$ = $1; }
-    | and_expression AMPERSAND eq_expression {
-        UNSUPPORTED_FEATURE("&", $2.line);
-		$$ = parseContext.add_binary(EOpAnd, $1, $3, $2.line, "&", false);
-    }
+    | and_expression AMPERSAND eq_expression	{ UNSUPPORTED_FEATURE("&", $2.line); $$ = parseContext.add_binary(EOpAnd, $1, $3, $2.line, "&", false); }
     ;
 
 xor_expression
     : and_expression { $$ = $1; }
-    | xor_expression CARET and_expression {
-        UNSUPPORTED_FEATURE("^", $2.line);
-		$$ = parseContext.add_binary(EOpExclusiveOr, $1, $3, $2.line, "^", false);
-    }
+    | xor_expression CARET and_expression		{ UNSUPPORTED_FEATURE("^", $2.line); $$ = parseContext.add_binary(EOpExclusiveOr, $1, $3, $2.line, "^", false); }
     ;
 
 or_expression
     : xor_expression { $$ = $1; }
-    | or_expression VERTICAL_BAR xor_expression {
-        UNSUPPORTED_FEATURE("|", $2.line);
-		$$ = parseContext.add_binary(EOpInclusiveOr, $1, $3, $2.line, "|", false);
-    }
+    | or_expression VERTICAL_BAR xor_expression	{ UNSUPPORTED_FEATURE("|", $2.line); $$ = parseContext.add_binary(EOpInclusiveOr, $1, $3, $2.line, "|", false); }
     ;
 
 log_and_expression
     : or_expression { $$ = $1; }
-    | log_and_expression AND_OP or_expression {
-		$$ = parseContext.add_binary(EOpLogicalAnd, $1, $3, $2.line, "&&", true);
-    }
+    | log_and_expression AND_OP or_expression		{ $$ = parseContext.add_binary(EOpLogicalAnd, $1, $3, $2.line, "&&", true); }
     ;
 
 log_xor_expression
     : log_and_expression { $$ = $1; }
-    | log_xor_expression XOR_OP log_and_expression  { 
-		$$ = parseContext.add_binary(EOpLogicalXor, $1, $3, $2.line, "^^", true);
-    }
+    | log_xor_expression XOR_OP log_and_expression	{ $$ = parseContext.add_binary(EOpLogicalXor, $1, $3, $2.line, "^^", true); }
     ;
 
 log_or_expression
     : log_xor_expression { $$ = $1; }
-    | log_or_expression OR_OP log_xor_expression  { 
-		$$ = parseContext.add_binary(EOpLogicalOr, $1, $3, $2.line, "||", true);
-    }
+    | log_or_expression OR_OP log_xor_expression	{ $$ = parseContext.add_binary(EOpLogicalOr, $1, $3, $2.line, "||", true); }
     ;
 
 cond_expression
