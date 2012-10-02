@@ -279,13 +279,11 @@ protected:
 	TSourceLoc line;
 };
 
-//
 // This is just to help yacc.
-//
 struct TIntermNodePair
 {
-   TIntermNode* node1;
-   TIntermNode* node2;
+	TIntermNode* node1;
+	TIntermNode* node2;
 };
 
 class TIntermSymbol;
@@ -297,30 +295,30 @@ class TIntermBinary;
 class TIntermTyped : public TIntermNode
 {
 public:
-   TIntermTyped(const TType& t) : type(t)
-   {
-   }
+	TIntermTyped(const TType& t) : type(t)
+	{
+	}
 
-   virtual TIntermTyped* getAsTyped() { return this; }
+	virtual TIntermTyped* getAsTyped() { return this; }
 
-   void setType(const TType& t) { type = t; }
-   TType getType() const { return type; }
-   TType* getTypePointer() { return &type; }
+	void setType(const TType& t) { type = t; }
+	TType getType() const { return type; }
+	TType* getTypePointer() { return &type; }
 
-   TBasicType getBasicType() const { return type.getBasicType(); }
-   TQualifier getQualifier() const { return type.getQualifier(); }
-   TPrecision getPrecision() const { return type.getPrecision(); }
-   int getNominalSize() const { return type.getNominalSize(); }
-   int getSize() const { return type.getInstanceSize(); }
-   bool isMatrix() const { return type.isMatrix(); }
-   bool isArray()  const { return type.isArray(); }
-   bool isVector() const { return type.isVector(); }
-   const char* getBasicString() const { return type.getBasicString(); }
-   const char* getQualifierString() const { return type.getQualifierString(); }
-   TString getCompleteString() const { return type.getCompleteString(); }
+	TBasicType getBasicType() const { return type.getBasicType(); }
+	TQualifier getQualifier() const { return type.getQualifier(); }
+	TPrecision getPrecision() const { return type.getPrecision(); }
+	int getNominalSize() const { return type.getNominalSize(); }
+	int getSize() const { return type.getInstanceSize(); }
+	bool isMatrix() const { return type.isMatrix(); }
+	bool isArray()  const { return type.isArray(); }
+	bool isVector() const { return type.isVector(); }
+	const char* getBasicString() const { return type.getBasicString(); }
+	const char* getQualifierString() const { return type.getQualifierString(); }
+	TString getCompleteString() const { return type.getCompleteString(); }
 
 protected:
-   TType type;
+	TType type;
 };
 
 
@@ -340,14 +338,14 @@ public:
 	cond(aCond),
 	expr(aExpr),
 	body(aBody)
-   {
-   }
-   virtual void traverse(TIntermTraverser*);
-	
+	{
+	}
+	virtual void traverse(TIntermTraverser*);
+
 	TLoopType getType() const { return type; }
 	TIntermTyped* getCondition() { return cond; }
 	TIntermTyped* getExpression() { return expr; }
-   TIntermNode*  getBody() { return body; }
+	TIntermNode*  getBody() { return body; }
 	
 protected:
 	TLoopType	type;
@@ -362,18 +360,18 @@ protected:
 class TIntermBranch : public TIntermNode
 {
 public:
-   TIntermBranch(TOperator op, TIntermTyped* e) :
-   flowOp(op),
-   expression(e)
-   {
-   }
-   virtual void traverse(TIntermTraverser*);
+	TIntermBranch(TOperator op, TIntermTyped* e) :
+	flowOp(op),
+	expression(e)
+	{
+	}
+	virtual void traverse(TIntermTraverser*);
 
-   TOperator getFlowOp() { return flowOp; }
-   TIntermTyped* getExpression() { return expression; }
+	TOperator getFlowOp() { return flowOp; }
+	TIntermTyped* getExpression() { return expression; }
 protected:
-   TOperator flowOp;
-   TIntermTyped* expression;  // non-zero except for "return exp;" statements
+	TOperator flowOp;
+	TIntermTyped* expression;  // non-zero except for "return exp;" statements
 };
 
 //
@@ -511,21 +509,22 @@ protected:
 class TIntermOperator : public TIntermTyped
 {
 public:
-   TOperator getOp() const { return op; }
-   bool modifiesState() const;
-   bool isConstructor() const;
-   virtual bool promote(TInfoSink&)
-   {
-      return true;
-   }
-   virtual TIntermOperator* getAsOperatorNode()
-   {
-      return this;
-   }
+	TOperator getOp() const { return op; }
+	bool modifiesState() const;
+	bool isConstructor() const;
+	virtual bool promote(TInfoSink&)
+	{
+		return true;
+	}
+	virtual TIntermOperator* getAsOperatorNode()
+	{
+		return this;
+	}
+	
 protected:
-   TIntermOperator(TOperator o) : TIntermTyped(TType(EbtFloat, EbpUndefined)), op(o) {}
-   TIntermOperator(TOperator o, TType& t) : TIntermTyped(t), op(o) {}   
-   TOperator op;
+	TIntermOperator(TOperator o) : TIntermTyped(TType(EbtFloat, EbpUndefined)), op(o) {}
+	TIntermOperator(TOperator o, TType& t) : TIntermTyped(t), op(o) {}   
+	TOperator op;
 };
 
 //
@@ -534,24 +533,25 @@ protected:
 class TIntermBinary : public TIntermOperator
 {
 public:
-   TIntermBinary(TOperator o) : TIntermOperator(o)
-   {
-   }
-   virtual void traverse(TIntermTraverser*);
+	TIntermBinary(TOperator o) : TIntermOperator(o)
+	{
+	}
+	virtual void traverse(TIntermTraverser*);
 
-   void setLeft(TIntermTyped* n) { left = n; }
-   void setRight(TIntermTyped* n) { right = n; }
-   TIntermTyped* getLeft() const { return left; }
-   TIntermTyped* getRight() const { return right; }
+	void setLeft(TIntermTyped* n) { left = n; }
+	void setRight(TIntermTyped* n) { right = n; }
+	TIntermTyped* getLeft() const { return left; }
+	TIntermTyped* getRight() const { return right; }
 
-   virtual TIntermBinary* getAsBinaryNode()
-   {
-      return this;
-   }
-   virtual bool promote(TInfoSink&);
+	virtual TIntermBinary* getAsBinaryNode()
+	{
+		return this;
+	}
+	virtual bool promote(TInfoSink&);
+	
 protected:
-   TIntermTyped* left;
-   TIntermTyped* right;
+	TIntermTyped* left;
+	TIntermTyped* right;
 };
 
 //
@@ -560,20 +560,21 @@ protected:
 class TIntermUnary : public TIntermOperator
 {
 public:
-   TIntermUnary(TOperator o, TType& t) : TIntermOperator(o, t), operand(0)
-   {
-   }
-   TIntermUnary(TOperator o) : TIntermOperator(o), operand(0)
-   {
-   }
-   virtual void traverse(TIntermTraverser*);
+	TIntermUnary(TOperator o, TType& t) : TIntermOperator(o, t), operand(0)
+	{
+	}
+	TIntermUnary(TOperator o) : TIntermOperator(o), operand(0)
+	{
+	}
+	virtual void traverse(TIntermTraverser*);
 
-   void setOperand(TIntermTyped* o) { operand = o; }
-   TIntermTyped* getOperand() { return operand; }
+	void setOperand(TIntermTyped* o) { operand = o; }
+	TIntermTyped* getOperand() { return operand; }
 
-   virtual bool promote(TInfoSink&);
-protected:
-   TIntermTyped* operand;
+	virtual bool promote(TInfoSink&);
+	
+private:
+	TIntermTyped* operand;
 };
 
 typedef TVector<TIntermNode*> TNodeArray;
@@ -585,37 +586,39 @@ typedef TVector<TIntermNode*> TNodeArray;
 class TIntermAggregate : public TIntermOperator
 {
 public:
-   TIntermAggregate() : TIntermOperator(EOpNull)
-   {
-   }
-   TIntermAggregate(TOperator o) : TIntermOperator(o)
-   {
-   }
-   ~TIntermAggregate() { }
+	TIntermAggregate() : TIntermOperator(EOpNull)
+	{
+	}
+	TIntermAggregate(TOperator o) : TIntermOperator(o)
+	{
+	}
+	~TIntermAggregate() { }
 
-   virtual TIntermAggregate* getAsAggregate()
-   {
-      return this;
-   }
+	virtual TIntermAggregate* getAsAggregate()
+	{
+		return this;
+	}
 
-   void setOperator(TOperator o) { op = o; }
-   TNodeArray& getNodes() { return nodes; }
-   void setName(const TString& n) { name = n; }
-   void setPlainName(const TString& n) { plainName = n; }
-   void setSemantic(const TString& s) { semantic = s; }
-   const TString& getName() const { return name; }
-   const TString& getPlainName() const { return plainName; }
-   const TString& getSemantic() const { return semantic; }
+	void setOperator(TOperator o) { op = o; }
+	TNodeArray& getNodes() { return nodes; }
+	void setName(const TString& n) { name = n; }
+	void setPlainName(const TString& n) { plainName = n; }
+	void setSemantic(const TString& s) { semantic = s; }
+	const TString& getName() const { return name; }
+	const TString& getPlainName() const { return plainName; }
+	const TString& getSemantic() const { return semantic; }
 
-   virtual void traverse(TIntermTraverser*);
+	virtual void traverse(TIntermTraverser*);
 
-protected:
-   TIntermAggregate(const TIntermAggregate&); // disallow copy constructor
-   TIntermAggregate& operator=(const TIntermAggregate&); // disallow assignment operator
-   TNodeArray nodes;
-   TString name;
-   TString plainName;
-   TString semantic;
+private:
+	// no copying
+	TIntermAggregate(const TIntermAggregate&);
+	TIntermAggregate& operator=(const TIntermAggregate&);
+	
+	TNodeArray nodes;
+	TString name;
+	TString plainName;
+	TString semantic;
 };
 
 //
@@ -624,19 +627,20 @@ protected:
 class TIntermSelection : public TIntermTyped
 {
 public:
-   TIntermSelection(TIntermTyped* cond, TIntermNode* trueB, TIntermNode* falseB) :
-	  TIntermTyped(TType(EbtVoid,EbpUndefined)), condition(cond), trueBlock(trueB), falseBlock(falseB) { }
-   TIntermSelection(TIntermTyped* cond, TIntermNode* trueB, TIntermNode* falseB, const TType& type) :
-	  TIntermTyped(type), condition(cond), trueBlock(trueB), falseBlock(falseB) { }
-   virtual void traverse(TIntermTraverser*);
+	TIntermSelection(TIntermTyped* cond, TIntermNode* trueB, TIntermNode* falseB)
+	:	TIntermTyped(TType(EbtVoid,EbpUndefined)), condition(cond), trueBlock(trueB), falseBlock(falseB) { }
+	TIntermSelection(TIntermTyped* cond, TIntermNode* trueB, TIntermNode* falseB, const TType& type)
+	:	TIntermTyped(type), condition(cond), trueBlock(trueB), falseBlock(falseB) { }
+	virtual void traverse(TIntermTraverser*);
 
-   TIntermNode* getCondition() const { return condition; }
-   TIntermNode* getTrueBlock() const { return trueBlock; }
-   TIntermNode* getFalseBlock() const { return falseBlock; }
-   TIntermSelection* getAsSelectionNode() { return this; }
+	TIntermNode* getCondition() const { return condition; }
+	TIntermNode* getTrueBlock() const { return trueBlock; }
+	TIntermNode* getFalseBlock() const { return falseBlock; }
+	TIntermSelection* getAsSelectionNode() { return this; }
 
 	bool promoteTernary(TInfoSink&);
-protected:
+	
+private:
    TIntermTyped* condition;
    TIntermNode* trueBlock;
    TIntermNode* falseBlock;
