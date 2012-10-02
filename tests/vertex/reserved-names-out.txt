@@ -1,0 +1,17 @@
+uniform vec4 xlat_var_attribute;
+uniform vec4 xlat_var_varying;
+#line 4
+vec4 xlat_main(  );
+#line 4
+vec4 xlat_main(  ) {
+    return (xlat_var_attribute + xlat_var_varying);
+}
+void main() {
+    vec4 xl_retval;
+    xl_retval = xlat_main( );
+    gl_Position = vec4(xl_retval);
+}
+
+// uniforms:
+// xlat_var_attribute:<none> type 12 arrsize 0
+// xlat_var_varying:<none> type 12 arrsize 0

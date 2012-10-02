@@ -11,7 +11,9 @@
 static bool IsReservedGlslKeyword (const std::string& name)
 {
 	if ((name == "input") ||
-        (name == "output"))
+        (name == "output") ||
+		(name == "varying") ||
+		(name == "attribute"))
 	{
 		return true;
 	}
