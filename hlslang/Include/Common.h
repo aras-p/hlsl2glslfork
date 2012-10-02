@@ -80,13 +80,6 @@ public:
 
 
 //
-// Persistent string memory.  Should only be used for strings that survive
-// across compiles/links.
-//
-typedef std::basic_string<char> TPersistString;
-typedef std::ostringstream TPersistStringStream;
-
-//
 // templatized min and max functions.
 //
 template <class T> T Min(const T a, const T b)

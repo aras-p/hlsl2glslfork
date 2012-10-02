@@ -43,7 +43,7 @@ public:
    {
       sink.erase();
    }
-   TInfoSinkBase& operator<<(const TPersistString& t)
+   TInfoSinkBase& operator<<(const std::string& t)
    {
       append(t); return *this;
    }
@@ -70,7 +70,7 @@ public:
 		// does not have a fractional part, the default precision format does
 		// not write the decimal portion which gets interpreted as integer by
 		// the compiler.
-		TPersistStringStream stream;
+		std::ostringstream stream;
 		if (fractionalPart(f) == 0.0f) {
 			stream.precision(1);
 			stream << std::showpoint << std::fixed << f;
@@ -84,7 +84,7 @@ public:
 		return *this;
 	}
 	
-   TInfoSinkBase& operator+(const TPersistString& t)
+   TInfoSinkBase& operator+(const std::string& t)
    {
       append(t); return *this;
    }
@@ -140,7 +140,7 @@ private:
    void append(const char *s); 
 
    void append(int count, char c);
-   void append(const TPersistString& t);
+   void append(const std::string& t);
    void append(const TString& t);
 
    void checkMem(size_t growth)
@@ -149,7 +149,7 @@ private:
          sink.reserve(sink.capacity() +  sink.capacity() / 2);
    }
    void appendToStream(const char* s);
-   TPersistString sink;
+   std::string sink;
 };
 
 class TInfoSink

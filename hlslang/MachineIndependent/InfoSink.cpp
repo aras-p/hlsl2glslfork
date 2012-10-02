@@ -17,7 +17,7 @@ void TInfoSinkBase::append(int count, char c)
    sink.append(count, c); 
 }
 
-void TInfoSinkBase::append(const TPersistString& t) 
+void TInfoSinkBase::append(const std::string& t) 
 {
    checkMem(t.size());  
    sink.append(t); 
