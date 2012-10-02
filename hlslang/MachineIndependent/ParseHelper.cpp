@@ -116,14 +116,28 @@ namespace {
 // --------------------------------------------------------------------------
 
 
-TIntermTyped* TParseContext::add_binary(TOperator op, TIntermTyped* a, TIntermTyped* b, TSourceLoc line, const char* name)
+TIntermTyped* TParseContext::add_binary(TOperator op, TIntermTyped* a, TIntermTyped* b, TSourceLoc line, const char* name, bool boolResult)
 {
 	TIntermTyped* res = ir_add_binary_math(op, a, b, line, infoSink);
 	if (res == NULL)
 	{
 		binaryOpError(line, name, a->getCompleteString(), b->getCompleteString());
 		recover();
-		res = a;
+		if (boolResult)
+		{
+            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), line);
+			constant->setValue(false);
+			res = constant;
+		}
+		else
+		{
+			res = a;
+		}
+	}
+	else if (op == EOpEqual || op == EOpNotEqual)
+	{
+		if (a->isArray() || b->isArray())
+			recover();
 	}
 	return res;
 }

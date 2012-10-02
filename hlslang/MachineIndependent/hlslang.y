@@ -813,23 +813,23 @@ unary_operator
 multiplicative_expression
     : unary_expression { $$ = $1; }
     | multiplicative_expression STAR unary_expression {
-		$$ = parseContext.add_binary(EOpMul, $1, $3, $2.line, "*");
+		$$ = parseContext.add_binary(EOpMul, $1, $3, $2.line, "*", false);
     }
     | multiplicative_expression SLASH unary_expression {
-		$$ = parseContext.add_binary(EOpDiv, $1, $3, $2.line, "/");
+		$$ = parseContext.add_binary(EOpDiv, $1, $3, $2.line, "/", false);
     }
     | multiplicative_expression PERCENT unary_expression {
-		$$ = parseContext.add_binary(EOpMod, $1, $3, $2.line, "%");
+		$$ = parseContext.add_binary(EOpMod, $1, $3, $2.line, "%", false);
     }
     ;
 
 additive_expression
     : multiplicative_expression { $$ = $1; }
     | additive_expression PLUS multiplicative_expression {  
-		$$ = parseContext.add_binary(EOpAdd, $1, $3, $2.line, "+");
+		$$ = parseContext.add_binary(EOpAdd, $1, $3, $2.line, "+", false);
     }
     | additive_expression DASH multiplicative_expression {
-		$$ = parseContext.add_binary(EOpSub, $1, $3, $2.line, "-");
+		$$ = parseContext.add_binary(EOpSub, $1, $3, $2.line, "-", false);
     }
     ;
 
@@ -837,81 +837,37 @@ shift_expression
     : additive_expression { $$ = $1; }
     | shift_expression LEFT_OP additive_expression {
         UNSUPPORTED_FEATURE("<<", $2.line);
-		$$ = parseContext.add_binary(EOpLeftShift, $1, $3, $2.line, "<<");
+		$$ = parseContext.add_binary(EOpLeftShift, $1, $3, $2.line, "<<", false);
     }
     | shift_expression RIGHT_OP additive_expression {
         UNSUPPORTED_FEATURE(">>", $2.line);
-		$$ = parseContext.add_binary(EOpRightShift, $1, $3, $2.line, ">>");
+		$$ = parseContext.add_binary(EOpRightShift, $1, $3, $2.line, ">>", false);
     }
     ;
 
 relational_expression
     : shift_expression { $$ = $1; }
     | relational_expression LEFT_ANGLE shift_expression { 
-        $$ = ir_add_binary_math(EOpLessThan, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "<", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
-			constant->setValue(false);
-			$$ = constant;
-        }
+		$$ = parseContext.add_binary(EOpLessThan, $1, $3, $2.line, "<", true);
     }
     | relational_expression RIGHT_ANGLE shift_expression  { 
-        $$ = ir_add_binary_math(EOpGreaterThan, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, ">", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
-			constant->setValue(false);
-			$$ = constant;
-        }
+		$$ = parseContext.add_binary(EOpGreaterThan, $1, $3, $2.line, ">", true);
     }
     | relational_expression LE_OP shift_expression  { 
-        $$ = ir_add_binary_math(EOpLessThanEqual, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "<=", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
-			constant->setValue(false);
-			$$ = constant;
-        }
+		$$ = parseContext.add_binary(EOpLessThanEqual, $1, $3, $2.line, "<=", true);
     }
     | relational_expression GE_OP shift_expression  { 
-        $$ = ir_add_binary_math(EOpGreaterThanEqual, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, ">=", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
-			constant->setValue(false);
-			$$ = constant;
-        }
+		$$ = parseContext.add_binary(EOpGreaterThanEqual, $1, $3, $2.line, ">=", true);
     }
     ;
 
 equality_expression
     : relational_expression { $$ = $1; }
     | equality_expression EQ_OP relational_expression  {
-        $$ = ir_add_binary_math(EOpEqual, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "==", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
-			constant->setValue(false);
-			$$ = constant;
-        } else if (($1->isArray() || $3->isArray()))
-            parseContext.recover();
+		$$ = parseContext.add_binary(EOpEqual, $1, $3, $2.line, "==", true);
     }
     | equality_expression NE_OP relational_expression { 
-        $$ = ir_add_binary_math(EOpNotEqual, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "!=", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
-			constant->setValue(false);
-			$$ = constant;
-        } else if (($1->isArray() || $3->isArray()))
-            parseContext.recover();
+		$$ = parseContext.add_binary(EOpNotEqual, $1, $3, $2.line, "!=", true);
     }
     ;
 
@@ -919,7 +875,7 @@ and_expression
     : equality_expression { $$ = $1; }
     | and_expression AMPERSAND equality_expression {
         UNSUPPORTED_FEATURE("&", $2.line);
-		$$ = parseContext.add_binary(EOpAnd, $1, $3, $2.line, "&");
+		$$ = parseContext.add_binary(EOpAnd, $1, $3, $2.line, "&", false);
     }
     ;
 
@@ -927,7 +883,7 @@ exclusive_or_expression
     : and_expression { $$ = $1; }
     | exclusive_or_expression CARET and_expression {
         UNSUPPORTED_FEATURE("^", $2.line);
-		$$ = parseContext.add_binary(EOpExclusiveOr, $1, $3, $2.line, "^");
+		$$ = parseContext.add_binary(EOpExclusiveOr, $1, $3, $2.line, "^", false);
     }
     ;
 
@@ -935,49 +891,28 @@ inclusive_or_expression
     : exclusive_or_expression { $$ = $1; }
     | inclusive_or_expression VERTICAL_BAR exclusive_or_expression {
         UNSUPPORTED_FEATURE("|", $2.line);
-		$$ = parseContext.add_binary(EOpInclusiveOr, $1, $3, $2.line, "|");
+		$$ = parseContext.add_binary(EOpInclusiveOr, $1, $3, $2.line, "|", false);
     }
     ;
 
 logical_and_expression
     : inclusive_or_expression { $$ = $1; }
     | logical_and_expression AND_OP inclusive_or_expression {
-        $$ = ir_add_binary_math(EOpLogicalAnd, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "&&", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
-			constant->setValue(false);
-			$$ = constant;
-        }
+		$$ = parseContext.add_binary(EOpLogicalAnd, $1, $3, $2.line, "&&", true);
     }
     ;
 
 logical_xor_expression
     : logical_and_expression { $$ = $1; }
     | logical_xor_expression XOR_OP logical_and_expression  { 
-        $$ = ir_add_binary_math(EOpLogicalXor, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "^^", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
-			constant->setValue(false);
-			$$ = constant;
-        }
+		$$ = parseContext.add_binary(EOpLogicalXor, $1, $3, $2.line, "^^", true);
     }
     ;
 
 logical_or_expression
     : logical_xor_expression { $$ = $1; }
     | logical_or_expression OR_OP logical_xor_expression  { 
-        $$ = ir_add_binary_math(EOpLogicalOr, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "||", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
-			constant->setValue(false);
-			$$ = constant;
-        }
+		$$ = parseContext.add_binary(EOpLogicalOr, $1, $3, $2.line, "||", true);
     }
     ;
 

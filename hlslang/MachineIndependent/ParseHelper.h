@@ -37,7 +37,7 @@ struct TParseContext
 
 	TQualifier getDefaultQualifier() const { return symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary; }
 	
-	TIntermTyped* add_binary(TOperator op, TIntermTyped* a, TIntermTyped* b, TSourceLoc line, const char* name);
+	TIntermTyped* add_binary(TOperator op, TIntermTyped* a, TIntermTyped* b, TSourceLoc line, const char* name, bool boolResult);
 	
 	bool parseVectorFields(const TString&, int vecSize, TVectorFields&, const TSourceLoc& line);
 	bool parseMatrixFields(const TString&, int matSize, TVectorFields&, const TSourceLoc& line);
