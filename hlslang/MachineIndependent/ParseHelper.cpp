@@ -113,6 +113,23 @@ namespace {
 	}
 }
 
+// --------------------------------------------------------------------------
+
+
+TIntermTyped* TParseContext::add_binary(TOperator op, TIntermTyped* a, TIntermTyped* b, TSourceLoc line, const char* name)
+{
+	TIntermTyped* res = ir_add_binary_math(op, a, b, line, infoSink);
+	if (res == NULL)
+	{
+		binaryOpError(line, name, a->getCompleteString(), b->getCompleteString());
+		recover();
+		res = a;
+	}
+	return res;
+}
+
+
+// --------------------------------------------------------------------------
 
 // Sub- vector and matrix fields
 
@@ -347,7 +364,7 @@ void TParseContext::assignError(const TSourceLoc& line, const char* op, TString 
 //
 // Same error message for all places unary operations don't work.
 //
-void TParseContext::unaryOpError(const TSourceLoc& line, char* op, TString operand)
+void TParseContext::unaryOpError(const TSourceLoc& line, const char* op, TString operand)
 {
    error(line, " wrong operand type", op, 
          "no operation '%s' exists that takes an operand of type %s (or there is no acceptable conversion)",
@@ -357,7 +374,7 @@ void TParseContext::unaryOpError(const TSourceLoc& line, char* op, TString opera
 //
 // Same error message for all binary operations don't work.
 //
-void TParseContext::binaryOpError(const TSourceLoc& line, char* op, TString left, TString right)
+void TParseContext::binaryOpError(const TSourceLoc& line, const char* op, TString left, TString right)
 {
    error(line, " wrong operand types ", op, 
          "no operation '%s' exists that takes a left-hand operand of type '%s' and "

@@ -813,48 +813,23 @@ unary_operator
 multiplicative_expression
     : unary_expression { $$ = $1; }
     | multiplicative_expression STAR unary_expression {
-        $$ = ir_add_binary_math(EOpMul, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "*", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            $$ = $1;
-        }
+		$$ = parseContext.add_binary(EOpMul, $1, $3, $2.line, "*");
     }
     | multiplicative_expression SLASH unary_expression {
-        $$ = ir_add_binary_math(EOpDiv, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "/", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            $$ = $1;
-        }
+		$$ = parseContext.add_binary(EOpDiv, $1, $3, $2.line, "/");
     }
     | multiplicative_expression PERCENT unary_expression {
-        $$ = ir_add_binary_math(EOpMod, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "%", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            $$ = $1;
-        }
+		$$ = parseContext.add_binary(EOpMod, $1, $3, $2.line, "%");
     }
     ;
 
 additive_expression
     : multiplicative_expression { $$ = $1; }
     | additive_expression PLUS multiplicative_expression {  
-        $$ = ir_add_binary_math(EOpAdd, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "+", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            $$ = $1;
-        }
+		$$ = parseContext.add_binary(EOpAdd, $1, $3, $2.line, "+");
     }
     | additive_expression DASH multiplicative_expression {
-        $$ = ir_add_binary_math(EOpSub, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "-", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            $$ = $1;
-        } 
+		$$ = parseContext.add_binary(EOpSub, $1, $3, $2.line, "-");
     }
     ;
 
@@ -862,21 +837,11 @@ shift_expression
     : additive_expression { $$ = $1; }
     | shift_expression LEFT_OP additive_expression {
         UNSUPPORTED_FEATURE("<<", $2.line);
-        $$ = ir_add_binary_math(EOpLeftShift, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "<<", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            $$ = $1;
-        }
+		$$ = parseContext.add_binary(EOpLeftShift, $1, $3, $2.line, "<<");
     }
     | shift_expression RIGHT_OP additive_expression {
         UNSUPPORTED_FEATURE(">>", $2.line);
-        $$ = ir_add_binary_math(EOpRightShift, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, ">>", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            $$ = $1;
-        }
+		$$ = parseContext.add_binary(EOpRightShift, $1, $3, $2.line, ">>");
     }
     ;
 
@@ -954,12 +919,7 @@ and_expression
     : equality_expression { $$ = $1; }
     | and_expression AMPERSAND equality_expression {
         UNSUPPORTED_FEATURE("&", $2.line);
-        $$ = ir_add_binary_math(EOpAnd, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "&", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            $$ = $1;
-        }
+		$$ = parseContext.add_binary(EOpAnd, $1, $3, $2.line, "&");
     }
     ;
 
@@ -967,12 +927,7 @@ exclusive_or_expression
     : and_expression { $$ = $1; }
     | exclusive_or_expression CARET and_expression {
         UNSUPPORTED_FEATURE("^", $2.line);
-        $$ = ir_add_binary_math(EOpExclusiveOr, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "^", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            $$ = $1;
-        }
+		$$ = parseContext.add_binary(EOpExclusiveOr, $1, $3, $2.line, "^");
     }
     ;
 
@@ -980,12 +935,7 @@ inclusive_or_expression
     : exclusive_or_expression { $$ = $1; }
     | inclusive_or_expression VERTICAL_BAR exclusive_or_expression {
         UNSUPPORTED_FEATURE("|", $2.line);
-        $$ = ir_add_binary_math(EOpInclusiveOr, $1, $3, $2.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.binaryOpError($2.line, "|", $1->getCompleteString(), $3->getCompleteString());
-            parseContext.recover();
-            $$ = $1;
-        }
+		$$ = parseContext.add_binary(EOpInclusiveOr, $1, $3, $2.line, "|");
     }
     ;
 

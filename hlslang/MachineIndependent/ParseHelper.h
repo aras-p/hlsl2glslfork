@@ -36,12 +36,14 @@ struct TParseContext
 	void recover();
 
 	TQualifier getDefaultQualifier() const { return symbolTable.atGlobalLevel() ? EvqGlobal : EvqTemporary; }
-
+	
+	TIntermTyped* add_binary(TOperator op, TIntermTyped* a, TIntermTyped* b, TSourceLoc line, const char* name);
+	
 	bool parseVectorFields(const TString&, int vecSize, TVectorFields&, const TSourceLoc& line);
 	bool parseMatrixFields(const TString&, int matSize, TVectorFields&, const TSourceLoc& line);
 	void assignError(const TSourceLoc& line, const char* op, TString left, TString right);
-	void unaryOpError(const TSourceLoc& line, char* op, TString operand);
-	void binaryOpError(const TSourceLoc& line, char* op, TString left, TString right);
+	void unaryOpError(const TSourceLoc& line, const char* op, TString operand);
+	void binaryOpError(const TSourceLoc& line, const char* op, TString left, TString right);
 	bool lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTyped*);
 	bool constErrorCheck(TIntermTyped* node);
 	bool integerErrorCheck(TIntermTyped* node, const char* token);
