@@ -68,8 +68,6 @@ enum TQualifier
    EvqStatic,        // Static variables
    EvqStaticConst,   // Static Readonly variables
    EvqAttribute,     // Readonly 
-   EvqVaryingIn,     // readonly, fragment shaders only
-   EvqVaryingOut,    // vertex shaders only  read/write
    EvqUniform,       // Readonly, vertex and fragment
    EvqMutableUniform, //HLSL uniform value, that is not really uniform
 
@@ -93,8 +91,6 @@ __inline const char* getQualifierString(TQualifier q)
    case EvqGlobal:         return "Global";         break;
    case EvqConst:          return "const";          break;
    case EvqAttribute:      return "attribute";      break;
-   case EvqVaryingIn:      return "varying";        break;
-   case EvqVaryingOut:     return "varying";        break;
    case EvqUniform:        return "uniform";        break;
    case EvqIn:             return "in";             break;
    case EvqOut:            return "out";            break;

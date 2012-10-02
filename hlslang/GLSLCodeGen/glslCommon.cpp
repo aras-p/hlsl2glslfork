@@ -163,8 +163,6 @@ EGlslQualifier translateQualifier( TQualifier qual )
    case EvqGlobal:        return EqtNone;
    case EvqConst:         return EqtConst;
    case EvqAttribute:     return EqtNone;
-   case EvqVaryingIn:     return EqtNone;
-   case EvqVaryingOut:    return EqtNone;
    case EvqUniform:       return EqtUniform;
    case EvqMutableUniform: return EqtMutableUniform;
    case EvqIn:            return EqtIn;

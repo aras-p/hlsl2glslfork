@@ -1740,11 +1740,6 @@ fully_specified_type
             parseContext.error($2.line, "cannot be bool or int", getQualifierString($1.qualifier), "");
             parseContext.recover();
         }
-        if (($1.qualifier == EvqVaryingIn || $1.qualifier == EvqVaryingOut) &&
-            ($2.type == EbtBool || $2.type == EbtInt)) {
-            parseContext.error($2.line, "cannot be bool or int", getQualifierString($1.qualifier), "");
-            parseContext.recover();
-        }
         $$ = $2; 
         $$.qualifier = $1.qualifier;
     }

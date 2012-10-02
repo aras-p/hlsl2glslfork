@@ -454,7 +454,6 @@ bool TParseContext::lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTy
 			// mark this uniform as mutable
 			node->getTypePointer()->changeQualifier( EvqMutableUniform);
 			break;
-		case EvqVaryingIn:      message = "can't modify a varying";      break;
 		default:
 			
 			//
@@ -777,8 +776,7 @@ bool TParseContext::samplerErrorCheck(const TSourceLoc& line, const TPublicType&
 
 bool TParseContext::structQualifierErrorCheck(const TSourceLoc& line, const TPublicType& pType)
 {
-   if ((pType.qualifier == EvqVaryingIn || pType.qualifier == EvqVaryingOut || pType.qualifier == EvqAttribute) &&
-       pType.type == EbtStruct)
+   if (pType.qualifier == EvqAttribute && pType.type == EbtStruct)
    {
       error(line, "cannot be used with a structure", getQualifierString(pType.qualifier), "");
 
