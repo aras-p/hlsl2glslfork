@@ -22,30 +22,19 @@ static TPrecision GetHigherPrecision (TPrecision left, TPrecision right) {
 // They are called from parser productions.
 
 
-//
 // Add a terminal node for an identifier in an expression.
-//
-// Returns the added node.
-//
-TIntermSymbol* TIntermediate::addSymbol(int id, const TString& name, const TType& type, TSourceLoc line)
+TIntermSymbol* ir_add_symbol(int id, const TString& name, const TType& type, TSourceLoc line)
 {
-   TIntermSymbol* node = new TIntermSymbol(id, name, type);
-   node->setLine(line);
-
-   return node;
+	TIntermSymbol* node = new TIntermSymbol(id, name, type);
+	node->setLine(line);
+	return node;
 }
 
-//
-// Add a terminal node for an identifier in an expression.
-//
-// Returns the added node.
-//
-TIntermSymbol* TIntermediate::addSymbol(int id, const TString& name, const TTypeInfo *info, const TType& type, TSourceLoc line)
+TIntermSymbol* ir_add_symbol(int id, const TString& name, const TTypeInfo *info, const TType& type, TSourceLoc line)
 {
-   TIntermSymbol* node = new TIntermSymbol(id, name, info, type);
-   node->setLine(line);
-
-   return node;
+	TIntermSymbol* node = new TIntermSymbol(id, name, info, type);
+	node->setLine(line);
+	return node;
 }
 
 //
@@ -569,7 +558,7 @@ TIntermDeclaration* TIntermediate::addDeclaration(TIntermSymbol* symbol, TInterm
 
 TIntermDeclaration* TIntermediate::addDeclaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line) {
 	TVariable* var = static_cast<TVariable*>(symbol);
-	TIntermSymbol* sym = addSymbol(var->getUniqueId(), var->getName(), var->getType(), line);
+	TIntermSymbol* sym = ir_add_symbol(var->getUniqueId(), var->getName(), var->getType(), line);
 	sym->setGlobal(symbol->isGlobal());
 
 	return addDeclaration(sym, initializer, line);
@@ -577,7 +566,7 @@ TIntermDeclaration* TIntermediate::addDeclaration(TSymbol* symbol, TIntermTyped*
 
 TIntermDeclaration* TIntermediate::growDeclaration(TIntermDeclaration* declaration, TSymbol* symbol, TIntermTyped* initializer) {
 	TVariable* var = static_cast<TVariable*>(symbol);
-	TIntermSymbol* sym = addSymbol(var->getUniqueId(), var->getName(), var->getType(), var->getType().getLine());
+	TIntermSymbol* sym = ir_add_symbol(var->getUniqueId(), var->getName(), var->getType(), var->getType().getLine());
 	sym->setGlobal(symbol->isGlobal());
 	
 	return growDeclaration(declaration, sym, initializer);

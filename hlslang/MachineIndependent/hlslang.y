@@ -190,7 +190,7 @@ variable_identifier
 
         // don't delete $1.string, it's used by error recovery, and the pool
         // pop will reclaim the memory
-		TIntermSymbol* sym = parseContext.intermediate.addSymbol(variable->getUniqueId(), 
+		TIntermSymbol* sym = ir_add_symbol(variable->getUniqueId(), 
                                                      variable->getName(),
                                                      variable->getInfo(), 
                                                      variable->getType(), $1.line);
@@ -2384,13 +2384,13 @@ function_definition
                 //                
                 paramNodes = parseContext.intermediate.growAggregate(
                                                paramNodes, 
-                                               parseContext.intermediate.addSymbol(variable->getUniqueId(),
+                                               ir_add_symbol(variable->getUniqueId(),
                                                                        variable->getName(),
                                                                        variable->getInfo(),
                                                                        variable->getType(), $1.line), 
                                                $1.line);
             } else {
-                paramNodes = parseContext.intermediate.growAggregate(paramNodes, parseContext.intermediate.addSymbol(0, "", param.info, *param.type, $1.line), $1.line);
+                paramNodes = parseContext.intermediate.growAggregate(paramNodes, ir_add_symbol(0, "", param.info, *param.type, $1.line), $1.line);
             }
         }
         parseContext.intermediate.setAggregateOperator(paramNodes, EOpParameters, $1.line);

@@ -20,6 +20,10 @@ struct TVectorFields
 // Set of helper functions to help parse and build the tree.
 //
 class TInfoSink;
+
+TIntermSymbol* ir_add_symbol(int Id, const TString&, const TType&, TSourceLoc);
+TIntermSymbol* ir_add_symbol(int id, const TString& name, const TTypeInfo *info, const TType& type, TSourceLoc line);
+
 class TIntermediate
 {
 public:    
@@ -28,8 +32,6 @@ public:
 	TIntermediate(TInfoSink& i) : infoSink(i)
 	{
 	}
-	TIntermSymbol* addSymbol(int Id, const TString&, const TType&, TSourceLoc);
-	TIntermSymbol* addSymbol(int id, const TString& name, const TTypeInfo *info, const TType& type, TSourceLoc line);
 	TIntermTyped* addConversion(TOperator, const TType&, TIntermTyped*);
 	TIntermTyped* addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
 	TIntermTyped* addAssign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
