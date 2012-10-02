@@ -26,6 +26,9 @@ TIntermSymbol* ir_add_symbol(int id, const TString& name, const TTypeInfo *info,
 TIntermConstant* ir_add_constant(const TType&, TSourceLoc);
 TIntermTyped* ir_add_index(TOperator op, TIntermTyped* base, TIntermTyped* index, TSourceLoc);
 TIntermTyped* ir_add_comma(TIntermTyped* left, TIntermTyped* right, TSourceLoc);
+
+TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* child, TSourceLoc, TInfoSink& infoSink);
+TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc, TInfoSink& infoSink);
 TIntermNode*  ir_add_selection(TIntermTyped* cond, TIntermNodePair code, TSourceLoc, TInfoSink& infoSink);
 TIntermTyped* ir_add_selection(TIntermTyped* cond, TIntermTyped* trueBlock, TIntermTyped* falseBlock, TSourceLoc, TInfoSink& infoSink);
 TIntermBranch* ir_add_branch(TOperator, TSourceLoc);
@@ -54,8 +57,6 @@ public:
 	TIntermediate(TInfoSink& i) : infoSink(i)
 	{
 	}
-	TIntermTyped* addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
-	TIntermTyped* addUnaryMath(TOperator op, TIntermNode* child, TSourceLoc);
 
 	void remove(TIntermNode*);
 	void outputTree(TIntermNode*);

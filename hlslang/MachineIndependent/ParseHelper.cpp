@@ -1378,7 +1378,7 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 		TIntermTyped* constructor = ir_set_aggregate_op(aggregate, op, line);
 		constructor->setType(*type);
 		if (!TransposeMatrixConstructorArgs (type, params))
-			constructor = intermediate.addUnaryMath (EOpTranspose, constructor, line);
+			constructor = ir_add_unary_math (EOpTranspose, constructor, line, infoSink);
 		
 		return constructor;
 	}
@@ -1543,7 +1543,7 @@ TIntermTyped* TParseContext::addAssign(TOperator op, TIntermTyped* left, TInterm
    return tNode;
 }
 
-// Function for constructor implementation. Calls addUnaryMath with appropriate EOp value
+// Function for constructor implementation. Calls ir_add_unary_math with appropriate EOp value
 // for the parameter to the constructor (passed to this function). Essentially, it converts
 // the parameter types correctly. If a constructor expects an int (like ivec2) and is passed a 
 // float, then float is converted to int.
@@ -1594,7 +1594,7 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
 		recover();
 		return 0;
 	}
-	newNode = intermediate.addUnaryMath(basicOp, node, node->getLine());
+	newNode = ir_add_unary_math(basicOp, node, node->getLine(), infoSink);
 	if (newNode == 0)
 	{
 	  error(line, "can't convert", "constructor", "");

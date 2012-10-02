@@ -37,12 +37,9 @@ TIntermSymbol* ir_add_symbol(int id, const TString& name, const TTypeInfo *info,
 	return node;
 }
 
-//
+
 // Connect two nodes with a new parent that does a binary operation on the nodes.
-//
-// Returns the added node.
-//
-TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line)
+TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TInfoSink& infoSink)
 {
 	if (!left || !right)
 		return 0;
@@ -268,12 +265,9 @@ TIntermTyped* ir_add_index(TOperator op, TIntermTyped* base, TIntermTyped* index
 	return node;
 }
 
-//
+
 // Add one node as the parent of another that it operates on.
-//
-// Returns the added node.
-//
-TIntermTyped* TIntermediate::addUnaryMath(TOperator op, TIntermNode* childNode, TSourceLoc line)
+TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc line, TInfoSink& infoSink)
 {
    TIntermUnary* node;
    TIntermTyped* child = childNode->getAsTyped();
