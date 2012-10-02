@@ -72,10 +72,10 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
 			{
 				// If the left is a float or int, convert to a bool.  This is the conversion that HLSL
 				// does
-				left = addConversion( EOpConstructBool, 
+				left = ir_add_conversion(EOpConstructBool, 
 									 TType ( EbtBool, left->getPrecision(), left->getQualifier(),
 											left->getNominalSize(), left->isMatrix(), left->isArray()), 
-									 left );
+									 left, infoSink);
 				
 				if ( left == 0 )
 					return 0;
@@ -94,10 +94,10 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
 			{
 				// If the right is a float or int, convert to a bool.  This is the conversion that HLSL
 				// does
-				right = addConversion( EOpConstructBool, 
+				right = ir_add_conversion(EOpConstructBool, 
 									  TType ( EbtBool, right->getPrecision(), right->getQualifier(),
 											 right->getNominalSize(), right->isMatrix(), right->isArray()), 
-									  right );
+									  right, infoSink);
 				
 				if ( right == 0 )
 					return 0;
@@ -128,13 +128,13 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
 				
 			if (leftToFloat)
 			{
-				left = addConversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getNominalSize(), left->isMatrix(), left->isArray()), left);
+				left = ir_add_conversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getNominalSize(), left->isMatrix(), left->isArray()), left, infoSink);
 				if (left == 0)
 					return 0;
 			}
 			if (rightToFloat)
 			{
-				right = addConversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getNominalSize(), right->isMatrix(), right->isArray()), right);
+				right = ir_add_conversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getNominalSize(), right->isMatrix(), right->isArray()), right, infoSink);
 				if (right == 0)
 					return 0;
 			}
@@ -172,12 +172,12 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
 		
 		if (useLeft)
 		{
-			child = addConversion(op, left->getType(), right);
+			child = ir_add_conversion(op, left->getType(), right, infoSink);
 			if (child)
 				right = child;
 			else
 			{
-				child = addConversion(op, right->getType(), left);
+				child = ir_add_conversion(op, right->getType(), left, infoSink);
 				if (child)
 					left = child;
 				else
@@ -186,12 +186,12 @@ TIntermTyped* TIntermediate::addBinaryMath(TOperator op, TIntermTyped* left, TIn
 		}
 		else
 		{
-			child = addConversion(op, right->getType(), left);
+			child = ir_add_conversion(op, right->getType(), left, infoSink);
 			if (child)
 				left = child;
 			else
 			{
-				child = addConversion(op, left->getType(), right);
+				child = ir_add_conversion(op, left->getType(), right, infoSink);
 				if (child)
 					right = child;
 				else
@@ -241,7 +241,7 @@ TIntermTyped* TIntermediate::addAssign(TOperator op, TIntermTyped* left, TInterm
       line = left->getLine();
    node->setLine(line);
 
-   TIntermTyped* child = addConversion(op, left->getType(), right);
+   TIntermTyped* child = ir_add_conversion(op, left->getType(), right, infoSink);
    if (child == 0)
       return 0;
 
@@ -325,10 +325,10 @@ TIntermTyped* TIntermediate::addUnaryMath(TOperator op, TIntermNode* childNode, 
 
    if (newType != EbtVoid)
    {
-      child = addConversion(op, TType(newType, child->getPrecision(), EvqTemporary, child->getNominalSize(), 
+      child = ir_add_conversion(op, TType(newType, child->getPrecision(), EvqTemporary, child->getNominalSize(), 
                                       child->isMatrix(), 
                                       child->isArray()),
-                            child);
+                            child, infoSink);
       if (child == 0)
          return 0;
    }
@@ -408,15 +408,12 @@ TIntermAggregate* TIntermediate::setAggregateOperator(TIntermNode* node, TOperat
    return aggNode;
 }
 
-//
+
 // Convert one type to another.
 //
 // Returns the node representing the conversion, which could be the same
-// node passed in if no conversion was needed.
-//
-// Return 0 if a conversion can't be done.
-//
-TIntermTyped* TIntermediate::addConversion(TOperator op, const TType& type, TIntermTyped* node)
+// node passed in if no conversion was needed. Returns NULL if conversion can't be done.
+TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* node, TInfoSink& infoSink)
 {
 	if (!node)
 		return 0;
@@ -487,7 +484,7 @@ TIntermTyped* TIntermediate::addConversion(TOperator op, const TType& type, TInt
    if (node->getAsConstant())
    {
 
-      return(promoteConstant(promoteTo, node->getAsConstant()));
+      return ir_promote_constant(promoteTo, node->getAsConstant(), infoSink);
    }
    else
    {
@@ -677,9 +674,9 @@ TIntermNode* TIntermediate::addSelection(TIntermTyped* cond, TIntermNodePair nod
    {
    case EbtFloat:
    case EbtInt:
-      cond = addConversion ( EOpConstructBool, 
+      cond = ir_add_conversion (EOpConstructBool, 
                              TType (EbtBool, cond->getPrecision(), cond->getQualifier(), cond->getNominalSize(), cond->isMatrix(), cond->isArray()),
-                             cond );
+                             cond, infoSink);
       break;
    default:
       // Do nothing
@@ -722,9 +719,9 @@ TIntermTyped* TIntermediate::addSelection(TIntermTyped* cond, TIntermTyped* true
 
    if (cond->getBasicType() != EbtBool)
    {
-	   cond = addConversion (EOpConstructBool, 
+	   cond = ir_add_conversion (EOpConstructBool, 
 		   TType (EbtBool, cond->getPrecision(), cond->getQualifier(), cond->getNominalSize(), cond->isMatrix(), cond->isArray()),
-		   cond);
+		   cond, infoSink);
    }
 
    // Choose which one to try to promote to based on which has more precision
@@ -753,12 +750,12 @@ TIntermTyped* TIntermediate::addSelection(TIntermTyped* cond, TIntermTyped* true
    //
    if ( bPromoteFromTrueBlockType )
    {
-      TIntermTyped* child = addConversion(EOpSequence, trueBlock->getType(), falseBlock);
+      TIntermTyped* child = ir_add_conversion(EOpSequence, trueBlock->getType(), falseBlock, infoSink);
       if (child)
          falseBlock = child;
       else
       {
-         child = addConversion(EOpSequence, falseBlock->getType(), trueBlock);
+         child = ir_add_conversion(EOpSequence, falseBlock->getType(), trueBlock, infoSink);
          if (child)
             trueBlock = child;
          else
@@ -767,12 +764,12 @@ TIntermTyped* TIntermediate::addSelection(TIntermTyped* cond, TIntermTyped* true
    }
    else
    {
-      TIntermTyped* child = addConversion(EOpSequence, falseBlock->getType(), trueBlock);
+      TIntermTyped* child = ir_add_conversion(EOpSequence, falseBlock->getType(), trueBlock, infoSink);
       if (child)
          trueBlock = child;
       else
       {
-         child = addConversion(EOpSequence, trueBlock->getType(), falseBlock);
+         child = ir_add_conversion(EOpSequence, trueBlock->getType(), falseBlock, infoSink);
          if (child)
             falseBlock = child;
          else
@@ -793,18 +790,13 @@ TIntermTyped* TIntermediate::addSelection(TIntermTyped* cond, TIntermTyped* true
    return node;
 }
 
-//
+
 // Constant terminal nodes.  Has a union that contains bool, float or int constants
-//
-// Returns the constant union node created.
-//
-
-TIntermConstant* TIntermediate::addConstant(const TType& t, TSourceLoc line)
+TIntermConstant* ir_add_constant(const TType& t, TSourceLoc line)
 {
-   TIntermConstant* node = new TIntermConstant(t);
-   node->setLine(line);
-
-   return node;
+	TIntermConstant* node = new TIntermConstant(t);
+	node->setLine(line);
+	return node;
 }
 
 TIntermTyped* TIntermediate::addSwizzle(TVectorFields& fields, TSourceLoc line)
@@ -817,7 +809,7 @@ TIntermTyped* TIntermediate::addSwizzle(TVectorFields& fields, TSourceLoc line)
 
 	for (int i = 0; i < fields.num; i++)
 	{
-		TIntermConstant* constant = addConstant(TType(EbtInt, EbpUndefined, EvqConst), line);
+		TIntermConstant* constant = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), line);
 		constant->setValue(fields.offsets[i]);
 		nodes.push_back(constant);
 	}
@@ -1425,11 +1417,11 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 	return true;
 }
 
-TIntermTyped* TIntermediate::promoteConstant(TBasicType promoteTo, TIntermConstant* right) 
+TIntermTyped* ir_promote_constant(TBasicType promoteTo, TIntermConstant* right, TInfoSink& infoSink)
 {
 	unsigned size = right->getCount();
 	const TType& t = right->getType();
-	TIntermConstant* left = addConstant(TType(promoteTo, t.getPrecision(), t.getQualifier(), t.getNominalSize(), t.isMatrix(), t.isArray()), right->getLine());
+	TIntermConstant* left = ir_add_constant(TType(promoteTo, t.getPrecision(), t.getQualifier(), t.getNominalSize(), t.isMatrix(), t.isArray()), right->getLine());
 	for (unsigned i = 0; i != size; ++i) {
 		TIntermConstant::Value& value = right->getValue(i);
 		

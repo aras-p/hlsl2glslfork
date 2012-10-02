@@ -204,17 +204,17 @@ primary_expression
         $$ = $1;
     }
     | INTCONSTANT {
-        TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $1.line);
+        TIntermConstant* constant = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), $1.line);
 		constant->setValue($1.i);
 		$$ = constant;
     }
     | FLOATCONSTANT {
-        TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
+        TIntermConstant* constant = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
 		constant->setValue($1.f);
 		$$ = constant;
     }
     | BOOLCONSTANT {
-        TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $1.line);
+        TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $1.line);
 		constant->setValue($1.b);
 		$$ = constant;
     }
@@ -269,7 +269,7 @@ postfix_expression
 			$$ = parseContext.intermediate.addIndex(EOpIndexIndirect, $1, $3, $2.line);
 		}
         if ($$ == 0) {
-            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), $2.line);
 			constant->setValue(0.f);
 			$$ = constant;
         } else if ($1->isArray()) {
@@ -313,7 +313,7 @@ postfix_expression
             }
 
 			if (fields.num == 1) {
-				TIntermConstant* index = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
+				TIntermConstant* index = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
 				index->setValue(fields.offsets[0]);
 				$$ = parseContext.intermediate.addIndex(EOpIndexDirect, $1, index, $2.line);
 				$$->setType(TType($1->getBasicType(), $1->getPrecision()));
@@ -352,7 +352,7 @@ postfix_expression
                     }                
                 }
                 if (fieldFound) {
-					TIntermConstant* index = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
+					TIntermConstant* index = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
 					index->setValue(i);
 					$$ = parseContext.intermediate.addIndex(EOpIndexDirectStruct, $1, index, $2.line);                
 					$$->setType(*(*fields)[i].type);
@@ -428,7 +428,7 @@ function_call
                 parseContext.recover();
             }
 
-			TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtInt, EbpUndefined, EvqConst), $1.line);
+			TIntermConstant* constant = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), $1.line);
 			constant->setValue($1.intermNode->getAsTyped()->getType().getArraySize());
             $$ = constant;
         } else if (op != EOpNull) {
@@ -523,7 +523,7 @@ function_call
                 // error message was put out by PaFindFunction()
                 // Put on a dummy node for error recovery
                 
-				TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
+				TIntermConstant* constant = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), $1.line);
 				constant->setValue(0.f);
 				$$ = constant;
                 parseContext.recover();
@@ -887,7 +887,7 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "<", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
 			constant->setValue(false);
 			$$ = constant;
         }
@@ -897,7 +897,7 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, ">", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
 			constant->setValue(false);
 			$$ = constant;
         }
@@ -907,7 +907,7 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "<=", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
 			constant->setValue(false);
 			$$ = constant;
         }
@@ -917,7 +917,7 @@ relational_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, ">=", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
 			constant->setValue(false);
 			$$ = constant;
         }
@@ -931,7 +931,7 @@ equality_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "==", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
 			constant->setValue(false);
 			$$ = constant;
         } else if (($1->isArray() || $3->isArray()))
@@ -942,7 +942,7 @@ equality_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "!=", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
 			constant->setValue(false);
 			$$ = constant;
         } else if (($1->isArray() || $3->isArray()))
@@ -996,7 +996,7 @@ logical_and_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "&&", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
 			constant->setValue(false);
 			$$ = constant;
         }
@@ -1010,7 +1010,7 @@ logical_xor_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "^^", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
 			constant->setValue(false);
 			$$ = constant;
         }
@@ -1024,7 +1024,7 @@ logical_or_expression
         if ($$ == 0) {
             parseContext.binaryOpError($2.line, "||", $1->getCompleteString(), $3->getCompleteString());
             parseContext.recover();
-            TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
+            TIntermConstant* constant = ir_add_constant(TType(EbtBool, EbpUndefined, EvqConst), $2.line);
 			constant->setValue(false);
 			$$ = constant;
         }
@@ -2551,7 +2551,7 @@ type_info
 
 sampler_initializer
 	: SAMPLERSTATE LEFT_BRACE sampler_init_list RIGHT_BRACE {
-		TIntermConstant* constant = parseContext.intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst, 1), $1.line);
+		TIntermConstant* constant = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst, 1), $1.line);
 		constant->setValue(0.f);
 		$$ = constant;
 	}

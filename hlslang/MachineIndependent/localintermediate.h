@@ -23,6 +23,9 @@ class TInfoSink;
 
 TIntermSymbol* ir_add_symbol(int Id, const TString&, const TType&, TSourceLoc);
 TIntermSymbol* ir_add_symbol(int id, const TString& name, const TTypeInfo *info, const TType& type, TSourceLoc line);
+TIntermTyped* ir_add_conversion(TOperator, const TType&, TIntermTyped*, TInfoSink& infoSink);
+TIntermTyped* ir_promote_constant(TBasicType, TIntermConstant*, TInfoSink& infoSink);
+TIntermConstant* ir_add_constant(const TType&, TSourceLoc);
 
 class TIntermediate
 {
@@ -32,7 +35,6 @@ public:
 	TIntermediate(TInfoSink& i) : infoSink(i)
 	{
 	}
-	TIntermTyped* addConversion(TOperator, const TType&, TIntermTyped*);
 	TIntermTyped* addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
 	TIntermTyped* addAssign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
 	TIntermTyped* addIndex(TOperator op, TIntermTyped* base, TIntermTyped* index, TSourceLoc);
@@ -48,8 +50,6 @@ public:
 	TIntermNode*  addSelection(TIntermTyped* cond, TIntermNodePair code, TSourceLoc);
 	TIntermTyped* addSelection(TIntermTyped* cond, TIntermTyped* trueBlock, TIntermTyped* falseBlock, TSourceLoc);
 	TIntermTyped* addComma(TIntermTyped* left, TIntermTyped* right, TSourceLoc);
-	TIntermConstant* addConstant(const TType&, TSourceLoc);
-	TIntermTyped* promoteConstant(TBasicType, TIntermConstant*) ;
 	TIntermNode* addLoop(TLoopType type, TIntermTyped* cond, TIntermTyped* expr, TIntermNode* body, TSourceLoc line);
 	TIntermBranch* addBranch(TOperator, TSourceLoc);
 	TIntermBranch* addBranch(TOperator, TIntermTyped*, TSourceLoc);

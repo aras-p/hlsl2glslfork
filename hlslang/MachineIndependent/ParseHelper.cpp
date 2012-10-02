@@ -1230,7 +1230,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 		type = variable->getType();
 	}
 	
-	TIntermTyped* converted = intermediate.addConversion(EOpAssign, type, initializer);
+	TIntermTyped* converted = ir_add_conversion(EOpAssign, type, initializer, infoSink);
 	if (converted)
 		initializer = converted;
 
@@ -1492,7 +1492,7 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
 				for ( int nPad = 0; nPad < nNumZerosToPad; nPad++ )
 				{
 					// Create a new constant with value 0.0 and add the constant to the aggregrate node
-					TIntermConstant *constant = intermediate.addConstant(TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());
+					TIntermConstant *constant = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());
 					constant->setValue(0.f);
 					tempAgg = intermediate.growAggregate (tempAgg, constant, tNode->getLine()); 
 				}
@@ -1643,9 +1643,9 @@ TIntermTyped* TParseContext::constructStruct(TIntermNode* node, TType* type, int
 	if (*type == node->getAsTyped()->getType())
 		result = subset ? node->getAsTyped() : intermediate.setAggregateOperator(node->getAsTyped(), EOpConstructStruct, line);
 	else if (node->getAsConstant())
-		result = intermediate.promoteConstant(type->getBasicType(), node->getAsConstant());
+		result = ir_promote_constant(type->getBasicType(), node->getAsConstant(), infoSink);
 	else if (node->getAsTyped())
-		result = intermediate.addConversion(EOpAssign, *type, node->getAsTyped());
+		result = ir_add_conversion(EOpAssign, *type, node->getAsTyped(), infoSink);
 		
 	if (result)
 		return result;
