@@ -33,6 +33,8 @@ TIntermBranch* ir_add_branch(TOperator, TIntermTyped*, TSourceLoc);
 TIntermNode* ir_add_loop(TLoopType type, TIntermTyped* cond, TIntermTyped* expr, TIntermNode* body, TSourceLoc line);
 TIntermTyped* ir_add_swizzle(TVectorFields&, TSourceLoc);
 TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc, TInfoSink& infoSink);
+TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink);
+TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink);
 
 TIntermTyped* ir_add_conversion(TOperator, const TType&, TIntermTyped*, TInfoSink& infoSink);
 
@@ -55,8 +57,6 @@ public:
 	TIntermTyped* addBinaryMath(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);
 	TIntermTyped* addUnaryMath(TOperator op, TIntermNode* child, TSourceLoc);
 
-	TIntermDeclaration* addDeclaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line);
-	TIntermDeclaration* addDeclaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line);
 	void remove(TIntermNode*);
 	void outputTree(TIntermNode*);
 

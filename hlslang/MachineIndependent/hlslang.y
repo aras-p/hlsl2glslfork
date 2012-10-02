@@ -1572,7 +1572,7 @@ single_declaration
 		
 		TSymbol* symbol = parseContext.symbolTable.find(*$2.string);
 		if (!error && symbol) {
-			$$ = parseContext.intermediate.addDeclaration(symbol, NULL, $2.line);
+			$$ = ir_add_declaration(symbol, NULL, $2.line, parseContext.infoSink);
 		} else {
 			$$ = 0;
 		}
@@ -1595,7 +1595,7 @@ single_declaration
 		
 		TSymbol* symbol = parseContext.symbolTable.find(*$2.string);
 		if (symbol) {
-			$$ = parseContext.intermediate.addDeclaration(symbol, NULL, $2.line);
+			$$ = ir_add_declaration(symbol, NULL, $2.line, parseContext.infoSink);
 		} else {
 			$$ = 0;
 		}
@@ -1620,7 +1620,7 @@ single_declaration
                 parseContext.recover();
 			
 			if (variable) {
-				$$ = parseContext.intermediate.addDeclaration(variable, NULL, $2.line);
+				$$ = ir_add_declaration(variable, NULL, $2.line, parseContext.infoSink);
 			} else {
 				$$ = 0;
 			}
@@ -1643,7 +1643,7 @@ single_declaration
 			TIntermSymbol* symbol;
 			if (!parseContext.executeInitializer($2.line, *$2.string, $5, $1, $7, symbol, variable)) {
 				if (variable)
-					$$ = parseContext.intermediate.addDeclaration(symbol, $7, $6.line);
+					$$ = ir_add_declaration(symbol, $7, $6.line, parseContext.infoSink);
 				else
 					$$ = 0;
 			} else {
@@ -1673,7 +1673,7 @@ single_declaration
 			TIntermSymbol* symbol;
 			if (!parseContext.executeInitializer($2.line, *$2.string, $6, $1, $8, symbol, variable)) {
 				if (variable)
-					$$ = parseContext.intermediate.addDeclaration(symbol, $8, $7.line);
+					$$ = ir_add_declaration(symbol, $8, $7.line, parseContext.infoSink);
 				else
 					$$ = 0;
 			} else {
@@ -1690,7 +1690,7 @@ single_declaration
 			TIntermSymbol* symbol;
 			if (!parseContext.executeInitializer($2.line, *$2.string, $3, $1, $5, symbol)) {
 				if (symbol)
-					$$ = parseContext.intermediate.addDeclaration(symbol, $5, $4.line);
+					$$ = ir_add_declaration(symbol, $5, $4.line, parseContext.infoSink);
 				else
 					$$ = 0;
 			} else {
@@ -2189,7 +2189,7 @@ condition
             parseContext.recover();
         
         if (!parseContext.executeInitializer($2.line, *$2.string, $1, $4, symbol)) {
-			$$ = parseContext.intermediate.addDeclaration(symbol, $4, $2.line);
+			$$ = ir_add_declaration(symbol, $4, $2.line, parseContext.infoSink);
         } else {
             parseContext.recover();
             $$ = 0;

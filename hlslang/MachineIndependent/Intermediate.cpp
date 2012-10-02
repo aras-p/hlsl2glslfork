@@ -534,7 +534,8 @@ TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* n
    }
 }
 
-TIntermDeclaration* TIntermediate::addDeclaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line) {
+TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink)
+{
 	TIntermDeclaration* decl = new TIntermDeclaration(symbol->getType());
 	decl->setLine(line);
 	
@@ -546,12 +547,13 @@ TIntermDeclaration* TIntermediate::addDeclaration(TIntermSymbol* symbol, TInterm
 	return decl;
 }
 
-TIntermDeclaration* TIntermediate::addDeclaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line) {
+TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink)
+{
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = ir_add_symbol(var->getUniqueId(), var->getName(), var->getType(), line);
 	sym->setGlobal(symbol->isGlobal());
 
-	return addDeclaration(sym, initializer, line);
+	return ir_add_declaration(sym, initializer, line, infoSink);
 }
 
 
