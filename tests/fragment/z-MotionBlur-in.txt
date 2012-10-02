@@ -1,3 +1,5 @@
+// motion blur reconstruction filter pass
+
 uniform float4 _ZBufferParams ;
 inline float Linear01Depth ( float z )
 {
@@ -47,7 +49,6 @@ float softDepthCompare ( float za , float zb )
     return clamp ( 1.0 - ( za - zb ) / _SoftZDistance , 0.0 , 1.0 ) ;
 }
 
-// reconstruction filter motion blur
 float4 main ( v2f i ) : COLOR
 {
     float2 x = i . uv ;
