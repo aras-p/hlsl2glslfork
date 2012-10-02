@@ -785,7 +785,8 @@ TIntermConstant* ir_add_constant(const TType& t, TSourceLoc line)
 	return node;
 }
 
-TIntermTyped* TIntermediate::addSwizzle(TVectorFields& fields, TSourceLoc line)
+
+TIntermTyped* ir_add_swizzle(TVectorFields& fields, TSourceLoc line)
 {
 	TIntermAggregate* node = new TIntermAggregate(EOpSequence);
 
@@ -803,14 +804,16 @@ TIntermTyped* TIntermediate::addSwizzle(TVectorFields& fields, TSourceLoc line)
 	return node;
 }
 
-// Create loop nodes.
-TIntermNode* TIntermediate::addLoop(TLoopType type, TIntermTyped* cond, TIntermTyped* expr, TIntermNode* body, TSourceLoc line)
-{
-   TIntermNode* node = new TIntermLoop(type, cond, expr, body);
-   node->setLine(line);
 
-   return node;
+// Create loop nodes
+TIntermNode* ir_add_loop(TLoopType type, TIntermTyped* cond, TIntermTyped* expr, TIntermNode* body, TSourceLoc line)
+{
+	TIntermNode* node = new TIntermLoop(type, cond, expr, body);
+	node->setLine(line);
+
+	return node;
 }
+
 
 //
 // Add branches.

@@ -319,7 +319,7 @@ postfix_expression
 				$$->setType(TType($1->getBasicType(), $1->getPrecision()));
 			} else {
 				TString vectorString = *$3.string;
-				TIntermTyped* index = parseContext.intermediate.addSwizzle(fields, $3.line);                
+				TIntermTyped* index = ir_add_swizzle(fields, $3.line);                
 				$$ = ir_add_index(EOpVectorSwizzle, $1, index, $2.line);
 				$$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, (int) vectorString.size()));  
 			}
@@ -332,7 +332,7 @@ postfix_expression
             }
 
             TString vectorString = *$3.string;
-            TIntermTyped* index = parseContext.intermediate.addSwizzle(fields, $3.line);                
+            TIntermTyped* index = ir_add_swizzle(fields, $3.line);                
             $$ = ir_add_index(EOpMatrixSwizzle, $1, index, $2.line);
             $$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, fields.num));
                     
@@ -2200,14 +2200,14 @@ condition
 iteration_statement
     : WHILE LEFT_PAREN { parseContext.symbolTable.push(); ++parseContext.loopNestingLevel; } condition RIGHT_PAREN statement_no_new_scope { 
         parseContext.symbolTable.pop();
-        $$ = parseContext.intermediate.addLoop(ELoopWhile, $4, 0, $6, $1.line);
+        $$ = ir_add_loop(ELoopWhile, $4, 0, $6, $1.line);
         --parseContext.loopNestingLevel;
     }
     | DO { ++parseContext.loopNestingLevel; } statement WHILE LEFT_PAREN expression RIGHT_PAREN SEMICOLON {
         if (parseContext.boolErrorCheck($8.line, $6))
             parseContext.recover();
                     
-        $$ = parseContext.intermediate.addLoop(ELoopDoWhile, $6, 0, $3, $4.line);
+        $$ = ir_add_loop(ELoopDoWhile, $6, 0, $3, $4.line);
         --parseContext.loopNestingLevel;
     }
     | FOR LEFT_PAREN { parseContext.symbolTable.push(); ++parseContext.loopNestingLevel; } for_init_statement for_rest_statement RIGHT_PAREN statement_no_new_scope {
@@ -2215,7 +2215,7 @@ iteration_statement
         $$ = ir_make_aggregate($4, $2.line);
         $$ = ir_grow_aggregate(
                 $$,
-                parseContext.intermediate.addLoop(ELoopFor, reinterpret_cast<TIntermTyped*>($5.node1), reinterpret_cast<TIntermTyped*>($5.node2), $7, $1.line),
+                ir_add_loop(ELoopFor, reinterpret_cast<TIntermTyped*>($5.node1), reinterpret_cast<TIntermTyped*>($5.node2), $7, $1.line),
                 $1.line);
         $$->getAsAggregate()->setOperator(EOpSequence);
         --parseContext.loopNestingLevel;
