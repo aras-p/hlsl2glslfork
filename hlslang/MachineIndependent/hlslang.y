@@ -38,12 +38,6 @@ Jutta Degener, 1995
     extern void yyerror(char*);
 #endif
 
-#define VERTEX_ONLY(S, L) {                                                     \
-    if (parseContext.language != EShLangVertex) {                               \
-        parseContext.error(L, " supported in vertex shaders only ", S, "", "");            \
-        parseContext.recover();                                                            \
-    }                                                                           \
-}
 
 #define FRAG_ONLY(S, L) {                                                       \
     if (parseContext.language != EShLangFragment) {                             \
@@ -106,11 +100,11 @@ Jutta Degener, 1995
 
 %pure_parser /* Just in case is called from multiple threads */
 %expect 1 /* One shift reduce conflict because of if | else */
-%token <lex> ATTRIBUTE CONST_QUAL STATIC_QUAL BOOL_TYPE FLOAT_TYPE INT_TYPE STRING_TYPE FIXED_TYPE HALF_TYPE
+%token <lex> CONST_QUAL STATIC_QUAL BOOL_TYPE FLOAT_TYPE INT_TYPE STRING_TYPE FIXED_TYPE HALF_TYPE
 %token <lex> BREAK CONTINUE DO ELSE FOR IF DISCARD RETURN
 %token <lex> BVEC2 BVEC3 BVEC4 IVEC2 IVEC3 IVEC4 VEC2 VEC3 VEC4 HVEC2 HVEC3 HVEC4 FVEC2 FVEC3 FVEC4
 %token <lex> MATRIX2 MATRIX3 MATRIX4 HMATRIX2 HMATRIX3 HMATRIX4 FMATRIX2 FMATRIX3 FMATRIX4
-%token <lex> IN_QUAL OUT_QUAL INOUT_QUAL UNIFORM VARYING
+%token <lex> IN_QUAL OUT_QUAL INOUT_QUAL UNIFORM
 %token <lex> STRUCT VOID_TYPE WHILE
 %token <lex> SAMPLER1D SAMPLER2D SAMPLER3D SAMPLERCUBE SAMPLER1DSHADOW SAMPLER2DSHADOW SAMPLERRECTSHADOW SAMPLERRECT
 %token <lex> SAMPLERGENERIC VECTOR MATRIX REGISTER TEXTURE SAMPLERSTATE
@@ -1765,20 +1759,6 @@ type_qualifier
     }
     | STATIC_QUAL CONST_QUAL {
         $$.setBasic(EbtVoid, EvqStaticConst, $1.line);
-    }
-    | ATTRIBUTE { 
-        VERTEX_ONLY("attribute", $1.line);
-        if (parseContext.globalErrorCheck($1.line, parseContext.symbolTable.atGlobalLevel(), "attribute"))
-            parseContext.recover();
-        $$.setBasic(EbtVoid, EvqAttribute, $1.line);
-    }
-    | VARYING {
-        if (parseContext.globalErrorCheck($1.line, parseContext.symbolTable.atGlobalLevel(), "varying"))
-            parseContext.recover();
-        if (parseContext.language == EShLangVertex)
-            $$.setBasic(EbtVoid, EvqVaryingOut, $1.line);
-        else
-            $$.setBasic(EbtVoid, EvqVaryingIn, $1.line);
     }
     | UNIFORM {
         if (parseContext.globalErrorCheck($1.line, parseContext.symbolTable.atGlobalLevel(), "uniform"))
