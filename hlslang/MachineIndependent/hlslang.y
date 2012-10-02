@@ -668,67 +668,67 @@ function_identifier
         }
     }
     | IDENTIFIER {
-        if (parseContext.reservedErrorCheck($1.line, *$1.string)) 
-            parseContext.recover();
-        TType type(EbtVoid, EbpUndefined);
-	const TString *mangled;
-	if ( *$1.string == "main")
-	    mangled = NewPoolTString("xlat_main");
-	else
-	    mangled = $1.string;
-        TFunction *function = new TFunction( mangled, type);
-        $$ = function;
-    }
+		if (parseContext.reservedErrorCheck($1.line, *$1.string)) 
+			parseContext.recover();
+		TType type(EbtVoid, EbpUndefined);
+		const TString *mangled;
+		if ( *$1.string == "main")
+			mangled = NewPoolTString("xlat_main");
+		else
+			mangled = $1.string;
+		TFunction *function = new TFunction( mangled, type);
+		$$ = function;
+	}
     | FIELD_SELECTION {
-        if (parseContext.reservedErrorCheck($1.line, *$1.string)) 
-            parseContext.recover();
-        TType type(EbtVoid, EbpUndefined);
-        TFunction *function = new TFunction($1.string, type);
-        $$ = function;
+		if (parseContext.reservedErrorCheck($1.line, *$1.string)) 
+			parseContext.recover();
+		TType type(EbtVoid, EbpUndefined);
+		TFunction *function = new TFunction($1.string, type);
+		$$ = function;
     }
     ;
 
 unary_expression
     : postfix_expression {
-        $$ = $1;
+		$$ = $1;
     }
     | INC_OP unary_expression {
-        if (parseContext.lValueErrorCheck($1.line, "++", $2))
-            parseContext.recover();
-        $$ = ir_add_unary_math(EOpPreIncrement, $2, $1.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.unaryOpError($1.line, "++", $2->getCompleteString());
-            parseContext.recover();
-            $$ = $2;
-        }
+		if (parseContext.lValueErrorCheck($1.line, "++", $2))
+			parseContext.recover();
+		$$ = ir_add_unary_math(EOpPreIncrement, $2, $1.line, parseContext.infoSink);
+		if ($$ == 0) {
+			parseContext.unaryOpError($1.line, "++", $2->getCompleteString());
+			parseContext.recover();
+			$$ = $2;
+		}
     }
     | DEC_OP unary_expression {
         if (parseContext.lValueErrorCheck($1.line, "--", $2))
             parseContext.recover();
-        $$ = ir_add_unary_math(EOpPreDecrement, $2, $1.line, parseContext.infoSink);
-        if ($$ == 0) {
-            parseContext.unaryOpError($1.line, "--", $2->getCompleteString());
-            parseContext.recover();
-            $$ = $2;
-        }
+		$$ = ir_add_unary_math(EOpPreDecrement, $2, $1.line, parseContext.infoSink);
+		if ($$ == 0) {
+			parseContext.unaryOpError($1.line, "--", $2->getCompleteString());
+			parseContext.recover();
+			$$ = $2;
+		}
     }
     | unary_operator unary_expression {
-        if ($1.op != EOpNull) {
-            $$ = ir_add_unary_math($1.op, $2, $1.line, parseContext.infoSink);
-            if ($$ == 0) {
-                const char* errorOp = "";
-                switch($1.op) {
-                case EOpNegative:   errorOp = "-"; break;
-                case EOpLogicalNot: errorOp = "!"; break;
-                case EOpBitwiseNot: errorOp = "~"; break;
-				default: break;
-                }
-                parseContext.unaryOpError($1.line, const_cast<char*> (errorOp), $2->getCompleteString());
-                parseContext.recover();
-                $$ = $2;
-            }
-        } else
-            $$ = $2;
+		if ($1.op != EOpNull) {
+			$$ = ir_add_unary_math($1.op, $2, $1.line, parseContext.infoSink);
+			if ($$ == 0) {
+				const char* errorOp = "";
+				switch($1.op) {
+					case EOpNegative:   errorOp = "-"; break;
+					case EOpLogicalNot: errorOp = "!"; break;
+					case EOpBitwiseNot: errorOp = "~"; break;
+					default: break;
+				}
+				parseContext.unaryOpError($1.line, const_cast<char*> (errorOp), $2->getCompleteString());
+				parseContext.recover();
+				$$ = $2;
+			}
+		} else
+			$$ = $2;
     }
     | LEFT_PAREN type_specifier_nonarray RIGHT_PAREN unary_expression {
         // cast operator, insert constructor
