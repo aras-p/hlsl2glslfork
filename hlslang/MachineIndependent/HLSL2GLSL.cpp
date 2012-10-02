@@ -42,7 +42,6 @@ TPoolAllocator* PerProcessGPA = 0;
 static bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage language, TInfoSink& infoSink, 
                             TSymbolTable* symbolTables, bool bUseGlobalSymbolTable )
 {
-   TIntermediate intermediate(infoSink); 
    TSymbolTable* symbolTable;
 
    if ( bUseGlobalSymbolTable )
@@ -52,7 +51,7 @@ static bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage 
 
 	//@TODO: for now, we use same global symbol table for all target language versions.
 	// This is wrong and will have to be changed at some point.
-	TParseContext parseContext(*symbolTable, intermediate, language, ETargetGLSL_ES_100, 0, infoSink);
+	TParseContext parseContext(*symbolTable, language, ETargetGLSL_ES_100, 0, infoSink);
 
    GlobalParseContext = &parseContext;
 
@@ -239,12 +238,11 @@ int C_DECL Hlsl2Glsl_Parse(
    if (!shaderString)
 	   return 1;
 
-   TIntermediate intermediate(compiler->infoSink);
    TSymbolTable symbolTable(SymbolTables[compiler->getLanguage()]);
 
    GenerateBuiltInSymbolTable(compiler->infoSink, &symbolTable, compiler->getLanguage());
 
-   TParseContext parseContext(symbolTable, intermediate, compiler->getLanguage(), targetVersion, options, compiler->infoSink);
+   TParseContext parseContext(symbolTable, compiler->getLanguage(), targetVersion, options, compiler->infoSink);
 
    GlobalParseContext = &parseContext;
 

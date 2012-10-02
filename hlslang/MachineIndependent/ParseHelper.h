@@ -15,9 +15,8 @@
 //
 struct TParseContext
 {
-	TParseContext(TSymbolTable& symt, TIntermediate& interm, EShLanguage L, ETargetVersion ver, unsigned opts, TInfoSink& is)
-	: intermediate(interm)
-	, symbolTable(symt)
+	TParseContext(TSymbolTable& symt, EShLanguage L, ETargetVersion ver, unsigned opts, TInfoSink& is)
+	: symbolTable(symt)
 	, infoSink(is)
 	, language(L)
 	, targetVersion(ver)
@@ -82,7 +81,6 @@ struct TParseContext
 	TIntermNode* promoteFunctionArguments( TIntermNode *node, const TFunction* func);
 	
 public:
-	TIntermediate& intermediate; // to hold and build a parse tree
 	TSymbolTable& symbolTable;   // symbol table that goes with the language currently being parsed
 	TInfoSink& infoSink;
 	

@@ -51,21 +51,6 @@ TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TSymbol
 void ir_output_tree(TIntermNode* root, TInfoSink& infoSink);
 
 
-class TIntermediate
-{
-public:    
-	POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
-
-	TIntermediate(TInfoSink& i) : infoSink(i)
-	{
-	}
-
-private:
-	TInfoSink& infoSink;
-
-private:
-	void operator=(TIntermediate&); // prevent assignments
-};
 
 #endif // _LOCAL_INTERMEDIATE_INCLUDED_
 
