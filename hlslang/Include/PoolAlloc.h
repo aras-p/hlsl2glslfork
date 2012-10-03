@@ -8,8 +8,8 @@
 
 //
 // This header defines an allocator that can be used to efficiently
-// allocate a large number of small requests for heap memory, with the 
-// intention that they are not individually deallocated, but rather 
+// allocate a large number of small requests for heap memory, with the
+// intention that they are not individually deallocated, but rather
 // collectively deallocated at one time.
 //
 // This simultaneously
@@ -35,14 +35,14 @@ typedef void*(*GlobalAllocateFunction)(unsigned, void*);
 typedef void(*GlobalFreeFunction)(void*, void*);
 void SetGlobalAllocationAllocator(GlobalAllocateFunction alloc, GlobalFreeFunction free, void* user);
 
-class TAllocation 
+class TAllocation
 {
 public:
    TAllocation(size_t size, unsigned char* mem, TAllocation* prev = 0) :
-      size(size), mem(mem), prevAlloc(prev) 
+      size(size), mem(mem), prevAlloc(prev)
    {
    }
-    
+
 private:
    unsigned char* data()      const { return mem; }
 
@@ -50,10 +50,10 @@ private:
    unsigned char* mem;           // beginning of our allocation (pts to header)
    TAllocation* prevAlloc;       // prior allocation in the chain
 };
-    
+
 //
 // There are several stacks.  One is to track the pushing and popping
-// of the user, and not yet implemented.  The others are simply a 
+// of the user, and not yet implemented.  The others are simply a
 // repositories of free pages or used pages.
 //
 // Page stacks are linked together with a simple header at the beginning
@@ -62,7 +62,7 @@ private:
 // re-use.
 //
 // The "page size" used is not, nor must it match, the underlying OS
-// page size.  But, having it be about that size or equal to a set of 
+// page size.  But, having it be about that size or equal to a set of
 // pages is likely most optimal.
 //
 class TPoolAllocator {
@@ -106,15 +106,15 @@ public:
 
 protected:
    friend struct tHeader;
-    
-   struct tHeader 
+
+   struct tHeader
    {
       tHeader(tHeader* nextPage, size_t pageCount) :
-         nextPage(nextPage), pageCount(pageCount) 
-      { 
+         nextPage(nextPage), pageCount(pageCount)
+      {
       }
 
-      ~tHeader() 
+      ~tHeader()
       {
       }
 
@@ -122,7 +122,7 @@ protected:
       size_t pageCount;
    };
 
-   struct tAllocState 
+   struct tAllocState
    {
       size_t offset;
       tHeader* page;
@@ -131,7 +131,7 @@ protected:
 
    bool global;            // should be true if this object is globally scoped
    size_t pageSize;        // granularity of allocation from the OS
-   size_t alignment;       // all returned allocations will be aligned at 
+   size_t alignment;       // all returned allocations will be aligned at
                          //      this granularity, which will be a power of 2
    size_t alignmentMask;
    size_t headerSkip;      // amount of memory to skip to make room for the
@@ -175,7 +175,7 @@ void SetGlobalPoolAllocatorPtr(TPoolAllocator* poolAllocator);
 // do any deallocation, but will still do destruction.
 //
 template<class T>
-class pool_allocator 
+class pool_allocator
 {
 public:
    typedef size_t size_type;
@@ -185,8 +185,8 @@ public:
    typedef T& reference;
    typedef const T& const_reference;
    typedef T value_type;
-   template<class Other> 
-      struct rebind 
+   template<class Other>
+      struct rebind
       {
          typedef pool_allocator<Other> other;
       };
@@ -196,9 +196,14 @@ public:
 #ifdef USING_SGI_STL
    pool_allocator()  { }
 #else
-   pool_allocator() : allocator(GlobalPoolAllocator) { }
-   pool_allocator(TPoolAllocator& a) : allocator(a) { }
+   pool_allocator() : allocator(&GlobalPoolAllocator) { }
+   pool_allocator(TPoolAllocator& a) : allocator(&a) { }
    pool_allocator(const pool_allocator<T>& p) : allocator(p.allocator) { }
+   pool_allocator& operator= (const pool_allocator<T>& rhs)
+   {
+      allocator = rhs.allocator;
+      return *this;
+   }
 #endif
 
 #if defined(_MSC_VER) && _MSC_VER >= 1300
@@ -206,44 +211,44 @@ public:
 #ifdef USING_SGI_STL
       pool_allocator(const pool_allocator<Other>& p) /*: allocator(p.getAllocator())*/ { }
 #else
-      pool_allocator(const pool_allocator<Other>& p) : allocator(p.getAllocator()) { }
+      pool_allocator(const pool_allocator<Other>& p) : allocator(&p.getAllocator()) { }
 #endif
 #endif
 
 #ifndef _WIN32
       template<class Other>
-         pool_allocator(const pool_allocator<Other>& p) : allocator(p.getAllocator()) { }
+         pool_allocator(const pool_allocator<Other>& p) : allocator(&p.getAllocator()) { }
 #endif
 
 #ifdef USING_SGI_STL
-   static pointer allocate(size_type n) 
+   static pointer allocate(size_type n)
    {
-      return reinterpret_cast<pointer>(getAllocator().allocate(n)); 
+      return reinterpret_cast<pointer>(getAllocator().allocate(n));
    }
-   pointer allocate(size_type n, const void*) 
-   { 
-      return reinterpret_cast<pointer>(getAllocator().allocate(n)); 
+   pointer allocate(size_type n, const void*)
+   {
+      return reinterpret_cast<pointer>(getAllocator().allocate(n));
    }
 
    static void deallocate(void*, size_type) { }
    static void deallocate(pointer, size_type) { }
 #else
-   pointer allocate(size_type n) 
-   { 
-      return reinterpret_cast<pointer>(getAllocator().allocate(n * sizeof(T))); 
+   pointer allocate(size_type n)
+   {
+      return reinterpret_cast<pointer>(getAllocator().allocate(n * sizeof(T)));
    }
-   pointer allocate(size_type n, const void*) 
-   { 
-      return reinterpret_cast<pointer>(getAllocator().allocate(n * sizeof(T))); 
+   pointer allocate(size_type n, const void*)
+   {
+      return reinterpret_cast<pointer>(getAllocator().allocate(n * sizeof(T)));
    }
 
    void deallocate(void*, size_type) { }
    void deallocate(pointer, size_type) { }
 #endif
 
-   pointer _Charalloc(size_t n) 
+   pointer _Charalloc(size_t n)
    {
-      return reinterpret_cast<pointer>(getAllocator().allocate(n)); 
+      return reinterpret_cast<pointer>(getAllocator().allocate(n));
    }
 
    void construct(pointer p, const T& val) { new ((void *)p) T(val); }
@@ -259,11 +264,11 @@ public:
    //void setAllocator(TPoolAllocator* a) { allocator = a; }
    static  TPoolAllocator& getAllocator() { return GlobalPoolAllocator; }
 #else
-   void setAllocator(TPoolAllocator* a) { allocator = *a; }
-   TPoolAllocator& getAllocator() const { return allocator; }
+   void setAllocator(TPoolAllocator* a) { allocator = a; }
+   TPoolAllocator& getAllocator() const { return *allocator; }
 
 protected:
-   TPoolAllocator& allocator;
+   TPoolAllocator* allocator;
 #endif
 };
 
