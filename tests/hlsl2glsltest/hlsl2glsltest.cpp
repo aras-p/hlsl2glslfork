@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <time.h>
+#include <assert.h>
 
 
 const bool kDumpShaderAST = false;

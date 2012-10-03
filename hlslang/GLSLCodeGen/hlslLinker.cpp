@@ -610,7 +610,7 @@ void HlslLinker::emitLibraryFunctions(const std::set<TOperator>& libFunctions, E
 	std::string shaderExtensions, shaderLibFunctions;
 	if (!libFunctions.empty())
 	{
-		for (std::set<TOperator>::iterator it = libFunctions.begin(); it != libFunctions.end(); it++)
+		for (std::set<TOperator>::const_iterator it = libFunctions.begin(); it != libFunctions.end(); it++)
 		{
 			const std::string &func = getHLSLSupportCode(*it, shaderExtensions, lang==EShLangVertex, usePrecision);
 			if (!func.empty())
