@@ -1540,9 +1540,6 @@ single_declaration
 				$$ = 0;
 			}
 		} else {
-			//Skip sampler initializers for now
-			$$ = 0;
-
 			if (parseContext.structQualifierErrorCheck($2.line, $1))
 				parseContext.recover();
 
@@ -1551,6 +1548,13 @@ single_declaration
 
 			if (parseContext.nonInitErrorCheck($2.line, *$2.string, $3, $1))
 				parseContext.recover();
+				
+			TSymbol* symbol = parseContext.symbolTable.find(*$2.string);
+			if (symbol) {
+				$$ = ir_add_declaration(symbol, NULL, $2.line, parseContext.infoSink);
+			} else {
+				$$ = 0;
+			}
 		}
     }
     ;
