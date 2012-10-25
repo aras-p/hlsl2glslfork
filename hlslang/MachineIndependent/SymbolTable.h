@@ -75,12 +75,12 @@ protected:
 //
 class TVariable : public TSymbol {
 public:
-	TVariable(const TString *name, const TType& t, bool uT = false ) : TSymbol(name), type(t), userType(uT), arrayInformationType(0)
+	TVariable(const TString *name, const TType& t, bool uT = false ) : TSymbol(name), type(t), userType(uT), arrayInformationType(0), constValue(0)
 	{
 		changeQualifier(type.getQualifier());
 	}
 	
-	TVariable(const TString *name, const TTypeInfo* info, const TType& t, bool uT = false ) : TSymbol(name, info), type(t), userType(uT), arrayInformationType(0)
+	TVariable(const TString *name, const TTypeInfo* info, const TType& t, bool uT = false ) : TSymbol(name, info), type(t), userType(uT), arrayInformationType(0), constValue(0)
 	{
 		changeQualifier(type.getQualifier());
 	}
@@ -95,14 +95,14 @@ public:
 	void updateArrayInformationType(TType *t) { arrayInformationType = t; }
 	TType* getArrayInformationType() { return arrayInformationType; }
 	
-	bool isConstant() const { return type.getQualifier() == EvqConst; }
 	virtual void dump(TInfoSink &infoSink) const;
 
 	TVariable(const TVariable&, TStructureMap& remapper); // copy constructor
 	virtual TVariable* clone(TStructureMap& remapper);
 
+	TIntermConstant* constValue;
+	
 protected:
-	bool foldable;
 	TType type;
 	bool userType;
 	TType *arrayInformationType;  // this is used for updating maxArraySize in all the references to a given symbol

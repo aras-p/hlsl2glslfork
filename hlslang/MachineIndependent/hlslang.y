@@ -190,12 +190,22 @@ variable_identifier
 
         // don't delete $1.string, it's used by error recovery, and the pool
         // pop will reclaim the memory
-		TIntermSymbol* sym = ir_add_symbol(variable->getUniqueId(), 
-                                                     variable->getName(),
-                                                     variable->getInfo(), 
-                                                     variable->getType(), $1.line);
-		sym->setGlobal(variable->isGlobal());
-		$$ = sym;
+		
+		if (variable->getType().getQualifier() == EvqConst && variable->constValue)
+		{
+			TIntermConstant* c = ir_add_constant(variable->getType(), $1.line);
+			c->copyValuesFrom(*variable->constValue);
+			$$ = c;
+		}
+		else
+		{
+			TIntermSymbol* sym = ir_add_symbol(variable->getUniqueId(), 
+														 variable->getName(),
+														 variable->getInfo(), 
+														 variable->getType(), $1.line);
+			sym->setGlobal(variable->isGlobal());
+			$$ = sym;
+		}
     }
     ;
 

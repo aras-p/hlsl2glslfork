@@ -1330,6 +1330,14 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 			return true;
 		}
 	}
+	
+
+	// constant initializer value, if present
+	if (initializer->getAsConstant())
+	{
+		variable->constValue = initializer->getAsConstant();
+	}
+	
 
 	if (qualifier == EvqUniform)
 	{

@@ -491,6 +491,8 @@ public:
 	unsigned getCount() {
 		return values.size();
 	}
+	
+	void copyValuesFrom(const TIntermConstant& c) { values = c.values; }
 
 	virtual void traverse(TIntermTraverser* );
 protected:
