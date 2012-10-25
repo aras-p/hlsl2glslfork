@@ -218,6 +218,20 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 	if (! node->promote(infoSink))
 		return 0;
 	
+	//
+	// See if we can fold constants
+	
+	TIntermConstant* constA = left->getAsConstant();
+	TIntermConstant* constB = right->getAsConstant();
+	
+	if (constA && constB)
+	{
+		TIntermConstant* FoldBinaryConstantExpression(TOperator op, TIntermConstant* nodeA, TIntermConstant* nodeB);
+		TIntermConstant* res = FoldBinaryConstantExpression(node->getOp(), constA, constB);
+		if (res)
+			return res;
+	}	
+	
 	return node;
 }
 
@@ -333,9 +347,7 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
    default: break;
    }
 
-   TIntermConstant *childTempConstant = 0;
-   if (child->getAsConstant())
-      childTempConstant = child->getAsConstant();
+   TIntermConstant* childConst = child->getAsConstant();
 
    //
    // Make a new node for the operator.
@@ -348,8 +360,21 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
 
    if (! node->promote(infoSink))
       return 0;
+	
+	
+	//
+	// See if we can fold constants
+	
+	if (childConst)
+	{
+		TIntermConstant* FoldUnaryConstantExpression(TOperator op, TIntermConstant* node);
+		TIntermConstant* res = FoldUnaryConstantExpression(node->getOp(), childConst);
+		if (res)
+			return res;
+	}	
+	
 
-   return node;
+	return node;
 }
 
 
