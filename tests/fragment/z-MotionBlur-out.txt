@@ -71,7 +71,7 @@ vec4 xlat_main( in v2f i ) {
     #line 64
     float weight = 1.0;
     vec4 sum = (cx * weight);
-    int centerSample = ((13 - 1) / 2);
+    int centerSample = 6;
     int i_1 = 0;
     for ( ; (i_1 < 13); (i_1++)) {
         #line 69

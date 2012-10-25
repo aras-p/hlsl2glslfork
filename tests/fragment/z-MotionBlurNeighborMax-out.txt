@@ -20,10 +20,10 @@ vec2 maxMag( in vec2 a, in vec2 b ) {
 #line 29
 vec4 xlat_main( in v2f i ) {
     vec2 mx = texture2D( _MainTex, i.uv).xy;
-    int j = (-1);
+    int j = -1;
     for ( ; (j < 2); (j++)) {
         #line 33
-        int l = (-1);
+        int l = -1;
         for ( ; (l < 2); (l++)) {
             vec2 v = texture2D( _MainTex, (i.uv + (vec2( float(l), float(j)) * _MainTex_TexelSize.xy))).xy;
             mx = maxMag( mx, v);

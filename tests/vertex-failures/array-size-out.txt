@@ -4,6 +4,7 @@
 9: ERROR: '' : constant expression required 
 9: ERROR: '' : array size must be a constant integer expression 
 14: ERROR: '[' :  array index out of range '10'
+15: ERROR: '[' :  array index out of range '10'
 16: ERROR: '[' :  array index out of range '10'
-ERROR: 7 compilation errors.  No code generated.
+ERROR: 8 compilation errors.  No code generated.
 

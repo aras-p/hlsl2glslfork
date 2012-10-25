@@ -53,8 +53,8 @@ highp vec4 FxaaPixelShader( in highp vec2 pos, in highp vec4 fxaaConsolePosPos, 
     #line 545
     highp float lumaS = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 0.0, 1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
     highp float lumaE = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 1.0, 0.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
-    highp float lumaN = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 0.0, float((-1))) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
-    highp float lumaW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( float((-1)), 0.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
+    highp float lumaN = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 0.0, -1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
+    highp float lumaW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( -1.0, 0.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
     #line 551
     highp float maxSM = max( lumaS, rgbyM.w);
     highp float minSM = min( lumaS, rgbyM.w);
@@ -75,10 +75,10 @@ highp vec4 FxaaPixelShader( in highp vec2 pos, in highp vec4 fxaaConsolePosPos, 
         return rgbyM;
     }
     #line 572
-    highp float lumaNW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( float((-1)), float((-1))) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
+    highp float lumaNW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( -1.0, -1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
     highp float lumaSE = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 1.0, 1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
-    highp float lumaNE = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 1.0, float((-1))) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
-    highp float lumaSW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( float((-1)), 1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
+    highp float lumaNE = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 1.0, -1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
+    highp float lumaSW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( -1.0, 1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
     #line 581
     highp float lumaNS = (lumaN + lumaS);
     highp float lumaWE = (lumaW + lumaE);

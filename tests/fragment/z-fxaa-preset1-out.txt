@@ -53,9 +53,9 @@ vec3 FxaaFilterReturn( in vec3 rgb ) {
 }
 #line 313
 vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
-    vec3 rgbN = FxaaTexOff( tex, pos.xy, vec2( 0.0, float((-1))), rcpFrame).xyz;
+    vec3 rgbN = FxaaTexOff( tex, pos.xy, vec2( 0.0, -1.0), rcpFrame).xyz;
     #line 317
-    vec3 rgbW = FxaaTexOff( tex, pos.xy, vec2( float((-1)), 0.0), rcpFrame).xyz;
+    vec3 rgbW = FxaaTexOff( tex, pos.xy, vec2( -1.0, 0.0), rcpFrame).xyz;
     vec3 rgbM = FxaaTexOff( tex, pos.xy, vec2( 0.0, 0.0), rcpFrame).xyz;
     vec3 rgbE = FxaaTexOff( tex, pos.xy, vec2( 1.0, 0.0), rcpFrame).xyz;
     vec3 rgbS = FxaaTexOff( tex, pos.xy, vec2( 0.0, 1.0), rcpFrame).xyz;
@@ -82,9 +82,9 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     float blendL = (max( 0.0, ((rangeL / range) - (1.0 / 4.0))) * (1.0 / (1.0 - (1.0 / 4.0))));
     blendL = min( (3.0 / 4.0), blendL);
     #line 355
-    vec3 rgbNW = FxaaTexOff( tex, pos.xy, vec2( float((-1)), float((-1))), rcpFrame).xyz;
-    vec3 rgbNE = FxaaTexOff( tex, pos.xy, vec2( 1.0, float((-1))), rcpFrame).xyz;
-    vec3 rgbSW = FxaaTexOff( tex, pos.xy, vec2( float((-1)), 1.0), rcpFrame).xyz;
+    vec3 rgbNW = FxaaTexOff( tex, pos.xy, vec2( -1.0, -1.0), rcpFrame).xyz;
+    vec3 rgbNE = FxaaTexOff( tex, pos.xy, vec2( 1.0, -1.0), rcpFrame).xyz;
+    vec3 rgbSW = FxaaTexOff( tex, pos.xy, vec2( -1.0, 1.0), rcpFrame).xyz;
     vec3 rgbSE = FxaaTexOff( tex, pos.xy, vec2( 1.0, 1.0), rcpFrame).xyz;
     #line 360
     rgbL += (((rgbNW + rgbNE) + rgbSW) + rgbSE);

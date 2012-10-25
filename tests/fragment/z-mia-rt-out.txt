@@ -434,8 +434,8 @@ void surf( in Input IN, inout MySurfaceOutput o ) {
     #line 386
     vec2 uv_BumpMap2 = ((IN.uv_MainTex.xy * _BumpMap2_ST.xy) + _BumpMap2_ST.zw);
     vec3 up = vec3( 0.0, 0.0, 1.0);
-    vec3 n1 = mix( up, max( vec3( float((-1)), float((-1)), 0.01), UnpackNormal( texture2D( _BumpMap, IN.uv_BumpMap))), vec3( _BumpMapFactor));
-    vec3 n2 = mix( up, max( vec3( float((-1)), float((-1)), 0.01), UnpackNormal( texture2D( _BumpMap2, uv_BumpMap2))), vec3( _BumpMapFactor2));
+    vec3 n1 = mix( up, max( vec3( -1.0, -1.0, 0.01), UnpackNormal( texture2D( _BumpMap, IN.uv_BumpMap))), vec3( _BumpMapFactor));
+    vec3 n2 = mix( up, max( vec3( -1.0, -1.0, 0.01), UnpackNormal( texture2D( _BumpMap2, uv_BumpMap2))), vec3( _BumpMapFactor2));
     #line 390
     o.Normal = CombineNormals( n1, n2);
     float NdotV = max( 0.0, dot( o.Normal, normalize(IN.viewDir)));

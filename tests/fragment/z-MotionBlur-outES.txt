@@ -71,7 +71,7 @@ highp vec4 xlat_main( in v2f i ) {
     #line 64
     highp float weight = 1.0;
     highp vec4 sum = (cx * weight);
-    highp int centerSample = ((13 - 1) / 2);
+    highp int centerSample = 6;
     highp int i_1 = 0;
     for ( ; (i_1 < 13); (i_1++)) {
         #line 69

@@ -53,8 +53,8 @@ vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, 
     #line 545
     float lumaS = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 0.0, 1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
     float lumaE = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 1.0, 0.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
-    float lumaN = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 0.0, float((-1))) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
-    float lumaW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( float((-1)), 0.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
+    float lumaN = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 0.0, -1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
+    float lumaW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( -1.0, 0.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
     #line 551
     float maxSM = max( lumaS, rgbyM.w);
     float minSM = min( lumaS, rgbyM.w);
@@ -75,10 +75,10 @@ vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, 
         return rgbyM;
     }
     #line 572
-    float lumaNW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( float((-1)), float((-1))) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
+    float lumaNW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( -1.0, -1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
     float lumaSE = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 1.0, 1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
-    float lumaNE = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 1.0, float((-1))) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
-    float lumaSW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( float((-1)), 1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
+    float lumaNE = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( 1.0, -1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
+    float lumaSW = FxaaLuma( xll_tex2Dlod( tex, vec4( (posM + (vec2( -1.0, 1.0) * fxaaQualityRcpFrame.xy)), 0.0, 0.0)));
     #line 581
     float lumaNS = (lumaN + lumaS);
     float lumaWE = (lumaW + lumaE);

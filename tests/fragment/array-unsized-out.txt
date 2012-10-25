@@ -2,7 +2,7 @@ vec4 xlat_main(  );
 #line 1
 vec4 xlat_main(  ) {
     vec2 lut[3];
-    lut[0] = vec2( float((-1)), 0.1);
+    lut[0] = vec2( -1.0, 0.1);
     lut[1] = vec2( 0.0, 0.5);
     lut[2] = vec2( 1.0, 0.1);
     #line 7
