@@ -23,7 +23,7 @@ vec4 xlat_main(  ) {
     v = vec4( 2.0);
     #line 21
     const float fcf = 1.9;
-    v = vec4( fcf);
+    v = vec4( 1.9);
     return vec4( foo);
 }
 void main() {

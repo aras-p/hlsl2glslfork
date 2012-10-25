@@ -3,7 +3,7 @@ vec4 xlat_main(  );
 vec4 xlat_main(  ) {
     #line 3
     const float f = 1.0;
-    return vec4( f, f, f, f);
+    return vec4( 1.0, 1.0, 1.0, 1.0);
 }
 void main() {
     vec4 xl_retval;

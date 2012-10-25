@@ -460,7 +460,7 @@ void surf( in Input IN, inout MySurfaceOutput o ) {
 highp float OrenNayarTerm( in highp float roughness, in highp vec3 normal, in highp vec3 lightDir, in highp vec3 viewDir ) {
     #line 157
     const highp float PI = 3.14159;
-    highp float INVERSE_PI = (1.0 / PI);
+    highp float INVERSE_PI = (1.0 / 3.14159);
     highp float INVERSE_PI_SQ = (INVERSE_PI * INVERSE_PI);
     highp float rSq = (roughness * roughness);
     #line 161
