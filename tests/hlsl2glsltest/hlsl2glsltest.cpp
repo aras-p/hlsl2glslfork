@@ -490,6 +490,11 @@ static bool TestFileFailure (TestRun type,
     }
     
 	std::string text = Hlsl2Glsl_GetInfoLog( parser );
+	if (!res)
+	{
+		text += "\n// compiled shader:\n";
+		text += Hlsl2Glsl_GetShader (parser);
+	}
 	std::string output;
 	
 	if (res)
