@@ -1,5 +1,9 @@
 static const int kNumBones = 4;
-float4 sBonePallete[kNumBones*3];
+float4 sBonePal[kNumBones*3];
+
+static const int kNumBones2 = kNumBones;
+static const int kNumBones3 = kNumBones2;
+float4 sBonePal2[kNumBones3];
 
 static const int kOtherConst = kNumBones*2;
 float sFoo[kOtherConst*2 + kNumBones + 7];
@@ -13,5 +17,5 @@ float arrNeg[-kNeg];
 
 float4 main() : POSITION
 {
-    return sBonePalette[0] + sFoo[3] + params[7] + arrNeg[2];
+    return sBonePal[0] + sFoo[3] + params[7] + arrNeg[2];
 }
