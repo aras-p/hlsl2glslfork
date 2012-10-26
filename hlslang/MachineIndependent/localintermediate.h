@@ -21,8 +21,8 @@ struct TVectorFields
 //
 class TInfoSink;
 
-TIntermSymbol* ir_add_symbol(int Id, const TString&, const TType&, TSourceLoc);
-TIntermSymbol* ir_add_symbol(int id, const TString& name, const TTypeInfo *info, const TType& type, TSourceLoc line);
+TIntermSymbol* ir_add_symbol(const TVariable* var, TSourceLoc);
+TIntermSymbol* ir_add_symbol_internal(int id, const TString& name, const TTypeInfo *info, const TType& type, TSourceLoc line);
 TIntermConstant* ir_add_constant(const TType&, TSourceLoc);
 TIntermTyped* ir_add_index(TOperator op, TIntermTyped* base, TIntermTyped* index, TSourceLoc);
 TIntermTyped* ir_add_comma(TIntermTyped* left, TIntermTyped* right, TSourceLoc);

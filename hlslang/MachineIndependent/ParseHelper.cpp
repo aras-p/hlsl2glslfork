@@ -1349,8 +1349,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 		}
 	}
 
-	TIntermSymbol* intermSymbol = ir_add_symbol(variable->getUniqueId(), variable->getName(), variable->getInfo(), variable->getType(), line);
-	intermSymbol->setGlobal(variable->isGlobal());
+	TIntermSymbol* intermSymbol = ir_add_symbol(variable, line);
 	intermNode = intermSymbol;
 	return false;
 }

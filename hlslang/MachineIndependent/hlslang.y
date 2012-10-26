@@ -199,11 +199,7 @@ variable_identifier
 		}
 		else
 		{
-			TIntermSymbol* sym = ir_add_symbol(variable->getUniqueId(), 
-														 variable->getName(),
-														 variable->getInfo(), 
-														 variable->getType(), $1.line);
-			sym->setGlobal(variable->isGlobal());
+			TIntermSymbol* sym = ir_add_symbol(variable, $1.line);
 			$$ = sym;
 		}
     }
@@ -2230,13 +2226,10 @@ function_definition
                 //                
                 paramNodes = ir_grow_aggregate(
                                                paramNodes, 
-                                               ir_add_symbol(variable->getUniqueId(),
-                                                                       variable->getName(),
-                                                                       variable->getInfo(),
-                                                                       variable->getType(), $1.line), 
+                                               ir_add_symbol(variable, $1.line),
                                                $1.line);
             } else {
-                paramNodes = ir_grow_aggregate(paramNodes, ir_add_symbol(0, "", param.info, *param.type, $1.line), $1.line);
+                paramNodes = ir_grow_aggregate(paramNodes, ir_add_symbol_internal(0, "", param.info, *param.type, $1.line), $1.line);
             }
         }
         ir_set_aggregate_op(paramNodes, EOpParameters, $1.line);

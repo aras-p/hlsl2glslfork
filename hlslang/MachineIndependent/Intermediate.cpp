@@ -23,14 +23,14 @@ static TPrecision GetHigherPrecision (TPrecision left, TPrecision right) {
 
 
 // Add a terminal node for an identifier in an expression.
-TIntermSymbol* ir_add_symbol(int id, const TString& name, const TType& type, TSourceLoc line)
+TIntermSymbol* ir_add_symbol(const TVariable* var, TSourceLoc line)
 {
-	TIntermSymbol* node = new TIntermSymbol(id, name, type);
-	node->setLine(line);
+	TIntermSymbol* node = ir_add_symbol_internal(var->getUniqueId(), var->getName(), var->getInfo(), var->getType(), line);
+	node->setGlobal(var->isGlobal());
 	return node;
 }
 
-TIntermSymbol* ir_add_symbol(int id, const TString& name, const TTypeInfo *info, const TType& type, TSourceLoc line)
+TIntermSymbol* ir_add_symbol_internal(int id, const TString& name, const TTypeInfo *info, const TType& type, TSourceLoc line)
 {
 	TIntermSymbol* node = new TIntermSymbol(id, name, info, type);
 	node->setLine(line);
@@ -569,8 +569,7 @@ TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* init
 TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink)
 {
 	TVariable* var = static_cast<TVariable*>(symbol);
-	TIntermSymbol* sym = ir_add_symbol(var->getUniqueId(), var->getName(), var->getType(), line);
-	sym->setGlobal(symbol->isGlobal());
+	TIntermSymbol* sym = ir_add_symbol(var, line);
 
 	return ir_add_declaration(sym, initializer, line, infoSink);
 }
@@ -579,8 +578,7 @@ TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initialize
 TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink)
 {
 	TVariable* var = static_cast<TVariable*>(symbol);
-	TIntermSymbol* sym = ir_add_symbol(var->getUniqueId(), var->getName(), var->getType(), var->getType().getLine());
-	sym->setGlobal(symbol->isGlobal());
+	TIntermSymbol* sym = ir_add_symbol(var, var->getType().getLine());
 	
 	return ir_grow_declaration(declaration, sym, initializer, infoSink);
 }
