@@ -825,6 +825,27 @@ TIntermTyped* ir_add_swizzle(TVectorFields& fields, TSourceLoc line)
 }
 
 
+TIntermTyped* ir_add_vector_swizzle(TVectorFields& fields, TIntermTyped* arg, TSourceLoc lineDot, TSourceLoc lineIndex)
+{
+	TIntermTyped* res = NULL;
+	if (fields.num == 1)
+	{
+		TIntermConstant* index = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), lineIndex);
+		index->setValue(fields.offsets[0]);
+		res = ir_add_index(EOpIndexDirect, arg, index, lineDot);
+		res->setType(TType(arg->getBasicType(), arg->getPrecision()));
+	}
+	else
+	{
+		TIntermTyped* index = ir_add_swizzle(fields, lineIndex);
+		res = ir_add_index(EOpVectorSwizzle, arg, index, lineDot);
+		res->setType(TType(arg->getBasicType(), arg->getPrecision(), EvqTemporary, fields.num));  
+	}
+	return res;
+}
+
+
+
 // Create loop nodes
 TIntermNode* ir_add_loop(TLoopType type, TIntermTyped* cond, TIntermTyped* expr, TIntermNode* body, TSourceLoc line)
 {

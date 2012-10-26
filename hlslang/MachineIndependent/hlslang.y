@@ -322,17 +322,7 @@ postfix_expression
                 parseContext.recover();
             }
 
-			if (fields.num == 1) {
-				TIntermConstant* index = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), $3.line);
-				index->setValue(fields.offsets[0]);
-				$$ = ir_add_index(EOpIndexDirect, $1, index, $2.line);
-				$$->setType(TType($1->getBasicType(), $1->getPrecision()));
-			} else {
-				TString vectorString = *$3.string;
-				TIntermTyped* index = ir_add_swizzle(fields, $3.line);                
-				$$ = ir_add_index(EOpVectorSwizzle, $1, index, $2.line);
-				$$->setType(TType($1->getBasicType(), $1->getPrecision(), EvqTemporary, (int) vectorString.size()));  
-			}
+			$$ = ir_add_vector_swizzle(fields, $1, $2.line, $3.line);
         } else if ($1->isMatrix()) {
             TVectorFields fields;
             if (! parseContext.parseMatrixFields(*$3.string, $1->getNominalSize(), fields, $3.line)) {

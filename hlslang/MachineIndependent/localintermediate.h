@@ -35,6 +35,7 @@ TIntermBranch* ir_add_branch(TOperator, TSourceLoc);
 TIntermBranch* ir_add_branch(TOperator, TIntermTyped*, TSourceLoc);
 TIntermNode* ir_add_loop(TLoopType type, TIntermTyped* cond, TIntermTyped* expr, TIntermNode* body, TSourceLoc line);
 TIntermTyped* ir_add_swizzle(TVectorFields&, TSourceLoc);
+TIntermTyped* ir_add_vector_swizzle(TVectorFields& fields, TIntermTyped* arg, TSourceLoc lineDot, TSourceLoc lineIndex);
 TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc, TInfoSink& infoSink);
 TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink);
 TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink);
