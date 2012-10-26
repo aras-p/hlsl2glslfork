@@ -823,8 +823,41 @@ TIntermTyped* ir_add_swizzle(TVectorFields& fields, TSourceLoc line)
 }
 
 
-TIntermTyped* ir_add_vector_swizzle(TVectorFields& fields, TIntermTyped* arg, TSourceLoc lineDot, TSourceLoc lineIndex)
+// This function returns the tree representation for the vector field(s) being accessed from contant vector.
+// If only one component of vector is accessed (v.x or v[0] where v is a contant vector), then a contant node is
+// returned, else an aggregate node is returned (for v.xy). The input to this function could either be the symbol
+// node or it could be the intermediate tree representation of accessing fields in a constant structure or column of 
+// a constant matrix.
+TIntermTyped* ir_add_const_vector_swizzle(const TVectorFields& fields, TIntermTyped* node, TSourceLoc line)
 {
+	TIntermConstant* constNode = node->getAsConstant();
+	if (!constNode)
+		return NULL;
+	
+	TIntermConstant* res = ir_add_constant(node->getType(), line);
+	for (int i = 0; i < fields.num; ++i)
+	{
+		int index = fields.offsets[i];
+		assert(index >= 0 && index < constNode->getCount());
+		res->setValue(i, constNode->getValue (index));
+	}
+	
+	res->setType(TType(node->getBasicType(), node->getPrecision(), EvqConst, fields.num));
+	
+	return res;
+}
+
+
+TIntermTyped* ir_add_vector_swizzle(TVectorFields& fields, TIntermTyped* arg, TSourceLoc lineDot, TSourceLoc lineIndex)
+{	
+	// swizzle on a constant -> fold it
+	if (arg->getType().getQualifier() == EvqConst)
+	{
+		TIntermTyped* res = ir_add_const_vector_swizzle(fields, arg, lineIndex);
+		if (res)
+			return res;
+	}
+		
 	TIntermTyped* res = NULL;
 	if (fields.num == 1)
 	{

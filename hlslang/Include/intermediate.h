@@ -479,7 +479,8 @@ public:
 	void setValue(unsigned i, int val)	{ grow(i); defset(i, Int); }
 	void setValue(unsigned i, float val){ grow(i); defset(i, Float); ;}
 	void setValue(unsigned i, bool val) { grow(i); defset(i, Bool); }
-	
+	void setValue(unsigned i, const Value& val) { values[i] = val; }
+
 	int toInt(unsigned i = 0) { return values[i].asInt; }
 	float toFloat(unsigned i = 0) { return values[i].asFloat; }
 	bool toBool(unsigned i = 0) { return values[i].asBool; }
