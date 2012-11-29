@@ -441,7 +441,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				OBJROOT = build;
 				PREBINDING = NO;
-				SDKROOT = macosx;
+				SDKROOT = "";
 				SYMROOT = lib/mac;
 			};
 			name = Debug;
@@ -455,7 +455,7 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				OBJROOT = build;
 				PREBINDING = NO;
-				SDKROOT = macosx;
+				SDKROOT = "";
 				SYMROOT = lib/mac;
 			};
 			name = Release;
