@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -347,7 +347,7 @@
 		0867D690FE84028FC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 1DEB916408733D950010E9CD /* Build configuration list for PBXProject "hlslang" */;
-			compatibilityVersion = "Xcode 2.4";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -444,7 +444,7 @@
 				GCC_VERSION = 4.0;
 				OBJROOT = build;
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = macosx;
 				SYMROOT = lib/mac;
 			};
 			name = Debug;
@@ -461,7 +461,7 @@
 				GCC_VERSION = 4.0;
 				OBJROOT = build;
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = macosx;
 				SYMROOT = lib/mac;
 			};
 			name = Release;
