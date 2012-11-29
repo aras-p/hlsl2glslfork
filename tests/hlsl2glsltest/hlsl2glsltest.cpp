@@ -626,9 +626,9 @@ int main (int argc, const char** argv)
 	clock_t time1 = clock();
 	float t = float(time1-time0) / float(CLOCKS_PER_SEC);
 	if (errors != 0)
-		printf ("%i tests, %i FAILED, %.2fs\n", tests, errors, t);
+		printf ("%i tests, %i FAILED, %.2fs\n", (int)tests, (int)errors, t);
 	else
-		printf ("%i tests succeeded, %.2fs\n", tests, t);
+		printf ("%i tests succeeded, %.2fs\n", (int)tests, t);
 
 	return errors ? 1 : 0;
 }
