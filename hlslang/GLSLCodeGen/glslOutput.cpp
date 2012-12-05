@@ -647,7 +647,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    case EOpInclusiveOrAssign:        op = "|=";  infix = true; needsParens = false; break;
    case EOpExclusiveOrAssign:        op = "^=";  infix = true; needsParens = false; break;
    case EOpLeftShiftAssign:          op = "<<="; infix = true; needsParens = false; break;
-   case EOpRightShiftAssign:         op = "??="; infix = true; needsParens = false; break;
+   case EOpRightShiftAssign:         op = ">>="; infix = true; needsParens = false; break;
 
    case EOpIndexDirect:
       {
