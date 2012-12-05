@@ -72,6 +72,7 @@ static const char* attribString[EAttrSemCount] = {
 	"",
 	"gl_VertexID",
 	"gl_InstanceIDARB",
+	"",
 	""
 };
 
@@ -119,6 +120,7 @@ static const char* varOutString[EAttrSemCount] = {
 	"",
 	"",
 	"gl_PointSize",
+	"",
 	"",
 	"",
 	"",
@@ -181,6 +183,7 @@ static const char* varInString[EAttrSemCount] = {
 	"",
 	"",
 	"gl_PrimitiveID",
+	"",
 };
 
 // String table that maps attribute semantics to built-in GLSL fragment shader outputs
@@ -231,6 +234,7 @@ static const char* resultString[EAttrSemCount] = {
 	"",
 	"",
 	"gl_FragDepth",
+	"gl_SampleMask[0]",
 	"",
 	"",
 	"",
@@ -393,14 +397,14 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 
 		case EClassRes:
 			outName = resultString[sem];
-			if ( sem != EAttrSemDepth)
+			if ( sem == EAttrSemDepth)
+				ctor = "float";
+			else if ( sem == EAttrSemCoverage )
+				ctor = "int";
+			else
 			{
 				pad = 4 - size;
 				ctor = "vec4";
-			}
-			else
-			{
-				ctor = "float";
 			}
 			break;
 
@@ -533,7 +537,8 @@ static AttrSemanticMapping kAttributeSemantic[] = {
 	{ "depth", EAttrSemDepth },
 	{ "sv_vertexid", EAttrSemVertexID },
 	{ "sv_primitiveid", EAttrSemPrimitiveID },
-	{ "sv_instanceid", EAttrSemInstanceID }
+	{ "sv_instanceid", EAttrSemInstanceID },
+	{ "sv_coverage", EAttrSemCoverage }
 };
 
 // Determine the GLSL attribute semantic for a given HLSL semantic

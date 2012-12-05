@@ -86,9 +86,9 @@ enum EAttribSemantic
 {
 	EAttrSemNone,
 	EAttrSemPosition,
-    EAttrSemPosition1,
-    EAttrSemPosition2,
-    EAttrSemPosition3,
+	EAttrSemPosition1,
+	EAttrSemPosition2,
+	EAttrSemPosition3,
 	EAttrSemVPos,
 	EAttrSemVFace,
 	EAttrSemNormal,
@@ -125,15 +125,16 @@ enum EAttribSemantic
 	EAttrSemBlendIndices1,
 	EAttrSemBlendIndices2,
 	EAttrSemBlendIndices3,
-    EAttrSemPSize,
-    EAttrSemPSize1,
-    EAttrSemPSize2,
-    EAttrSemPSize3,
+	EAttrSemPSize,
+	EAttrSemPSize1,
+	EAttrSemPSize2,
+	EAttrSemPSize3,
 	EAttrSemDepth,
 	EAttrSemUnknown,
 	EAttrSemVertexID,
 	EAttrSemInstanceID,
 	EAttrSemPrimitiveID,
+	EAttrSemCoverage,
 	EAttrSemCount
 };
 
