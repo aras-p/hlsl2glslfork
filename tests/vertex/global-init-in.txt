@@ -1,11 +1,12 @@
 uniform float4 uniVar = 1.;
-float4 staticVar = uniVar;
+static float4 staticVar = uniVar;
+static float4 staticVar2 = staticVar;
 float4 unusedVar = 50;
 float uninitializedVar;
 
 float test()
 {
-    return staticVar.x * 2. + uninitializedVar;
+    return staticVar.x * 2. + uninitializedVar + staticVar2.y;
 }
 
 float4 main() : POSITION
