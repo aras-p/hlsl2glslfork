@@ -1,6 +1,4 @@
-mat3 xll_constructMat3( mat4 m) {
-  return mat3( vec3( m[0]), vec3( m[1]), vec3( m[2]));
-}
+
 #line 14
 struct v2f {
     mediump vec4 pos;
@@ -25,7 +23,7 @@ v2f xlat_main( in appdata v );
 #line 19
 highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal ) {
     highp vec3 viewpos = (UNITY_MATRIX_MV * vertex).xyz;
-    highp vec3 viewN = (xll_constructMat3( UNITY_MATRIX_IT_MV) * normal);
+    highp vec3 viewN = (mat3( UNITY_MATRIX_IT_MV) * normal);
     #line 23
     highp vec3 lightColor = vec3( 0.0, 0.0, 0.0);
     highp int i = 0;
@@ -60,9 +58,9 @@ void main() {
 }
 
 // uniforms:
-// UNITY_MATRIX_MVP:<none> type 15 arrsize 0
-// UNITY_MATRIX_MV:<none> type 15 arrsize 0
-// UNITY_MATRIX_IT_MV:<none> type 15 arrsize 0
+// UNITY_MATRIX_MVP:<none> type 21 arrsize 0
+// UNITY_MATRIX_MV:<none> type 21 arrsize 0
+// UNITY_MATRIX_IT_MV:<none> type 21 arrsize 0
 // unity_LightPosition:<none> type 12 arrsize 4
 // unity_LightAtten:<none> type 12 arrsize 4
 // unity_LightColor:<none> type 12 arrsize 4

@@ -23,4 +23,4 @@ void main() {
 }
 
 // uniforms:
-// diffuseMap:<none> type 19 arrsize 0
+// diffuseMap:<none> type 25 arrsize 0

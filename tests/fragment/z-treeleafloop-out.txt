@@ -75,10 +75,10 @@ void main() {
 }
 
 // uniforms:
-// _MainTex:<none> type 19 arrsize 0
+// _MainTex:<none> type 25 arrsize 0
 // _Cutoff:<none> type 9 arrsize 0
-// _BumpSpecMap:<none> type 19 arrsize 0
-// _TranslucencyMap:<none> type 19 arrsize 0
+// _BumpSpecMap:<none> type 25 arrsize 0
+// _TranslucencyMap:<none> type 25 arrsize 0
 // UNITY_LIGHTMODEL_AMBIENT:<none> type 12 arrsize 0
 // _TerrainTreeLightColors:<none> type 12 arrsize 4
 // _TranslucencyColor:<none> type 11 arrsize 0

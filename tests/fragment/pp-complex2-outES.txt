@@ -214,6 +214,6 @@ void main() {
 // uniforms:
 // _WorldSpaceLightPos0:<none> type 12 arrsize 0
 // _LightColor0:<none> type 12 arrsize 0
-// _MainTex:<none> type 19 arrsize 0
+// _MainTex:<none> type 25 arrsize 0
 // _Color:<none> type 12 arrsize 0
-// _ShadowMapTexture:<none> type 19 arrsize 0
+// _ShadowMapTexture:<none> type 25 arrsize 0
