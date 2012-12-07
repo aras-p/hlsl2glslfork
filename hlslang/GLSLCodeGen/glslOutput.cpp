@@ -101,8 +101,10 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 			unsigned v = Min(i, n_constants - 1);
 			if (construct && i > 0)
 				out << ", ";
-			
-			switch (c->getBasicType()) {
+			TBasicType basicType = c->getBasicType();
+			if (basicType == EbtStruct)
+			    basicType = c->getValue(v).type;
+			switch (basicType) {
 				case EbtBool:
 					out << (c->toBool(v) ? "true" : "false");
 					break;
