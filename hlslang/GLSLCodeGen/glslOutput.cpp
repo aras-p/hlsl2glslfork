@@ -1229,7 +1229,8 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 		node->getCondition()->traverse(goit);
 		out << ')';
 		current->beginBlock();
-		node->getTrueBlock()->traverse(goit);
+		if (node->getTrueBlock())
+    		node->getTrueBlock()->traverse(goit);
 		current->endBlock();
 		if (node->getFalseBlock())
 		{
@@ -1248,14 +1249,11 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 		out << "xll_vecTSel (";
 		node->getCondition()->traverse(goit);
 		out << ", ";
+		assert(node->getTrueBlock());
 		node->getTrueBlock()->traverse(goit);
 		out << ", ";
-		if (node->getFalseBlock())
-		{
-			node->getFalseBlock()->traverse(goit);
-		}
-		else
-			assert(0);
+		assert(node->getFalseBlock());
+		node->getFalseBlock()->traverse(goit);
 		out << ")";
 	}
 	else
@@ -1264,14 +1262,11 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 		out << "(( ";
 		node->getCondition()->traverse(goit);
 		out << " ) ? ( ";
+		assert(node->getTrueBlock());
 		node->getTrueBlock()->traverse(goit);
 		out << " ) : ( ";
-		if (node->getFalseBlock())
-		{
-			node->getFalseBlock()->traverse(goit);
-		}
-		else
-			assert(0);
+		assert(node->getFalseBlock());
+		node->getFalseBlock()->traverse(goit);
 		out << " ))";
 	}
 
