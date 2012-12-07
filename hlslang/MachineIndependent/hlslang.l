@@ -372,7 +372,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
         return 0;
 }
 
-void yyerror(char *s)
+void yyerror(const char *s)
 {
     if (((TParseContext *)cpp->pC)->AfterEOF) {
         if (cpp->tokensBeforeEOF == 1) {

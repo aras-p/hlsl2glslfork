@@ -35,7 +35,7 @@ Jutta Degener, 1995
     #define parseContext (*((TParseContext*)(parseContextLocal)))
     #define YY_DECL int yylex(YYSTYPE* pyylval, void* parseContextLocal)
     #define YYLEX_PARAM (void*)(parseContextLocal)
-    extern void yyerror(char*);
+    extern void yyerror(const char*);
 #endif
 
 
