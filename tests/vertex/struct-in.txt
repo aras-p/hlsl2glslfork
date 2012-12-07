@@ -11,11 +11,16 @@ struct Outer
     Inner inner2;
 };
 
+float4 StructTakingFunc(Outer outer, Inner inner)
+{
+    return float4(outer.inner.member2 + inner.member2, outer.inner.member1);
+}
+
 float4 main() : POSITION
 {
     Outer test;
     test.inner.member1 = 1;
     test.inner.member2 = 0;
     Inner test2 = (Inner)0;
-    return float4(test.inner.member2 + test2.member2, test.inner.member1);
+    return (float4)StructTakingFunc(test, test2);
 }

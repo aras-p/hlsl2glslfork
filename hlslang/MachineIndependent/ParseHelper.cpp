@@ -1395,8 +1395,8 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 		return 0;
 	
 	TTypeList& struct_members = *type->getStruct();
-	if (node->getAsAggregate()) {
-		TIntermAggregate* aggregate = node->getAsAggregate();
+	TIntermAggregate* aggregate = node->getAsAggregate();
+	if (aggregate && aggregate->getOp() == EOpNull) {
 		
 		if (type->isArray())
 			return constructArray(aggregate, type, op, line);
