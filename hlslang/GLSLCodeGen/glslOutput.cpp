@@ -1046,7 +1046,7 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    case EOpNegative:       op = "-";  funcStyle = false; prefix = true; break;
    case EOpVectorLogicalNot:
    case EOpLogicalNot:     op = "!";  funcStyle = false; prefix = true; break;
-   case EOpBitwiseNot:     op = "-";  funcStyle = false; prefix = true; break;
+   case EOpBitwiseNot:     op = "~";  funcStyle = false; prefix = true; break;
 
    case EOpPostIncrement:  op = "++"; funcStyle = false; prefix = false; break;
    case EOpPostDecrement:  op = "--"; funcStyle = false; prefix = false; break;
