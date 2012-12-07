@@ -17,4 +17,4 @@ void main() {
 }
 
 // uniforms:
-// tex:<none> type 19 arrsize 0
+// tex:<none> type 25 arrsize 0

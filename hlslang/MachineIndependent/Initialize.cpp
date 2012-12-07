@@ -13,6 +13,18 @@
 #include "Initialize.h"
 
 #include "SymbolTable.h"
+#include <sstream>
+
+static void appendMatrixType(std::stringstream& ss, unsigned rows, unsigned cols)
+{
+    ss << "float";
+    if (rows > 1 && cols > 1)
+        ss << rows << "x" << cols;
+    else if (cols > 1)
+        ss << cols;
+    else if (rows > 1)
+        ss << rows;
+}
 
 void TBuiltIns::initialize()
 {
@@ -376,21 +388,43 @@ void TBuiltIns::initialize()
       //
       // HLSL Matrix Functions.
       //
-      s.append(TString("float2x2 mul(float2x2 x, float2x2 y);"));
-      s.append(TString("float3x3 mul(float3x3 x, float3x3 y);"));
-      s.append(TString("float4x4 mul(float4x4 x, float4x4 y);"));
-      s.append(TString("float2 mul(float2 x, float2x2 y);"));
-      s.append(TString("float3 mul(float3 x, float3x3 y);"));
-      s.append(TString("float4 mul(float4 x, float4x4 y);"));
-      s.append(TString("float2 mul(float2x2 x, float2 y);"));
-      s.append(TString("float3 mul(float3x3 x, float3 y);"));
-      s.append(TString("float4 mul(float4x4 x, float4 y);"));
+
+      for (unsigned cols = 2; cols <= 4; ++cols)
+      {
+          for (unsigned rows = 1; rows <= 4; ++rows)
+          {
+              std::stringstream ss;
+              appendMatrixType(ss, rows, cols);
+              ss << " mul(float x, ";
+              appendMatrixType(ss, rows, cols);
+              ss << " y);";
+
+              appendMatrixType(ss, rows, cols);
+              ss << " mul(";
+              appendMatrixType(ss, rows, cols);
+              ss << " x, float y);";
+              for (unsigned othercols = 1; othercols <= 4; ++othercols)
+              {
+                  // matrix<rows, othercols> mul(matrix<rows, cols>, matrix<cols, othercols>)
+
+                  appendMatrixType(ss, rows, othercols);
+                  ss << " mul(";
+                  appendMatrixType(ss, rows, cols);
+                  ss << " x, ";
+                  appendMatrixType(ss, cols, othercols);
+                  ss << " y);";
+              }
+              s.append(TString(ss.str().c_str()));
+          }
+      }
+
       s.append(TString("float2x2 transpose(float2x2 m);"));
       s.append(TString("float3x3 transpose(float3x3 m);"));
       s.append(TString("float4x4 transpose(float4x4 m);"));
       s.append(TString("float determinant(float2x2 m);"));
       s.append(TString("float determinant(float3x3 m);"));
       s.append(TString("float determinant(float4x4 m);"));
+      s.append(TString("float2x2 mul(float2x2 x, float2x2 y);"));
 
       //
       // Vector relational functions.

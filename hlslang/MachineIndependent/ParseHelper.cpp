@@ -248,12 +248,11 @@ bool TParseContext::parseVectorFields(const TString& compString, int vecSize, TV
 	return true;
 }
 
-
 //
 // Look at a '.' field selector string and change it into offsets
 // for a matrix.
 //
-bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TVectorFields& fields, const TSourceLoc& line)
+bool TParseContext::parseMatrixFields(const TString& compString, int matCols, int matRows, TVectorFields& fields, const TSourceLoc& line)
 {
 	fields.num = 1;
 	fields.offsets[0] = 0;
@@ -287,7 +286,7 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TV
 			}
 			int row = compString[ii + 2] - '0';
 			int collumn = compString[ii + 3] - '0';
-			if ( row >= matSize || collumn >= matSize)
+			if ( row >= matRows || collumn >= matCols)
 			{
 				error(line, "matrix field selection out of range", compString.c_str(), "");
 				return false;
@@ -319,7 +318,7 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matSize, TV
 			}
 			int row = compString[ii + 1] - '1';
 			int collumn = compString[ii + 2] - '1';
-			if ( row >= matSize || collumn >= matSize)
+			if ( row >= matRows || collumn >= matCols)
 			{
 				error(line, "matrix field selection out of range", compString.c_str(), "");
 				return false;
@@ -554,16 +553,16 @@ bool TParseContext::constErrorCheck(TIntermTyped* node)
 
 //
 // Both test, and if necessary spit out an error, to see if the node is really
-// an integer.
+// an integer or convertible to an integer.
 //
 // Returns true if the was an error.
 //
-bool TParseContext::integerErrorCheck(TIntermTyped* node, const char* token)
+bool TParseContext::scalarErrorCheck(TIntermTyped* node, const char* token)
 {
-   if (node->getBasicType() == EbtInt && node->getNominalSize() == 1)
-      return false;
+    if (node->isScalar())
+        return false;
 
-   error(node->getLine(), "integer expression required", token, "");
+   error(node->getLine(), "scalar expression required", token, "");
 
    return true;
 }
@@ -624,9 +623,15 @@ bool TParseContext::constructorErrorCheck(const TSourceLoc& line, TIntermNode* n
    bool constructingMatrix = false;
    switch (op)
    {
-   case EOpConstructMat2:
-   case EOpConstructMat3:
-   case EOpConstructMat4:
+   case EOpConstructMat2x2:
+   case EOpConstructMat2x3:
+   case EOpConstructMat2x4:
+   case EOpConstructMat3x2:
+   case EOpConstructMat3x3:
+   case EOpConstructMat3x4:
+   case EOpConstructMat4x2:
+   case EOpConstructMat4x3:
+   case EOpConstructMat4x4:
       constructingMatrix = true;
       break;
    default: 
@@ -772,8 +777,8 @@ bool TParseContext::boolErrorCheck(const TSourceLoc& line, const TPublicType& pT
 {
    // In HLSL, any float or int will be automatically casted to a bool, so the basic type can be bool,
    // float, or int.   
-   if ((pType.type != EbtBool && pType.type != EbtInt && pType.type != EbtFloat) || 
-        pType.array || pType.matrix || (pType.size > 1))
+   if ((pType.type != EbtBool && pType.type != EbtInt && pType.type != EbtFloat) ||
+        pType.array || pType.matrix || (pType.matcols > 1) || (pType.matrows > 1))
    {
       error(line, "boolean expression expected", "", "");
       return true;
@@ -1363,13 +1368,14 @@ static bool TransposeMatrixConstructorArgs (const TType* type, TNodeArray& args)
 		return false;
 
 	// HLSL vs. GLSL construct matrices in transposed order, so transpose the arguments for the constructor
-	const int size = type->getNominalSize();
-	for (int r = 0; r < size; ++r)
+	const int cols = type->getColsCount();
+	const int rows = type->getRowsCount();
+	for (int r = 0; r < rows; ++r)
 	{
-		for (int c = r+1; c < size; ++c)
+		for (int c = r+1; c < cols; ++c)
 		{
-			size_t idx1 = r*size+c;
-			size_t idx2 = c*size+r;
+			size_t idx1 = r*cols+c;
+			size_t idx2 = c*rows+r;
 			std::swap (args[idx1], args[idx2]);
 		}
 	}
@@ -1389,8 +1395,8 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 		return 0;
 	
 	TTypeList& struct_members = *type->getStruct();
-	if (node->getAsAggregate()) {
-		TIntermAggregate* aggregate = node->getAsAggregate();
+	TIntermAggregate* aggregate = node->getAsAggregate();
+	if (aggregate && aggregate->getOp() == EOpNull) {
 		
 		if (type->isArray())
 			return constructArray(aggregate, type, op, line);
@@ -1439,17 +1445,37 @@ TOperator TParseContext::getConstructorOp( const TType& type)
    case EbtFloat:
       if (type.isMatrix())
       {
-         switch(type.getNominalSize())
+         switch (type.getColsCount())
          {
-         case 2: op = EOpConstructMat2; break;
-         case 3: op = EOpConstructMat3; break;
-         case 4: op = EOpConstructMat4; break;
-         default: op = EOpNull; break;
+         case 2:
+           switch (type.getRowsCount())
+           {
+           case 2: op = EOpConstructMat2x2; break;
+           case 3: op = EOpConstructMat2x3; break;
+           case 4: op = EOpConstructMat2x4; break;
+           default: op = EOpNull; break;
+           } break;
+         case 3:
+           switch (type.getRowsCount())
+           {
+           case 2: op = EOpConstructMat3x2; break;
+           case 3: op = EOpConstructMat3x3; break;
+           case 4: op = EOpConstructMat3x4; break;
+           default: op = EOpNull; break;
+           } break;
+         case 4:
+           switch (type.getRowsCount())
+           {
+           case 2: op = EOpConstructMat4x2; break;
+           case 3: op = EOpConstructMat4x3; break;
+           case 4: op = EOpConstructMat4x4; break;
+           default: op = EOpNull; break;
+           } break;
          }
       }
       else
       {
-         switch(type.getNominalSize())
+         switch (type.getRowsCount())
          {
          case 1: op = EOpConstructFloat; break;
          case 2: op = EOpConstructVec2; break;
@@ -1460,7 +1486,7 @@ TOperator TParseContext::getConstructorOp( const TType& type)
       }
       break;
    case EbtInt:
-      switch (type.getNominalSize())
+      switch (type.getRowsCount())
       {
       case 1: op = EOpConstructInt; break;
       case 2: op = EOpConstructIVec2; break;
@@ -1470,7 +1496,7 @@ TOperator TParseContext::getConstructorOp( const TType& type)
       }
       break;
    case EbtBool:
-      switch (type.getNominalSize())
+      switch (type.getRowsCount())
       {
       case 1: op = EOpConstructBool; break;
       case 2: op = EOpConstructBVec2; break;
@@ -1485,6 +1511,46 @@ TOperator TParseContext::getConstructorOp( const TType& type)
       break;
    }
    return op;
+}
+
+TIntermTyped* TParseContext::constructBuiltInAllowUpwardVectorPromote(
+    const TType* type, TOperator op, TIntermNode* node, TSourceLoc line, bool subset)
+{
+    TIntermTyped* tNode = node->getAsTyped();
+    // Handle upward promotion of vectors:
+    //   HLSL allows upward promotion of vectors as a special case to function calls.  For example,
+    //   the call mul( mf4, vf3 ) will end up upward promoting the second argument from a float3
+    //   to a float4 ( xyz, 0 ).  This code here generalizes this case, where in the case that
+    //   an upward promotion of a vector is required, the necessary constants initializers are
+    //   added to an aggregate.
+    if ( tNode->getRowsCount() < type->getRowsCount() && tNode->isVector() && type->isVector() )
+    {
+        TIntermAggregate *tempAgg = 0;
+
+        // Add the vector being uprward promoted
+        tempAgg = ir_grow_aggregate(tempAgg, tNode, line);
+
+        // Determine the number of trailing 0's required
+        int nNumZerosToPad = type->getRowsCount() - tNode->getRowsCount();
+        for ( int nPad = 0; nPad < nNumZerosToPad; nPad++ )
+        {
+            // Create a new constant with value 0.0
+            TIntermConstant *cUnion = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());
+            cUnion->setValue(0.0f);
+
+            // Add the constant to the aggregrate node
+            tempAgg = ir_grow_aggregate( tempAgg, cUnion, tNode->getLine()); 
+        }
+
+        // Construct the built-in with padding
+        tNode = constructBuiltIn (type, op, tempAgg, line, subset);
+    }
+    else
+    {
+        tNode = constructBuiltIn(type, op, tNode, line, subset);
+    }
+
+    return tNode;
 }
 
 // This function promotes the function arguments contained in node to
@@ -1510,38 +1576,7 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
          if ( tNode != 0 && tNode->getType() != *(*func)[paramNum].type)
          {
             TOperator op = getConstructorOp(*(*func)[paramNum].type);
-
-            // Handle upward promotion of vectors:
-            //   HLSL allows upward promotion of vectors as a special case to function calls.  For example,
-            //   the call mul( mf4, vf3 ) will end up upward promoting the second argument from a float3
-            //   to a float4 ( xyz, 0 ).  This code here generalizes this case, where in the case that
-            //   an upward promotion of a vector is required, the necessary constants initializers are
-            //   added to an aggregate.
-            if ( tNode->getNominalSize() < (*func)[paramNum].type->getNominalSize() &&
-                 tNode->isVector() && (*func)[paramNum].type->isVector() )
-            {
-				TIntermAggregate *tempAgg = 0;
-
-				// Add the vector being uprward promoted
-				tempAgg = ir_grow_aggregate ( tempAgg, tNode, node->getLine() );                   
-
-				// Determine the number of trailing 0's required
-				int nNumZerosToPad = (*func)[paramNum].type->getNominalSize() - tNode->getNominalSize();
-				for ( int nPad = 0; nPad < nNumZerosToPad; nPad++ )
-				{
-					// Create a new constant with value 0.0 and add the constant to the aggregrate node
-					TIntermConstant *constant = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());
-					constant->setValue(0.f);
-					tempAgg = ir_grow_aggregate (tempAgg, constant, tNode->getLine()); 
-				}
-
-				// Construct the built-in with padding
-				tNode = constructBuiltIn ( (*func)[paramNum].type, op, tempAgg, node->getLine(), false);
-            }
-            else
-            {
-               tNode = constructBuiltIn( (*func)[paramNum].type, op, tNode, node->getLine(), false);
-            }
+            tNode = constructBuiltInAllowUpwardVectorPromote( (*func)[paramNum].type, op, tNode, tNode->getLine(), false);
          }
 
          if ( !tNode )
@@ -1558,7 +1593,7 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
    {
       assert( func->getParamCount() == 1);
       TOperator op = getConstructorOp(*(*func)[0].type);
-      ret = constructBuiltIn( (*func)[0].type, op, node, node->getLine(), false);
+      ret = constructBuiltInAllowUpwardVectorPromote( (*func)[0].type, op, node, node->getLine(), false);
    }
 
    return ret;
@@ -1606,9 +1641,15 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
 	case EOpConstructVec2:
 	case EOpConstructVec3:
 	case EOpConstructVec4:
-	case EOpConstructMat2:
-	case EOpConstructMat3:
-	case EOpConstructMat4:
+	case EOpConstructMat2x2:
+	case EOpConstructMat2x3:
+	case EOpConstructMat2x4:
+	case EOpConstructMat3x2:
+	case EOpConstructMat3x3:
+	case EOpConstructMat3x4:
+	case EOpConstructMat4x2:
+	case EOpConstructMat4x3:
+	case EOpConstructMat4x4:
 	case EOpConstructFloat:
 		basicOp = EOpConstructFloat;
 		break;
@@ -1639,30 +1680,51 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
 	  return 0;
 	}
 
-	//
-	// Now, if there still isn't an operation to do the construction, and we need one, add one.
-	//
+    // this conversion is not allowed, except when passing a parameter to a function
+    if ( newNode->getTypePointer()->isVector() && type->isVector() &&
+         newNode->getRowsCount() < type->getRowsCount())
+        return 0;
+
+    //
+    // Now, if there still isn't an operation to do the construction, and we need one, add one.
+    //
 
 	// Otherwise, skip out early.
 	if (subset || newNode != node && newNode->getType() == *type)
 	  return newNode;
 
-	//now perform HLSL style matrix conversions
-	if ( newNode->getTypePointer()->isMatrix() && type->isMatrix())
-	{
-	  switch (type->getNominalSize())
-	  {
-	  case 2:
-		 op = EOpConstructMat2FromMat;
-		 break;
-	  case 3:
-		 op = EOpConstructMat3FromMat;
-		 break;
-	  case 4:
-		 //there is no way to down convert to a mat4
-		 assert(0);
-	  }
-	}
+   //now perform HLSL style matrix conversions
+   if ( newNode->getTypePointer()->isMatrix() && type->isMatrix())
+   {
+      if (newNode->getColsCount() < type->getColsCount() ||
+          newNode->getRowsCount() < type->getRowsCount())
+          return 0;
+
+      switch (type->getColsCount())
+      {
+      case 2:
+          switch (type->getRowsCount())
+          {
+          case 2: op = EOpConstructMat2x2; break;
+          case 3: op = EOpConstructMat2x3; break;
+          case 4: op = EOpConstructMat2x4; break;
+          } break;
+      case 3:
+          switch (type->getRowsCount())
+          {
+          case 2: op = EOpConstructMat3x2; break;
+          case 3: op = EOpConstructMat3x3; break;
+          case 4: op = EOpConstructMat3x4; break;
+          } break;
+      case 4:
+          switch (type->getRowsCount())
+          {
+          case 2: op = EOpConstructMat4x2; break;
+          case 3: op = EOpConstructMat4x3; break;
+          case 4: assert(false); break;
+          } break;
+      }
+   }
 
 	// will insert a new node for the constructor, as needed.
 	newNode = ir_set_aggregate_op(newNode, op, line);
@@ -1712,7 +1774,7 @@ TIntermTyped* TParseContext::constructArray(TIntermAggregate* aggNode, const TTy
    int nInitializerSize = 0;
    while ( sit != seq.end() )
    {
-      nInitializerSize += (*sit)->getAsTyped()->getNominalSize();
+      nInitializerSize += (*sit)->getAsTyped()->getSize();
       sit++;
    }
 
@@ -1741,7 +1803,7 @@ TIntermTyped* TParseContext::constructArray(TIntermAggregate* aggNode, const TTy
       while ( nInitSize < elementType.getObjectSize() )
       {
          tempAgg = ir_grow_aggregate( tempAgg, *sit, line);
-         nInitSize += (*sit)->getAsTyped()->getNominalSize();
+         nInitSize += (*sit)->getAsTyped()->getSize();
          sit++;
       }
 

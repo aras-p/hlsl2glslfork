@@ -441,6 +441,7 @@ void initializeHLSLSupportLibrary()
 		"#endif\n")
 		);
 
+    /*
    hlslSupportLib->insert( CodeMap::value_type( EOpConstructMat2FromMat,
         "mat2 xll_constructMat2( mat3 m) {\n"
         "  return mat2( vec2( m[0]), vec2( m[1]));\n"
@@ -455,6 +456,7 @@ void initializeHLSLSupportLibrary()
         "  return mat3( vec3( m[0]), vec3( m[1]), vec3( m[2]));\n"
         "}\n")
         );
+        */
 
    hlslSupportLib->insert( CodeMap::value_type( EOpDeterminant,
         "float xll_determinant( mat2 m) {\n"

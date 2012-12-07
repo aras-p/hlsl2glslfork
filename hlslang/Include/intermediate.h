@@ -197,15 +197,27 @@ enum TOperator
 	EOpConstructIVec2,
 	EOpConstructIVec3,
 	EOpConstructIVec4,
-	EOpConstructMat2,
-	EOpConstructMat3,
-	EOpConstructMat4,
+	EOpConstructMat2x2,
+	EOpConstructMat2x3,
+	EOpConstructMat2x4,
+	EOpConstructMat3x2,
+	EOpConstructMat3x3,
+	EOpConstructMat3x4,
+	EOpConstructMat4x2,
+	EOpConstructMat4x3,
+	EOpConstructMat4x4,
 	EOpConstructStruct,
 	EOpConstructArray,
 
 	// HLSL matrix/matrix constructors
-	EOpConstructMat2FromMat,
-	EOpConstructMat3FromMat,
+	EOpConstructMat2x2FromMat,
+	EOpConstructMat2x3FromMat,
+	EOpConstructMat2x4FromMat,
+	EOpConstructMat3x2FromMat,
+	EOpConstructMat3x3FromMat,
+	EOpConstructMat3x4FromMat,
+	EOpConstructMat4x2FromMat,
+	EOpConstructMat4x3FromMat,
 
 	EOpMatrixIndex,
 	EOpMatrixIndexDynamic,
@@ -308,11 +320,13 @@ public:
 	TBasicType getBasicType() const { return type.getBasicType(); }
 	TQualifier getQualifier() const { return type.getQualifier(); }
 	TPrecision getPrecision() const { return type.getPrecision(); }
-	int getNominalSize() const { return type.getNominalSize(); }
+	int getColsCount() const { return type.getColsCount(); }
+	int getRowsCount() const { return type.getRowsCount(); }
 	int getSize() const { return type.getInstanceSize(); }
 	bool isMatrix() const { return type.isMatrix(); }
 	bool isArray()  const { return type.isArray(); }
 	bool isVector() const { return type.isVector(); }
+	bool isScalar() const { return type.isScalar(); }
 	const char* getBasicString() const { return type.getBasicString(); }
 	const char* getQualifierString() const { return type.getQualifierString(); }
 	TString getCompleteString() const { return type.getCompleteString(); }
@@ -435,7 +449,8 @@ public:
 			t.getBasicType(),
 			t.getQualifier(),
 			t.getPrecision(),
-			t.getNominalSize(),
+			t.getColsCount(),
+			t.getRowsCount(),
 			t.isMatrix(),
 			t.isArray(),
 			t.getArraySize(),

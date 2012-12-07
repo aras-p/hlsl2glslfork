@@ -7,7 +7,7 @@ set(CMAKE_SUPPRESS_REGENERATION TRUE)
 set(HEADER_FILES
   hlslang/Include/BaseTypes.h
   hlslang/Include/Common.h
-  hlslang/Include/ConstantUnion.h
+  #hlslang/Include/ConstantUnion.h
   hlslang/Include/InfoSink.h
   hlslang/Include/InitializeGlobals.h
   hlslang/Include/InitializeParseContext.h
@@ -15,7 +15,7 @@ set(HEADER_FILES
   hlslang/Include/PoolAlloc.h
   hlslang/Include/Types.h
   hlslang/MachineIndependent/SymbolTable.h
-  hlslang/MachineIndependent/unistd.h
+  #hlslang/MachineIndependent/unistd.h
   OGLCompilersDLL/InitializeDll.h
 )
 source_group("Header Files" FILES ${HEADER_FILES})
@@ -63,7 +63,7 @@ set(MACHINE_INDEPENDENT_FILES
   hlslang/MachineIndependent/intermOut.cpp
   hlslang/MachineIndependent/IntermTraverse.cpp
   hlslang/MachineIndependent/localintermediate.h
-  hlslang/MachineIndependent/parseConst.cpp
+  #hlslang/MachineIndependent/parseConst.cpp
   hlslang/MachineIndependent/ParseHelper.cpp
   hlslang/MachineIndependent/ParseHelper.h
   hlslang/MachineIndependent/PoolAlloc.cpp
@@ -71,7 +71,8 @@ set(MACHINE_INDEPENDENT_FILES
   hlslang/MachineIndependent/RemoveTree.h
   hlslang/MachineIndependent/SymbolTable.cpp
   hlslang/MachineIndependent/SymbolTable.h
-  hlslang/MachineIndependent/unistd.h
+  #hlslang/MachineIndependent/unistd.h
+  hlslang/MachineIndependent/ConstantFolding.cpp
 )
 
 source_group("Machine Independent" FILES ${MACHINE_INDEPENDENT_FILES})
@@ -146,6 +147,7 @@ if (WIN32)
                       )
     
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D\"_HAS_ITERATOR_DEBUGGING=0\" /D\"_SECURE_SCL=0\" /D\"_CRT_SECURE_NO_WARNINGS\"")
+    SET(TEST_LIBS opengl32.lib)
 elseif (APPLE)
     set(OSDEPENDENT_FILES
       hlslang/OSDependent/Mac/osinclude.h
@@ -195,6 +197,8 @@ elseif (UNIX)
                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent
                          COMMENT "Executing flex on hlslang.l"
                       )
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb")
+    SET(TEST_LIBS GL glut GLEW pthread)
 endif ()
 
 
@@ -220,4 +224,4 @@ include_directories(
 )
 add_executable(hlsl2glsltest tests/hlsl2glsltest/hlsl2glsltest.cpp)
 
-target_link_libraries(hlsl2glsltest hlsl2glsl opengl32.lib)
+target_link_libraries(hlsl2glsltest hlsl2glsl ${TEST_LIBS})

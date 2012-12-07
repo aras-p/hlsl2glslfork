@@ -86,13 +86,13 @@ void main() {
 }
 
 // uniforms:
-// _CameraDepthTexture:<none> type 19 arrsize 0
+// _CameraDepthTexture:<none> type 25 arrsize 0
 // _ZBufferParams:<none> type 12 arrsize 0
-// _View2Shadow:<none> type 15 arrsize 0
-// _View2Shadow1:<none> type 15 arrsize 0
-// _View2Shadow2:<none> type 15 arrsize 0
-// _View2Shadow3:<none> type 15 arrsize 0
+// _View2Shadow:<none> type 21 arrsize 0
+// _View2Shadow1:<none> type 21 arrsize 0
+// _View2Shadow2:<none> type 21 arrsize 0
+// _View2Shadow3:<none> type 21 arrsize 0
 // _LightSplitsNear:<none> type 12 arrsize 0
 // _LightSplitsFar:<none> type 12 arrsize 0
-// _ShadowMapTexture:<none> type 19 arrsize 0
+// _ShadowMapTexture:<none> type 25 arrsize 0
 // _LightShadowData:<none> type 12 arrsize 0

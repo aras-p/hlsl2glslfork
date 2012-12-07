@@ -12,9 +12,6 @@ mat4 xll_transpose(mat4 m) {
                m[0][2], m[1][2], m[2][2], m[3][2],
                m[0][3], m[1][3], m[2][3], m[3][3]);
 }
-mat3 xll_constructMat3( mat4 m) {
-  return mat3( vec3( m[0]), vec3( m[1]), vec3( m[2]));
-}
 vec2 xll_matrixindex (mat2 m, int i) { vec2 v; v.x=m[0][i]; v.y=m[1][i]; return v; }
 vec3 xll_matrixindex (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }
 vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }
@@ -179,7 +176,7 @@ v2f_surf xlat_main( in appdata_full v ) {
     #line 432
     o.worldPos = (_Object2World * v.vertex).xyz;
     highp vec3 viewDir = (-ObjSpaceViewDir( v.vertex));
-    highp vec3 worldRefl = (xll_constructMat3( _Object2World) * viewDir);
+    highp vec3 worldRefl = (mat3( _Object2World) * viewDir);
     highp vec3 binormal = (cross( normalize(v.normal), normalize(v.tangent.xyz)) * v.tangent.w);
     #line 436
     highp mat3 rotation = xll_transpose(mat3( v.tangent.xyz, binormal, v.normal));
@@ -192,7 +189,7 @@ v2f_surf xlat_main( in appdata_full v ) {
     o.lmap.z = (length(((_Object2World * v.vertex).xyz - unity_ShadowFadeCenterAndType.xyz)) * unity_ShadowFadeCenterAndType.w);
     o.lmap.w = ((-(glstate_matrix_modelview0 * v.vertex).z) * (1.0 - unity_ShadowFadeCenterAndType.w));
     #line 444
-    highp vec3 worldN = (xll_constructMat3( _Object2World) * (v.normal * unity_Scale.w));
+    highp vec3 worldN = (mat3( _Object2World) * (v.normal * unity_Scale.w));
     highp vec3 lightDir = (rotation * ObjSpaceLightDir( v.vertex));
     o.lightDir = lightDir;
     highp vec3 viewDirForLight = (rotation * ObjSpaceViewDir( v.vertex));
@@ -231,16 +228,16 @@ void main() {
 }
 
 // uniforms:
-// glstate_matrix_mvp:<none> type 15 arrsize 0
+// glstate_matrix_mvp:<none> type 21 arrsize 0
 // _MainTex_ST:<none> type 12 arrsize 0
 // _BumpMap_ST:<none> type 12 arrsize 0
-// _Object2World:<none> type 15 arrsize 0
+// _Object2World:<none> type 21 arrsize 0
 // unity_Scale:<none> type 12 arrsize 0
 // unity_LightmapST:<none> type 12 arrsize 0
 // unity_ShadowFadeCenterAndType:<none> type 12 arrsize 0
-// glstate_matrix_modelview0:<none> type 15 arrsize 0
-// _World2Object:<none> type 15 arrsize 0
+// glstate_matrix_modelview0:<none> type 21 arrsize 0
+// _World2Object:<none> type 21 arrsize 0
 // _WorldSpaceLightPos0:<none> type 12 arrsize 0
-// _World2Object:<none> type 15 arrsize 0
+// _World2Object:<none> type 21 arrsize 0
 // _WorldSpaceCameraPos:<none> type 11 arrsize 0
 // unity_Scale:<none> type 12 arrsize 0

@@ -40,8 +40,8 @@ void main() {
 }
 
 // uniforms:
-// shadowMap:<none> type 19 arrsize 0
-// diffuseMap:<none> type 19 arrsize 0
+// shadowMap:<none> type 25 arrsize 0
+// diffuseMap:<none> type 25 arrsize 0
 // fixedDepthBias:<none> type 9 arrsize 0
 // gradientClamp:<none> type 9 arrsize 0
 // gradientScaleBias:<none> type 9 arrsize 0
