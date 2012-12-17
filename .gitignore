@@ -4,6 +4,8 @@
 *.ilk
 *.pbxuser
 *.perspectivev3
+*.xcworkspace
+xcuserdata
 *.cmake
 *.wwdb
 .svn/
