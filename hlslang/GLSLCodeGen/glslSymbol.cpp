@@ -5,7 +5,7 @@
 
 #include "glslSymbol.h"
 #include <float.h>
-
+#include <cstring>
 
 // Check against names that are keywords in GLSL, but not HLSL
 static bool IsReservedGlslKeyword (const std::string& name)

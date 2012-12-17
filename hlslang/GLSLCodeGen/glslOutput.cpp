@@ -6,6 +6,7 @@
 #include "glslOutput.h"
 
 #include <cstdlib>
+#include <cstring>
 
 #ifdef _WIN32
 	#define snprintf _snprintf
