@@ -134,12 +134,16 @@ static TSourceLoc lexlineno = { 0, 0 };
 "sampler1DShadow" {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER1DSHADOW; }
 "sampler2D"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2D; }
 "sampler2DShadow" {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2DSHADOW; }
+"sampler2D_half"  {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2D_HALF; }
+"sampler2D_float" {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2D_FLOAT; }
 "sampler3D"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER3D; }
 "samplerRECT"     {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLERRECT; }
 "samplerRECTShadow"     {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLERRECTSHADOW; }
 
 "sampler"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLERGENERIC; }
 "samplerCUBE"     {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLERCUBE; }
+"samplerCUBE_half"     {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLERCUBE_HALF; }
+"samplerCUBE_float"    {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLERCUBE_FLOAT; }
 
 "texture"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return TEXTURE; }
 "texture2D"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return TEXTURE; }
