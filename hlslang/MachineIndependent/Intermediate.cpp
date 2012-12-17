@@ -809,7 +809,6 @@ TIntermTyped* ir_add_swizzle(TVectorFields& fields, TSourceLoc line)
 	TIntermAggregate* node = new TIntermAggregate(EOpSequence);
 
 	node->setLine(line);
-	TIntermConstant* constIntNode;
 	TNodeArray& nodes = node->getNodes();
 
 	for (int i = 0; i < fields.num; i++)
