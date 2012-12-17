@@ -660,6 +660,9 @@ bool TParseContext::constructorErrorCheck(const TSourceLoc& line, TIntermNode* n
       if (function[i].type->isArray())
          arrayArg = true;
    }
+	
+	if (constructingMatrix)
+		constType = false;
 
    if (constType)
       type->changeQualifier(EvqConst);
