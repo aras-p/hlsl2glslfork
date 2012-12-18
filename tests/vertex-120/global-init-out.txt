@@ -1,3 +1,4 @@
+#version 120
 uniform vec4 uniVar = vec4( 1.0);
 vec4 staticVar = uniVar;
 #line 3
