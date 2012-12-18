@@ -27,7 +27,13 @@ static const char* attribString[EAttrSemCount] = {
 	"gl_Vertex",
 	"",
 	"",
+	"",
+	"",
+	"",
 	"gl_Normal",
+	"",
+	"",
+	"",
 	"gl_Color",
 	"gl_SecondaryColor",
 	"",
@@ -43,13 +49,30 @@ static const char* attribString[EAttrSemCount] = {
 	"",
 	"",
 	"xlat_attrib_tangent",
+	"",
+	"",
+	"",
 	"xlat_attrib_binorm",
+	"",
+	"",
+	"",
 	"xlat_attrib_blendweights",
+	"",
+	"",
+	"",
 	"xlat_attrib_blendindices",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
 	"",
 	"",
 	"gl_VertexID",
 	"gl_InstanceIDARB",
+	"",
 	""
 };
 
@@ -57,6 +80,12 @@ static const char* attribString[EAttrSemCount] = {
 static const char* varOutString[EAttrSemCount] = {
 	"",
 	"gl_Position",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
 	"",
 	"",
 	"",
@@ -82,15 +111,38 @@ static const char* varOutString[EAttrSemCount] = {
 	"",
 	"",
 	"",
-	""
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"gl_PointSize",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
 };
 
 // String table that maps attribute semantics to built-in GLSL input varyings
 static const char* varInString[EAttrSemCount] = {
 	"",
 	"",
+	"",
+	"",
+	"",
 	"gl_FragCoord",
 	"gl_FrontFacing",
+	"",
+	"",
+	"",
 	"",
 	"gl_Color",
 	"gl_SecondaryColor",
@@ -114,11 +166,34 @@ static const char* varInString[EAttrSemCount] = {
 	"",
 	"",
 	"",
-	"gl_PrimitiveID"
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"gl_PrimitiveID",
+	"",
 };
 
 // String table that maps attribute semantics to built-in GLSL fragment shader outputs
 static const char* resultString[EAttrSemCount] = {
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
 	"",
 	"",
 	"",
@@ -142,7 +217,27 @@ static const char* resultString[EAttrSemCount] = {
 	"",
 	"",
 	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
 	"gl_FragDepth",
+	"gl_SampleMask[0]",
+	"",
+	"",
+	"",
 	"",
 };
 
@@ -302,14 +397,14 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 
 		case EClassRes:
 			outName = resultString[sem];
-			if ( sem != EAttrSemDepth)
+			if ( sem == EAttrSemDepth)
+				ctor = "float";
+			else if ( sem == EAttrSemCoverage )
+				ctor = "int";
+			else
 			{
 				pad = 4 - size;
 				ctor = "vec4";
-			}
-			else
-			{
-				ctor = "float";
 			}
 			break;
 
@@ -388,18 +483,41 @@ struct AttrSemanticMapping {
 static AttrSemanticMapping kAttributeSemantic[] = {	
 	{ "position", EAttrSemPosition },
 	{ "position0", EAttrSemPosition },
+	{ "position1", EAttrSemPosition1 },
+	{ "position2", EAttrSemPosition2 },
+	{ "position3", EAttrSemPosition3 },
 	{ "vpos", EAttrSemVPos },
 	{ "vface", EAttrSemVFace },
 	{ "normal", EAttrSemNormal },
 	{ "normal0", EAttrSemNormal },
+	{ "normal1", EAttrSemNormal1 },
+	{ "normal2", EAttrSemNormal2 },
+	{ "normal3", EAttrSemNormal3 },
 	{ "tangent", EAttrSemTangent },
 	{ "tangent0", EAttrSemTangent },
+	{ "tangent1", EAttrSemTangent1 },
+	{ "tangent2", EAttrSemTangent2 },
+	{ "tangent3", EAttrSemTangent3 },
 	{ "binormal", EAttrSemBinormal },
 	{ "binormal0", EAttrSemBinormal },
+	{ "binormal1", EAttrSemBinormal1 },
+	{ "binormal2", EAttrSemBinormal2 },
+	{ "binormal3", EAttrSemBinormal3 },
 	{ "blendweight", EAttrSemBlendWeight },
 	{ "blendweight0", EAttrSemBlendWeight },
+	{ "blendweight1", EAttrSemBlendWeight1 },
+	{ "blendweight2", EAttrSemBlendWeight2 },
+	{ "blendweight3", EAttrSemBlendWeight3 },
 	{ "blendindices", EAttrSemBlendIndices },
 	{ "blendindices0", EAttrSemBlendIndices },
+	{ "blendindices1", EAttrSemBlendIndices1 },
+	{ "blendindices2", EAttrSemBlendIndices2 },
+	{ "blendindices3", EAttrSemBlendIndices3 },
+	{ "psize", EAttrSemPSize },
+	{ "psize0", EAttrSemPSize },
+	{ "psize1", EAttrSemPSize1 },
+	{ "psize2", EAttrSemPSize2 },
+	{ "psize3", EAttrSemPSize3 },
 	{ "color", EAttrSemColor0 },
 	{ "color0", EAttrSemColor0 },
 	{ "color1", EAttrSemColor1 },
@@ -419,7 +537,8 @@ static AttrSemanticMapping kAttributeSemantic[] = {
 	{ "depth", EAttrSemDepth },
 	{ "sv_vertexid", EAttrSemVertexID },
 	{ "sv_primitiveid", EAttrSemPrimitiveID },
-	{ "sv_instanceid", EAttrSemInstanceID }
+	{ "sv_instanceid", EAttrSemInstanceID },
+	{ "sv_coverage", EAttrSemCoverage }
 };
 
 // Determine the GLSL attribute semantic for a given HLSL semantic

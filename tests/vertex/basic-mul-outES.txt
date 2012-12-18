@@ -16,4 +16,4 @@ void main() {
 }
 
 // uniforms:
-// matrix_mvp:<none> type 15 arrsize 0
+// matrix_mvp:<none> type 21 arrsize 0

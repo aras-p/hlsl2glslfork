@@ -99,4 +99,4 @@ void main() {
 }
 
 // uniforms:
-// _FlareTexture:<none> type 19 arrsize 0
+// _FlareTexture:<none> type 25 arrsize 0
