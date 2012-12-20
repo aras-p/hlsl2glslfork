@@ -557,20 +557,6 @@ static bool TestFile (TestRun type,
 	return false;
 }
 
-void Delete(void* p, void* ud);
-void* Allocate(unsigned size, void* ud);
-
-void* Allocate(unsigned size, void* ud)
-{
-	return malloc(size);
-}
-
-void Delete(void* p, void* ud)
-{
-	free(p);
-}
-
-
 
 int main (int argc, const char** argv)
 {
@@ -584,7 +570,7 @@ int main (int argc, const char** argv)
 	
 	clock_t time0 = clock();
 	
-	Hlsl2Glsl_Initialize (Allocate, Delete, NULL);
+	Hlsl2Glsl_Initialize (NULL, NULL, NULL);
 
 	std::string baseFolder = argv[1];
 
