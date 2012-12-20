@@ -582,7 +582,7 @@ bool HlslLinker::buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, c
 }
 
 
-void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions, ExtensionSet& extensions, ETargetVersion version)
+void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions)
 {
 	for (FunctionSet::const_iterator it = calledFunctions.begin(); it != calledFunctions.end(); ++it) {
 		const std::vector<GlslSymbol*> &symbols = (*it)->getSymbols();
@@ -591,13 +591,7 @@ void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions
 		for (unsigned i = 0; i != n_symbols; ++i) {
 			GlslSymbol* s = symbols[i];
 			if (s->getQualifier() == EqtUniform || s->getQualifier() == EqtMutableUniform)
-			{
 				constants.push_back(s);
-				if (s->getType() == EgstSampler2DShadow && version == ETargetGLSL_ES_100)
-				{
-					extensions.insert("GL_EXT_shadow_samplers");
-				}
-			}
 		}
 		
 		//take each referenced library function, and add it to the set
@@ -649,11 +643,12 @@ void HlslLinker::emitStructs(HlslCrossCompiler* comp)
 }
 
 
-void HlslLinker::emitGlobals(const GlslFunction* globalFunction, const std::vector<GlslSymbol*>& constants)
+void HlslLinker::emitGlobals(const GlslFunction* globalFunction, const std::vector<GlslSymbol*>& constants, ExtensionSet& extensions, ETargetVersion version)
 {
 	// write global scope declarations (represented as a fake function)
 	assert(globalFunction);
 	shader << globalFunction->getCode();
+	globalFunction->addNeededExtensions (extensions, version);
 	
 	// write mutable uniform declarations
 	const unsigned n_constants = constants.size();
@@ -1074,7 +1069,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 	// uniforms and used built-in functions
 	std::vector<GlslSymbol*> constants;
 	std::set<TOperator> libFunctions;
-	buildUniformsAndLibFunctions(calledFunctions, constants, libFunctions, extensions, targetVersion);
+	buildUniformsAndLibFunctions(calledFunctions, constants, libFunctions);
 	buildUniformReflection (constants);
 
 
@@ -1082,7 +1077,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 
 	emitLibraryFunctions (libFunctions, extensions, lang, usePrecision);
 	emitStructs(compiler);
-	emitGlobals (globalFunction, constants);
+	emitGlobals (globalFunction, constants, extensions, targetVersion);
 	EmitCalledFunctions (shader, calledFunctions);
 
 	

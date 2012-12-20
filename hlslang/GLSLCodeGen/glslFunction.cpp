@@ -113,3 +113,16 @@ std::string GlslFunction::getPrototype() const
 
 	return out.str();
 }
+
+
+void GlslFunction::addNeededExtensions (ExtensionSet& extensions, ETargetVersion version) const
+{
+	for (size_t i = 0; i < symbols.size(); ++i)
+	{
+		const GlslSymbol* s = symbols[i];
+		if (s->getType() == EgstSampler2DShadow && version == ETargetGLSL_ES_100)
+		{
+			extensions.insert("GL_EXT_shadow_samplers");
+		}
+	}
+}

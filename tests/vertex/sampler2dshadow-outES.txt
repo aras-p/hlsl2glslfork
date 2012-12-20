@@ -1,3 +1,4 @@
+#extension GL_EXT_shadow_samplers : require
 
 #line 3
 uniform sampler2DShadow shadowmap;
