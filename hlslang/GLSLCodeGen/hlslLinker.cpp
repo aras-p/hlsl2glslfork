@@ -582,7 +582,7 @@ bool HlslLinker::buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, c
 }
 
 
-void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions)
+void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions, ExtensionSet& extensions, ETargetVersion version)
 {
 	for (FunctionSet::const_iterator it = calledFunctions.begin(); it != calledFunctions.end(); ++it) {
 		const std::vector<GlslSymbol*> &symbols = (*it)->getSymbols();
@@ -591,7 +591,13 @@ void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions
 		for (unsigned i = 0; i != n_symbols; ++i) {
 			GlslSymbol* s = symbols[i];
 			if (s->getQualifier() == EqtUniform || s->getQualifier() == EqtMutableUniform)
+			{
 				constants.push_back(s);
+				if (s->getType() == EgstSampler2DShadow && version == ETargetGLSL_ES_100)
+				{
+					extensions.insert("GL_EXT_shadow_samplers");
+				}
+			}
 		}
 		
 		//take each referenced library function, and add it to the set
@@ -604,15 +610,15 @@ void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions
 }
 
 
-void HlslLinker::emitLibraryFunctions(const std::set<TOperator>& libFunctions, EShLanguage lang, bool usePrecision)
+void HlslLinker::emitLibraryFunctions(const std::set<TOperator>& libFunctions, ExtensionSet& extensions, EShLanguage lang, bool usePrecision)
 {
 	// library Functions & required extensions
-	std::string shaderExtensions, shaderLibFunctions;
+	std::string shaderLibFunctions;
 	if (!libFunctions.empty())
 	{
 		for (std::set<TOperator>::const_iterator it = libFunctions.begin(); it != libFunctions.end(); it++)
 		{
-			const std::string &func = getHLSLSupportCode(*it, shaderExtensions, lang==EShLangVertex, usePrecision);
+			const std::string &func = getHLSLSupportCode(*it, extensions, lang==EShLangVertex, usePrecision);
 			if (!func.empty())
 			{
 				shaderLibFunctions += func;
@@ -620,7 +626,6 @@ void HlslLinker::emitLibraryFunctions(const std::set<TOperator>& libFunctions, E
 			}
 		}
 	}
-	shader << shaderExtensions;
 	shader << shaderLibFunctions;
 }
 
@@ -1063,16 +1068,19 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 	assert(funcMain);
 	
 	
+	ExtensionSet extensions;
+
+
 	// uniforms and used built-in functions
 	std::vector<GlslSymbol*> constants;
 	std::set<TOperator> libFunctions;
-	buildUniformsAndLibFunctions(calledFunctions, constants, libFunctions);
+	buildUniformsAndLibFunctions(calledFunctions, constants, libFunctions, extensions, targetVersion);
 	buildUniformReflection (constants);
 
 
 	// print all the components collected above.
 
-	emitLibraryFunctions (libFunctions, lang, usePrecision);
+	emitLibraryFunctions (libFunctions, extensions, lang, usePrecision);
 	emitStructs(compiler);
 	emitGlobals (globalFunction, constants);
 	EmitCalledFunctions (shader, calledFunctions);
@@ -1082,7 +1090,6 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 	// That main function uses semantics on the arguments and return values to
 	// connect items appropriately.	
 	
-	ExtensionSet extensions;
 	std::stringstream attrib;
 	std::stringstream uniform;
 	std::stringstream preamble;
@@ -1177,7 +1184,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 	// Generate final code of the pieces above.
 	{
 		shaderPrefix << kTargetVersionStrings[targetVersion];
-		std::set<const char*>::iterator it = extensions.begin(), end = extensions.end();
+		ExtensionSet::const_iterator it = extensions.begin(), end = extensions.end();
 		for (; it != end; ++it)
 			shaderPrefix << "#extension " << *it << " : require" << std::endl;
 	}

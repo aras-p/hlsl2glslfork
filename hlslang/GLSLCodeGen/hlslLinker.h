@@ -51,7 +51,7 @@ public:
    
 private:
 	typedef std::vector<GlslFunction*> FunctionSet;
-	typedef std::set<const char*> ExtensionSet;
+	typedef std::set<std::string> ExtensionSet;
 
 	std::string stripSemanticModifier(const std::string &semantic, bool warn);
 	EAttribSemantic parseAttributeSemantic(const std::string &semantic);
@@ -65,10 +65,10 @@ private:
 	
 	bool linkerSanityCheck(HlslCrossCompiler* compiler, const char* entryFunc);
 	bool buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, GlslFunction*& globalFunction, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain);
-	void buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions);
+	void buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions, ExtensionSet& extensions, ETargetVersion version);
 	void buildUniformReflection(const std::vector<GlslSymbol*>& constants);
 	
-	void emitLibraryFunctions(const std::set<TOperator>& libFunctions, EShLanguage lang, bool usePrecision);
+	void emitLibraryFunctions(const std::set<TOperator>& libFunctions, ExtensionSet& extensions, EShLanguage lang, bool usePrecision);
 	void emitStructs(HlslCrossCompiler* comp);
 	void emitGlobals(const GlslFunction* globalFunction, const std::vector<GlslSymbol*>& constants);
 	

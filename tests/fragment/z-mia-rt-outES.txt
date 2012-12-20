@@ -1,6 +1,6 @@
-#extension GL_OES_standard_derivatives : require
-#extension GL_EXT_shader_texture_lod : require
 #extension GL_ARB_shader_texture_lod : require
+#extension GL_EXT_shader_texture_lod : require
+#extension GL_OES_standard_derivatives : require
 float xll_dFdx(float f) {
   return dFdx(f);
 }
