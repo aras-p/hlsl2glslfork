@@ -103,7 +103,8 @@ pageSize(growthIncrement),
 alignment(allocationAlignment),
 freeList(0),
 inUseList(0),
-numCalls(0)
+numCalls(0),
+totalBytes(0)
 {
    //
    // Don't allow page sizes we know are smaller than all common
