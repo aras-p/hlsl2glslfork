@@ -1,0 +1,15 @@
+void xlat_main( in highp vec4 vertex, out highp vec4 overtex );
+#line 1
+void xlat_main( in highp vec4 vertex, out highp vec4 overtex ) {
+    #line 4
+    highp int stack[64];
+    highp int stackPos = 0;
+    highp int node = 0;
+    #line 11
+    overtex = vertex;
+}
+void main() {
+    highp vec4 xlt_overtex;
+    xlat_main( vec4(gl_Vertex), xlt_overtex);
+    gl_Position = vec4(xlt_overtex);
+}

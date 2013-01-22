@@ -349,8 +349,6 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 	
 	if (emit_old_arrays)
 	{
-		assert(decl->isSingleInitialization() && "Emission of multiple in-line array declarations isn't supported when running in pre-GLSL1.20 mode.");
-		
 		TQualifier q = type.getQualifier();
 		if (q == EvqConst)
 			q = EvqTemporary;

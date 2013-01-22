@@ -77,7 +77,7 @@ Jutta Degener, 1995
             TIntermNodePair nodePair;
             TIntermTyped* intermTypedNode;
             TIntermAggregate* intermAggregate;
-			TIntermDeclaration* intermDeclaration;
+			TIntermTyped* intermDeclaration;
         };
         union {
             TPublicType type;
@@ -1228,7 +1228,7 @@ init_declarator_list
         $$ = $1;
     } 
     | init_declarator_list COMMA IDENTIFIER type_info {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_public_type($1);
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
@@ -1246,7 +1246,7 @@ init_declarator_list
 			$$ = ir_grow_declaration($1, sym, NULL, parseContext.infoSink);
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_public_type($1);
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
@@ -1270,7 +1270,7 @@ init_declarator_list
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET type_info {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_public_type($1);
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
@@ -1299,7 +1299,7 @@ init_declarator_list
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info EQUAL initializer {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_public_type($1);
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
@@ -1327,7 +1327,7 @@ init_declarator_list
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET type_info EQUAL initializer {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_public_type($1);
 		int array_size;
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
@@ -1362,7 +1362,9 @@ init_declarator_list
         }
     }
     | init_declarator_list COMMA IDENTIFIER type_info EQUAL initializer {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_public_type($1);
+		// array-ness of type doesn't carry over from previous entries in declaration list!
+		type.setArray(false);
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();

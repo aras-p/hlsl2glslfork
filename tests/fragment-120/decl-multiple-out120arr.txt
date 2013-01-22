@@ -1,0 +1,17 @@
+#version 120
+vec4 xlat_main( in vec4 c );
+#line 1
+vec4 xlat_main( in vec4 c ) {
+    #line 4
+    int stack[64];
+    int stackPos = 0;
+    int node = 0;
+    #line 11
+    return c;
+}
+varying vec4 xlv_TEXCOORD0;
+void main() {
+    vec4 xl_retval;
+    xl_retval = xlat_main( vec4(xlv_TEXCOORD0));
+    gl_FragData[0] = vec4(xl_retval);
+}
