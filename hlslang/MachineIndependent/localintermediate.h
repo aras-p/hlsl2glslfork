@@ -51,7 +51,7 @@ TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol
 
 void ir_output_tree(TIntermNode* root, TInfoSink& infoSink);
 
-static inline TPublicType ir_get_decl_public_type(TIntermTyped* decl)
+static inline TPublicType ir_get_decl_type_noarray(TIntermTyped* decl)
 {
 	TType& t = *decl->getTypePointer();
 	TPublicType p = {
@@ -60,8 +60,8 @@ static inline TPublicType ir_get_decl_public_type(TIntermTyped* decl)
 		t.getPrecision(),
 		t.getNominalSize(),
 		t.isMatrix(),
-		t.isArray(),
-		t.getArraySize(),
+		false,
+		0,
 		t.getBasicType() == EbtStruct ? &t : NULL,
 		t.getLine()
 	};
