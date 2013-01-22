@@ -30,7 +30,8 @@ uniform vec4 unity_Scale;
 uniform vec3 _WorldSpaceCameraPos;
 uniform vec4 _WorldSpaceLightPos0;
 #line 9
-uniform mat4 _Object2World, _World2Object;
+uniform mat4 _Object2World;
+uniform mat4 _World2Object;
 #line 20
 #line 25
 #line 30

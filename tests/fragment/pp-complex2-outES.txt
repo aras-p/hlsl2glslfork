@@ -72,7 +72,8 @@ uniform highp vec4 unity_Scale;
 uniform highp vec3 _WorldSpaceCameraPos;
 uniform lowp vec4 _WorldSpaceLightPos0;
 #line 180
-uniform highp mat4 _Object2World, _World2Object;
+uniform highp mat4 _Object2World;
+uniform highp mat4 _World2Object;
 uniform highp vec4 _LightPositionRange;
 #line 191
 uniform lowp vec4 unity_ColorSpaceGrey;
@@ -90,7 +91,10 @@ uniform highp vec4 unity_LightColor[4];
 uniform highp vec4 unity_LightPosition[4];
 uniform highp vec4 unity_LightAtten[4];
 #line 283
-uniform highp vec3 unity_LightColor0, unity_LightColor1, unity_LightColor2, unity_LightColor3;
+uniform highp vec3 unity_LightColor0;
+uniform highp vec3 unity_LightColor1;
+uniform highp vec3 unity_LightColor2;
+uniform highp vec3 unity_LightColor3;
 #line 290
 #line 322
 #line 340
