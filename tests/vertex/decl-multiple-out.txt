@@ -6,10 +6,10 @@ void xlat_main( in vec4 vertex, out vec4 overtex ) {
     int stackPos = 0;
     int node = 0;
     float fltArrInit[4];
-    fltArrInit[0] = 1;
-    fltArrInit[1] = 2;
-    fltArrInit[2] = 3;
-    fltArrInit[3] = 4;
+    fltArrInit[0] = float(1);
+    fltArrInit[1] = float(2);
+    fltArrInit[2] = float(3);
+    fltArrInit[3] = float(4);
     #line 11
     overtex = vertex;
 }

@@ -378,7 +378,17 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 			current->beginStatement();
 			sym->traverse(this);
 			(*out) << "[" << i << "] = ";
+			EGlslSymbolType init_type = translateType(init[i]->getAsTyped()->getTypePointer());
+
+			bool diffTypes = (symbol_type != init_type);
+			if (diffTypes) {
+				writeType (*out, symbol_type, NULL, EbpUndefined);
+				(*out) << "(";
+			}
 			init[i]->traverse(this);
+			if (diffTypes) {
+				(*out) << ")";
+			}
 			current->endStatement();
 		}
 		
