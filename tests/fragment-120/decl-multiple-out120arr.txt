@@ -6,6 +6,15 @@ vec4 xlat_main( in vec4 c ) {
     int stack[64];
     int stackPos = 0;
     int node = 0;
+    #if defined(HLSL2GLSL_ENABLE_ARRAY_120_WORKAROUND)
+        float fltArrInit[4];
+        fltArrInit[0] = 1;
+        fltArrInit[1] = 2;
+        fltArrInit[2] = 3;
+        fltArrInit[3] = 4;
+    #else
+        float[4] fltArrInit = float[4]( 1, 2, 3, 4);
+    #endif
     #line 11
     return c;
 }

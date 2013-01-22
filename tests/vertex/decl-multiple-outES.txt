@@ -5,6 +5,11 @@ void xlat_main( in highp vec4 vertex, out highp vec4 overtex ) {
     highp int stack[64];
     highp int stackPos = 0;
     highp int node = 0;
+    highp float fltArrInit[4];
+    fltArrInit[0] = 1;
+    fltArrInit[1] = 2;
+    fltArrInit[2] = 3;
+    fltArrInit[3] = 4;
     #line 11
     overtex = vertex;
 }

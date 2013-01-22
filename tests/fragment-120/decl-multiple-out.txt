@@ -6,6 +6,7 @@ vec4 xlat_main( in vec4 c ) {
     int stack[64];
     int stackPos = 0;
     int node = 0;
+    float[4] fltArrInit = float[4]( 1, 2, 3, 4);
     #line 11
     return c;
 }
