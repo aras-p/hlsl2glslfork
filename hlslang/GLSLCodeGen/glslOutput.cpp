@@ -472,8 +472,24 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 	}
 
 	out << " ";
+
+	// Pre-GLSL1.20, global variables can't have initializers.
+	// So just print the symbol node itself.
+	bool skipInitializer = false;
+	const bool can_have_global_init = (goit->m_TargetVersion >= ETargetGLSL_120);
+	if (!can_have_global_init && decl->hasInitialization() && type.getQualifier() != EvqConst)
+	{
+		TIntermBinary* initNode = decl->getDeclaration()->getAsBinaryNode();
+		TIntermSymbol* symbol = initNode->getLeft()->getAsSymbolNode();
+		if (symbol && symbol->isGlobal())
+		{
+			skipInitializer = true;
+			symbol->traverse(goit);
+		}
+	}
 	
-	decl->getDeclaration()->traverse(goit);
+	if (!skipInitializer)
+		decl->getDeclaration()->traverse(goit);
 	
 	if (type.isArray())
 		out << "[" << type.getArraySize() << "]";
