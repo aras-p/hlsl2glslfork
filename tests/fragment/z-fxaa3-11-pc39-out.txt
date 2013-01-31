@@ -85,21 +85,21 @@ vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, 
     float subpixRcpRange = (1.0 / range);
     float subpixNSWE = (lumaNS + lumaWE);
     #line 585
-    float edgeHorz1 = (((-2.0) * rgbyM.w) + lumaNS);
-    float edgeVert1 = (((-2.0) * rgbyM.w) + lumaWE);
+    float edgeHorz1 = ((-2.0 * rgbyM.w) + lumaNS);
+    float edgeVert1 = ((-2.0 * rgbyM.w) + lumaWE);
     float lumaNESE = (lumaNE + lumaSE);
     #line 589
     float lumaNWNE = (lumaNW + lumaNE);
-    float edgeHorz2 = (((-2.0) * lumaE) + lumaNESE);
-    float edgeVert2 = (((-2.0) * lumaN) + lumaNWNE);
+    float edgeHorz2 = ((-2.0 * lumaE) + lumaNESE);
+    float edgeVert2 = ((-2.0 * lumaN) + lumaNWNE);
     #line 593
     float lumaNWSW = (lumaNW + lumaSW);
     float lumaSWSE = (lumaSW + lumaSE);
     float edgeHorz4 = ((abs(edgeHorz1) * 2.0) + abs(edgeHorz2));
     float edgeVert4 = ((abs(edgeVert1) * 2.0) + abs(edgeVert2));
     #line 597
-    float edgeHorz3 = (((-2.0) * lumaW) + lumaNWSW);
-    float edgeVert3 = (((-2.0) * lumaS) + lumaSWSE);
+    float edgeHorz3 = ((-2.0 * lumaW) + lumaNWSW);
+    float edgeVert3 = ((-2.0 * lumaS) + lumaSWSE);
     float edgeHorz = (abs(edgeHorz3) + edgeHorz4);
     float edgeVert = (abs(edgeVert3) + edgeVert4);
     #line 602
@@ -117,7 +117,7 @@ vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, 
     if (horzSpan){
         lengthSign = fxaaQualityRcpFrame.y;
     }
-    float subpixB = ((subpixA * (1.0 / 12.0)) - rgbyM.w);
+    float subpixB = ((subpixA * 0.0833333) - rgbyM.w);
     #line 612
     float gradientN = (lumaN - rgbyM.w);
     float gradientS = (lumaS - rgbyM.w);
@@ -152,7 +152,7 @@ vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, 
     #line 634
     posP.x = (posB.x + (offNP.x * 1.0));
     posP.y = (posB.y + (offNP.y * 1.0));
-    float subpixD = (((-2.0) * subpixC) + 3.0);
+    float subpixD = ((-2.0 * subpixC) + 3.0);
     float lumaEndN = FxaaLuma( xll_tex2Dlod( tex, vec4( posN, 0.0, 0.0)));
     #line 638
     float subpixE = (subpixC * subpixC);
@@ -543,7 +543,7 @@ vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, 
 vec4 xlat_main( in v2f i ) {
     float fxaaN = 0.5;
     #line 982
-    return FxaaPixelShader( i.uv, i.uvPosPos, _MainTex, _MainTex, _MainTex, _MainTex_TexelSize.xy, (_MainTex_TexelSize.xyxy * vec4( (-fxaaN), (-fxaaN), fxaaN, fxaaN)), (_MainTex_TexelSize.xyxy * vec4( (-2.0), (-2.0), 2.0, 2.0)), (_MainTex_TexelSize.xyxy * vec4( 8.0, 8.0, (-4.0), (-4.0))), 0.75, 0.166, 0.0833, 8.0, 0.125, 0.05, vec4( 1.0, (-1.0), 0.25, (-0.25)));
+    return FxaaPixelShader( i.uv, i.uvPosPos, _MainTex, _MainTex, _MainTex, _MainTex_TexelSize.xy, (_MainTex_TexelSize.xyxy * vec4( (-fxaaN), (-fxaaN), fxaaN, fxaaN)), (_MainTex_TexelSize.xyxy * vec4( -2.0, -2.0, 2.0, 2.0)), (_MainTex_TexelSize.xyxy * vec4( 8.0, 8.0, -4.0, -4.0)), 0.75, 0.166, 0.0833, 8.0, 0.125, 0.05, vec4( 1.0, -1.0, 0.25, -0.25));
 }
 varying vec4 xlv_SV_POSITION;
 varying vec2 xlv_TEXCOORD0;

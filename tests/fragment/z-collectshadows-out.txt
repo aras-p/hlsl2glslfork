@@ -52,7 +52,7 @@ float Linear01Depth( in float z ) {
 vec2 EncodeFloatRG( in float v ) {
     #line 29
     vec2 kEncodeMul = vec2( 1.0, 255.0);
-    float kEncodeBit = (1.0 / 255.0);
+    float kEncodeBit = 0.00392157;
     vec2 enc = (kEncodeMul * v);
     enc = fract(enc);
     #line 33

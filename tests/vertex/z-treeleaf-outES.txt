@@ -78,7 +78,7 @@ void ExpandBillboard( in highp mat4 mat, inout highp vec4 pos, inout highp vec3 
     pos += ((vec4( normal.xy, 0.0, 0.0) * mat) * isBillboard);
     normal = mix( normal, norb, vec3( isBillboard));
     #line 60
-    tangent = mix( tangent, vec4( tanb, (-1.0)), vec4( isBillboard));
+    tangent = mix( tangent, vec4( tanb, -1.0), vec4( isBillboard));
 }
 #line 66
 highp vec4 TriangleWave( in highp vec4 x ) {

@@ -406,7 +406,7 @@ highp vec3 GlobalIllumination( in Input IN, in MySurfaceOutput s, out highp vec3
     #line 354
     lowp vec3 worldN = vec3( dot( IN.TtoW0, normal), dot( IN.TtoW1, normal), dot( IN.TtoW2, normal));
     highp float roughness = (_Roughness * s.Roughness);
-    highp float Q = ((0.25 * 0.33) * (1.0 - pow( (1.0 - max( 0.0, (roughness - 0.033))), 2.0)));
+    highp float Q = (0.0825 * (1.0 - pow( (1.0 - max( 0.0, (roughness - 0.033))), 2.0)));
     highp float LOD = ((1.25 * (1.0 - pow( (1.0 - max( 0.0, roughness)), 2.0))) * 4.0);
     #line 358
     PlanarMapping pm0;
@@ -469,8 +469,8 @@ void surf( in Input IN, inout MySurfaceOutput o ) {
 highp float OrenNayarTerm( in highp float roughness, in highp vec3 normal, in highp vec3 lightDir, in highp vec3 viewDir ) {
     #line 157
     const highp float PI = 3.14159;
-    highp float INVERSE_PI = (1.0 / 3.14159);
-    highp float INVERSE_PI_SQ = (INVERSE_PI * INVERSE_PI);
+    const highp float INVERSE_PI = 0.31831;
+    const highp float INVERSE_PI_SQ = 0.101321;
     highp float rSq = (roughness * roughness);
     #line 161
     highp float NdotL = LambertTermWithRolloff( normal, lightDir);
@@ -484,8 +484,8 @@ highp float OrenNayarTerm( in highp float roughness, in highp vec3 normal, in hi
     highp float c1 = (1.0 - (0.5 * K1));
     #line 169
     highp float c2 = (0.45 * K2);
-    c2 *= (sin(a) - (( (y >= 0.0) ) ? ( 0.0 ) : ( pow( ((2.0 * b) * INVERSE_PI), 3.0) )));
-    highp float c3 = (((1.0 / 8.0) * K2) * pow( (((4.0 * a) * b) * INVERSE_PI_SQ), 2.0));
+    c2 *= (sin(a) - (( (y >= 0.0) ) ? ( 0.0 ) : ( pow( ((2.0 * b) * 0.31831), 3.0) )));
+    highp float c3 = ((0.125 * K2) * pow( (((4.0 * a) * b) * 0.101321), 2.0));
     highp float x = ((y * c2) * tan(b));
     #line 173
     highp float e = (((1.0 - abs(y)) * c3) * tan(((a + b) / 2.0)));

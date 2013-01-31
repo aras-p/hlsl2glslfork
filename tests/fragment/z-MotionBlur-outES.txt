@@ -79,7 +79,7 @@ highp vec4 xlat_main( in v2f i ) {
         if ((i_1 == centerSample)){
             contrib = 0.0;
         }
-        highp float t = mix( (-1.0), 1.0, (((float(i_1) + j) + 1.0) / (13.0 + 1.0)));
+        highp float t = mix( -1.0, 1.0, (((float(i_1) + j) + 1.0) / 14.0));
         highp vec2 y = (x + (vn * t));
         #line 73
         highp vec2 yf = y;

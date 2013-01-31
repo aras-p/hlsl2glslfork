@@ -52,7 +52,7 @@ highp float Linear01Depth( in highp float z ) {
 highp vec2 EncodeFloatRG( in highp float v ) {
     #line 29
     highp vec2 kEncodeMul = vec2( 1.0, 255.0);
-    highp float kEncodeBit = (1.0 / 255.0);
+    highp float kEncodeBit = 0.00392157;
     highp vec2 enc = (kEncodeMul * v);
     enc = fract(enc);
     #line 33

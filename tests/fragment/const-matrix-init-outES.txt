@@ -40,7 +40,7 @@ mediump vec4 DirLM( in lowp vec3 scale, in lowp vec3 normal );
 lowp vec4 xlat_main( in mediump vec2 uv, in lowp vec3 normal );
 #line 9
 mediump vec4 DirLM( in lowp vec3 scale, in lowp vec3 normal ) {
-    highp mat3 unity_DirBasis = xll_transpose(mat3( vec3( 0.816497, 0.0, 0.57735), vec3( (-0.408248), 0.707107, 0.57735), vec3( (-0.408248), (-0.707107), 0.57735)));
+    highp mat3 unity_DirBasis = xll_transpose(mat3( vec3( 0.816497, 0.0, 0.57735), vec3( -0.408248, 0.707107, 0.57735), vec3( -0.408248, -0.707107, 0.57735)));
     mediump vec3 normalInDirBasis = xll_saturate((unity_DirBasis * normal));
     #line 13
     highp float f = dot( normalInDirBasis, scale);

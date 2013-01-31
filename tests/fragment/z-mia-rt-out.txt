@@ -396,7 +396,7 @@ vec3 GlobalIllumination( in Input IN, in MySurfaceOutput s, out vec3 spec ) {
     #line 345
     vec3 worldN = vec3( dot( IN.TtoW0, normal), dot( IN.TtoW1, normal), dot( IN.TtoW2, normal));
     float roughness = (_Roughness * s.Roughness);
-    float Q = ((0.25 * 0.33) * (1.0 - pow( (1.0 - max( 0.0, (roughness - 0.033))), 2.0)));
+    float Q = (0.0825 * (1.0 - pow( (1.0 - max( 0.0, (roughness - 0.033))), 2.0)));
     float LOD = ((1.25 * (1.0 - pow( (1.0 - max( 0.0, roughness)), 2.0))) * 4.0);
     #line 349
     PlanarMapping pm0;
@@ -459,8 +459,8 @@ void surf( in Input IN, inout MySurfaceOutput o ) {
 float OrenNayarTerm( in float roughness, in vec3 normal, in vec3 lightDir, in vec3 viewDir ) {
     #line 159
     const float PI = 3.14159;
-    float INVERSE_PI = (1.0 / 3.14159);
-    float INVERSE_PI_SQ = (INVERSE_PI * INVERSE_PI);
+    const float INVERSE_PI = 0.31831;
+    const float INVERSE_PI_SQ = 0.101321;
     float rSq = (roughness * roughness);
     #line 163
     float NdotL = LambertTermWithRolloff( normal, lightDir);
@@ -474,8 +474,8 @@ float OrenNayarTerm( in float roughness, in vec3 normal, in vec3 lightDir, in ve
     float c1 = (1.0 - (0.5 * K1));
     #line 171
     float c2 = (0.45 * K2);
-    c2 *= (sin(a) - (( (y >= 0.0) ) ? ( 0.0 ) : ( pow( ((2.0 * b) * INVERSE_PI), 3.0) )));
-    float c3 = (((1.0 / 8.0) * K2) * pow( (((4.0 * a) * b) * INVERSE_PI_SQ), 2.0));
+    c2 *= (sin(a) - (( (y >= 0.0) ) ? ( 0.0 ) : ( pow( ((2.0 * b) * 0.31831), 3.0) )));
+    float c3 = ((0.125 * K2) * pow( (((4.0 * a) * b) * 0.101321), 2.0));
     float x = ((y * c2) * tan(b));
     #line 175
     float e = (((1.0 - abs(y)) * c3) * tan(((a + b) / 2.0)));
