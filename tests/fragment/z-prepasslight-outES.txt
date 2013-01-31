@@ -80,7 +80,7 @@ highp float Linear01Depth( in highp float z ) {
 #line 8
 highp float DecodeFloatRGBA( in highp vec4 enc ) {
     #line 10
-    highp vec4 kDecodeDot = vec4( 1.0, (1.0 / 255.0), (1.0 / 65025.0), (1.0 / 160581376.0));
+    highp vec4 kDecodeDot = vec4( 1.0, (1.0 / 255.0), (1.0 / 65025.0), (1.0 / 1.60581e+08));
     return dot( enc, kDecodeDot);
 }
 #line 39

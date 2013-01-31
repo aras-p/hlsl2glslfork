@@ -84,28 +84,6 @@ void GlslSymbol::writeDecl (std::stringstream& out, unsigned flags)
 }
 
 
-// two requirements here:
-// 1) We always need a decimal-point so that the GLSL output is clearly a float
-// 2) We want to have reasonably consistent behaviour between MacOS & Windows (so tests are consistent)
-// historically there was this pattern instead 
-//  active.setf ( std::stringstream::showpoint );
-// 	active.unsetf(std::ios::fixed);
-// 	active.unsetf(std::ios::scientific);
-// 	active.precision (6);
-// but the interpretation of precision was different between platforms
-
-void GlslSymbol::writeFloat(std::stringstream &out, float f)
-{
-	static char buffer[64];
-	
-	if (fractionalPart(f) == 0.f)
-		sprintf(buffer, "%.1f", f);
-	else
-		sprintf(buffer, "%.*g", FLT_DIG, f);
-
-	out << buffer;
-}
-
 void GlslSymbol::mangleName()
 {
 	std::stringstream s;

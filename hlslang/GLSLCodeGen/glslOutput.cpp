@@ -12,6 +12,48 @@
 	#define snprintf _snprintf
 #endif
 
+
+void print_float (std::stringstream& out, float f)
+{
+	// Kind of roundabout way, but this is to satisfy two things:
+	// * MSVC and gcc-based compilers differ a bit in how they treat float
+	//   width/precision specifiers. Want to match for tests.
+	// * GLSL (early version at least) require floats to have ".0" or
+	//   exponential notation.
+	char tmp[64];
+	sprintf(tmp, "%.6g", f);
+
+	char* posE = NULL;
+	posE = strchr(tmp, 'e');
+	if (!posE)
+		posE = strchr(tmp, 'E');
+
+	#if _MSC_VER
+	// While gcc would print something like 1.0e+07, MSVC will print 1.0e+007 -
+	// only for exponential notation, it seems, will add one extra useless zero. Let's try to remove
+	// that so compiler output matches.
+	if (posE != NULL)
+	{
+		if((posE[1] == '+' || posE[1] == '-') && posE[2] == '0')
+		{
+			char* p = posE+2;
+			while (p[0])
+			{
+				p[0] = p[1];
+				++p;
+			}
+		}
+	}
+	#endif
+
+	out << tmp;
+
+	// need to append ".0"?
+	if (!strchr(tmp,'.') && (posE == NULL))
+		out << ".0";
+}
+
+
 bool isShadowSampler(TBasicType t) {
 	switch (t) {
 		case EbtSampler1DShadow:
@@ -98,7 +140,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 					out << c->toInt(v);
 					break;
 				case EbtFloat:
-					GlslSymbol::writeFloat(out, c->toFloat(v));
+					print_float(out, c->toFloat(v));
 					break;
 				default:
 					assert(0);
