@@ -1,0 +1,22 @@
+const int kInt1 = 3;
+const int kInt2 = 7;
+#line 3
+int kInt3;
+uniform float size1;
+uniform float size2;
+#line 7
+uniform float size3;
+#line 12
+vec4 xlat_main(  );
+#line 12
+vec4 xlat_main(  ) {
+    return vec4( 3.0, 7.0, float(kInt3), size2);
+}
+void main() {
+    vec4 xl_retval;
+    xl_retval = xlat_main( );
+    gl_Position = vec4(xl_retval);
+}
+
+// uniforms:
+// size2:<none> type 9 arrsize 0

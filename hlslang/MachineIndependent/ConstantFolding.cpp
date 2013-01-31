@@ -18,55 +18,61 @@ TIntermConstant* FoldBinaryConstantExpression(TOperator op, TIntermConstant* nod
 	if (nodeA->getType() != nodeB->getType())
 		return NULL;
 	
-	// for now, only support integers; we really only need constant folding for array sizes
-	if (nodeA->getBasicType() != EbtInt)
+	// for now, only support integers and floats
+	if (nodeA->getBasicType() != EbtInt && nodeA->getBasicType() != EbtFloat)
 		return NULL;
 		
 	
 	TIntermConstant* newNode = new TIntermConstant(nodeA->getType());
+
+#define DO_FOLD_OP(oper) \
+	if (nodeA->getBasicType() == EbtInt) \
+		for (unsigned i = 0; i < newNode->getCount(); ++i) \
+			newNode->setValue(i, nodeA->getValue(i).asInt oper nodeB->getValue(i).asInt); \
+	else \
+		for (unsigned i = 0; i < newNode->getCount(); ++i) \
+			newNode->setValue(i, nodeA->getValue(i).asFloat oper nodeB->getValue(i).asFloat)
+
+#define DO_FOLD_OP_INT(oper) \
+	if (nodeA->getBasicType() == EbtInt) \
+		for (unsigned i = 0; i < newNode->getCount(); ++i) \
+		newNode->setValue(i, nodeA->getValue(i).asInt oper nodeB->getValue(i).asInt); \
+	else { \
+		delete newNode; \
+		return NULL; \
+	}
+
+#define DO_FOLD_OP_ZERO(oper) \
+	if (nodeA->getBasicType() == EbtInt) \
+		for (unsigned i = 0; i < newNode->getCount(); ++i) \
+			newNode->setValue(i, nodeB->getValue(i).asInt ? nodeA->getValue(i).asInt oper nodeB->getValue(i).asInt : 0); \
+	else \
+		for (unsigned i = 0; i < newNode->getCount(); ++i) \
+			newNode->setValue(i, nodeB->getValue(i).asInt ? nodeA->getValue(i).asFloat oper nodeB->getValue(i).asFloat : 0)
 	
 	switch (op)
 	{
-		case EOpAdd:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, nodeA->getValue(i).asInt + nodeB->getValue(i).asInt);
-			break;
-		case EOpSub:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, nodeA->getValue(i).asInt - nodeB->getValue(i).asInt);
-			break;
-		case EOpMul:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, nodeA->getValue(i).asInt * nodeB->getValue(i).asInt);
-			break;
-		case EOpDiv:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, nodeB->getValue(i).asInt ? nodeA->getValue(i).asInt / nodeB->getValue(i).asInt : 0);
-			break;
+		case EOpAdd: DO_FOLD_OP(+); break;
+		case EOpSub: DO_FOLD_OP(-); break;
+		case EOpMul: DO_FOLD_OP(*); break;
+		case EOpDiv: DO_FOLD_OP_ZERO(/); break;
 		case EOpMod:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, nodeB->getValue(i).asInt ? nodeA->getValue(i).asInt % nodeB->getValue(i).asInt : 0);
+			if (nodeA->getBasicType() == EbtInt)
+			{
+				for (unsigned i = 0; i < newNode->getCount(); ++i)
+					newNode->setValue(i, nodeB->getValue(i).asInt ? nodeA->getValue(i).asInt % nodeB->getValue(i).asInt : 0);
+			}
+			else
+			{
+				delete newNode;
+				return NULL;
+			}
 			break;
-		case EOpRightShift:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, nodeA->getValue(i).asInt >> nodeB->getValue(i).asInt);
-			break;
-		case EOpLeftShift:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, nodeA->getValue(i).asInt << nodeB->getValue(i).asInt);
-			break;
-		case EOpAnd:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, nodeA->getValue(i).asInt & nodeB->getValue(i).asInt);
-			break;
-		case EOpInclusiveOr:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, nodeA->getValue(i).asInt | nodeB->getValue(i).asInt);
-			break;
-		case EOpExclusiveOr:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, nodeA->getValue(i).asInt ^ nodeB->getValue(i).asInt);
-			break;
+		case EOpRightShift: DO_FOLD_OP_INT(>>); break;
+		case EOpLeftShift: DO_FOLD_OP_INT(<<); break;
+		case EOpAnd: DO_FOLD_OP_INT(&); break;
+		case EOpInclusiveOr: DO_FOLD_OP_INT(|); break;
+		case EOpExclusiveOr: DO_FOLD_OP_INT(^); break;
 		default:
 			delete newNode;
 			return NULL;
