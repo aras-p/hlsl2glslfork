@@ -6,11 +6,18 @@ uniform float size1;
 uniform float size2;
 #line 7
 uniform float size3;
-#line 12
+uniform float size4;
+uniform float size5;
+uniform float size6;
+#line 11
+uniform float size7;
+uniform float size8;
+uniform float size9;
+#line 15
 vec4 xlat_main(  );
-#line 12
+#line 15
 vec4 xlat_main(  ) {
-    return vec4( 3.0, 7.0, float(kInt3), size2);
+    return vec4( 3.0, 7.0, float(kInt3), (size2 + size8));
 }
 void main() {
     vec4 xl_retval;
@@ -20,3 +27,4 @@ void main() {
 
 // uniforms:
 // size2:<none> type 9 arrsize 0
+// size8:<none> type 9 arrsize 0

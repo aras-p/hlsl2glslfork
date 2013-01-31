@@ -87,17 +87,24 @@ TIntermConstant* FoldUnaryConstantExpression(TOperator op, TIntermConstant* node
 	if (!node)
 		return NULL;
 	
-	// for now, only support integers; we really only need constant folding for array sizes
-	if (node->getBasicType() != EbtInt)
+	// for now, only support integers and floats
+	if (node->getBasicType() != EbtInt && node->getBasicType() != EbtFloat)
 		return NULL;
-	
 	
 	TIntermConstant* newNode = new TIntermConstant(node->getType());
 	switch (op)
 	{
 		case EOpNegative:
-			for (unsigned i = 0; i < newNode->getCount(); ++i)
-				newNode->setValue(i, -node->getValue(i).asInt);
+			if (node->getBasicType() == EbtInt)
+			{
+				for (unsigned i = 0; i < newNode->getCount(); ++i)
+					newNode->setValue(i, -node->getValue(i).asInt);
+			}
+			else
+			{
+				for (unsigned i = 0; i < newNode->getCount(); ++i)
+					newNode->setValue(i, -node->getValue(i).asFloat);
+			}
 			break;
 		default:
 			delete newNode;
