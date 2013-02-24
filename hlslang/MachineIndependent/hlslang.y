@@ -46,6 +46,13 @@ Jutta Degener, 1995
     }                                                                           \
 }
 
+#define NONSQUARE_MATRIX_CHECK(S, L) { \
+	if (parseContext.targetVersion < ETargetGLSL_120) { \
+		parseContext.error(L, " not supported in pre-GLSL1.20", S, "", ""); \
+		parseContext.recover(); \
+	} \
+}
+
 #define UNSUPPORTED_FEATURE(S, L) {                                                       \
     parseContext.error(L, " not supported ", S, "", "");              \
     parseContext.recover();                                                            \
@@ -1718,14 +1725,17 @@ type_specifier_nonarray
         $$.setMatrix(2, 2);
     }
     | MATRIX2x3 {
+		NONSQUARE_MATRIX_CHECK("float2x3", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setMatrix(3, 2);
     }
     | MATRIX2x4 {
+		NONSQUARE_MATRIX_CHECK("float2x4", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setMatrix(4, 2);
     }
     | MATRIX3x2 {
+		NONSQUARE_MATRIX_CHECK("float3x2", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setMatrix(2, 3);
     }
@@ -1734,14 +1744,17 @@ type_specifier_nonarray
         $$.setMatrix(3, 3);
     }
     | MATRIX3x4 {
+		NONSQUARE_MATRIX_CHECK("float3x4", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setMatrix(4, 3);
     }
     | MATRIX4x2 {
+		NONSQUARE_MATRIX_CHECK("float4x2", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setMatrix(2, 4);
     }
     | MATRIX4x3 {
+		NONSQUARE_MATRIX_CHECK("float4x3", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpHigh);
         $$.setMatrix(3, 4);
     }
@@ -1754,14 +1767,17 @@ type_specifier_nonarray
         $$.setMatrix(2, 2);
     }
     | HMATRIX2x3 {
+		NONSQUARE_MATRIX_CHECK("half2x3", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
         $$.setMatrix(3, 2);
     }
     | HMATRIX2x4 {
+		NONSQUARE_MATRIX_CHECK("half2x4", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
         $$.setMatrix(4, 2);
     }
     | HMATRIX3x2 {
+		NONSQUARE_MATRIX_CHECK("half3x2", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
         $$.setMatrix(2, 3);
     }
@@ -1770,14 +1786,17 @@ type_specifier_nonarray
         $$.setMatrix(3, 3);
     }
     | HMATRIX3x4 {
+		NONSQUARE_MATRIX_CHECK("half3x4", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
         $$.setMatrix(4, 3);
     }
     | HMATRIX4x2 {
+		NONSQUARE_MATRIX_CHECK("half4x2", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
         $$.setMatrix(2, 4);
     }
     | HMATRIX4x3 {
+		NONSQUARE_MATRIX_CHECK("half4x3", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpMedium);
         $$.setMatrix(3, 4);
     }
@@ -1790,14 +1809,17 @@ type_specifier_nonarray
         $$.setMatrix(2, 2);
     }
     | FMATRIX2x3 {
+		NONSQUARE_MATRIX_CHECK("fixed2x3", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
         $$.setMatrix(3, 2);
     }
     | FMATRIX2x4 {
+		NONSQUARE_MATRIX_CHECK("fixed2x4", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
         $$.setMatrix(4, 2);
     }
     | FMATRIX3x2 {
+		NONSQUARE_MATRIX_CHECK("fixed3x2", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
         $$.setMatrix(2, 3);
     }
@@ -1806,14 +1828,17 @@ type_specifier_nonarray
         $$.setMatrix(3, 3);
     }
     | FMATRIX3x4 {
+		NONSQUARE_MATRIX_CHECK("fixed3x4", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
         $$.setMatrix(4, 3);
     }
     | FMATRIX4x2 {
+		NONSQUARE_MATRIX_CHECK("fixed4x2", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
         $$.setMatrix(2, 4);
     }
     | FMATRIX4x3 {
+		NONSQUARE_MATRIX_CHECK("fixed4x3", $1.line);
         SET_BASIC_TYPE($$,$1,EbtFloat,EbpLow);
         $$.setMatrix(3, 4);
     }
