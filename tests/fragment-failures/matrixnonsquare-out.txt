@@ -1,0 +1,3 @@
+3: ERROR: 'float2x3' : syntax error syntax error
+ERROR: 1 compilation errors.  No code generated.
+
