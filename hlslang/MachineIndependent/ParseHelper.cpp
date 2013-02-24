@@ -118,7 +118,7 @@ namespace {
 
 TIntermTyped* TParseContext::add_binary(TOperator op, TIntermTyped* a, TIntermTyped* b, TSourceLoc line, const char* name, bool boolResult)
 {
-	TIntermTyped* res = ir_add_binary_math(op, a, b, line, infoSink);
+	TIntermTyped* res = ir_add_binary_math(op, a, b, line, infoSink, targetVersion);
 	if (res == NULL)
 	{
 		binaryOpError(line, name, a->getCompleteString(), b->getCompleteString());
@@ -1425,7 +1425,7 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 		TIntermTyped* constructor = ir_set_aggregate_op(aggregate, op, line);
 		constructor->setType(*type);
 		if (!TransposeMatrixConstructorArgs (type, params))
-			constructor = ir_add_unary_math (EOpTranspose, constructor, line, infoSink);
+			constructor = ir_add_unary_math (EOpTranspose, constructor, line, infoSink, targetVersion);
 		
 		return constructor;
 	}
@@ -1607,13 +1607,13 @@ TIntermTyped* TParseContext::addAssign(TOperator op, TIntermTyped* left, TInterm
    TIntermTyped *tNode;
 
 
-   if ( (tNode = ir_add_assign(op,left,right,loc, infoSink)) == 0)
+   if ( (tNode = ir_add_assign(op,left,right,loc, infoSink, targetVersion)) == 0)
    {
       //need to convert
       TOperator cop = getConstructorOp( left->getType());
       TType type = left->getType();
       tNode = constructBuiltIn( &type, cop, right, loc, false);
-      tNode = ir_add_assign(op, left, tNode, loc, infoSink);
+      tNode = ir_add_assign(op, left, tNode, loc, infoSink, targetVersion);
    }
 
    return tNode;
@@ -1676,7 +1676,7 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
 		recover();
 		return 0;
 	}
-	newNode = ir_add_unary_math(basicOp, node, node->getLine(), infoSink);
+	newNode = ir_add_unary_math(basicOp, node, node->getLine(), infoSink, targetVersion);
 	if (newNode == 0)
 	{
 	  error(line, "can't convert", "constructor", "");
@@ -1702,31 +1702,45 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
       if (newNode->getColsCount() < type->getColsCount() ||
           newNode->getRowsCount() < type->getRowsCount())
           return 0;
+	   
+	   if (targetVersion < ETargetGLSL_120)
+	   {
+		   const int c = type->getColsCount();
+		   const int r = type->getRowsCount();
+		   if (c == 2 && r == 2)
+			   op = EOpConstructMat2x2FromMat;
+		   else if (c == 3 && r == 3)
+			   op = EOpConstructMat3x3FromMat;
+		   //@TODO: errors on others?
+	   }
+	   else
+	   {
 
-      switch (type->getColsCount())
-      {
-      case 2:
-          switch (type->getRowsCount())
-          {
-          case 2: op = EOpConstructMat2x2; break;
-          case 3: op = EOpConstructMat2x3; break;
-          case 4: op = EOpConstructMat2x4; break;
-          } break;
-      case 3:
-          switch (type->getRowsCount())
-          {
-          case 2: op = EOpConstructMat3x2; break;
-          case 3: op = EOpConstructMat3x3; break;
-          case 4: op = EOpConstructMat3x4; break;
-          } break;
-      case 4:
-          switch (type->getRowsCount())
-          {
-          case 2: op = EOpConstructMat4x2; break;
-          case 3: op = EOpConstructMat4x3; break;
-          case 4: assert(false); break;
-          } break;
-      }
+		  switch (type->getColsCount())
+		  {
+		  case 2:
+			  switch (type->getRowsCount())
+			  {
+			  case 2: op = EOpConstructMat2x2; break;
+			  case 3: op = EOpConstructMat2x3; break;
+			  case 4: op = EOpConstructMat2x4; break;
+			  } break;
+		  case 3:
+			  switch (type->getRowsCount())
+			  {
+			  case 2: op = EOpConstructMat3x2; break;
+			  case 3: op = EOpConstructMat3x3; break;
+			  case 4: op = EOpConstructMat3x4; break;
+			  } break;
+		  case 4:
+			  switch (type->getRowsCount())
+			  {
+			  case 2: op = EOpConstructMat4x2; break;
+			  case 3: op = EOpConstructMat4x3; break;
+			  case 4: assert(false); break;
+			  } break;
+		  }
+	   }
    }
 
 	// will insert a new node for the constructor, as needed.

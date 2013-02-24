@@ -1443,17 +1443,14 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpConstructMat4x4:  writeFuncCall( "mat4",   node, goit); return false;
 
 
-                             /*
-   case EOpConstructMat2FromMat:
-      current->addLibFunction(EOpConstructMat2FromMat);
+   case EOpConstructMat2x2FromMat:
+      current->addLibFunction(EOpConstructMat2x2FromMat);
       writeFuncCall( "xll_constructMat2", node, goit);
       return false;
-
-   case EOpConstructMat3FromMat:
-      current->addLibFunction(EOpConstructMat3FromMat);
+   case EOpConstructMat3x3FromMat:
+      current->addLibFunction(EOpConstructMat3x3FromMat);
       writeFuncCall( "xll_constructMat3", node, goit);
       return false;
-      */
 
    case EOpConstructStruct:  writeFuncCall( node->getTypePointer()->getTypeName(), node, goit); return false;
    case EOpConstructArray:  writeFuncCall( buildArrayConstructorString(*node->getTypePointer()), node, goit); return false;

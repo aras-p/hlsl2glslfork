@@ -389,7 +389,7 @@ postfix_expression
     | postfix_expression INC_OP {
         if (parseContext.lValueErrorCheck($2.line, "++", $1))
             parseContext.recover();
-        $$ = ir_add_unary_math(EOpPostIncrement, $1, $2.line, parseContext.infoSink);
+        $$ = ir_add_unary_math(EOpPostIncrement, $1, $2.line, parseContext.infoSink, parseContext.targetVersion);
         if ($$ == 0) {
             parseContext.unaryOpError($2.line, "++", $1->getCompleteString());
             parseContext.recover();
@@ -399,7 +399,7 @@ postfix_expression
     | postfix_expression DEC_OP {
         if (parseContext.lValueErrorCheck($2.line, "--", $1))
             parseContext.recover();
-        $$ = ir_add_unary_math(EOpPostDecrement, $1, $2.line, parseContext.infoSink);
+        $$ = ir_add_unary_math(EOpPostDecrement, $1, $2.line, parseContext.infoSink, parseContext.targetVersion);
         if ($$ == 0) {
             parseContext.unaryOpError($2.line, "--", $1->getCompleteString());
             parseContext.recover();
@@ -492,7 +492,7 @@ function_call
                         //
                         // Treat it like a built-in unary operator.
                         //
-                        $$ = ir_add_unary_math(op, $1.intermNode, gNullSourceLoc, parseContext.infoSink);
+                        $$ = ir_add_unary_math(op, $1.intermNode, gNullSourceLoc, parseContext.infoSink, parseContext.targetVersion);
                         if ($$ == 0)  {
                             parseContext.error($1.intermNode->getLine(), " wrong operand type", "Internal Error",
                                 "built in unary operator function.  Type: %s",
@@ -712,7 +712,7 @@ unary_expression
     | INC_OP unary_expression {
 		if (parseContext.lValueErrorCheck($1.line, "++", $2))
 			parseContext.recover();
-		$$ = ir_add_unary_math(EOpPreIncrement, $2, $1.line, parseContext.infoSink);
+		$$ = ir_add_unary_math(EOpPreIncrement, $2, $1.line, parseContext.infoSink, parseContext.targetVersion);
 		if ($$ == 0) {
 			parseContext.unaryOpError($1.line, "++", $2->getCompleteString());
 			parseContext.recover();
@@ -722,7 +722,7 @@ unary_expression
     | DEC_OP unary_expression {
         if (parseContext.lValueErrorCheck($1.line, "--", $2))
             parseContext.recover();
-		$$ = ir_add_unary_math(EOpPreDecrement, $2, $1.line, parseContext.infoSink);
+		$$ = ir_add_unary_math(EOpPreDecrement, $2, $1.line, parseContext.infoSink, parseContext.targetVersion);
 		if ($$ == 0) {
 			parseContext.unaryOpError($1.line, "--", $2->getCompleteString());
 			parseContext.recover();
@@ -731,7 +731,7 @@ unary_expression
     }
     | unary_operator unary_expression {
 		if ($1.op != EOpNull) {
-			$$ = ir_add_unary_math($1.op, $2, $1.line, parseContext.infoSink);
+			$$ = ir_add_unary_math($1.op, $2, $1.line, parseContext.infoSink, parseContext.targetVersion);
 			if ($$ == 0) {
 				const char* errorOp = "";
 				switch($1.op) {
@@ -1275,7 +1275,7 @@ init_declarator_list
 		if (!sym)
 			$$ = $1;
 		else
-			$$ = ir_grow_declaration($1, sym, NULL, parseContext.infoSink);
+			$$ = ir_grow_declaration($1, sym, NULL, parseContext.infoSink, parseContext.targetVersion);
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info {
 		TPublicType type = ir_get_decl_type_noarray($1);
@@ -1297,7 +1297,7 @@ init_declarator_list
 				$$ = $1;
 			else {
 				variable->getType().setArray(true);
-				$$ = ir_grow_declaration($1, variable, NULL, parseContext.infoSink);
+				$$ = ir_grow_declaration($1, variable, NULL, parseContext.infoSink, parseContext.targetVersion);
 			}
         }
     }
@@ -1325,7 +1325,7 @@ init_declarator_list
 			if (!variable)
 				$$ = $1;
 			else {
-				$$ = ir_grow_declaration($1, variable, NULL, parseContext.infoSink);
+				$$ = ir_grow_declaration($1, variable, NULL, parseContext.infoSink, parseContext.targetVersion);
 			}
         }
     }
@@ -1348,7 +1348,7 @@ init_declarator_list
                 if (!variable)
 					$$ = $1;
 				else {
-					$$ = ir_grow_declaration($1, variable, $8, parseContext.infoSink);
+					$$ = ir_grow_declaration($1, variable, $8, parseContext.infoSink, parseContext.targetVersion);
 				}
             } else {
                 parseContext.recover();
@@ -1381,7 +1381,7 @@ init_declarator_list
 				if (!variable)
 					$$ = $1;
 				else {
-					$$ = ir_grow_declaration($1, variable, $9, parseContext.infoSink);
+					$$ = ir_grow_declaration($1, variable, $9, parseContext.infoSink, parseContext.targetVersion);
 				}
             } else {
                 parseContext.recover();
@@ -1402,7 +1402,7 @@ init_declarator_list
 				if (!variable)
 					$$ = $1;
 				else 				
-					$$ = ir_grow_declaration($1, variable, $6, parseContext.infoSink);
+					$$ = ir_grow_declaration($1, variable, $6, parseContext.infoSink, parseContext.targetVersion);
 			} else {
 				parseContext.recover();
 				$$ = 0;
@@ -1439,7 +1439,7 @@ single_declaration
 		
 		TSymbol* symbol = parseContext.symbolTable.find(*$2.string);
 		if (!error && symbol) {
-			$$ = ir_add_declaration(symbol, NULL, $2.line, parseContext.infoSink);
+			$$ = ir_add_declaration(symbol, NULL, $2.line, parseContext.infoSink, parseContext.targetVersion);
 		} else {
 			$$ = 0;
 		}
@@ -1462,7 +1462,7 @@ single_declaration
 		
 		TSymbol* symbol = parseContext.symbolTable.find(*$2.string);
 		if (symbol) {
-			$$ = ir_add_declaration(symbol, NULL, $2.line, parseContext.infoSink);
+			$$ = ir_add_declaration(symbol, NULL, $2.line, parseContext.infoSink, parseContext.targetVersion);
 		} else {
 			$$ = 0;
 		}
@@ -1487,7 +1487,7 @@ single_declaration
                 parseContext.recover();
 			
 			if (variable) {
-				$$ = ir_add_declaration(variable, NULL, $2.line, parseContext.infoSink);
+				$$ = ir_add_declaration(variable, NULL, $2.line, parseContext.infoSink, parseContext.targetVersion);
 			} else {
 				$$ = 0;
 			}
@@ -1510,7 +1510,7 @@ single_declaration
 			TIntermSymbol* symbol;
 			if (!parseContext.executeInitializer($2.line, *$2.string, $5, $1, $7, symbol, variable)) {
 				if (variable)
-					$$ = ir_add_declaration(symbol, $7, $6.line, parseContext.infoSink);
+					$$ = ir_add_declaration(symbol, $7, $6.line, parseContext.infoSink, parseContext.targetVersion);
 				else
 					$$ = 0;
 			} else {
@@ -1540,7 +1540,7 @@ single_declaration
 			TIntermSymbol* symbol;
 			if (!parseContext.executeInitializer($2.line, *$2.string, $6, $1, $8, symbol, variable)) {
 				if (variable)
-					$$ = ir_add_declaration(symbol, $8, $7.line, parseContext.infoSink);
+					$$ = ir_add_declaration(symbol, $8, $7.line, parseContext.infoSink, parseContext.targetVersion);
 				else
 					$$ = 0;
 			} else {
@@ -1557,7 +1557,7 @@ single_declaration
 			TIntermSymbol* symbol;
 			if (!parseContext.executeInitializer($2.line, *$2.string, $3, $1, $5, symbol)) {
 				if (symbol)
-					$$ = ir_add_declaration(symbol, $5, $4.line, parseContext.infoSink);
+					$$ = ir_add_declaration(symbol, $5, $4.line, parseContext.infoSink, parseContext.targetVersion);
 				else
 					$$ = 0;
 			} else {
@@ -1576,7 +1576,7 @@ single_declaration
 				
 			TSymbol* symbol = parseContext.symbolTable.find(*$2.string);
 			if (symbol) {
-				$$ = ir_add_declaration(symbol, NULL, $2.line, parseContext.infoSink);
+				$$ = ir_add_declaration(symbol, NULL, $2.line, parseContext.infoSink, parseContext.targetVersion);
 			} else {
 				$$ = 0;
 			}
@@ -2145,7 +2145,7 @@ condition
             parseContext.recover();
 
         if (!parseContext.executeInitializer($2.line, *$2.string, $1, $4, symbol)) {
-			$$ = ir_add_declaration(symbol, $4, $2.line, parseContext.infoSink);
+			$$ = ir_add_declaration(symbol, $4, $2.line, parseContext.infoSink, parseContext.targetVersion);
         } else {
             parseContext.recover();
             $$ = 0;

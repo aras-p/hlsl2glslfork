@@ -12,6 +12,9 @@ mat4 xll_transpose(mat4 m) {
                m[0][2], m[1][2], m[2][2], m[3][2],
                m[0][3], m[1][3], m[2][3], m[3][3]);
 }
+mat3 xll_constructMat3( mat4 m) {
+  return mat3( vec3( m[0]), vec3( m[1]), vec3( m[2]));
+}
 vec2 xll_matrixindex (mat2 m, int i) { vec2 v; v.x=m[0][i]; v.y=m[1][i]; return v; }
 vec3 xll_matrixindex (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }
 vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }
@@ -183,14 +186,14 @@ v2f_surf xlat_main( in appdata_full v ) {
     o.worldPos = (_Object2World * v.vertex).xyz;
     vec3 viewDir = (-ObjSpaceViewDir( v.vertex));
     #line 424
-    vec3 worldRefl = (mat3( _Object2World) * viewDir);
+    vec3 worldRefl = (xll_constructMat3( _Object2World) * viewDir);
     vec3 binormal = (cross( normalize(v.normal), normalize(v.tangent.xyz)) * v.tangent.w);
     mat3 rotation = xll_transpose(mat3( v.tangent.xyz, binormal, v.normal));
     o.TtoW0 = (vec4( (rotation * xll_matrixindex (_Object2World, 0).xyz), worldRefl.x) * unity_Scale.w);
     #line 428
     o.TtoW1 = (vec4( (rotation * xll_matrixindex (_Object2World, 1).xyz), worldRefl.y) * unity_Scale.w);
     o.TtoW2 = (vec4( (rotation * xll_matrixindex (_Object2World, 2).xyz), worldRefl.z) * unity_Scale.w);
-    vec3 worldN = (mat3( _Object2World) * (v.normal * unity_Scale.w));
+    vec3 worldN = (xll_constructMat3( _Object2World) * (v.normal * unity_Scale.w));
     vec3 lightDir = (rotation * ObjSpaceLightDir( v.vertex));
     #line 432
     o.lightDir = lightDir;

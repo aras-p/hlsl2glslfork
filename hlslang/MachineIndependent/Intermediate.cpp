@@ -39,7 +39,7 @@ TIntermSymbol* ir_add_symbol_internal(int id, const TString& name, const TTypeIn
 
 
 // Connect two nodes with a new parent that does a binary operation on the nodes.
-TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TInfoSink& infoSink)
+TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TInfoSink& infoSink, ETargetVersion targetVersion)
 {
 	if (!left || !right)
 		return 0;
@@ -215,7 +215,7 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 	
 	node->setLeft(left);
 	node->setRight(right);
-	if (! node->promote(infoSink))
+	if (! node->promote(infoSink, targetVersion))
 		return 0;
 	
 	//
@@ -237,7 +237,7 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 
 
 // Connect two nodes through an assignment.
-TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TInfoSink& infoSink)
+TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TInfoSink& infoSink, ETargetVersion targetVersion)
 {
    //
    // Like adding binary math, except the conversion can only go
@@ -254,7 +254,7 @@ TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* righ
 
    node->setLeft(left);
    node->setRight(child);
-   if (! node->promote(infoSink))
+   if (! node->promote(infoSink, targetVersion))
       return 0;
 
    return node;
@@ -281,7 +281,7 @@ TIntermTyped* ir_add_index(TOperator op, TIntermTyped* base, TIntermTyped* index
 
 
 // Add one node as the parent of another that it operates on.
-TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc line, TInfoSink& infoSink)
+TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc line, TInfoSink& infoSink, ETargetVersion targetVersion)
 {
    TIntermUnary* node;
    TIntermTyped* child = childNode->getAsTyped();
@@ -357,7 +357,7 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
    node->setLine(line);
    node->setOperand(child);
 
-   if (! node->promote(infoSink))
+   if (! node->promote(infoSink, targetVersion))
       return 0;
 	
 	
@@ -552,7 +552,7 @@ TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* n
    }
 }
 
-TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink)
+TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink, ETargetVersion targetVersion)
 {
 	TIntermDeclaration* decl = new TIntermDeclaration(symbol->getType());
 	decl->setLine(line);
@@ -560,31 +560,31 @@ TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* init
 	if (!initializer)
 		decl->getDeclaration() = symbol;
 	else
-		decl->getDeclaration() = ir_add_assign(EOpAssign, symbol, initializer, line, infoSink);
+		decl->getDeclaration() = ir_add_assign(EOpAssign, symbol, initializer, line, infoSink, targetVersion);
 	
 	return decl;
 }
 
-TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink)
+TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink, ETargetVersion targetVersion)
 {
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = ir_add_symbol(var, line);
 
-	return ir_add_declaration(sym, initializer, line, infoSink);
+	return ir_add_declaration(sym, initializer, line, infoSink, targetVersion);
 }
 
 
-TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink)
+TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink, ETargetVersion targetVersion)
 {
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = ir_add_symbol(var, var->getType().getLine());
 	
-	return ir_grow_declaration(declaration, sym, initializer, infoSink);
+	return ir_grow_declaration(declaration, sym, initializer, infoSink, targetVersion);
 }
 
-TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol *symbol, TIntermTyped *initializer, TInfoSink& infoSink)
+TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol *symbol, TIntermTyped *initializer, TInfoSink& infoSink, ETargetVersion targetVersion)
 {
-	TIntermTyped* added_decl = ir_add_declaration (symbol, initializer, symbol->getLine(), infoSink);
+	TIntermTyped* added_decl = ir_add_declaration (symbol, initializer, symbol->getLine(), infoSink, targetVersion);
 
 	if (declaration->getAsDeclaration()) {
 		TIntermAggregate* aggregate = ir_make_aggregate(declaration, declaration->getLine());
@@ -951,7 +951,7 @@ bool TIntermOperator::isConstructor() const
 //
 // Returns false in nothing makes sense.
 //
-bool TIntermUnary::promote(TInfoSink&)
+bool TIntermUnary::promote(TInfoSink&, ETargetVersion targetVersion)
 {
    switch (op)
    {
@@ -988,8 +988,22 @@ bool TIntermUnary::promote(TInfoSink&)
    return true;
 }
 
-static TOperator getMatrixConstructOp(const TIntermTyped& intermediate)
+static TOperator getMatrixConstructOp(const TIntermTyped& intermediate, ETargetVersion targetVersion)
 {
+	// before GLSL 1.20, only square matrices
+	if (targetVersion < ETargetGLSL_120)
+	{
+		const int c = intermediate.getColsCount();
+		const int r = intermediate.getRowsCount();
+		if (c == 2 && r == 2)
+			return EOpConstructMat2x2FromMat;
+		if (c == 3 && r == 3)
+			return EOpConstructMat3x3FromMat;
+		if (c == 4 && r == 4)
+			return EOpConstructMat4x4;
+		return EOpNull; //@TODO: error?
+	}
+	
     switch (intermediate.getColsCount())
     {
     case 2:
@@ -1018,37 +1032,9 @@ static TOperator getMatrixConstructOp(const TIntermTyped& intermediate)
     return EOpNull;
 }
 
-static TOperator getDownConvertOp(const TIntermTyped& intermediate)
+static TOperator getDownConvertOp(const TIntermTyped& intermediate, ETargetVersion targetVersion)
 {
-    return getMatrixConstructOp(intermediate);
-    /* implement EOpConstructMat?x?FromMat if support for glsl <1.20 is needed,
-    switch (intermediate.getColsCount())
-    {
-    case 2:
-        switch (intermediate.getRowsCount())
-        {
-        case 2: return EOpConstructMat2x2FromMat;
-        case 3: return EOpConstructMat2x3FromMat;
-        case 4: return EOpConstructMat2x4FromMat;
-        } break;
-    case 3:
-        switch (intermediate.getRowsCount())
-        {
-        case 2: return EOpConstructMat3x2FromMat;
-        case 3: return EOpConstructMat3x3FromMat;
-        case 4: return EOpConstructMat3x4FromMat;
-        } break;
-    case 4:
-        switch (intermediate.getRowsCount())
-        {
-        case 2: return EOpConstructMat4x2FromMat;
-        case 3: return EOpConstructMat4x3FromMat;
-        case 4: return EOpConstructMat4x4; //should never need to down convert to mat4
-        } break;
-    }
-    assert(false);
-    return EOpNull;
-    */
+    return getMatrixConstructOp(intermediate, targetVersion);
 }
 
 
@@ -1058,7 +1044,7 @@ static TOperator getDownConvertOp(const TIntermTyped& intermediate)
 //
 // Returns false if operator can't work on operands.
 //
-bool TIntermBinary::promote(TInfoSink& infoSink)
+bool TIntermBinary::promote(TInfoSink& infoSink, ETargetVersion targetVersion)
 {
    TBasicType type = left->getBasicType();
 
@@ -1212,7 +1198,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
        TOperator convert = EOpNull;
        if (left->getTypePointer()->isMatrix())
        {
-           convert = getDownConvertOp(*right);
+           convert = getDownConvertOp(*right, targetVersion);
        }
        else if (left->getTypePointer()->isVector())
        {
@@ -1243,7 +1229,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
        TOperator convert = EOpNull;
        if (right->getTypePointer()->isMatrix())
        {
-           convert = getDownConvertOp(*left);
+           convert = getDownConvertOp(*left, targetVersion);
        }
        else if (right->getTypePointer()->isVector())
        {
@@ -1370,7 +1356,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
 
          if (left->isMatrix() )
          {
-             convert = getMatrixConstructOp(*left);
+             convert = getMatrixConstructOp(*left, targetVersion);
          }
          else if (left->isVector() )
          {

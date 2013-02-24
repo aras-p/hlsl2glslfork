@@ -15,6 +15,7 @@
 
 #include "../Include/Common.h"
 #include "../Include/Types.h"
+#include "../../include/hlsl2glsl.h"
 
 //
 // Operators used by the high-level (parse tree) representation.
@@ -529,7 +530,7 @@ public:
 	TOperator getOp() const { return op; }
 	bool modifiesState() const;
 	bool isConstructor() const;
-	virtual bool promote(TInfoSink&)
+	virtual bool promote(TInfoSink&, ETargetVersion targetVersion)
 	{
 		return true;
 	}
@@ -564,7 +565,7 @@ public:
 	{
 		return this;
 	}
-	virtual bool promote(TInfoSink&);
+	virtual bool promote(TInfoSink&, ETargetVersion targetVersion);
 	
 protected:
 	TIntermTyped* left;
@@ -588,7 +589,7 @@ public:
 	void setOperand(TIntermTyped* o) { operand = o; }
 	TIntermTyped* getOperand() { return operand; }
 
-	virtual bool promote(TInfoSink&);
+	virtual bool promote(TInfoSink&, ETargetVersion targetVersion);
 	
 private:
 	TIntermTyped* operand;
