@@ -8,7 +8,8 @@ void vec_downcast(float2 f)
 
 float2 mat_downcast(float2x3 m)
 {
-    return m[0].xx;
+	float2x2 m22 = m;
+    return m22[0].xx;
 }
 
 uniform float val;
