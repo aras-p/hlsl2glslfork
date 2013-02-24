@@ -1,3 +1,4 @@
+#extension GL_EXT_frag_depth : require
 void xlat_main( out lowp vec4 ocol, out mediump float oz );
 #line 1
 void xlat_main( out lowp vec4 ocol, out mediump float oz ) {
@@ -10,6 +11,6 @@ void main() {
     mediump float xlt_oz;
     xlat_main( xlt_ocol, xlt_oz);
     gl_FragData[0] = vec4(xlt_ocol);
-    gl_FragDepth = float(xlt_oz);
+    gl_FragDepthEXT = float(xlt_oz);
 ;
 }
