@@ -77,7 +77,8 @@ private:
 	void emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& varying, std::stringstream& preamble, std::stringstream& postamble, std::stringstream& call);
 	void emitMainStart(const HlslCrossCompiler* compiler, const EGlslSymbolType retType, GlslFunction* funcMain, unsigned options, bool usePrecision, std::stringstream& preamble);
 	bool emitReturnValue(const EGlslSymbolType retType, GlslFunction* funcMain, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble);
-	
+	bool emitReturnStruct(GlslStruct* retStruct, std::string parentName, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble);
+
 private:
 	TInfoSink& infoSink;
 	
