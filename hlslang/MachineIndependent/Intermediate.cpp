@@ -9,6 +9,7 @@
 
 #include "localintermediate.h"
 #include "RemoveTree.h"
+#include "ParseHelper.h"
 #include <float.h>
 #include <limits.h>
 
@@ -39,7 +40,7 @@ TIntermSymbol* ir_add_symbol_internal(int id, const TString& name, const TTypeIn
 
 
 // Connect two nodes with a new parent that does a binary operation on the nodes.
-TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TInfoSink& infoSink, ETargetVersion targetVersion)
+TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TParseContext& ctx)
 {
 	if (!left || !right)
 		return 0;
@@ -72,7 +73,7 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 				left = ir_add_conversion(EOpConstructBool, 
 									 TType ( EbtBool, left->getPrecision(), left->getQualifier(),
 											left->getColsCount(), left->getRowsCount(), left->isMatrix(), left->isArray()), 
-									 left, infoSink);
+									 left, ctx.infoSink);
 				
 				if ( left == 0 )
 					return 0;
@@ -94,7 +95,7 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 				right = ir_add_conversion(EOpConstructBool, 
 									  TType ( EbtBool, right->getPrecision(), right->getQualifier(),
 											 right->getColsCount(), right->getRowsCount(), right->isMatrix(), right->isArray()), 
-									  right, infoSink);
+									  right, ctx.infoSink);
 				
 				if ( right == 0 )
 					return 0;
@@ -125,13 +126,13 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 				
 			if (leftToFloat)
 			{
-				left = ir_add_conversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getColsCount(), left->getRowsCount(), left->isMatrix(), left->isArray()), left, infoSink);
+				left = ir_add_conversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getColsCount(), left->getRowsCount(), left->isMatrix(), left->isArray()), left, ctx.infoSink);
 				if (left == 0)
 					return 0;
 			}
 			if (rightToFloat)
 			{
-				right = ir_add_conversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getColsCount(), right->getRowsCount(), right->isMatrix(), right->isArray()), right, infoSink);
+				right = ir_add_conversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getColsCount(), right->getRowsCount(), right->isMatrix(), right->isArray()), right, ctx.infoSink);
 				if (right == 0)
 					return 0;
 			}
@@ -169,12 +170,12 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 		
 		if (useLeft)
 		{
-			child = ir_add_conversion(op, left->getType(), right, infoSink);
+			child = ir_add_conversion(op, left->getType(), right, ctx.infoSink);
 			if (child)
 				right = child;
 			else
 			{
-				child = ir_add_conversion(op, right->getType(), left, infoSink);
+				child = ir_add_conversion(op, right->getType(), left, ctx.infoSink);
 				if (child)
 					left = child;
 				else
@@ -183,12 +184,12 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 		}
 		else
 		{
-			child = ir_add_conversion(op, right->getType(), left, infoSink);
+			child = ir_add_conversion(op, right->getType(), left, ctx.infoSink);
 			if (child)
 				left = child;
 			else
 			{
-				child = ir_add_conversion(op, left->getType(), right, infoSink);
+				child = ir_add_conversion(op, left->getType(), right, ctx.infoSink);
 				if (child)
 					right = child;
 				else
@@ -215,7 +216,7 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 	
 	node->setLeft(left);
 	node->setRight(right);
-	if (! node->promote(infoSink, targetVersion))
+	if (! node->promote(ctx))
 		return 0;
 	
 	//
@@ -237,7 +238,7 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 
 
 // Connect two nodes through an assignment.
-TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TInfoSink& infoSink, ETargetVersion targetVersion)
+TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TParseContext& ctx)
 {
    //
    // Like adding binary math, except the conversion can only go
@@ -248,13 +249,13 @@ TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* righ
       line = left->getLine();
    node->setLine(line);
 
-   TIntermTyped* child = ir_add_conversion(op, left->getType(), right, infoSink);
+   TIntermTyped* child = ir_add_conversion(op, left->getType(), right, ctx.infoSink);
    if (child == 0)
       return 0;
 
    node->setLeft(left);
    node->setRight(child);
-   if (! node->promote(infoSink, targetVersion))
+   if (! node->promote(ctx))
       return 0;
 
    return node;
@@ -281,14 +282,14 @@ TIntermTyped* ir_add_index(TOperator op, TIntermTyped* base, TIntermTyped* index
 
 
 // Add one node as the parent of another that it operates on.
-TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc line, TInfoSink& infoSink, ETargetVersion targetVersion)
+TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc line, TParseContext& ctx)
 {
    TIntermUnary* node;
    TIntermTyped* child = childNode->getAsTyped();
 
    if (child == 0)
    {
-      infoSink.info.message(EPrefixInternalError, "Bad type in AddUnaryMath", line);
+      ctx.infoSink.info.message(EPrefixInternalError, "Bad type in AddUnaryMath", line);
       return 0;
    }
 
@@ -329,7 +330,7 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
       child = ir_add_conversion(op, TType(newType, child->getPrecision(), EvqTemporary, child->getColsCount(), child->getRowsCount(), 
                                       child->isMatrix(), 
                                       child->isArray()),
-                            child, infoSink);
+                            child, ctx.infoSink);
       if (child == 0)
          return 0;
    }
@@ -357,7 +358,7 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
    node->setLine(line);
    node->setOperand(child);
 
-   if (! node->promote(infoSink, targetVersion))
+   if (! node->promote(ctx))
       return 0;
 	
 	
@@ -552,7 +553,7 @@ TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* n
    }
 }
 
-TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink, ETargetVersion targetVersion)
+TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TParseContext& ctx)
 {
 	TIntermDeclaration* decl = new TIntermDeclaration(symbol->getType());
 	decl->setLine(line);
@@ -560,31 +561,38 @@ TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* init
 	if (!initializer)
 		decl->getDeclaration() = symbol;
 	else
-		decl->getDeclaration() = ir_add_assign(EOpAssign, symbol, initializer, line, infoSink, targetVersion);
+	{
+		TIntermTyped* t = ir_add_assign(EOpAssign, symbol, initializer, line, ctx);
+		if (!t) {
+			delete decl;
+			return NULL;
+		}
+		decl->getDeclaration() = t;
+	}
 	
 	return decl;
 }
 
-TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink, ETargetVersion targetVersion)
+TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TParseContext& ctx)
 {
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = ir_add_symbol(var, line);
 
-	return ir_add_declaration(sym, initializer, line, infoSink, targetVersion);
+	return ir_add_declaration(sym, initializer, line, ctx);
 }
 
 
-TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink, ETargetVersion targetVersion)
+TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol, TIntermTyped* initializer, TParseContext& ctx)
 {
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = ir_add_symbol(var, var->getType().getLine());
 	
-	return ir_grow_declaration(declaration, sym, initializer, infoSink, targetVersion);
+	return ir_grow_declaration(declaration, sym, initializer, ctx);
 }
 
-TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol *symbol, TIntermTyped *initializer, TInfoSink& infoSink, ETargetVersion targetVersion)
+TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol *symbol, TIntermTyped *initializer, TParseContext& ctx)
 {
-	TIntermTyped* added_decl = ir_add_declaration (symbol, initializer, symbol->getLine(), infoSink, targetVersion);
+	TIntermTyped* added_decl = ir_add_declaration (symbol, initializer, symbol->getLine(), ctx);
 
 	if (declaration->getAsDeclaration()) {
 		TIntermAggregate* aggregate = ir_make_aggregate(declaration, declaration->getLine());
@@ -951,7 +959,7 @@ bool TIntermOperator::isConstructor() const
 //
 // Returns false in nothing makes sense.
 //
-bool TIntermUnary::promote(TInfoSink&, ETargetVersion targetVersion)
+bool TIntermUnary::promote(TParseContext& ctx)
 {
    switch (op)
    {
@@ -988,10 +996,10 @@ bool TIntermUnary::promote(TInfoSink&, ETargetVersion targetVersion)
    return true;
 }
 
-static TOperator getMatrixConstructOp(const TIntermTyped& intermediate, ETargetVersion targetVersion)
+static TOperator getMatrixConstructOp(const TIntermTyped& intermediate, TParseContext& ctx)
 {
 	// before GLSL 1.20, only square matrices
-	if (targetVersion < ETargetGLSL_120)
+	if (ctx.targetVersion < ETargetGLSL_120)
 	{
 		const int c = intermediate.getColsCount();
 		const int r = intermediate.getRowsCount();
@@ -1001,7 +1009,8 @@ static TOperator getMatrixConstructOp(const TIntermTyped& intermediate, ETargetV
 			return EOpConstructMat3x3FromMat;
 		if (c == 4 && r == 4)
 			return EOpConstructMat4x4;
-		return EOpNull; //@TODO: error?
+		ctx.error(intermediate.getLine(), " non-square matrices not supported", "", "(%ix%i)", r, c);
+		return EOpNull;
 	}
 	
     switch (intermediate.getColsCount())
@@ -1032,10 +1041,6 @@ static TOperator getMatrixConstructOp(const TIntermTyped& intermediate, ETargetV
     return EOpNull;
 }
 
-static TOperator getDownConvertOp(const TIntermTyped& intermediate, ETargetVersion targetVersion)
-{
-    return getMatrixConstructOp(intermediate, targetVersion);
-}
 
 
 //
@@ -1044,7 +1049,7 @@ static TOperator getDownConvertOp(const TIntermTyped& intermediate, ETargetVersi
 //
 // Returns false if operator can't work on operands.
 //
-bool TIntermBinary::promote(TInfoSink& infoSink, ETargetVersion targetVersion)
+bool TIntermBinary::promote(TParseContext& ctx)
 {
    TBasicType type = left->getBasicType();
 
@@ -1198,7 +1203,9 @@ bool TIntermBinary::promote(TInfoSink& infoSink, ETargetVersion targetVersion)
        TOperator convert = EOpNull;
        if (left->getTypePointer()->isMatrix())
        {
-           convert = getDownConvertOp(*right, targetVersion);
+           convert = getMatrixConstructOp(*right, ctx);
+		   if (convert == EOpNull)
+			   return false;
        }
        else if (left->getTypePointer()->isVector())
        {
@@ -1229,7 +1236,9 @@ bool TIntermBinary::promote(TInfoSink& infoSink, ETargetVersion targetVersion)
        TOperator convert = EOpNull;
        if (right->getTypePointer()->isMatrix())
        {
-           convert = getDownConvertOp(*left, targetVersion);
+           convert = getMatrixConstructOp(*left, ctx);
+		   if (convert == EOpNull)
+			   return false;
        }
        else if (right->getTypePointer()->isVector())
        {
@@ -1298,7 +1307,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink, ETargetVersion targetVersion)
       }
       else
       {
-         infoSink.info.message(EPrefixInternalError, "Missing elses", getLine());
+         ctx.infoSink.info.message(EPrefixInternalError, "Missing elses", getLine());
          return false;
       }
       break;
@@ -1343,7 +1352,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink, ETargetVersion targetVersion)
       }
       else
       {
-         infoSink.info.message(EPrefixInternalError, "Missing elses", getLine());
+         ctx.infoSink.info.message(EPrefixInternalError, "Missing elses", getLine());
          return false;
       }
       break;
@@ -1356,7 +1365,9 @@ bool TIntermBinary::promote(TInfoSink& infoSink, ETargetVersion targetVersion)
 
          if (left->isMatrix() )
          {
-             convert = getMatrixConstructOp(*left, targetVersion);
+             convert = getMatrixConstructOp(*left, ctx);
+			 if (convert == EOpNull)
+				 return false;
          }
          else if (left->isVector() )
          {

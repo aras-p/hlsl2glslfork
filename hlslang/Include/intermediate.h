@@ -17,6 +17,8 @@
 #include "../Include/Types.h"
 #include "../../include/hlsl2glsl.h"
 
+struct TParseContext;
+
 //
 // Operators used by the high-level (parse tree) representation.
 //
@@ -210,15 +212,9 @@ enum TOperator
 	EOpConstructStruct,
 	EOpConstructArray,
 
-	// HLSL matrix/matrix constructors
+	// pre-GLSL1.20 matrix downcasts
 	EOpConstructMat2x2FromMat,
-	EOpConstructMat2x3FromMat,
-	EOpConstructMat2x4FromMat,
-	EOpConstructMat3x2FromMat,
 	EOpConstructMat3x3FromMat,
-	EOpConstructMat3x4FromMat,
-	EOpConstructMat4x2FromMat,
-	EOpConstructMat4x3FromMat,
 
 	EOpMatrixIndex,
 	EOpMatrixIndexDynamic,
@@ -530,7 +526,7 @@ public:
 	TOperator getOp() const { return op; }
 	bool modifiesState() const;
 	bool isConstructor() const;
-	virtual bool promote(TInfoSink&, ETargetVersion targetVersion)
+	virtual bool promote(TParseContext& ctx)
 	{
 		return true;
 	}
@@ -565,7 +561,7 @@ public:
 	{
 		return this;
 	}
-	virtual bool promote(TInfoSink&, ETargetVersion targetVersion);
+	virtual bool promote(TParseContext& ctx);
 	
 protected:
 	TIntermTyped* left;
@@ -589,7 +585,7 @@ public:
 	void setOperand(TIntermTyped* o) { operand = o; }
 	TIntermTyped* getOperand() { return operand; }
 
-	virtual bool promote(TInfoSink&, ETargetVersion targetVersion);
+	virtual bool promote(TParseContext& ctx);
 	
 private:
 	TIntermTyped* operand;

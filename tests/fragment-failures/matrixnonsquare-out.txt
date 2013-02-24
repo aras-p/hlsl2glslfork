@@ -1,3 +1,4 @@
-3: ERROR: 'float2x3' : syntax error syntax error
-ERROR: 1 compilation errors.  No code generated.
+17: ERROR: '' :  non-square matrices not supported (2x4)
+19: ERROR: '' :  non-square matrices not supported (3x2)
+ERROR: 2 compilation errors.  No code generated.
 

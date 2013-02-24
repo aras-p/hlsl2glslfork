@@ -118,7 +118,7 @@ namespace {
 
 TIntermTyped* TParseContext::add_binary(TOperator op, TIntermTyped* a, TIntermTyped* b, TSourceLoc line, const char* name, bool boolResult)
 {
-	TIntermTyped* res = ir_add_binary_math(op, a, b, line, infoSink, targetVersion);
+	TIntermTyped* res = ir_add_binary_math(op, a, b, line, *this);
 	if (res == NULL)
 	{
 		binaryOpError(line, name, a->getCompleteString(), b->getCompleteString());
@@ -1425,7 +1425,7 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 		TIntermTyped* constructor = ir_set_aggregate_op(aggregate, op, line);
 		constructor->setType(*type);
 		if (!TransposeMatrixConstructorArgs (type, params))
-			constructor = ir_add_unary_math (EOpTranspose, constructor, line, infoSink, targetVersion);
+			constructor = ir_add_unary_math (EOpTranspose, constructor, line, *this);
 		
 		return constructor;
 	}
@@ -1607,13 +1607,13 @@ TIntermTyped* TParseContext::addAssign(TOperator op, TIntermTyped* left, TInterm
    TIntermTyped *tNode;
 
 
-   if ( (tNode = ir_add_assign(op,left,right,loc, infoSink, targetVersion)) == 0)
+   if ( (tNode = ir_add_assign(op,left,right,loc, *this)) == 0)
    {
       //need to convert
       TOperator cop = getConstructorOp( left->getType());
       TType type = left->getType();
       tNode = constructBuiltIn( &type, cop, right, loc, false);
-      tNode = ir_add_assign(op, left, tNode, loc, infoSink, targetVersion);
+      tNode = ir_add_assign(op, left, tNode, loc, *this);
    }
 
    return tNode;
@@ -1676,7 +1676,7 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
 		recover();
 		return 0;
 	}
-	newNode = ir_add_unary_math(basicOp, node, node->getLine(), infoSink, targetVersion);
+	newNode = ir_add_unary_math(basicOp, node, node->getLine(), *this);
 	if (newNode == 0)
 	{
 	  error(line, "can't convert", "constructor", "");
