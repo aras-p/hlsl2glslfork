@@ -628,33 +628,8 @@ function_identifier
             TOperator op = EOpNull;
             switch ($1.type) {
             case EbtFloat:
-                if ($1.matrix) {
-                    switch($1.matcols) {
-                    case 2: switch($1.matrows) {
-                        case 2: op = EOpConstructMat2x2;  break;
-                        case 3: op = EOpConstructMat2x3;  break;
-                        case 4: op = EOpConstructMat2x4;  break;
-                    } break;
-                    case 3: switch($1.matrows) {
-                        case 2: op = EOpConstructMat3x2;  break;
-                        case 3: op = EOpConstructMat3x3;  break;
-                        case 4: op = EOpConstructMat3x4;  break;
-                    } break;
-                    case 4: switch($1.matrows) {
-                        case 2: op = EOpConstructMat4x2;  break;
-                        case 3: op = EOpConstructMat4x3;  break;
-                        case 4: op = EOpConstructMat4x4;  break;
-                    } break;
-                    }         
-                } else {      
-                    switch($1.matrows) {
-                    case 1: op = EOpConstructFloat; break;
-                    case 2: op = EOpConstructVec2;  break;
-                    case 3: op = EOpConstructVec3;  break;
-                    case 4: op = EOpConstructVec4;  break;
-                    }       
-                }  
-                break;               
+				op = ir_get_constructor_op_float($1, parseContext);
+                break;
             case EbtInt:
                 switch($1.matrows) {
                 case 1: op = EOpConstructInt;   break;
@@ -752,32 +727,7 @@ unary_expression
         TOperator op = EOpNull;
         switch ($2.type) {
         case EbtFloat:
-            if ($2.matrix) {
-                switch($2.matcols) {
-                case 2: switch($2.matrows) {
-                    case 2: op = EOpConstructMat2x2;  break;
-                    case 3: op = EOpConstructMat2x3;  break;
-                    case 4: op = EOpConstructMat2x4;  break;
-                } break;
-                case 3: switch($2.matrows) {
-                    case 2: op = EOpConstructMat3x2;  break;
-                    case 3: op = EOpConstructMat3x3;  break;
-                    case 4: op = EOpConstructMat3x4;  break;
-                } break;
-                case 4: switch($2.matrows) {
-                    case 2: op = EOpConstructMat4x2;  break;
-                    case 3: op = EOpConstructMat4x3;  break;
-                    case 4: op = EOpConstructMat4x4;  break;
-                } break;
-                }         
-            } else {      
-                switch($2.matrows) {
-                case 1: op = EOpConstructFloat; break;
-                case 2: op = EOpConstructVec2;  break;
-                case 3: op = EOpConstructVec3;  break;
-                case 4: op = EOpConstructVec4;  break;
-                }       
-            }  
+			op = ir_get_constructor_op_float($2, parseContext);
             break;               
         case EbtInt:
             switch($2.matrows) {

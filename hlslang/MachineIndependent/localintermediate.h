@@ -49,6 +49,9 @@ TIntermAggregate* ir_set_aggregate_op(TIntermNode*, TOperator, TSourceLoc);
 TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol* symbol, TIntermTyped* initializer, TParseContext& ctx);
 TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol, TIntermTyped* initializer, TParseContext& ctx);
 
+TOperator ir_get_constructor_op_float(const TPublicType& t, TParseContext& ctx);
+
+
 void ir_output_tree(TIntermNode* root, TInfoSink& infoSink);
 
 static inline TPublicType ir_get_decl_type_noarray(TIntermTyped* decl)
