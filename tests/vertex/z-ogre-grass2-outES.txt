@@ -49,9 +49,9 @@ void main() {
 }
 
 // uniforms:
-// world:<none> type 15 arrsize 0
-// worldViewProj:<none> type 15 arrsize 0
-// texViewProj:<none> type 15 arrsize 0
+// world:<none> type 21 arrsize 0
+// worldViewProj:<none> type 21 arrsize 0
+// texViewProj:<none> type 21 arrsize 0
 // camObjPos:<none> type 12 arrsize 0
 // objSpaceLight:<none> type 12 arrsize 0
 // lightColour:<none> type 12 arrsize 0

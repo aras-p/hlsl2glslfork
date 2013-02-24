@@ -22,7 +22,13 @@ const char typeString[EgstTypeCount][32] =
    "vec3",
    "vec4",
    "mat2",
+   "mat2x3",
+   "mat2x4",
+   "mat3x2",
    "mat3",
+   "mat3x4",
+   "mat4x2",
+   "mat4x3",
    "mat4",
    "sampler",
    "sampler1D",
@@ -75,7 +81,13 @@ void writeType (std::stringstream &out, EGlslSymbolType type, GlslStruct *s, TPr
    case EgstFloat3:
    case EgstFloat4:
    case EgstFloat2x2:
+   case EgstFloat2x3:
+   case EgstFloat2x4:
+   case EgstFloat3x2:
    case EgstFloat3x3:
+   case EgstFloat3x4:
+   case EgstFloat4x2:
+   case EgstFloat4x3:
    case EgstFloat4x4:
    case EgstSamplerGeneric: 
    case EgstSampler1D:
@@ -109,11 +121,29 @@ EGlslSymbolType translateType( const TType *type )
 {
    if ( type->isMatrix() )
    {
-      switch (type->getNominalSize())
+      switch (type->getColsCount())
       {
-      case 2:  return EgstFloat2x2;
-      case 3:  return EgstFloat3x3;
-      case 4:  return EgstFloat4x4;
+      case 2:
+          switch (type->getRowsCount())
+          {
+          case 2:  return EgstFloat2x2;
+          case 3:  return EgstFloat2x3;
+          case 4:  return EgstFloat2x4;
+          } break;
+      case 3:
+          switch (type->getRowsCount())
+          {
+          case 2:  return EgstFloat3x2;
+          case 3:  return EgstFloat3x3;
+          case 4:  return EgstFloat3x4;
+          } break;
+      case 4:
+          switch (type->getRowsCount())
+          {
+          case 2:  return EgstFloat4x2;
+          case 3:  return EgstFloat4x3;
+          case 4:  return EgstFloat4x4;
+          } break;
       }
    }
    else
@@ -123,11 +153,11 @@ EGlslSymbolType translateType( const TType *type )
       case EbtVoid:
          return EgstVoid;
       case EbtBool:
-         return EGlslSymbolType(EgstBool + (type->getNominalSize() - 1));
+         return EGlslSymbolType(EgstBool + (type->getRowsCount() - 1));
       case EbtInt:
-         return EGlslSymbolType(EgstInt + (type->getNominalSize() - 1));
+         return EGlslSymbolType(EgstInt + (type->getRowsCount() - 1));
       case EbtFloat:
-         return EGlslSymbolType(EgstFloat + (type->getNominalSize() - 1));
+         return EGlslSymbolType(EgstFloat + (type->getRowsCount() - 1));
       case EbtSamplerGeneric:
          return EgstSamplerGeneric;
       case EbtSampler1D:

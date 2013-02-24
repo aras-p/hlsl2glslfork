@@ -83,6 +83,6 @@ void main() {
 }
 
 // uniforms:
-// UNITY_MATRIX_MVP:<none> type 15 arrsize 0
+// UNITY_MATRIX_MVP:<none> type 21 arrsize 0
 // unity_LightColor:<none> type 12 arrsize 4
 // unity_LightAtten:<none> type 12 arrsize 4

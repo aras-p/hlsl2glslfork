@@ -60,10 +60,21 @@ static void logf(const char* format, ...)
 #define snprintf _snprintf
 
 
-#else
+#elif defined(__APPLE__)
+
 #include <OpenGL/OpenGL.h>
 #include <AGL/agl.h>
 #include <dirent.h>
+
+#else
+
+#include <unistd.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <string.h>
+#include <GL/glew.h>
+#include <GL/glut.h>
+
 #endif
 #include "../../include/hlsl2glsl.h"
 
@@ -184,7 +195,7 @@ static bool InitializeOpenGL ()
 	HGLRC rc = wglCreateContext( dc );
 	wglMakeCurrent( dc, rc );
 
-#else
+#elif defined(__APPLE__)
 	GLint attributes[16];
 	int i = 0;
 	attributes[i++]=AGL_RGBA;
@@ -192,11 +203,16 @@ static bool InitializeOpenGL ()
 	attributes[i++]=32;
 	attributes[i++]=AGL_NO_RECOVERY;
 	attributes[i++]=AGL_NONE;
-	
+
 	AGLPixelFormat pixelFormat = aglChoosePixelFormat(NULL,0,attributes);
 	AGLContext agl = aglCreateContext(pixelFormat, NULL);
 	aglSetCurrentContext (agl);
-
+#else
+        int argc = 0;
+        char** argv = NULL;
+        glutInit(&argc, argv);
+        glutCreateWindow("hlsl2glsltest");
+        glewInit();
 #endif
 	
 	// check if we have GLSL

@@ -39,9 +39,9 @@ TString TType::getCompleteString() const
    if (array)
       p += sprintf(p, " array");
    if (matrix)
-      p += sprintf(p, "matrix%dX%d", size, size);
-   else if (size > 1)
-      p += sprintf(p, "vec%d", size);
+      p += sprintf(p, "matrix%dX%d", matcols, matrows);
+   else if (matrows > 1)
+      p += sprintf(p, "vec%d", matrows);
 
    return TString(buf);
 }   
@@ -254,12 +254,19 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    case EOpConstructIVec2: out.debug << "Construct ivec2"; break;
    case EOpConstructIVec3: out.debug << "Construct ivec3"; break;
    case EOpConstructIVec4: out.debug << "Construct ivec4"; break;
-   case EOpConstructMat2:  out.debug << "Construct mat2";  break;
-   case EOpConstructMat3:  out.debug << "Construct mat3";  break;
-   case EOpConstructMat4:  out.debug << "Construct mat4";  break;
+
+   case EOpConstructMat2x2:  out.debug << "Construct mat2x2";  break;
+   case EOpConstructMat2x3:  out.debug << "Construct mat2x3";  break;
+   case EOpConstructMat2x4:  out.debug << "Construct mat2x4";  break;
+   case EOpConstructMat3x2:  out.debug << "Construct mat3x2";  break;
+   case EOpConstructMat3x3:  out.debug << "Construct mat3x3";  break;
+   case EOpConstructMat3x4:  out.debug << "Construct mat3x4";  break;
+   case EOpConstructMat4x2:  out.debug << "Construct mat4x2";  break;
+   case EOpConstructMat4x3:  out.debug << "Construct mat4x3";  break;
+   case EOpConstructMat4x4:  out.debug << "Construct mat4x4";  break;
    case EOpConstructStruct:  out.debug << "Construct struc";  break;
-   case EOpConstructMat2FromMat: out.debug << "Construct mat2 from mat"; break;
-   case EOpConstructMat3FromMat: out.debug << "Construct mat3 from mat"; break;
+   case EOpConstructMat2x2FromMat: out.debug << "Construct mat2 from mat"; break;
+   case EOpConstructMat3x3FromMat: out.debug << "Construct mat3 from mat"; break;
    case EOpMatrixIndex: out.debug << "Matrix index"; break;
    case EOpMatrixIndexDynamic: out.debug << "Matrix index dynamic"; break;
 

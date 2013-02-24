@@ -117,5 +117,5 @@ void main() {
 }
 
 // uniforms:
-// glstate_matrix_mvp:<none> type 15 arrsize 0
+// glstate_matrix_mvp:<none> type 21 arrsize 0
 // _FlareTexture_ST:<none> type 12 arrsize 0

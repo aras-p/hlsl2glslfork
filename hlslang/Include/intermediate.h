@@ -15,6 +15,9 @@
 
 #include "../Include/Common.h"
 #include "../Include/Types.h"
+#include "../../include/hlsl2glsl.h"
+
+struct TParseContext;
 
 //
 // Operators used by the high-level (parse tree) representation.
@@ -197,15 +200,21 @@ enum TOperator
 	EOpConstructIVec2,
 	EOpConstructIVec3,
 	EOpConstructIVec4,
-	EOpConstructMat2,
-	EOpConstructMat3,
-	EOpConstructMat4,
+	EOpConstructMat2x2,
+	EOpConstructMat2x3,
+	EOpConstructMat2x4,
+	EOpConstructMat3x2,
+	EOpConstructMat3x3,
+	EOpConstructMat3x4,
+	EOpConstructMat4x2,
+	EOpConstructMat4x3,
+	EOpConstructMat4x4,
 	EOpConstructStruct,
 	EOpConstructArray,
 
-	// HLSL matrix/matrix constructors
-	EOpConstructMat2FromMat,
-	EOpConstructMat3FromMat,
+	// pre-GLSL1.20 matrix downcasts
+	EOpConstructMat2x2FromMat,
+	EOpConstructMat3x3FromMat,
 
 	EOpMatrixIndex,
 	EOpMatrixIndexDynamic,
@@ -308,11 +317,13 @@ public:
 	TBasicType getBasicType() const { return type.getBasicType(); }
 	TQualifier getQualifier() const { return type.getQualifier(); }
 	TPrecision getPrecision() const { return type.getPrecision(); }
-	int getNominalSize() const { return type.getNominalSize(); }
+	int getColsCount() const { return type.getColsCount(); }
+	int getRowsCount() const { return type.getRowsCount(); }
 	int getSize() const { return type.getInstanceSize(); }
 	bool isMatrix() const { return type.isMatrix(); }
 	bool isArray()  const { return type.isArray(); }
 	bool isVector() const { return type.isVector(); }
+	bool isScalar() const { return type.isScalar(); }
 	const char* getBasicString() const { return type.getBasicString(); }
 	const char* getQualifierString() const { return type.getQualifierString(); }
 	TString getCompleteString() const { return type.getCompleteString(); }
@@ -425,6 +436,24 @@ public:
 	
 	bool hasInitialization() const { return _declaration->getAsBinaryNode() != NULL; }
 	TIntermTyped*& getDeclaration() { return _declaration; }
+	/* @TODO
+	TPublicType getPublicType() {
+		TType& t = *getTypePointer();
+		TPublicType p = {
+			t.getBasicType(),
+			t.getQualifier(),
+			t.getPrecision(),
+			t.getColsCount(),
+			t.getRowsCount(),
+			t.isMatrix(),
+			t.isArray(),
+			t.getArraySize(),
+			t.getBasicType() == EbtStruct ? &t : NULL,
+			t.getLine()
+		};
+		return p;
+	}
+	*/
 	bool containsArrayInitialization() const { return isArray() && hasInitialization(); }
 	
 private:
@@ -497,7 +526,7 @@ public:
 	TOperator getOp() const { return op; }
 	bool modifiesState() const;
 	bool isConstructor() const;
-	virtual bool promote(TInfoSink&)
+	virtual bool promote(TParseContext& ctx)
 	{
 		return true;
 	}
@@ -532,7 +561,7 @@ public:
 	{
 		return this;
 	}
-	virtual bool promote(TInfoSink&);
+	virtual bool promote(TParseContext& ctx);
 	
 protected:
 	TIntermTyped* left;
@@ -556,7 +585,7 @@ public:
 	void setOperand(TIntermTyped* o) { operand = o; }
 	TIntermTyped* getOperand() { return operand; }
 
-	virtual bool promote(TInfoSink&);
+	virtual bool promote(TParseContext& ctx);
 	
 private:
 	TIntermTyped* operand;

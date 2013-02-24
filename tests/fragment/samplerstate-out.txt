@@ -22,4 +22,4 @@ void main() {
 }
 
 // uniforms:
-// Sampler_sDiffuseMap:<none> type 19 arrsize 0
+// Sampler_sDiffuseMap:<none> type 25 arrsize 0

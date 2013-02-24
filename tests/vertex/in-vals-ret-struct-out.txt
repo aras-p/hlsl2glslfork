@@ -33,4 +33,4 @@ void main() {
 }
 
 // uniforms:
-// mvp:<none> type 15 arrsize 0
+// mvp:<none> type 21 arrsize 0

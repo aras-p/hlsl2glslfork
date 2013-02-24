@@ -87,8 +87,20 @@ int getElements( EGlslSymbolType t )
    case EgstFloat4:
    case EgstFloat2x2:
       return 4;
+   case EgstFloat2x3:
+      return 6;
+   case EgstFloat2x4:
+      return 8;
+   case EgstFloat3x2:
+      return 6;
    case EgstFloat3x3:
       return 9;
+   case EgstFloat3x4:
+      return 12;
+   case EgstFloat4x2:
+      return 8;
+   case EgstFloat4x3:
+      return 12;
    case EgstFloat4x4:
       return 16;
    }
@@ -131,8 +143,10 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 			unsigned v = Min(i, n_constants - 1);
 			if (construct && i > 0)
 				out << ", ";
-			
-			switch (c->getBasicType()) {
+			TBasicType basicType = c->getBasicType();
+			if (basicType == EbtStruct)
+			    basicType = c->getValue(v).type;
+			switch (basicType) {
 				case EbtBool:
 					out << (c->toBool(v) ? "true" : "false");
 					break;
@@ -160,8 +174,8 @@ void writeComparison( const TString &compareOp, const TString &compareCall, TInt
    bool bUseCompareCall = false;
 
    // Determine whether we need the vector or scalar comparison function
-   if ( ( node->getLeft() && node->getLeft()->getNominalSize() > 1 ) ||
-        ( node->getRight() && node->getRight()->getNominalSize() > 1 ) )
+   if ( ( node->getLeft() && !node->getLeft()->isScalar()) ||
+        ( node->getRight() && !node->getRight()->isScalar()) )
    {
       bUseCompareCall = true;
    }
@@ -176,9 +190,9 @@ void writeComparison( const TString &compareOp, const TString &compareCall, TInt
       if (node->getLeft())
       {
          // If it is a float, need to smear to the size of the right hand side
-         if ( node->getLeft()->getNominalSize() == 1 )
+         if (node->getLeft()->isScalar())
          {
-            out << "vec" <<  node->getRight()->getNominalSize() << "( ";
+            out << "vec" <<  node->getRight()->getRowsCount() << "( ";
 
             node->getLeft()->traverse(goit);
 
@@ -194,9 +208,9 @@ void writeComparison( const TString &compareOp, const TString &compareCall, TInt
       if (node->getRight())
       {
          // If it is a float, need to smear to the size of the left hand side
-         if ( node->getRight()->getNominalSize() == 1 )
+         if (node->getRight()->isScalar())
          {
-            out << "vec" <<  node->getLeft()->getNominalSize() << "( ";
+            out << "vec" <<  node->getLeft()->getRowsCount() << "( ";
 
             node->getRight()->traverse(goit);
 
@@ -701,7 +715,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    case EOpInclusiveOrAssign:        op = "|=";  infix = true; needsParens = false; break;
    case EOpExclusiveOrAssign:        op = "^=";  infix = true; needsParens = false; break;
    case EOpLeftShiftAssign:          op = "<<="; infix = true; needsParens = false; break;
-   case EOpRightShiftAssign:         op = "??="; infix = true; needsParens = false; break;
+   case EOpRightShiftAssign:         op = ">>="; infix = true; needsParens = false; break;
 
    case EOpIndexDirect:
       {
@@ -934,8 +948,8 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
    case EOpMul:    op = "*"; infix = true; break;
    case EOpDiv:    op = "/"; infix = true; break;
    case EOpMod:    op = "mod"; infix = false; break;
-   case EOpRightShift:  op = "<<"; infix = true; break;
-   case EOpLeftShift:   op = ">>"; infix = true; break;
+   case EOpRightShift:  op = ">>"; infix = true; break;
+   case EOpLeftShift:   op = "<<"; infix = true; break;
    case EOpAnd:         op = "&"; infix = true; break;
    case EOpInclusiveOr: op = "|"; infix = true; break;
    case EOpExclusiveOr: op = "^"; infix = true; break;
@@ -1098,7 +1112,7 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    case EOpNegative:       op = "-";  funcStyle = false; prefix = true; break;
    case EOpVectorLogicalNot:
    case EOpLogicalNot:     op = "!";  funcStyle = false; prefix = true; break;
-   case EOpBitwiseNot:     op = "-";  funcStyle = false; prefix = true; break;
+   case EOpBitwiseNot:     op = "~";  funcStyle = false; prefix = true; break;
 
    case EOpPostIncrement:  op = "++"; funcStyle = false; prefix = false; break;
    case EOpPostDecrement:  op = "--"; funcStyle = false; prefix = false; break;
@@ -1108,9 +1122,9 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    case EOpConvIntToBool:
    case EOpConvFloatToBool:
       op = "bool";
-      if ( node->getTypePointer()->getNominalSize() > 1)
+      if (node->getTypePointer()->isVector())
       {
-         zero[0] += node->getTypePointer()->getNominalSize();
+         zero[0] += node->getTypePointer()->getRowsCount();
          op = TString("bvec") + zero; 
       }
       funcStyle = true;
@@ -1120,9 +1134,9 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    case EOpConvBoolToFloat:
    case EOpConvIntToFloat:
       op = "float";
-      if ( node->getTypePointer()->getNominalSize() > 1)
+      if (node->getTypePointer()->isVector())
       {
-         zero[0] += node->getTypePointer()->getNominalSize();
+         zero[0] += node->getTypePointer()->getRowsCount();
          op = TString("vec") + zero; 
       }
       funcStyle = true;
@@ -1132,9 +1146,9 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    case EOpConvFloatToInt: 
    case EOpConvBoolToInt:
       op = "int";
-      if ( node->getTypePointer()->getNominalSize() > 1)
+      if (node->getTypePointer()->isVector())
       {
-         zero[0] += node->getTypePointer()->getNominalSize();
+         zero[0] += node->getTypePointer()->getRowsCount();
          op = TString("ivec") + zero; 
       }
       funcStyle = true;
@@ -1281,7 +1295,8 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 		node->getCondition()->traverse(goit);
 		out << ')';
 		current->beginBlock();
-		node->getTrueBlock()->traverse(goit);
+		if (node->getTrueBlock())
+    		node->getTrueBlock()->traverse(goit);
 		current->endBlock();
 		if (node->getFalseBlock())
 		{
@@ -1300,14 +1315,11 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 		out << "xll_vecTSel (";
 		node->getCondition()->traverse(goit);
 		out << ", ";
+		assert(node->getTrueBlock());
 		node->getTrueBlock()->traverse(goit);
 		out << ", ";
-		if (node->getFalseBlock())
-		{
-			node->getFalseBlock()->traverse(goit);
-		}
-		else
-			assert(0);
+		assert(node->getFalseBlock());
+		node->getFalseBlock()->traverse(goit);
 		out << ")";
 	}
 	else
@@ -1316,14 +1328,11 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 		out << "(( ";
 		node->getCondition()->traverse(goit);
 		out << " ) ? ( ";
+		assert(node->getTrueBlock());
 		node->getTrueBlock()->traverse(goit);
 		out << " ) : ( ";
-		if (node->getFalseBlock())
-		{
-			node->getFalseBlock()->traverse(goit);
-		}
-		else
-			assert(0);
+		assert(node->getFalseBlock());
+		node->getFalseBlock()->traverse(goit);
 		out << " ))";
 	}
 
@@ -1420,21 +1429,29 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    case EOpConstructIVec2: writeFuncCall( "ivec2", node, goit); return false;
    case EOpConstructIVec3: writeFuncCall( "ivec3", node, goit); return false;
    case EOpConstructIVec4: writeFuncCall( "ivec4", node, goit); return false;
-		   
-   case EOpConstructMat2:  writeFuncCall( "mat2", node, goit); return false;
-   case EOpConstructMat3:  writeFuncCall( "mat3", node, goit); return false;
-   case EOpConstructMat4:  writeFuncCall( "mat4", node, goit); return false;
-		   
-   case EOpConstructMat2FromMat:
-      current->addLibFunction(EOpConstructMat2FromMat);
+
+   case EOpConstructMat2x2:  writeFuncCall( "mat2",   node, goit); return false;
+   case EOpConstructMat2x3:  writeFuncCall( "mat2x3", node, goit); return false;
+   case EOpConstructMat2x4:  writeFuncCall( "mat2x4", node, goit); return false;
+
+   case EOpConstructMat3x2:  writeFuncCall( "mat3x2", node, goit); return false;
+   case EOpConstructMat3x3:  writeFuncCall( "mat3",   node, goit); return false;
+   case EOpConstructMat3x4:  writeFuncCall( "mat3x4", node, goit); return false;
+
+   case EOpConstructMat4x2:  writeFuncCall( "mat4x2", node, goit); return false;
+   case EOpConstructMat4x3:  writeFuncCall( "mat4x3", node, goit); return false;
+   case EOpConstructMat4x4:  writeFuncCall( "mat4",   node, goit); return false;
+
+
+   case EOpConstructMat2x2FromMat:
+      current->addLibFunction(EOpConstructMat2x2FromMat);
       writeFuncCall( "xll_constructMat2", node, goit);
       return false;
-
-   case EOpConstructMat3FromMat:
-      current->addLibFunction(EOpConstructMat3FromMat);
+   case EOpConstructMat3x3FromMat:
+      current->addLibFunction(EOpConstructMat3x3FromMat);
       writeFuncCall( "xll_constructMat3", node, goit);
       return false;
-		   
+
    case EOpConstructStruct:  writeFuncCall( node->getTypePointer()->getTypeName(), node, goit); return false;
    case EOpConstructArray:  writeFuncCall( buildArrayConstructorString(*node->getTypePointer()), node, goit); return false;
 

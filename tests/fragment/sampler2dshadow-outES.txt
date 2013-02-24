@@ -22,4 +22,4 @@ void main() {
 }
 
 // uniforms:
-// shadowmap:<none> type 20 arrsize 0
+// shadowmap:<none> type 26 arrsize 0

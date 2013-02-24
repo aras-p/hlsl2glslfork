@@ -155,11 +155,11 @@ void main() {
 }
 
 // uniforms:
-// _BumpMap:<none> type 19 arrsize 0
+// _BumpMap:<none> type 25 arrsize 0
 // _DistortParams:<none> type 12 arrsize 0
-// _RefractionTex:<none> type 19 arrsize 0
-// _CameraDepthTexture:<none> type 19 arrsize 0
-// _ReflectionTex:<none> type 19 arrsize 0
+// _RefractionTex:<none> type 25 arrsize 0
+// _CameraDepthTexture:<none> type 25 arrsize 0
+// _ReflectionTex:<none> type 25 arrsize 0
 // _WorldLightDir:<none> type 12 arrsize 0
 // _Shininess:<none> type 9 arrsize 0
 // _InvFadeParemeter:<none> type 12 arrsize 0
@@ -167,6 +167,6 @@ void main() {
 // _BaseColor:<none> type 12 arrsize 0
 // _ReflectionColor:<none> type 12 arrsize 0
 // _SpecularColor:<none> type 12 arrsize 0
-// _ShoreTex:<none> type 19 arrsize 0
+// _ShoreTex:<none> type 25 arrsize 0
 // _Foam:<none> type 12 arrsize 0
 // _ZBufferParams:<none> type 12 arrsize 0

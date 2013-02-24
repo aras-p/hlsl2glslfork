@@ -642,9 +642,9 @@ void main() {
 }
 
 // uniforms:
-// unity_LightmapThird:<none> type 19 arrsize 0
-// unity_LightmapInd:<none> type 19 arrsize 0
-// unity_Lightmap:<none> type 19 arrsize 0
+// unity_LightmapThird:<none> type 25 arrsize 0
+// unity_LightmapInd:<none> type 25 arrsize 0
+// unity_Lightmap:<none> type 25 arrsize 0
 // unity_LightmapFade:<none> type 12 arrsize 0
 // glstate_lightmodel_ambient:<none> type 12 arrsize 0
 // _Roughness2:<none> type 9 arrsize 0
@@ -658,20 +658,20 @@ void main() {
 // _Rolloff:<none> type 9 arrsize 0
 // _Falloff:<none> type 9 arrsize 0
 // _Rolloff:<none> type 9 arrsize 0
-// _MainTex:<none> type 19 arrsize 0
+// _MainTex:<none> type 25 arrsize 0
 // _Color:<none> type 12 arrsize 0
 // _ReflColor:<none> type 12 arrsize 0
 // _BumpMap2_ST:<none> type 12 arrsize 0
-// _BumpMap:<none> type 19 arrsize 0
+// _BumpMap:<none> type 25 arrsize 0
 // _BumpMapFactor:<none> type 9 arrsize 0
-// _BumpMap2:<none> type 19 arrsize 0
+// _BumpMap2:<none> type 25 arrsize 0
 // _BumpMapFactor2:<none> type 9 arrsize 0
 // _Refl0:<none> type 9 arrsize 0
 // _Reflectivity:<none> type 9 arrsize 0
 // _Refl90:<none> type 9 arrsize 0
-// _MainReflectivityTex:<none> type 19 arrsize 0
+// _MainReflectivityTex:<none> type 25 arrsize 0
 // _MainReflectivityTex_AddMul:<none> type 12 arrsize 0
-// _MainRoughnessTex:<none> type 19 arrsize 0
+// _MainRoughnessTex:<none> type 25 arrsize 0
 // _MainRoughnessTex_AddMul:<none> type 12 arrsize 0
 // _Roughness:<none> type 9 arrsize 0
 // _PlanarReflection0:<none> type 12 arrsize 0
@@ -683,14 +683,14 @@ void main() {
 // _PlanarReflection2:<none> type 12 arrsize 0
 // _PlanarReflectionTangent2:<none> type 12 arrsize 0
 // _PlanarReflectionBiTangent2:<none> type 12 arrsize 0
-// _Cube:<none> type 22 arrsize 0
-// _PlanarReflectionTex0:<none> type 19 arrsize 0
-// _PlanarReflectionTex1:<none> type 19 arrsize 0
-// _PlanarReflectionTex2:<none> type 19 arrsize 0
+// _Cube:<none> type 28 arrsize 0
+// _PlanarReflectionTex0:<none> type 25 arrsize 0
+// _PlanarReflectionTex1:<none> type 25 arrsize 0
+// _PlanarReflectionTex2:<none> type 25 arrsize 0
 // _ReflOnlyIntensity:<none> type 9 arrsize 0
 // _Metalic:<none> type 9 arrsize 0
-// _WorldToMirrorProjMatrix:<none> type 15 arrsize 0
-// _MirrorTex:<none> type 19 arrsize 0
+// _WorldToMirrorProjMatrix:<none> type 21 arrsize 0
+// _MirrorTex:<none> type 25 arrsize 0
 // unity_SHAr:<none> type 12 arrsize 0
 // unity_SHAg:<none> type 12 arrsize 0
 // unity_SHAb:<none> type 12 arrsize 0

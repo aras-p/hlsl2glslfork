@@ -9,6 +9,7 @@
 
 #include "localintermediate.h"
 #include "RemoveTree.h"
+#include "ParseHelper.h"
 #include <float.h>
 #include <limits.h>
 
@@ -39,7 +40,7 @@ TIntermSymbol* ir_add_symbol_internal(int id, const TString& name, const TTypeIn
 
 
 // Connect two nodes with a new parent that does a binary operation on the nodes.
-TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TInfoSink& infoSink)
+TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TParseContext& ctx)
 {
 	if (!left || !right)
 		return 0;
@@ -71,8 +72,8 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 				// does
 				left = ir_add_conversion(EOpConstructBool, 
 									 TType ( EbtBool, left->getPrecision(), left->getQualifier(),
-											left->getNominalSize(), left->isMatrix(), left->isArray()), 
-									 left, infoSink);
+											left->getColsCount(), left->getRowsCount(), left->isMatrix(), left->isArray()), 
+									 left, ctx.infoSink);
 				
 				if ( left == 0 )
 					return 0;
@@ -93,8 +94,8 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 				// does
 				right = ir_add_conversion(EOpConstructBool, 
 									  TType ( EbtBool, right->getPrecision(), right->getQualifier(),
-											 right->getNominalSize(), right->isMatrix(), right->isArray()), 
-									  right, infoSink);
+											 right->getColsCount(), right->getRowsCount(), right->isMatrix(), right->isArray()), 
+									  right, ctx.infoSink);
 				
 				if ( right == 0 )
 					return 0;
@@ -125,13 +126,13 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 				
 			if (leftToFloat)
 			{
-				left = ir_add_conversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getNominalSize(), left->isMatrix(), left->isArray()), left, infoSink);
+				left = ir_add_conversion (EOpConstructFloat, TType (EbtFloat, left->getPrecision(), left->getQualifier(), left->getColsCount(), left->getRowsCount(), left->isMatrix(), left->isArray()), left, ctx.infoSink);
 				if (left == 0)
 					return 0;
 			}
 			if (rightToFloat)
 			{
-				right = ir_add_conversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getNominalSize(), right->isMatrix(), right->isArray()), right, infoSink);
+				right = ir_add_conversion (EOpConstructFloat, TType (EbtFloat, right->getPrecision(), right->getQualifier(), right->getColsCount(), right->getRowsCount(), right->isMatrix(), right->isArray()), right, ctx.infoSink);
 				if (right == 0)
 					return 0;
 			}
@@ -169,12 +170,12 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 		
 		if (useLeft)
 		{
-			child = ir_add_conversion(op, left->getType(), right, infoSink);
+			child = ir_add_conversion(op, left->getType(), right, ctx.infoSink);
 			if (child)
 				right = child;
 			else
 			{
-				child = ir_add_conversion(op, right->getType(), left, infoSink);
+				child = ir_add_conversion(op, right->getType(), left, ctx.infoSink);
 				if (child)
 					left = child;
 				else
@@ -183,12 +184,12 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 		}
 		else
 		{
-			child = ir_add_conversion(op, right->getType(), left, infoSink);
+			child = ir_add_conversion(op, right->getType(), left, ctx.infoSink);
 			if (child)
 				left = child;
 			else
 			{
-				child = ir_add_conversion(op, left->getType(), right, infoSink);
+				child = ir_add_conversion(op, left->getType(), right, ctx.infoSink);
 				if (child)
 					right = child;
 				else
@@ -215,7 +216,7 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 	
 	node->setLeft(left);
 	node->setRight(right);
-	if (! node->promote(infoSink))
+	if (! node->promote(ctx))
 		return 0;
 	
 	//
@@ -237,7 +238,7 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 
 
 // Connect two nodes through an assignment.
-TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TInfoSink& infoSink)
+TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc line, TParseContext& ctx)
 {
    //
    // Like adding binary math, except the conversion can only go
@@ -248,13 +249,13 @@ TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* righ
       line = left->getLine();
    node->setLine(line);
 
-   TIntermTyped* child = ir_add_conversion(op, left->getType(), right, infoSink);
+   TIntermTyped* child = ir_add_conversion(op, left->getType(), right, ctx.infoSink);
    if (child == 0)
       return 0;
 
    node->setLeft(left);
    node->setRight(child);
-   if (! node->promote(infoSink))
+   if (! node->promote(ctx))
       return 0;
 
    return node;
@@ -281,24 +282,22 @@ TIntermTyped* ir_add_index(TOperator op, TIntermTyped* base, TIntermTyped* index
 
 
 // Add one node as the parent of another that it operates on.
-TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc line, TInfoSink& infoSink)
+TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc line, TParseContext& ctx)
 {
    TIntermUnary* node;
    TIntermTyped* child = childNode->getAsTyped();
 
    if (child == 0)
    {
-      infoSink.info.message(EPrefixInternalError, "Bad type in AddUnaryMath", line);
+      ctx.infoSink.info.message(EPrefixInternalError, "Bad type in AddUnaryMath", line);
       return 0;
    }
 
    switch (op)
    {
    case EOpLogicalNot:
-      if (child->getType().getBasicType() != EbtBool || child->getType().isMatrix() || child->getType().isArray() || child->getType().isVector())
-      {
+      if (!child->isScalar())
          return 0;
-      }
       break;
 
    case EOpPostIncrement:
@@ -322,15 +321,16 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
    case EOpConstructInt:   newType = EbtInt;   break;
    case EOpConstructBool:  newType = EbtBool;  break;
    case EOpConstructFloat: newType = EbtFloat; break;
+   case EOpLogicalNot:     newType = EbtBool; break;
    default: break;
    }
 
    if (newType != EbtVoid)
    {
-      child = ir_add_conversion(op, TType(newType, child->getPrecision(), EvqTemporary, child->getNominalSize(), 
+      child = ir_add_conversion(op, TType(newType, child->getPrecision(), EvqTemporary, child->getColsCount(), child->getRowsCount(), 
                                       child->isMatrix(), 
                                       child->isArray()),
-                            child, infoSink);
+                            child, ctx.infoSink);
       if (child == 0)
          return 0;
    }
@@ -358,7 +358,7 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
    node->setLine(line);
    node->setOperand(child);
 
-   if (! node->promote(infoSink))
+   if (! node->promote(ctx))
       return 0;
 	
 	
@@ -427,8 +427,8 @@ TIntermAggregate* ir_set_aggregate_op(TIntermNode* node, TOperator op, TSourceLo
 // node passed in if no conversion was needed. Returns NULL if conversion can't be done.
 TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* node, TInfoSink& infoSink)
 {
-	if (!node)
-		return 0;
+    if (!node)
+        return 0;
 
    //
    // Does the base type allow operation?
@@ -514,7 +514,7 @@ TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* n
          {
          case EbtInt:   newOp = EOpConvIntToFloat;  break;
          case EbtBool:  newOp = EOpConvBoolToFloat; break;
-         default: 
+         default:
             infoSink.info.message(EPrefixInternalError, "Bad promotion node", node->getLine());
             return 0;
          }
@@ -524,7 +524,7 @@ TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* n
          {
          case EbtInt:   newOp = EOpConvIntToBool;   break;
          case EbtFloat: newOp = EOpConvFloatToBool; break;
-         default: 
+         default:
             infoSink.info.message(EPrefixInternalError, "Bad promotion node", node->getLine());
             return 0;
          }
@@ -534,17 +534,17 @@ TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* n
          {
          case EbtBool:   newOp = EOpConvBoolToInt;  break;
          case EbtFloat:  newOp = EOpConvFloatToInt; break;
-         default: 
+         default:
             infoSink.info.message(EPrefixInternalError, "Bad promotion node", node->getLine());
             return 0;
          }
          break;
-      default: 
+      default:
          infoSink.info.message(EPrefixInternalError, "Bad promotion type", node->getLine());
          return 0;
       }
 
-      TType type(promoteTo, node->getPrecision(), EvqTemporary, node->getNominalSize(), node->isMatrix(), node->isArray());
+      TType type(promoteTo, node->getPrecision(), EvqTemporary, node->getColsCount(), node->getRowsCount(), node->isMatrix(), node->isArray());
       newNode = new TIntermUnary(newOp, type);
       newNode->setLine(node->getLine());
       newNode->setOperand(node);
@@ -553,7 +553,7 @@ TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* n
    }
 }
 
-TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink)
+TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TParseContext& ctx)
 {
 	TIntermDeclaration* decl = new TIntermDeclaration(symbol->getType());
 	decl->setLine(line);
@@ -561,31 +561,38 @@ TIntermDeclaration* ir_add_declaration(TIntermSymbol* symbol, TIntermTyped* init
 	if (!initializer)
 		decl->getDeclaration() = symbol;
 	else
-		decl->getDeclaration() = ir_add_assign(EOpAssign, symbol, initializer, line, infoSink);
+	{
+		TIntermTyped* t = ir_add_assign(EOpAssign, symbol, initializer, line, ctx);
+		if (!t) {
+			delete decl;
+			return NULL;
+		}
+		decl->getDeclaration() = t;
+	}
 	
 	return decl;
 }
 
-TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TInfoSink& infoSink)
+TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initializer, TSourceLoc line, TParseContext& ctx)
 {
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = ir_add_symbol(var, line);
 
-	return ir_add_declaration(sym, initializer, line, infoSink);
+	return ir_add_declaration(sym, initializer, line, ctx);
 }
 
 
-TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink)
+TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol, TIntermTyped* initializer, TParseContext& ctx)
 {
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = ir_add_symbol(var, var->getType().getLine());
 	
-	return ir_grow_declaration(declaration, sym, initializer, infoSink);
+	return ir_grow_declaration(declaration, sym, initializer, ctx);
 }
 
-TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol *symbol, TIntermTyped *initializer, TInfoSink& infoSink)
+TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol *symbol, TIntermTyped *initializer, TParseContext& ctx)
 {
-	TIntermTyped* added_decl = ir_add_declaration (symbol, initializer, symbol->getLine(), infoSink);
+	TIntermTyped* added_decl = ir_add_declaration (symbol, initializer, symbol->getLine(), ctx);
 
 	if (declaration->getAsDeclaration()) {
 		TIntermAggregate* aggregate = ir_make_aggregate(declaration, declaration->getLine());
@@ -604,7 +611,7 @@ TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol *
 // Safe way to combine two nodes into an aggregate.  Works with null pointers, 
 // a node that's not a aggregate yet, etc.
 //
-// Returns the resulting aggregate, unless 0 was passed in for 
+// Returns the resulting aggregate, unless 0 was passed in for
 // both existing nodes.
 TIntermAggregate* ir_grow_aggregate(TIntermNode* left, TIntermNode* right, TSourceLoc line, TOperator expectedOp)
 {
@@ -658,17 +665,11 @@ TIntermAggregate* ir_make_aggregate(TIntermNode* node, TSourceLoc line)
 TIntermNode* ir_add_selection(TIntermTyped* cond, TIntermNodePair nodePair, TSourceLoc line, TInfoSink& infoSink)
 {   
    // Convert float/int to bool
-   switch ( cond->getBasicType() )
+   if ( cond->getBasicType() != EbtBool)
    {
-   case EbtFloat:
-   case EbtInt:
-      cond = ir_add_conversion (EOpConstructBool, 
-                             TType (EbtBool, cond->getPrecision(), cond->getQualifier(), cond->getNominalSize(), cond->isMatrix(), cond->isArray()),
+      cond = ir_add_conversion (EOpConstructBool,
+                             TType (EbtBool, cond->getPrecision(), cond->getQualifier(), cond->getColsCount(), cond->getRowsCount(), cond->isMatrix(), cond->isArray()),
                              cond, infoSink);
-      break;
-   default:
-      // Do nothing
-      break;
    }
 
    TIntermSelection* node = new TIntermSelection(cond, nodePair.node1, nodePair.node2);
@@ -704,7 +705,7 @@ TIntermTyped* ir_add_selection(TIntermTyped* cond, TIntermTyped* trueBlock, TInt
    if (cond->getBasicType() != EbtBool)
    {
 	   cond = ir_add_conversion (EOpConstructBool, 
-		   TType (EbtBool, cond->getPrecision(), cond->getQualifier(), cond->getNominalSize(), cond->isMatrix(), cond->isArray()),
+		   TType (EbtBool, cond->getPrecision(), cond->getQualifier(), cond->getColsCount(), cond->getRowsCount(), cond->isMatrix(), cond->isArray()),
 		   cond, infoSink);
    }
 
@@ -766,10 +767,10 @@ TIntermTyped* ir_add_selection(TIntermTyped* cond, TIntermTyped* trueBlock, TInt
    //
    TIntermSelection* node = new TIntermSelection(cond, trueBlock, falseBlock, trueBlock->getType());
    node->setLine(line);
-	
-	if (!node->promoteTernary(infoSink))
-		return 0;
-	
+
+    if (!node->promoteTernary(infoSink))
+        return 0;
+
 
    return node;
 }
@@ -849,7 +850,7 @@ TIntermTyped* ir_add_vector_swizzle(TVectorFields& fields, TIntermTyped* arg, TS
 	{
 		TIntermTyped* index = ir_add_swizzle(fields, lineIndex);
 		res = ir_add_index(EOpVectorSwizzle, arg, index, lineDot);
-		res->setType(TType(arg->getBasicType(), arg->getPrecision(), EvqTemporary, fields.num));  
+		res->setType(TType(arg->getBasicType(), arg->getPrecision(), EvqTemporary, 1, fields.num));
 	}
 	return res;
 }
@@ -893,25 +894,25 @@ bool TIntermOperator::modifiesState() const
 {
    switch (op)
    {
-   case EOpPostIncrement: 
-   case EOpPostDecrement: 
-   case EOpPreIncrement:  
-   case EOpPreDecrement:  
-   case EOpAssign:    
-   case EOpAddAssign: 
-   case EOpSubAssign: 
-   case EOpMulAssign: 
+   case EOpPostIncrement:
+   case EOpPostDecrement:
+   case EOpPreIncrement:
+   case EOpPreDecrement:
+   case EOpAssign:
+   case EOpAddAssign:
+   case EOpSubAssign:
+   case EOpMulAssign:
    case EOpVectorTimesMatrixAssign:
    case EOpVectorTimesScalarAssign:
    case EOpMatrixTimesScalarAssign:
    case EOpMatrixTimesMatrixAssign:
-   case EOpDivAssign: 
-   case EOpModAssign: 
-   case EOpAndAssign: 
-   case EOpInclusiveOrAssign: 
-   case EOpExclusiveOrAssign: 
-   case EOpLeftShiftAssign:   
-   case EOpRightShiftAssign:  
+   case EOpDivAssign:
+   case EOpModAssign:
+   case EOpAndAssign:
+   case EOpInclusiveOrAssign:
+   case EOpExclusiveOrAssign:
+   case EOpLeftShiftAssign:
+   case EOpRightShiftAssign:
       return true;
    default:
       return false;
@@ -928,9 +929,15 @@ bool TIntermOperator::isConstructor() const
    case EOpConstructVec2:
    case EOpConstructVec3:
    case EOpConstructVec4:
-   case EOpConstructMat2:
-   case EOpConstructMat3:
-   case EOpConstructMat4:
+   case EOpConstructMat2x2:
+   case EOpConstructMat2x3:
+   case EOpConstructMat2x4:
+   case EOpConstructMat3x2:
+   case EOpConstructMat3x3:
+   case EOpConstructMat3x4:
+   case EOpConstructMat4x2:
+   case EOpConstructMat4x3:
+   case EOpConstructMat4x4:
    case EOpConstructFloat:
    case EOpConstructIVec2:
    case EOpConstructIVec3:
@@ -947,12 +954,12 @@ bool TIntermOperator::isConstructor() const
    }
 }
 //
-// Make sure the type of a unary operator is appropriate for its 
+// Make sure the type of a unary operator is appropriate for its
 // combination of operation and operand type.
 //
 // Returns false in nothing makes sense.
 //
-bool TIntermUnary::promote(TInfoSink&)
+bool TIntermUnary::promote(TParseContext& ctx)
 {
    switch (op)
    {
@@ -989,25 +996,96 @@ bool TIntermUnary::promote(TInfoSink&)
    return true;
 }
 
+
+TOperator ir_get_constructor_op_float(const TPublicType& t, TParseContext& ctx)
+{
+	TOperator op = EOpNull;
+	if (t.matrix) {
+		const bool hasNonSquare = (ctx.targetVersion >= ETargetGLSL_120);
+		switch(t.matcols) {
+			case 2: switch(t.matrows) {
+				case 2: op = EOpConstructMat2x2;  break;
+				case 3: if (hasNonSquare) op = EOpConstructMat2x3;  break;
+				case 4: if (hasNonSquare) op = EOpConstructMat2x4;  break;
+			} break;
+			case 3: switch(t.matrows) {
+				case 2: if (hasNonSquare) op = EOpConstructMat3x2;  break;
+				case 3: op = EOpConstructMat3x3;  break;
+				case 4: if (hasNonSquare) op = EOpConstructMat3x4;  break;
+			} break;
+			case 4: switch(t.matrows) {
+				case 2: if (hasNonSquare) op = EOpConstructMat4x2;  break;
+				case 3: if (hasNonSquare) op = EOpConstructMat4x3;  break;
+				case 4: op = EOpConstructMat4x4;  break;
+			} break;
+		}
+	} else {
+		switch(t.matrows) {
+			case 1: op = EOpConstructFloat; break;
+			case 2: op = EOpConstructVec2;  break;
+			case 3: op = EOpConstructVec3;  break;
+			case 4: op = EOpConstructVec4;  break;
+		}
+	}
+	return op;
+}
+
+
+static TOperator getMatrixConstructOp(const TIntermTyped& intermediate, TParseContext& ctx)
+{
+	// before GLSL 1.20, only square matrices
+	if (ctx.targetVersion < ETargetGLSL_120)
+	{
+		const int c = intermediate.getColsCount();
+		const int r = intermediate.getRowsCount();
+		if (c == 2 && r == 2)
+			return EOpConstructMat2x2FromMat;
+		if (c == 3 && r == 3)
+			return EOpConstructMat3x3FromMat;
+		if (c == 4 && r == 4)
+			return EOpConstructMat4x4;
+		ctx.error(intermediate.getLine(), " non-square matrices not supported", "", "(%ix%i)", r, c);
+		return EOpNull;
+	}
+	
+    switch (intermediate.getColsCount())
+    {
+    case 2:
+        switch (intermediate.getRowsCount())
+        {
+        case 2: return EOpConstructMat2x2;
+        case 3: return EOpConstructMat2x3;
+        case 4: return EOpConstructMat2x4;
+        } break;
+    case 3:
+        switch (intermediate.getRowsCount())
+        {
+        case 2: return EOpConstructMat3x2;
+        case 3: return EOpConstructMat3x3;
+        case 4: return EOpConstructMat3x4;
+        } break;
+    case 4:
+        switch (intermediate.getRowsCount())
+        {
+        case 2: return EOpConstructMat4x2;
+        case 3: return EOpConstructMat4x3;
+        case 4: return EOpConstructMat4x4;
+        } break;
+    }
+    assert(false);
+    return EOpNull;
+}
+
+
+
 //
 // Establishes the type of the resultant operation, as well as
 // makes the operator the correct one for the operands.
 //
 // Returns false if operator can't work on operands.
 //
-bool TIntermBinary::promote(TInfoSink& infoSink)
+bool TIntermBinary::promote(TParseContext& ctx)
 {
-   int size = left->getNominalSize();
-   if (right->getNominalSize() < size)
-      size = right->getNominalSize();
-
-   if (size == 1)
-   {
-      size = left->getNominalSize();
-      if (right->getNominalSize() > size)
-         size = right->getNominalSize();
-   }
-
    TBasicType type = left->getBasicType();
 
    //
@@ -1020,7 +1098,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
    // Base assumption:  just make the type the same as the left
    // operand.  Then only deviations from this need be coded.
    //
-   setType(TType(type, left->getPrecision(), EvqTemporary, left->getNominalSize(), left->isMatrix()));
+   setType(TType(type, left->getPrecision(), EvqTemporary, left->getColsCount(), left->getRowsCount(), left->isMatrix()));
 
    // The result gets promoted to the highest precision.
    TPrecision higherPrecision = GetHigherPrecision(left->getPrecision(), right->getPrecision());
@@ -1062,7 +1140,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
    //
    // All scalars.  Code after this test assumes this case is removed!
    //
-   if (size == 1)
+   if (left->isScalar() && right->isScalar())
    {
 
       switch (op)
@@ -1123,87 +1201,99 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
       return true;
    }
 
+   // this is not an allowed promotion : float3x4 * float4x3
+   if (left->getRowsCount() != right->getRowsCount() && left->getColsCount() != right->getColsCount() &&
+       (left->getRowsCount() > right->getRowsCount()) != (left->getColsCount() > right->getColsCount()))
+       return false;
+
    //determine if this is an assignment
    bool assignment = ( op >= EOpAssign && op <= EOpRightShiftAssign) ? true : false;
 
-   //
-   // Are the sizes compatible?
-   //
-   if ( (left->getNominalSize() != size &&  left->getNominalSize() != 1) ||
-        (right->getNominalSize() != size && right->getNominalSize() != 1))
+   // find size of the resulting value
+   int cols = 0;
+   int rows = 0;
+
+   if (!left->isScalar() && !right->isScalar()) // no scalars, so downcast of the larger type
    {
-      //Insert a constructor on the larger type to make the sizes match
+       cols = std::min(left->getColsCount(), right->getColsCount());
+       rows = std::min(left->getRowsCount(), right->getRowsCount());
+   }
+   else
+   {
+       cols = std::max(left->getColsCount(), right->getColsCount());
+       rows = std::max(left->getRowsCount(), right->getRowsCount());
+   }
+   assert(cols > 0);
+   assert(rows > 0);
 
-      if ( left->getNominalSize() > right->getNominalSize() )
-      {
+   //
+   // Downcast needed ?
+   //
+   if ( left->getColsCount() > cols || left->getRowsCount() > rows)
+   {
+       if (assignment)
+           return false; //can't promote the destination
 
-         if (assignment)
-            return false; //can't promote the destination
-
-         //down convert left to match right
-         TOperator convert = EOpNull;
-         if (left->getTypePointer()->isMatrix())
-         {
-            switch (right->getNominalSize())
-            {
-            case 2: convert = EOpConstructMat2FromMat; break;
-            case 3: convert = EOpConstructMat3FromMat; break;
-            case 4: convert =  EOpConstructMat4; break; //should never need to down convert to mat4
-            }
-         }
-         else if (left->getTypePointer()->isVector())
-         {
-            switch (left->getTypePointer()->getBasicType())
-            {
-            case EbtBool:  convert = TOperator( EOpConstructBVec2 + right->getNominalSize() - 2); break;
-            case EbtInt:   convert = TOperator( EOpConstructIVec2 + right->getNominalSize() - 2); break;
-            case EbtFloat: convert = TOperator( EOpConstructVec2 + right->getNominalSize() - 2); break;
-            }
-         }
-         else
-         {
-            assert(0); //size 1 case should have been handled
-         }
-         TIntermAggregate *node = new TIntermAggregate(convert);
-         node->setLine(left->getLine());
-         node->setType(TType(left->getBasicType(), left->getPrecision(), EvqTemporary, right->getNominalSize(), left->isMatrix()));
-         node->getNodes().push_back(left);
-         left = node;
-         //now reset this node's type
-         setType(TType(left->getBasicType(), left->getPrecision(), EvqTemporary, right->getNominalSize(), left->isMatrix()));
-      }
-      else
-      {
-         //down convert right to match left
-         TOperator convert = EOpNull;
-         if (right->getTypePointer()->isMatrix())
-         {
-            switch (left->getNominalSize())
-            {
-            case 2: convert = EOpConstructMat2FromMat; break;
-            case 3: convert = EOpConstructMat3FromMat; break;
-            case 4: convert =  EOpConstructMat4; break; //should never need to down convert to mat4
-            }
-         }
-         else if (right->getTypePointer()->isVector())
-         {
-            switch (right->getTypePointer()->getBasicType())
-            {
-            case EbtBool:  convert = TOperator( EOpConstructBVec2 + left->getNominalSize() - 2); break;
-            case EbtInt:   convert = TOperator( EOpConstructIVec2 + left->getNominalSize() - 2); break;
-            case EbtFloat: convert = TOperator( EOpConstructVec2 + left->getNominalSize() - 2); break;
-            }
-         }
-         else
-         {
-            assert(0); //size 1 case should have been handled
-         }
-         TIntermAggregate *node = new TIntermAggregate(convert);
-         node->setLine(right->getLine());
-         node->setType(TType(right->getBasicType(), right->getPrecision(), EvqTemporary, left->getNominalSize(), right->isMatrix()));
-         node->getNodes().push_back(right);
-         right = node;
-      }
+       //down convert left to match right
+       TOperator convert = EOpNull;
+       if (left->getTypePointer()->isMatrix())
+       {
+           convert = getMatrixConstructOp(*right, ctx);
+		   if (convert == EOpNull)
+			   return false;
+       }
+       else if (left->getTypePointer()->isVector())
+       {
+           switch (right->getTypePointer()->getBasicType())
+           {
+           case EbtBool:  convert = TOperator( EOpConstructBVec2 + rows - 2); break;
+           case EbtInt:   convert = TOperator( EOpConstructIVec2 + rows - 2); break;
+           case EbtFloat: convert = TOperator( EOpConstructVec2 +  rows - 2); break;
+           }
+       }
+       else
+       {
+           assert(0); //size 1 case should have been handled
+       }
+       TIntermAggregate *node = new TIntermAggregate(convert);
+       node->setLine(left->getLine());
+       node->setType(TType(left->getBasicType(), left->getPrecision(), EvqTemporary,
+                           right->getColsCount(), right->getRowsCount(), left->isMatrix()));
+       node->getNodes().push_back(left);
+       left = node;
+       //now reset this node's type
+       setType(TType(left->getBasicType(), left->getPrecision(), EvqTemporary,
+                     right->getColsCount(), right->getRowsCount(), left->isMatrix()));
+   }
+   else if ( right->getColsCount() > cols || right->getRowsCount() > rows)
+   {
+       //down convert right to match left
+       TOperator convert = EOpNull;
+       if (right->getTypePointer()->isMatrix())
+       {
+           convert = getMatrixConstructOp(*left, ctx);
+		   if (convert == EOpNull)
+			   return false;
+       }
+       else if (right->getTypePointer()->isVector())
+       {
+           switch (left->getTypePointer()->getBasicType())
+           {
+           case EbtBool:  convert = TOperator( EOpConstructBVec2 + rows - 2); break;
+           case EbtInt:   convert = TOperator( EOpConstructIVec2 + rows - 2); break;
+           case EbtFloat: convert = TOperator( EOpConstructVec2  + rows - 2); break;
+           }
+       }
+       else
+       {
+           assert(0); //size 1 case should have been handled
+       }
+       TIntermAggregate *node = new TIntermAggregate(convert);
+       node->setLine(right->getLine());
+       node->setType(TType(right->getBasicType(), right->getPrecision(), EvqTemporary,
+                           left->getColsCount(), left->getRowsCount(), right->isMatrix()));
+       node->getNodes().push_back(right);
+       right = node;
    }
 
    //
@@ -1219,7 +1309,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          else
          {
             op = EOpMatrixTimesScalar;
-            setType(TType(type, higherPrecision, EvqTemporary, size, true));
+            setType(TType(type, higherPrecision, EvqTemporary, cols, rows, true));
          }
       }
       else if (left->isMatrix() && !right->isMatrix())
@@ -1227,7 +1317,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          if (right->isVector())
          {
             op = EOpMatrixTimesVector;
-            setType(TType(type, higherPrecision, EvqTemporary, size, false));
+            setType(TType(type, higherPrecision, EvqTemporary, cols, rows, false));
          }
          else
          {
@@ -1247,12 +1337,12 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          else if (left->isVector() || right->isVector())
          {
             op = EOpVectorTimesScalar;
-            setType(TType(type, higherPrecision, EvqTemporary, size, false));
+            setType(TType(type, higherPrecision, EvqTemporary, cols, rows, false));
          }
       }
       else
       {
-         infoSink.info.message(EPrefixInternalError, "Missing elses", getLine());
+         ctx.infoSink.info.message(EPrefixInternalError, "Missing elses", getLine());
          return false;
       }
       break;
@@ -1292,43 +1382,40 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
             if (! left->isVector())
                return false;
             op = EOpVectorTimesScalarAssign;
-            setType(TType(type, higherPrecision, EvqTemporary, size, false));
+            setType(TType(type, higherPrecision, EvqTemporary, cols, rows, false));
          }
       }
       else
       {
-         infoSink.info.message(EPrefixInternalError, "Missing elses", getLine());
+         ctx.infoSink.info.message(EPrefixInternalError, "Missing elses", getLine());
          return false;
       }
       break;
    case EOpAssign:
-      if (left->getNominalSize() != right->getNominalSize())
+      if ( left->getColsCount() != right->getColsCount() ||
+           left->getRowsCount() != right->getRowsCount())
       {
          //right needs to be forced to match left
          TOperator convert = EOpNull;
 
          if (left->isMatrix() )
          {
-            //TODO: These might need to be changed to smears
-            switch (left->getNominalSize())
-            {
-            case 2: convert = EOpConstructMat2; break;
-            case 3: convert = EOpConstructMat3; break;
-            case 4: convert =  EOpConstructMat4; break; 
-            }
+             convert = getMatrixConstructOp(*left, ctx);
+			 if (convert == EOpNull)
+				 return false;
          }
          else if (left->isVector() )
          {
-            switch (right->getTypePointer()->getBasicType())
+            switch (left->getTypePointer()->getBasicType())
             {
-            case EbtBool:  convert = TOperator( EOpConstructBVec2 + left->getNominalSize() - 2); break;
-            case EbtInt:   convert = TOperator( EOpConstructIVec2 + left->getNominalSize() - 2); break;
-            case EbtFloat: convert = TOperator( EOpConstructVec2 + left->getNominalSize() - 2); break;
+            case EbtBool:  convert = TOperator( EOpConstructBVec2 + left->getRowsCount() - 2); break;
+            case EbtInt:   convert = TOperator( EOpConstructIVec2 + left->getRowsCount() - 2); break;
+            case EbtFloat: convert = TOperator( EOpConstructVec2  + left->getRowsCount() - 2); break;
             }
          }
          else
          {
-            switch (right->getTypePointer()->getBasicType())
+            switch (left->getTypePointer()->getBasicType())
             {
             case EbtBool:  convert = EOpConstructBool; break;
             case EbtInt:   convert = EOpConstructInt; break;
@@ -1339,10 +1426,12 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
          assert( convert != EOpNull);
          TIntermAggregate *node = new TIntermAggregate(convert);
          node->setLine(right->getLine());
-         node->setType(TType(left->getBasicType(), left->getPrecision(), right->getQualifier() == EvqConst ? EvqConst : EvqTemporary, left->getNominalSize(), left->isMatrix()));
+         node->setType(TType(left->getBasicType(), left->getPrecision(), right->getQualifier() == EvqConst ? EvqConst : EvqTemporary,
+                             left->getColsCount(), left->getRowsCount(), left->isMatrix()));
          node->getNodes().push_back(right);
          right = node;
-         size = right->getNominalSize();
+         cols = right->getColsCount();
+         rows = right->getRowsCount();
       }
       // fall through
    case EOpMod:
@@ -1359,7 +1448,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
           left->isVector() && right->isMatrix() ||
           left->getBasicType() != right->getBasicType())
          return false;
-      setType(TType(type, left->getPrecision(), EvqTemporary, size, left->isMatrix() || right->isMatrix()));
+      setType(TType(type, left->getPrecision(), EvqTemporary, cols, rows, left->isMatrix() || right->isMatrix()));
       break;
 
    case EOpEqual:
@@ -1372,7 +1461,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
           left->isVector() && right->isMatrix() ||
           left->getBasicType() != right->getBasicType())
          return false;
-      setType(TType(EbtBool, higherPrecision, EvqTemporary, size, false));
+      setType(TType(EbtBool, higherPrecision, EvqTemporary, cols, rows, false));
       break;
 
    default:
@@ -1398,7 +1487,7 @@ bool TIntermBinary::promote(TInfoSink& infoSink)
       if (getType() != left->getType())
          return false;
       break;
-   default: 
+   default:
       break;
    }
 
@@ -1411,25 +1500,25 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 	if (!condition->isVector())
 		return true;
 	
-	int size = condition->getNominalSize();
+	int size = condition->getRowsCount();
 	TIntermTyped* trueb = trueBlock->getAsTyped();
 	TIntermTyped* falseb = falseBlock->getAsTyped();
 	if (!trueb || !falseb)
 		return false;
 	
-	if (trueb->getNominalSize() == size && falseb->getNominalSize() == size)
+	if (trueb->getRowsCount() == size && falseb->getRowsCount() == size)
 		return true;
 	
 	// Base assumption: just make the type a float vector
 	TPrecision higherPrecision = GetHigherPrecision(trueb->getPrecision(), falseb->getPrecision());
-	setType(TType(EbtFloat, higherPrecision, EvqTemporary, size, condition->isMatrix()));
+	setType(TType(EbtFloat, higherPrecision, EvqTemporary, 1, size, condition->isMatrix()));
 	
 	TOperator convert = EOpNull;	
 	{
 		convert = TOperator( EOpConstructVec2 + size - 2);
 		TIntermAggregate *node = new TIntermAggregate(convert);
 		node->setLine(trueb->getLine());
-		node->setType(TType(condition->getBasicType(), higherPrecision, trueb->getQualifier() == EvqConst ? EvqConst : EvqTemporary, size, condition->isMatrix()));
+		node->setType(TType(condition->getBasicType(), higherPrecision, trueb->getQualifier() == EvqConst ? EvqConst : EvqTemporary, 1, size, condition->isMatrix()));
 		node->getNodes().push_back(trueb);
 		trueBlock = node;
 	}
@@ -1437,7 +1526,7 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 		convert = TOperator( EOpConstructVec2 + size - 2);
 		TIntermAggregate *node = new TIntermAggregate(convert);
 		node->setLine(falseb->getLine());
-		node->setType(TType(condition->getBasicType(), higherPrecision, falseb->getQualifier() == EvqConst ? EvqConst : EvqTemporary, size, condition->isMatrix()));
+		node->setType(TType(condition->getBasicType(), higherPrecision, falseb->getQualifier() == EvqConst ? EvqConst : EvqTemporary, 1, size, condition->isMatrix()));
 		node->getNodes().push_back(falseb);
 		falseBlock = node;
 	}
@@ -1449,7 +1538,7 @@ TIntermTyped* ir_promote_constant(TBasicType promoteTo, TIntermConstant* right, 
 {
 	unsigned size = right->getCount();
 	const TType& t = right->getType();
-	TIntermConstant* left = ir_add_constant(TType(promoteTo, t.getPrecision(), t.getQualifier(), t.getNominalSize(), t.isMatrix(), t.isArray()), right->getLine());
+	TIntermConstant* left = ir_add_constant(TType(promoteTo, t.getPrecision(), t.getQualifier(), t.getColsCount(), t.getRowsCount(), t.isMatrix(), t.isArray()), right->getLine());
 	for (unsigned i = 0; i != size; ++i) {
 		TIntermConstant::Value& value = right->getValue(i);
 		

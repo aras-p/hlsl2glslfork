@@ -45,5 +45,5 @@ void main() {
 }
 
 // uniforms:
-// diffuse_map:<none> type 19 arrsize 0
-// shadow_map:<none> type 20 arrsize 0
+// diffuse_map:<none> type 25 arrsize 0
+// shadow_map:<none> type 26 arrsize 0
