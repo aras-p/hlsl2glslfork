@@ -5,7 +5,7 @@ mediump vec4 xlat_main(  ) {
     highp float foo = 1.0;
     foo += 1.0;
     foo += 100000.0;
-    foo += (-0.001);
+    foo += -0.001;
     #line 6
     foo += 1e-06;
     foo += 1e-06;

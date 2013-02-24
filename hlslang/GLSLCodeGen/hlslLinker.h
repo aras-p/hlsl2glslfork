@@ -51,7 +51,7 @@ public:
    
 private:
 	typedef std::vector<GlslFunction*> FunctionSet;
-	typedef std::set<const char*> ExtensionSet;
+	typedef std::set<std::string> ExtensionSet;
 
 	std::string stripSemanticModifier(const std::string &semantic, bool warn);
 	EAttribSemantic parseAttributeSemantic(const std::string &semantic);
@@ -61,7 +61,6 @@ private:
 							   EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset);
 	bool getArgumentData( GlslSymbol* sym, EClassifier c, std::string &outName,
 				  std::string &ctor, int &pad);
-	void addRequiredExtensions(EAttribSemantic sem, ExtensionSet& extensions);
 	
 	bool linkerSanityCheck(HlslCrossCompiler* compiler, const char* entryFunc);
 	bool buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, GlslFunction*& globalFunction, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain);
@@ -73,10 +72,10 @@ private:
 	void emitGlobals(const GlslFunction* globalFunction, const std::vector<GlslSymbol*>& constants);
 	
 	void emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call);
-	void emitInputStructParam(GlslSymbol* sym, EShLanguage lang, ExtensionSet& extensions, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call);
+	void emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call);
 	void emitOutputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& varying, std::stringstream& preamble, std::stringstream& postamble, std::stringstream& call);
 	void emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool usePrecision, EAttribSemantic attrSem, std::stringstream& varying, std::stringstream& preamble, std::stringstream& postamble, std::stringstream& call);
-	void emitMainStart(const HlslCrossCompiler* compiler, const EGlslSymbolType retType, GlslFunction* funcMain, ETargetVersion version, unsigned options, bool usePrecision, std::stringstream& preamble);
+	void emitMainStart(const HlslCrossCompiler* compiler, const EGlslSymbolType retType, GlslFunction* funcMain, unsigned options, bool usePrecision, std::stringstream& preamble);
 	bool emitReturnValue(const EGlslSymbolType retType, GlslFunction* funcMain, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble);
 	
 private:
@@ -100,6 +99,9 @@ private:
 	
 	// For varyings, determines whether the linker attempts to use user or built-in varyings
 	bool bUserVaryings;
+	
+	ExtensionSet m_Extensions;
+	ETargetVersion m_Target;
 };
 
 #endif //HLSL_LINKER_H

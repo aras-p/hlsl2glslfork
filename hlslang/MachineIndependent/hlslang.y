@@ -77,7 +77,7 @@ Jutta Degener, 1995
             TIntermNodePair nodePair;
             TIntermTyped* intermTypedNode;
             TIntermAggregate* intermAggregate;
-			TIntermDeclaration* intermDeclaration;
+			TIntermTyped* intermDeclaration;
         };
         union {
             TPublicType type;
@@ -1260,7 +1260,7 @@ init_declarator_list
         $$ = $1;
     }
     | init_declarator_list COMMA IDENTIFIER type_info {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_type_noarray($1);
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
@@ -1278,7 +1278,7 @@ init_declarator_list
 			$$ = ir_grow_declaration($1, sym, NULL, parseContext.infoSink);
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_type_noarray($1);
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
@@ -1302,7 +1302,7 @@ init_declarator_list
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET type_info {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_type_noarray($1);
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
@@ -1316,6 +1316,7 @@ init_declarator_list
             int size;
             if (parseContext.arraySizeErrorCheck($4.line, $5, size))
                 parseContext.recover();
+            type.setArray(true, size);
 			
             TVariable* variable;
             if (parseContext.arrayErrorCheck($4.line, *$3.string, $7, type, variable))
@@ -1324,14 +1325,12 @@ init_declarator_list
 			if (!variable)
 				$$ = $1;
 			else {
-				variable->getType().setArray(true);
-				variable->getType().setArraySize(size);
 				$$ = ir_grow_declaration($1, variable, NULL, parseContext.infoSink);
 			}
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET RIGHT_BRACKET type_info EQUAL initializer {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_type_noarray($1);
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();
@@ -1344,12 +1343,11 @@ init_declarator_list
 		
         {
             TIntermSymbol* symbol;
+            type.setArray(true, $8->getType().getArraySize());
             if (!parseContext.executeInitializer($3.line, *$3.string, $6, type, $8, symbol, variable)) {
                 if (!variable)
 					$$ = $1;
 				else {
-					variable->getType().setArray(true);
-					variable->getType().setArraySize($8->getType().getArraySize());
 					$$ = ir_grow_declaration($1, variable, $8, parseContext.infoSink);
 				}
             } else {
@@ -1359,7 +1357,7 @@ init_declarator_list
         }
     }
     | init_declarator_list COMMA IDENTIFIER LEFT_BRACKET const_expression RIGHT_BRACKET type_info EQUAL initializer {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_type_noarray($1);
 		int array_size;
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
@@ -1372,6 +1370,7 @@ init_declarator_list
             if (parseContext.arraySizeErrorCheck($4.line, $5, array_size))
                 parseContext.recover();
 			
+            type.setArray(true, array_size);
             if (parseContext.arrayErrorCheck($4.line, *$3.string, $7, type, variable))
                 parseContext.recover();
         }
@@ -1382,9 +1381,6 @@ init_declarator_list
 				if (!variable)
 					$$ = $1;
 				else {
-					variable->getType().setArray(true);
-					variable->getType().setArraySize(array_size);
-					
 					$$ = ir_grow_declaration($1, variable, $9, parseContext.infoSink);
 				}
             } else {
@@ -1394,7 +1390,7 @@ init_declarator_list
         }
     }
     | init_declarator_list COMMA IDENTIFIER type_info EQUAL initializer {
-		TPublicType type = $1->getPublicType();
+		TPublicType type = ir_get_decl_type_noarray($1);
 		
         if (parseContext.structQualifierErrorCheck($3.line, type))
             parseContext.recover();

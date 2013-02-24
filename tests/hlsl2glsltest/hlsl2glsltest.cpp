@@ -263,12 +263,14 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 		newSrc += "#define texture2DLodEXT texture2DLod\n";
 		newSrc += "#define texture2DProjLodEXT texture2DProjLod\n";
 		newSrc += "#define texture2DGradEXT texture2DGradARB\n";
+		newSrc += "#define gl_FragDepthEXT gl_FragDepth\n";
 		newSrc += "float shadow2DEXT (sampler2DShadow s, vec3 p) { return shadow2D(s,p).r; }\n";
 		newSrc += "float shadow2DProjEXT (sampler2DShadow s, vec4 p) { return shadow2DProj(s,p).r; }\n";
 		newSrc += source;
 		replace_string (newSrc, "GL_EXT_shader_texture_lod", "GL_ARB_shader_texture_lod", 0);
 		replace_string (newSrc, "#extension GL_OES_standard_derivatives : require", "", 0);
 		replace_string (newSrc, "#extension GL_EXT_shadow_samplers : require", "", 0);
+		replace_string (newSrc, "#extension GL_EXT_frag_depth : require", "", 0);
 					   
 		sourcePtr = newSrc.c_str();
 	}
@@ -573,20 +575,6 @@ static bool TestFile (TestRun type,
 	return false;
 }
 
-void Delete(void* p, void* ud);
-void* Allocate(unsigned size, void* ud);
-
-void* Allocate(unsigned size, void* ud)
-{
-	return malloc(size);
-}
-
-void Delete(void* p, void* ud)
-{
-	free(p);
-}
-
-
 
 int main (int argc, const char** argv)
 {
@@ -600,7 +588,7 @@ int main (int argc, const char** argv)
 	
 	clock_t time0 = clock();
 	
-	Hlsl2Glsl_Initialize (Allocate, Delete, NULL);
+	Hlsl2Glsl_Initialize (NULL, NULL, NULL);
 
 	std::string baseFolder = argv[1];
 

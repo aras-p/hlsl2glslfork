@@ -12,6 +12,48 @@
 	#define snprintf _snprintf
 #endif
 
+
+void print_float (std::stringstream& out, float f)
+{
+	// Kind of roundabout way, but this is to satisfy two things:
+	// * MSVC and gcc-based compilers differ a bit in how they treat float
+	//   width/precision specifiers. Want to match for tests.
+	// * GLSL (early version at least) require floats to have ".0" or
+	//   exponential notation.
+	char tmp[64];
+	sprintf(tmp, "%.6g", f);
+
+	char* posE = NULL;
+	posE = strchr(tmp, 'e');
+	if (!posE)
+		posE = strchr(tmp, 'E');
+
+	#if _MSC_VER
+	// While gcc would print something like 1.0e+07, MSVC will print 1.0e+007 -
+	// only for exponential notation, it seems, will add one extra useless zero. Let's try to remove
+	// that so compiler output matches.
+	if (posE != NULL)
+	{
+		if((posE[1] == '+' || posE[1] == '-') && posE[2] == '0')
+		{
+			char* p = posE+2;
+			while (p[0])
+			{
+				p[0] = p[1];
+				++p;
+			}
+		}
+	}
+	#endif
+
+	out << tmp;
+
+	// need to append ".0"?
+	if (!strchr(tmp,'.') && (posE == NULL))
+		out << ".0";
+}
+
+
 bool isShadowSampler(TBasicType t) {
 	switch (t) {
 		case EbtSampler1DShadow:
@@ -112,7 +154,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 					out << c->toInt(v);
 					break;
 				case EbtFloat:
-					GlslSymbol::writeFloat(out, c->toFloat(v));
+					print_float(out, c->toFloat(v));
 					break;
 				default:
 					assert(0);
@@ -363,8 +405,6 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 	
 	if (emit_old_arrays)
 	{
-		assert(decl->isSingleInitialization() && "Emission of multiple in-line array declarations isn't supported when running in pre-GLSL1.20 mode.");
-		
 		TQualifier q = type.getQualifier();
 		if (q == EvqConst)
 			q = EvqTemporary;
@@ -394,7 +434,17 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 			current->beginStatement();
 			sym->traverse(this);
 			(*out) << "[" << i << "] = ";
+			EGlslSymbolType init_type = translateType(init[i]->getAsTyped()->getTypePointer());
+
+			bool diffTypes = (symbol_type != init_type);
+			if (diffTypes) {
+				writeType (*out, symbol_type, NULL, EbpUndefined);
+				(*out) << "(";
+			}
 			init[i]->traverse(this);
+			if (diffTypes) {
+				(*out) << ")";
+			}
 			current->endStatement();
 		}
 		
@@ -478,8 +528,24 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 	}
 
 	out << " ";
+
+	// Pre-GLSL1.20, global variables can't have initializers.
+	// So just print the symbol node itself.
+	bool skipInitializer = false;
+	const bool can_have_global_init = (goit->m_TargetVersion >= ETargetGLSL_120);
+	if (!can_have_global_init && decl->hasInitialization() && type.getQualifier() != EvqConst)
+	{
+		TIntermBinary* initNode = decl->getDeclaration()->getAsBinaryNode();
+		TIntermSymbol* symbol = initNode->getLeft()->getAsSymbolNode();
+		if (symbol && symbol->isGlobal())
+		{
+			skipInitializer = true;
+			symbol->traverse(goit);
+		}
+	}
 	
-	decl->getDeclaration()->traverse(goit);
+	if (!skipInitializer)
+		decl->getDeclaration()->traverse(goit);
 	
 	if (type.isArray())
 		out << "[" << type.getArraySize() << "]";

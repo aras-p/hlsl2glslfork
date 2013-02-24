@@ -43,14 +43,31 @@ TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initialize
 TIntermTyped* ir_add_conversion(TOperator, const TType&, TIntermTyped*, TInfoSink& infoSink);
 
 TIntermTyped* ir_promote_constant(TBasicType, TIntermConstant*, TInfoSink& infoSink);
-TIntermAggregate* ir_grow_aggregate(TIntermNode* left, TIntermNode* right, TSourceLoc);
+TIntermAggregate* ir_grow_aggregate(TIntermNode* left, TIntermNode* right, TSourceLoc, TOperator expectedOp = EOpNull);
 TIntermAggregate* ir_make_aggregate(TIntermNode* node, TSourceLoc);
 TIntermAggregate* ir_set_aggregate_op(TIntermNode*, TOperator, TSourceLoc);
-TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TIntermSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink);
-TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink);
+TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink);
+TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink);
 
 void ir_output_tree(TIntermNode* root, TInfoSink& infoSink);
 
+static inline TPublicType ir_get_decl_type_noarray(TIntermTyped* decl)
+{
+	TType& t = *decl->getTypePointer();
+	TPublicType p = {
+		t.getBasicType(),
+		t.getQualifier(),
+		t.getPrecision(),
+		t.getColsCount(),
+		t.getRowsCount(),
+		t.isMatrix(),
+		false,
+		0,
+		t.getBasicType() == EbtStruct ? &t : NULL,
+		t.getLine()
+	};
+	return p;
+}
 
 
 #endif // _LOCAL_INTERMEDIATE_INCLUDED_

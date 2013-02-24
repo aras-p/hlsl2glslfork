@@ -437,12 +437,9 @@ public:
 	virtual void traverse(TIntermTraverser*);
 	virtual TIntermDeclaration* getAsDeclaration() { return this; }
 	
-	bool isSingleDeclaration() const { return _declaration->getAsSymbolNode() != NULL || _declaration->getAsBinaryNode() != NULL; }
-	bool isSingleInitialization() const { return _declaration->getAsBinaryNode() != NULL; }
-	bool isMultipleDeclaration() const { return _declaration->getAsAggregate() != NULL; }
+	bool hasInitialization() const { return _declaration->getAsBinaryNode() != NULL; }
 	TIntermTyped*& getDeclaration() { return _declaration; }
-	bool containsArrayInitialization();
-	
+	/* @TODO
 	TPublicType getPublicType() {
 		TType& t = *getTypePointer();
 		TPublicType p = {
@@ -459,6 +456,8 @@ public:
 		};
 		return p;
 	}
+	*/
+	bool containsArrayInitialization() const { return isArray() && hasInitialization(); }
 	
 private:
 	TIntermTyped* _declaration;

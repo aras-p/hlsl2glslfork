@@ -51,11 +51,11 @@ uniform highp float xlu_sampleDist;
 uniform highp float xlu_sampleStrength;
 varying highp vec2 xlv_TEXCOORD0;
 void main() {
-samples[0] = (-0.08);
-samples[1] = (-0.05);
-samples[2] = (-0.03);
-samples[3] = (-0.02);
-samples[4] = (-0.01);
+samples[0] = -0.08;
+samples[1] = -0.05;
+samples[2] = -0.03;
+samples[3] = -0.02;
+samples[4] = -0.01;
 samples[5] = 0.01;
 samples[6] = 0.02;
 samples[7] = 0.03;

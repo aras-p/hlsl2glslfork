@@ -112,7 +112,8 @@ uniform highp float _Roughness;
 uniform highp float _Roughness2;
 #line 220
 uniform highp float _Reflectivity;
-uniform highp float _Refl0, _Refl90;
+uniform highp float _Refl0;
+uniform highp float _Refl90;
 uniform highp float _Metalic;
 uniform highp float _SpecOnlyIntensity;
 #line 224
@@ -124,27 +125,33 @@ uniform highp mat4 _WorldToMirrorProjMatrix;
 uniform sampler2D _MirrorTex;
 #line 293
 uniform highp vec4 _PlanarReflection0;
-uniform highp vec4 _PlanarReflectionTangent0, _PlanarReflectionBiTangent0;
+uniform highp vec4 _PlanarReflectionTangent0;
+uniform highp vec4 _PlanarReflectionBiTangent0;
 #line 333
 uniform sampler2D _PlanarReflectionTex0;
 uniform highp vec4 _PlanarReflection1;
-uniform highp vec4 _PlanarReflectionTangent1, _PlanarReflectionBiTangent1;
+uniform highp vec4 _PlanarReflectionTangent1;
+uniform highp vec4 _PlanarReflectionBiTangent1;
 uniform sampler2D _PlanarReflectionTex1;
 #line 337
 uniform highp vec4 _PlanarReflection2;
-uniform highp vec4 _PlanarReflectionTangent2, _PlanarReflectionBiTangent2;
+uniform highp vec4 _PlanarReflectionTangent2;
+uniform highp vec4 _PlanarReflectionBiTangent2;
 uniform sampler2D _PlanarReflectionTex2;
 uniform samplerCube _Cube;
 #line 341
 uniform sampler2D _MainTex;
-uniform sampler2D _BumpMap, _BumpMap2;
+uniform sampler2D _BumpMap;
+uniform sampler2D _BumpMap2;
 #line 373
 uniform sampler2D _MainReflectivityTex;
 uniform sampler2D _MainRoughnessTex;
 uniform highp vec4 _BumpMap2_ST;
-uniform lowp vec4 _Color, _ReflColor;
+uniform lowp vec4 _Color;
+uniform lowp vec4 _ReflColor;
 #line 377
-uniform highp float _BumpMapFactor, _BumpMapFactor2;
+uniform highp float _BumpMapFactor;
+uniform highp float _BumpMapFactor2;
 uniform highp vec4 _MainReflectivityTex_AddMul;
 uniform highp vec4 _MainRoughnessTex_AddMul;
 #line 412

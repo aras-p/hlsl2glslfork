@@ -80,7 +80,7 @@ highp float Linear01Depth( in highp float z ) {
 #line 8
 highp float DecodeFloatRGBA( in highp vec4 enc ) {
     #line 10
-    highp vec4 kDecodeDot = vec4( 1.0, (1.0 / 255.0), (1.0 / 65025.0), (1.0 / 160581376.0));
+    highp vec4 kDecodeDot = vec4( 1.0, 0.00392157, 1.53787e-05, 6.22737e-09);
     return dot( enc, kDecodeDot);
 }
 #line 39
@@ -92,7 +92,7 @@ highp float SampleCubeDistance( in highp vec3 vec ) {
 #line 44
 mediump float unitySampleShadow( in highp vec3 vec, in highp float mydist ) {
     #line 46
-    highp float z = (1.0 / 128.0);
+    highp float z = 0.0078125;
     highp vec4 shadowVals;
     shadowVals.x = SampleCubeDistance( (vec + vec3( z, z, z)));
     shadowVals.y = SampleCubeDistance( (vec + vec3( (-z), (-z), z)));

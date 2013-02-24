@@ -71,6 +71,9 @@ public:
 	std::stringstream& getActiveOutput () { return *active; }
 	const TSourceLoc& getLine() const { return line; }
 
+	typedef std::set<std::string> ExtensionSet;
+	void addNeededExtensions (ExtensionSet& extensions, ETargetVersion version) const;
+
 private:
 	void mangleSymbolName (GlslSymbol *sym);
 	

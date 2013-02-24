@@ -9,7 +9,6 @@
 #include "glslCommon.h"
 #include "glslStruct.h"
 
-
 class GlslSymbol 
 {
 public:
@@ -55,8 +54,6 @@ public:
 	void releaseRef() { assert (refCount >= 0 ); if ( refCount > 0 ) refCount--; }
 	int getRef() const { return refCount; }
 
-	static void writeFloat(std::stringstream &out, float f);
-   
 private:
 	std::string name;
 	std::string mangledName;

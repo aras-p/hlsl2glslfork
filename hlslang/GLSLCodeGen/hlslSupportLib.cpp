@@ -117,7 +117,7 @@ void initializeHLSLSupportLibrary()
       "  return mat4( dFdx(m[0]), dFdx(m[1]), dFdx(m[2]), dFdx(m[3]));\n"
       "}\n\n")
       );
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpDPdx, std::make_pair("","#extension GL_OES_standard_derivatives : require\n")));
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpDPdx, std::make_pair("","GL_OES_standard_derivatives")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpDPdy,
 	  "float xll_dFdy(float f) {\n"
@@ -142,7 +142,7 @@ void initializeHLSLSupportLibrary()
       "  return mat4( dFdy(m[0]), dFdy(m[1]), dFdy(m[2]), dFdy(m[3]));\n"
       "}\n\n")
       );
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpDPdy, std::make_pair("","#extension GL_OES_standard_derivatives : require\n")));
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpDPdy, std::make_pair("","GL_OES_standard_derivatives")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpExp,
       "mat2 xll_exp(mat2 m) {\n"
@@ -335,7 +335,7 @@ void initializeHLSLSupportLibrary()
       "  return mat4( fwidth(m[0]), fwidth(m[1]), fwidth(m[2]), fwidth(m[3]));\n"
       "}\n\n")
       );
-    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpFwidth, std::make_pair("","#extension GL_OES_standard_derivatives : require\n")));
+    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpFwidth, std::make_pair("","GL_OES_standard_derivatives")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpFclip,
 	   "void xll_clip(float x) {\n"
@@ -737,14 +737,14 @@ void initializeHLSLSupportLibrary()
         "  return texture1DLod( s, coord.x, coord.w);\n"
         "}\n\n" )
         );
-	hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+	hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex1DGrad,
         "vec4 xll_tex1Dgrad(sampler1D s, float coord, float ddx, float ddy) {\n"
         "  return texture1DGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-	hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+	hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
    
    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DBias,
         "vec4 xll_tex2Dbias(sampler2D s, vec4 coord) {\n"
@@ -757,28 +757,28 @@ void initializeHLSLSupportLibrary()
         "   return texture2DLod( s, coord.xy, coord.w);\n"
         "}\n\n" )
         );
-	hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+	hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
    hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTex2DLod,
 		"vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {\n"
 		"   return texture2DLodEXT( s, coord.xy, coord.w);\n"
 		"}\n\n" )
 		);
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DLod, std::make_pair("","#extension GL_EXT_shader_texture_lod : require\n")));
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DLod, std::make_pair("","GL_EXT_shader_texture_lod")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DGrad,
         "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
         "   return texture2DGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-	hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+	hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
    hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTex2DGrad,
 		"vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
 		"   return texture2DGradEXT( s, coord, ddx, ddy);\n"
 		"}\n\n" )
 		);
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DGrad, std::make_pair("#extension GL_EXT_shader_texture_lod : require\n","#extension GL_EXT_shader_texture_lod : require\n")));
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DGrad, std::make_pair("GL_EXT_shader_texture_lod","GL_EXT_shader_texture_lod")));
 
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DBias,
@@ -792,14 +792,14 @@ void initializeHLSLSupportLibrary()
         "  return texture3DLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
-	hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+	hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DGrad,
         "vec4 xll_tex3Dgrad(sampler3D s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return texture3DGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-	hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+	hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeBias,   
         "vec4 xll_texCUBEbias(samplerCube s, vec4 coord) {\n"
@@ -812,14 +812,14 @@ void initializeHLSLSupportLibrary()
         "  return textureCubeLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
-	hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+	hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeGrad,  
         "vec4 xll_texCUBEgrad(samplerCUBE s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return textureCubeGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-	hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+	hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
 	// shadow2D / shadow2Dproj
 	hlslSupportLib->insert(CodeMap::value_type(EOpShadow2D,
@@ -828,7 +828,7 @@ void initializeHLSLSupportLibrary()
 	hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2D,
 	   "float xll_shadow2D(sampler2DShadow s, vec3 coord) { return shadow2DEXT (s, coord); }\n"
 	));
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2D, std::make_pair("","#extension GL_EXT_shadow_samplers : require\n")));
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2D, std::make_pair("GL_EXT_shadow_samplers","GL_EXT_shadow_samplers")));
 	
 	hlslSupportLib->insert(CodeMap::value_type(EOpShadow2DProj,
 	   "float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return shadow2DProj (s, coord).r; }\n"
@@ -836,7 +836,7 @@ void initializeHLSLSupportLibrary()
 	hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2DProj,
 		"float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return shadow2DProjEXT (s, coord); }\n"
 	));
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2DProj, std::make_pair("","#extension GL_EXT_shadow_samplers : require\n")));
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2DProj, std::make_pair("GL_EXT_shadow_samplers","GL_EXT_shadow_samplers")));
 	
 
    hlslSupportLib->insert( CodeMap::value_type( EOpD3DCOLORtoUBYTE4,  
@@ -872,7 +872,7 @@ void finalizeHLSLSupportLibrary()
 	hlslSupportLibExtensionsESOverrides = 0;
 }
 
-std::string getHLSLSupportCode (TOperator op, std::string& inoutExtensions, bool vertexShader, bool gles)
+std::string getHLSLSupportCode (TOperator op, ExtensionSet& extensions, bool vertexShader, bool gles)
 {
 	assert (hlslSupportLibExtensions);
 	assert (hlslSupportLibExtensionsESOverrides);
@@ -884,9 +884,9 @@ std::string getHLSLSupportCode (TOperator op, std::string& inoutExtensions, bool
 		CodeExtensionMap::iterator eit = hlslSupportLibExtensionsESOverrides->find(op);
 		if (eit != hlslSupportLibExtensionsESOverrides->end())
 		{
-			std::string ext = vertexShader ? eit->second.first : eit->second.second;
-			if (inoutExtensions.find (ext) == std::string::npos)
-				inoutExtensions += ext;
+			const std::string& ext = vertexShader ? eit->second.first : eit->second.second;
+			if (!ext.empty())
+				extensions.insert(ext);
 			found = true;
 		}
 	}
@@ -896,9 +896,9 @@ std::string getHLSLSupportCode (TOperator op, std::string& inoutExtensions, bool
 		CodeExtensionMap::iterator eit = hlslSupportLibExtensions->find(op);
 		if (eit != hlslSupportLibExtensions->end())
 		{
-			std::string ext = vertexShader ? eit->second.first : eit->second.second;
-			if (inoutExtensions.find (ext) == std::string::npos)
-				inoutExtensions += ext;
+			const std::string& ext = vertexShader ? eit->second.first : eit->second.second;
+			if (!ext.empty())
+				extensions.insert(ext);
 		}
 	}
 	

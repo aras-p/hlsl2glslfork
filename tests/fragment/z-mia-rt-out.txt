@@ -182,7 +182,8 @@ uniform float _Roughness;
 uniform float _Roughness2;
 #line 220
 uniform float _Reflectivity;
-uniform float _Refl0, _Refl90;
+uniform float _Refl0;
+uniform float _Refl90;
 uniform float _Metalic;
 uniform float _SpecOnlyIntensity;
 #line 224
@@ -194,27 +195,33 @@ uniform mat4 _WorldToMirrorProjMatrix;
 uniform sampler2D _MirrorTex;
 #line 293
 uniform vec4 _PlanarReflection0;
-uniform vec4 _PlanarReflectionTangent0, _PlanarReflectionBiTangent0;
+uniform vec4 _PlanarReflectionTangent0;
+uniform vec4 _PlanarReflectionBiTangent0;
 #line 333
 uniform sampler2D _PlanarReflectionTex0;
 uniform vec4 _PlanarReflection1;
-uniform vec4 _PlanarReflectionTangent1, _PlanarReflectionBiTangent1;
+uniform vec4 _PlanarReflectionTangent1;
+uniform vec4 _PlanarReflectionBiTangent1;
 uniform sampler2D _PlanarReflectionTex1;
 #line 337
 uniform vec4 _PlanarReflection2;
-uniform vec4 _PlanarReflectionTangent2, _PlanarReflectionBiTangent2;
+uniform vec4 _PlanarReflectionTangent2;
+uniform vec4 _PlanarReflectionBiTangent2;
 uniform sampler2D _PlanarReflectionTex2;
 uniform samplerCube _Cube;
 #line 341
 uniform sampler2D _MainTex;
-uniform sampler2D _BumpMap, _BumpMap2;
+uniform sampler2D _BumpMap;
+uniform sampler2D _BumpMap2;
 #line 373
 uniform sampler2D _MainReflectivityTex;
 uniform sampler2D _MainRoughnessTex;
 uniform vec4 _BumpMap2_ST;
-uniform vec4 _Color, _ReflColor;
+uniform vec4 _Color;
+uniform vec4 _ReflColor;
 #line 377
-uniform float _BumpMapFactor, _BumpMapFactor2;
+uniform float _BumpMapFactor;
+uniform float _BumpMapFactor2;
 uniform vec4 _MainReflectivityTex_AddMul;
 uniform vec4 _MainRoughnessTex_AddMul;
 #line 412
@@ -260,7 +267,9 @@ float RemapToRange( in float v, in vec4 range ) {
 }
 #line 46
 vec3 ShadeSH9( in vec4 normal ) {
-    vec3 x1, x2, x3;
+    vec3 x1;
+    vec3 x2;
+    vec3 x3;
     x1.x = dot( unity_SHAr, normal);
     #line 50
     x1.y = dot( unity_SHAg, normal);
@@ -387,7 +396,7 @@ vec3 GlobalIllumination( in Input IN, in MySurfaceOutput s, out vec3 spec ) {
     #line 345
     vec3 worldN = vec3( dot( IN.TtoW0, normal), dot( IN.TtoW1, normal), dot( IN.TtoW2, normal));
     float roughness = (_Roughness * s.Roughness);
-    float Q = ((0.25 * 0.33) * (1.0 - pow( (1.0 - max( 0.0, (roughness - 0.033))), 2.0)));
+    float Q = (0.0825 * (1.0 - pow( (1.0 - max( 0.0, (roughness - 0.033))), 2.0)));
     float LOD = ((1.25 * (1.0 - pow( (1.0 - max( 0.0, roughness)), 2.0))) * 4.0);
     #line 349
     PlanarMapping pm0;
@@ -450,8 +459,8 @@ void surf( in Input IN, inout MySurfaceOutput o ) {
 float OrenNayarTerm( in float roughness, in vec3 normal, in vec3 lightDir, in vec3 viewDir ) {
     #line 159
     const float PI = 3.14159;
-    float INVERSE_PI = (1.0 / 3.14159);
-    float INVERSE_PI_SQ = (INVERSE_PI * INVERSE_PI);
+    const float INVERSE_PI = 0.31831;
+    const float INVERSE_PI_SQ = 0.101321;
     float rSq = (roughness * roughness);
     #line 163
     float NdotL = LambertTermWithRolloff( normal, lightDir);
@@ -465,8 +474,8 @@ float OrenNayarTerm( in float roughness, in vec3 normal, in vec3 lightDir, in ve
     float c1 = (1.0 - (0.5 * K1));
     #line 171
     float c2 = (0.45 * K2);
-    c2 *= (sin(a) - (( (y >= 0.0) ) ? ( 0.0 ) : ( pow( ((2.0 * b) * INVERSE_PI), 3.0) )));
-    float c3 = (((1.0 / 8.0) * K2) * pow( (((4.0 * a) * b) * INVERSE_PI_SQ), 2.0));
+    c2 *= (sin(a) - (( (y >= 0.0) ) ? ( 0.0 ) : ( pow( ((2.0 * b) * 0.31831), 3.0) )));
+    float c3 = ((0.125 * K2) * pow( (((4.0 * a) * b) * 0.101321), 2.0));
     float x = ((y * c2) * tan(b));
     #line 175
     float e = (((1.0 - abs(y)) * c3) * tan(((a + b) / 2.0)));

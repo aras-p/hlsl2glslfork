@@ -574,7 +574,7 @@ TIntermDeclaration* ir_add_declaration(TSymbol* symbol, TIntermTyped* initialize
 }
 
 
-TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink)
+TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol, TIntermTyped* initializer, TInfoSink& infoSink)
 {
 	TVariable* var = static_cast<TVariable*>(symbol);
 	TIntermSymbol* sym = ir_add_symbol(var, var->getType().getLine());
@@ -582,41 +582,21 @@ TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TSymbol
 	return ir_grow_declaration(declaration, sym, initializer, infoSink);
 }
 
-TIntermDeclaration* ir_grow_declaration(TIntermDeclaration* declaration, TIntermSymbol *symbol, TIntermTyped *initializer, TInfoSink& infoSink)
+TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol *symbol, TIntermTyped *initializer, TInfoSink& infoSink)
 {
-	TIntermTyped* added_decl = symbol;
-	if (initializer)
-		added_decl = ir_add_assign(EOpAssign, symbol, initializer, symbol->getLine(), infoSink);
-	
-	if (declaration->isSingleDeclaration()) {
-		TIntermTyped* current = declaration->getDeclaration();
-		TIntermAggregate* aggregate = ir_make_aggregate(current, current->getLine());
-		aggregate->setOperator(EOpComma);
-		declaration->getDeclaration() = aggregate;
-	}
-		
-	TIntermAggregate* aggregate = ir_grow_aggregate(declaration->getDeclaration(), added_decl, added_decl->getLine());
-	aggregate->setOperator(EOpComma);
-	declaration->getDeclaration() = aggregate;
-	
-	return declaration;
-}
+	TIntermTyped* added_decl = ir_add_declaration (symbol, initializer, symbol->getLine(), infoSink);
 
-bool TIntermDeclaration::containsArrayInitialization() {
-	const TType& t = *this->getTypePointer();
-	if (isSingleInitialization() && t.isArray())
-		return true;
-	
-	if (t.isArray() && isMultipleDeclaration()) {
-		TNodeArray& decls = _declaration->getAsAggregate()->getNodes();
-		unsigned n_decls = decls.size();
-		for (unsigned i = 0; i != n_decls; ++i) {
-			if (decls[i]->getAsBinaryNode())
-				return true;
-		}
+	if (declaration->getAsDeclaration()) {
+		TIntermAggregate* aggregate = ir_make_aggregate(declaration, declaration->getLine());
+		aggregate->setOperator(EOpSequence);
+		declaration = aggregate;
 	}
+	assert (declaration->getAsAggregate());
+		
+	TIntermAggregate* aggregate = ir_grow_aggregate(declaration, added_decl, added_decl->getLine(), EOpSequence);
+	aggregate->setOperator(EOpSequence);
 	
-	return false;
+	return aggregate;
 }
 
 
@@ -625,7 +605,7 @@ bool TIntermDeclaration::containsArrayInitialization() {
 //
 // Returns the resulting aggregate, unless 0 was passed in for
 // both existing nodes.
-TIntermAggregate* ir_grow_aggregate(TIntermNode* left, TIntermNode* right, TSourceLoc line)
+TIntermAggregate* ir_grow_aggregate(TIntermNode* left, TIntermNode* right, TSourceLoc line, TOperator expectedOp)
 {
    if (left == 0 && right == 0)
       return 0;
@@ -633,7 +613,7 @@ TIntermAggregate* ir_grow_aggregate(TIntermNode* left, TIntermNode* right, TSour
    TIntermAggregate* aggNode = 0;
    if (left)
       aggNode = left->getAsAggregate();
-   if (!aggNode || aggNode->getOp() != EOpNull)
+   if (!aggNode || aggNode->getOp() != expectedOp)
    {
       aggNode = new TIntermAggregate;
       if (left)

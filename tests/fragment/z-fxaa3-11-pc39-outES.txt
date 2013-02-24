@@ -85,21 +85,21 @@ highp vec4 FxaaPixelShader( in highp vec2 pos, in highp vec4 fxaaConsolePosPos, 
     highp float subpixRcpRange = (1.0 / range);
     highp float subpixNSWE = (lumaNS + lumaWE);
     #line 585
-    highp float edgeHorz1 = (((-2.0) * rgbyM.w) + lumaNS);
-    highp float edgeVert1 = (((-2.0) * rgbyM.w) + lumaWE);
+    highp float edgeHorz1 = ((-2.0 * rgbyM.w) + lumaNS);
+    highp float edgeVert1 = ((-2.0 * rgbyM.w) + lumaWE);
     highp float lumaNESE = (lumaNE + lumaSE);
     #line 589
     highp float lumaNWNE = (lumaNW + lumaNE);
-    highp float edgeHorz2 = (((-2.0) * lumaE) + lumaNESE);
-    highp float edgeVert2 = (((-2.0) * lumaN) + lumaNWNE);
+    highp float edgeHorz2 = ((-2.0 * lumaE) + lumaNESE);
+    highp float edgeVert2 = ((-2.0 * lumaN) + lumaNWNE);
     #line 593
     highp float lumaNWSW = (lumaNW + lumaSW);
     highp float lumaSWSE = (lumaSW + lumaSE);
     highp float edgeHorz4 = ((abs(edgeHorz1) * 2.0) + abs(edgeHorz2));
     highp float edgeVert4 = ((abs(edgeVert1) * 2.0) + abs(edgeVert2));
     #line 597
-    highp float edgeHorz3 = (((-2.0) * lumaW) + lumaNWSW);
-    highp float edgeVert3 = (((-2.0) * lumaS) + lumaSWSE);
+    highp float edgeHorz3 = ((-2.0 * lumaW) + lumaNWSW);
+    highp float edgeVert3 = ((-2.0 * lumaS) + lumaSWSE);
     highp float edgeHorz = (abs(edgeHorz3) + edgeHorz4);
     highp float edgeVert = (abs(edgeVert3) + edgeVert4);
     #line 602
@@ -117,7 +117,7 @@ highp vec4 FxaaPixelShader( in highp vec2 pos, in highp vec4 fxaaConsolePosPos, 
     if (horzSpan){
         lengthSign = fxaaQualityRcpFrame.y;
     }
-    highp float subpixB = ((subpixA * (1.0 / 12.0)) - rgbyM.w);
+    highp float subpixB = ((subpixA * 0.0833333) - rgbyM.w);
     #line 612
     highp float gradientN = (lumaN - rgbyM.w);
     highp float gradientS = (lumaS - rgbyM.w);
@@ -152,7 +152,7 @@ highp vec4 FxaaPixelShader( in highp vec2 pos, in highp vec4 fxaaConsolePosPos, 
     #line 634
     posP.x = (posB.x + (offNP.x * 1.0));
     posP.y = (posB.y + (offNP.y * 1.0));
-    highp float subpixD = (((-2.0) * subpixC) + 3.0);
+    highp float subpixD = ((-2.0 * subpixC) + 3.0);
     highp float lumaEndN = FxaaLuma( xll_tex2Dlod( tex, vec4( posN, 0.0, 0.0)));
     #line 638
     highp float subpixE = (subpixC * subpixC);
@@ -543,7 +543,7 @@ highp vec4 FxaaPixelShader( in highp vec2 pos, in highp vec4 fxaaConsolePosPos, 
 highp vec4 xlat_main( in v2f i ) {
     highp float fxaaN = 0.5;
     #line 982
-    return FxaaPixelShader( i.uv, i.uvPosPos, _MainTex, _MainTex, _MainTex, _MainTex_TexelSize.xy, (_MainTex_TexelSize.xyxy * vec4( (-fxaaN), (-fxaaN), fxaaN, fxaaN)), (_MainTex_TexelSize.xyxy * vec4( (-2.0), (-2.0), 2.0, 2.0)), (_MainTex_TexelSize.xyxy * vec4( 8.0, 8.0, (-4.0), (-4.0))), 0.75, 0.166, 0.0833, 8.0, 0.125, 0.05, vec4( 1.0, (-1.0), 0.25, (-0.25)));
+    return FxaaPixelShader( i.uv, i.uvPosPos, _MainTex, _MainTex, _MainTex, _MainTex_TexelSize.xy, (_MainTex_TexelSize.xyxy * vec4( (-fxaaN), (-fxaaN), fxaaN, fxaaN)), (_MainTex_TexelSize.xyxy * vec4( -2.0, -2.0, 2.0, 2.0)), (_MainTex_TexelSize.xyxy * vec4( 8.0, 8.0, -4.0, -4.0)), 0.75, 0.166, 0.0833, 8.0, 0.125, 0.05, vec4( 1.0, -1.0, 0.25, -0.25));
 }
 varying highp vec4 xlv_SV_POSITION;
 varying highp vec2 xlv_TEXCOORD0;

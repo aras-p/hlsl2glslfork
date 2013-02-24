@@ -44,7 +44,8 @@ uniform highp vec4 unity_Scale;
 #line 17
 uniform highp vec3 _WorldSpaceCameraPos;
 uniform highp vec4 _WorldSpaceLightPos0;
-uniform highp mat4 _Object2World, _World2Object;
+uniform highp mat4 _Object2World;
+uniform highp mat4 _World2Object;
 uniform highp vec4 _LightPositionRange;
 #line 46
 #line 51

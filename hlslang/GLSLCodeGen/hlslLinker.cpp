@@ -131,6 +131,7 @@ static const char* varOutString[EAttrSemCount] = {
 	"",
 };
 
+
 // String table that maps attribute semantics to built-in GLSL input varyings
 static const char* varInString[EAttrSemCount] = {
 	"",
@@ -234,11 +235,11 @@ static const char* resultString[EAttrSemCount] = {
 	"",
 	"",
 	"gl_FragDepth",
+	"",
+	"",
+	"",
+	"",
 	"gl_SampleMask[0]",
-	"",
-	"",
-	"",
-	"",
 };
 
 static const char* kUserVaryingPrefix = "xlv_";
@@ -249,7 +250,9 @@ static inline void AddToVaryings (std::stringstream& s, TPrecision prec, const s
 		s << "varying " << getGLSLPrecisiontring(prec) << type << " " << name << ";\n";
 }
 
-HlslLinker::HlslLinker(TInfoSink& infoSink_) : infoSink(infoSink_)
+HlslLinker::HlslLinker(TInfoSink& infoSink_)
+: infoSink(infoSink_)
+, m_Target(ETargetVersionCount)
 {
 	for ( int i = 0; i < EAttrSemCount; i++)
 	{
@@ -397,9 +400,16 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 
 		case EClassRes:
 			outName = resultString[sem];
-			if ( sem == EAttrSemDepth)
+			if (sem == EAttrSemDepth)
+			{
+				if (m_Target == ETargetGLSL_ES_100)
+				{
+					outName = "gl_FragDepthEXT";
+					m_Extensions.insert("GL_EXT_frag_depth");
+				}
 				ctor = "float";
-			else if ( sem == EAttrSemCoverage )
+			}
+			else if (sem == EAttrSemCoverage)
 				ctor = "int";
 			else
 			{
@@ -633,11 +643,11 @@ static const char* GetEntryName (const char* entryFunc)
 
 static const char* kShaderTypeNames[2] = { "Vertex", "Fragment" };
 
-void HlslLinker::addRequiredExtensions(EAttribSemantic sem, ExtensionSet &extensions)
+
+static void add_extension_from_semantic(EAttribSemantic sem, ExtensionSet& extensions)
 {
 	if (sem == EAttrSemPrimitiveID || sem == EAttrSemVertexID)
 		extensions.insert("GL_EXT_gpu_shader4");
-	
 	if (sem == EAttrSemInstanceID)
 		extensions.insert("GL_ARB_draw_instanced");
 }
@@ -726,12 +736,12 @@ void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions
 void HlslLinker::emitLibraryFunctions(const std::set<TOperator>& libFunctions, EShLanguage lang, bool usePrecision)
 {
 	// library Functions & required extensions
-	std::string shaderExtensions, shaderLibFunctions;
+	std::string shaderLibFunctions;
 	if (!libFunctions.empty())
 	{
 		for (std::set<TOperator>::const_iterator it = libFunctions.begin(); it != libFunctions.end(); it++)
 		{
-			const std::string &func = getHLSLSupportCode(*it, shaderExtensions, lang==EShLangVertex, usePrecision);
+			const std::string &func = getHLSLSupportCode(*it, m_Extensions, lang==EShLangVertex, usePrecision);
 			if (!func.empty())
 			{
 				shaderLibFunctions += func;
@@ -739,7 +749,6 @@ void HlslLinker::emitLibraryFunctions(const std::set<TOperator>& libFunctions, E
 			}
 		}
 	}
-	shader << shaderExtensions;
 	shader << shaderLibFunctions;
 }
 
@@ -768,6 +777,7 @@ void HlslLinker::emitGlobals(const GlslFunction* globalFunction, const std::vect
 	// write global scope declarations (represented as a fake function)
 	assert(globalFunction);
 	shader << globalFunction->getCode();
+	globalFunction->addNeededExtensions (m_Extensions, m_Target);
 	
 	// write mutable uniform declarations
 	const unsigned n_constants = constants.size();
@@ -883,7 +893,7 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 }
 
 
-void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, ExtensionSet& extensions, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
+void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
 {
 	GlslStruct* str = sym->getStruct();
 	assert(str);
@@ -901,7 +911,7 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, Extensi
 		const GlslStruct::StructMember &current = str->getMember(jj);
 		EAttribSemantic memberSem = parseAttributeSemantic (current.semantic);
 		
-		addRequiredExtensions(memberSem, extensions);
+		add_extension_from_semantic(memberSem, m_Extensions);
 		
 		// if member of the struct is an array, we have to loop over all array elements
 		int arraySize = 1;
@@ -1031,14 +1041,14 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 }
 
 
-void HlslLinker::emitMainStart(const HlslCrossCompiler* compiler, const EGlslSymbolType retType, GlslFunction* funcMain, ETargetVersion version, unsigned options, bool usePrecision, std::stringstream& preamble)
+void HlslLinker::emitMainStart(const HlslCrossCompiler* compiler, const EGlslSymbolType retType, GlslFunction* funcMain, unsigned options, bool usePrecision, std::stringstream& preamble)
 {
 	preamble << "void main() {\n";
 	
 	std::string arrayInit = compiler->m_DeferredArrayInit.str();
 	if (!arrayInit.empty())
 	{
-		const bool emit_120_arrays = (version >= ETargetGLSL_120);
+		const bool emit_120_arrays = (m_Target >= ETargetGLSL_120);
 		const bool emit_old_arrays = !emit_120_arrays || (options & ETranslateOpEmitGLSL120ArrayInitWorkaround);
 		const bool emit_both = emit_120_arrays && emit_old_arrays;
 		
@@ -1162,6 +1172,8 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 
 bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETargetVersion targetVersion, unsigned options)
 {
+	m_Target = targetVersion;
+	m_Extensions.clear();
 	if (!linkerSanityCheck(compiler, entryFunc))
 		return false;
 	
@@ -1180,7 +1192,6 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 		return false;
 	assert(globalFunction);
 	assert(funcMain);
-	
 	
 	// uniforms and used built-in functions
 	std::vector<GlslSymbol*> constants;
@@ -1201,7 +1212,6 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 	// That main function uses semantics on the arguments and return values to
 	// connect items appropriately.	
 	
-	ExtensionSet extensions;
 	std::stringstream attrib;
 	std::stringstream uniform;
 	std::stringstream preamble;
@@ -1211,7 +1221,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 
 	// Declare return value
 	const EGlslSymbolType retType = funcMain->getReturnType();
-	emitMainStart(compiler, retType, funcMain, targetVersion, options, usePrecision, preamble);
+	emitMainStart(compiler, retType, funcMain, options, usePrecision, preamble);
 	
 
 	// Call the entry point
@@ -1228,7 +1238,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 		GlslSymbol *sym = funcMain->getParameter(ii);
 		EAttribSemantic attrSem = parseAttributeSemantic( sym->getSemantic());
 		
-		addRequiredExtensions(attrSem, extensions);
+		add_extension_from_semantic(attrSem, m_Extensions);
 
 		switch (sym->getQualifier())
 		{
@@ -1243,7 +1253,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 			}
 			else
 			{
-				emitInputStructParam(sym, lang, extensions, attrib, varying, preamble, call);
+				emitInputStructParam(sym, lang, attrib, varying, preamble, call);
 			}
 
 			// NOTE: for "inout" parameters need to fallthrough to the next case
@@ -1296,7 +1306,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 	// Generate final code of the pieces above.
 	{
 		shaderPrefix << kTargetVersionStrings[targetVersion];
-		std::set<const char*>::iterator it = extensions.begin(), end = extensions.end();
+		ExtensionSet::const_iterator it = m_Extensions.begin(), end = m_Extensions.end();
 		for (; it != end; ++it)
 			shaderPrefix << "#extension " << *it << " : require" << std::endl;
 	}
