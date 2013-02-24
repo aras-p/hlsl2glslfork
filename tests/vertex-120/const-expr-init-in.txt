@@ -3,7 +3,7 @@ const int kInt2 = 7;
 static int kInt3 = 11;
 
 float size1 = 512.0;
-float size2 = 1.0 / 512.0;
+float size2 = 1.0 / 64.0;
 float size3 = kInt1;
 float size4 = kInt2 / 3.0;
 float size5 = 5 - kInt2;

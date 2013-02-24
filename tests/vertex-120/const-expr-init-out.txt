@@ -4,7 +4,7 @@ const int kInt2 = 7;
 #line 3
 int kInt3 = 11;
 uniform float size1 = 512.0;
-uniform float size2 = 0.00195313;
+uniform float size2 = 0.015625;
 #line 7
 uniform float size3 = 3.0;
 uniform float size4 = 2.33333;
