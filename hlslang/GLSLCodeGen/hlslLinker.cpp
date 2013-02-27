@@ -18,6 +18,7 @@ static const char* kTargetVersionStrings[ETargetVersionCount] = {
 	"", // ES 1.00
 	"", // 1.10
 	"#version 120\n", // 1.20
+    "#version 140\n", // 1.40
 };
 
 
