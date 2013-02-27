@@ -729,6 +729,9 @@ void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions
 		libFunctions.insert( referencedFunctions.begin(), referencedFunctions.end());
 	}
 	
+    // std::unique only removes contiguous duplicates, so vector must be sorted to remove them all
+    std::sort(constants.begin(), constants.end());
+
 	// Remove duplicates
 	constants.resize(std::unique(constants.begin(), constants.end()) - constants.begin());
 }
