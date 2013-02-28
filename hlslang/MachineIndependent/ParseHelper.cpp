@@ -1346,16 +1346,21 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, con
 		variable->constValue = initializer->getAsConstant();
 	}
 	
-
-	if (qualifier == EvqUniform)
-	{
-		if (!isConst)
-		{
-			error(line, " Attempting to initialize uniform with a non-constant initializer", "", "");
-			variable->getType().changeQualifier(EvqTemporary);
-			return true;
-		}
-	}
+//ACS: this was stopping non-type-explicit constant initializers from working (was that by design?)
+//  e.g. it allowed this: 
+//      uniform float3 my_constants = float3(1, 2, 3);
+//  but not this, which afaik is legal hlsl: 
+//      uniform float3 my_constants = { 1, 2, 3 };
+//
+// 	if (qualifier == EvqUniform)
+// 	{
+// 		if (!isConst)
+// 		{
+// 			error(line, " Attempting to initialize uniform with a non-constant initializer", "", "");
+// 			variable->getType().changeQualifier(EvqTemporary);
+// 			return true;
+// 		}
+// 	}
 
 	TIntermSymbol* intermSymbol = ir_add_symbol(variable, line);
 	intermNode = intermSymbol;

@@ -18,6 +18,7 @@ static const char* kTargetVersionStrings[ETargetVersionCount] = {
 	"", // ES 1.00
 	"", // 1.10
 	"#version 120\n", // 1.20
+    "#version 140\n", // 1.40
 };
 
 
@@ -728,6 +729,9 @@ void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions
 		libFunctions.insert( referencedFunctions.begin(), referencedFunctions.end());
 	}
 	
+    // std::unique only removes contiguous duplicates, so vector must be sorted to remove them all
+    std::sort(constants.begin(), constants.end());
+
 	// Remove duplicates
 	constants.resize(std::unique(constants.begin(), constants.end()) - constants.begin());
 }

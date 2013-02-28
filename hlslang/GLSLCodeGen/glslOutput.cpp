@@ -12,6 +12,15 @@
 	#define snprintf _snprintf
 #endif
 
+//ACS: some texture lookup types were deprecated after 1.20, and 1.40 won't accept them
+bool UsePost120TextureLookups(ETargetVersion targetVersion) {
+    if(targetVersion<ETargetVersionCount) {
+        return (targetVersion>ETargetGLSL_120); 
+    }
+    else {
+        return false;
+    }
+}
 
 void print_float (std::stringstream& out, float f)
 {
@@ -296,6 +305,7 @@ void writeTex( const TString &name, TIntermAggregate *node, TGlslOutputTraverser
 	TBasicType sampler_type = (*nodes.begin())->getAsTyped()->getBasicType();
 	TString new_name;
 	
+    //ACS: do we need to change these for 1.40? 1.20-style texture lookups should just not show up at all, right?
 	if (isShadowSampler(sampler_type)) {
 		if (name == "texture2D")
 			new_name = "shadow2D";
@@ -1346,6 +1356,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    GlslFunction *current = goit->current;
    std::stringstream& out = current->getActiveOutput();
    int argCount = (int) node->getNodes().size();
+   bool usePost120TextureLookups = UsePost120TextureLookups(goit->m_TargetVersion); 
 
    if (node->getOp() == EOpNull)
    {
@@ -1549,7 +1560,13 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpTex2D:
       if (argCount == 2)
-         writeTex( "texture2D", node, goit);
+      {  
+          if(usePost120TextureLookups) {       
+              writeTex( "texture", node, goit);
+          } else {
+              writeTex( "texture2D", node, goit);
+          }
+      }
       else
       {
          current->addLibFunction(EOpTex2DGrad);
@@ -1558,7 +1575,11 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
       return false;
 
    case EOpTex2DProj:     
-      writeTex( "texture2DProj", node, goit);
+      if(usePost120TextureLookups) {       
+          writeTex( "textureProj", node, goit);
+      } else {
+          writeTex( "texture2DProj", node, goit);
+      }
       return false;
 
    case EOpTex2DLod:      
