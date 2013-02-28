@@ -157,6 +157,7 @@ enum ETargetVersion
 	ETargetGLSL_ES_100,
 	ETargetGLSL_110,
 	ETargetGLSL_120,
+    ETargetGLSL_140,
 	// ETargetGLSL_ES_300,
 	// ETargetGLSL_330,
 	ETargetVersionCount
@@ -207,8 +208,14 @@ typedef void(*GlobalFreeFunction)(void*, void*);
 /// HLSL2GLSL translator functions
 /// \return
 ///   1 on success, 0 on failure
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction free, void* user);
-
+///
+///ACS: added fixedTargetVersion
+///     * If left as default (ETargetVersionCount) Hlsl2Glsl operates as normal
+///     * If set, only Hlsl2Glsl_Translate calls of matching target will work, and 
+///       when set to higher than ETargetGLSL_120, will emit non-deprecated-after-120
+///       texture lookup calls e.g. texture() & textureLod() instead of texture2D() & textureCubeLod()
+SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction free, void* user, 
+                                                 ETargetVersion fixedTargetVersion = ETargetVersionCount);
 
 /// Finalize the HLSL2GLSL translator.  This function should be called to de-initialize the HLSL2GLSL 
 /// translator and should only be called once on shutdown.
