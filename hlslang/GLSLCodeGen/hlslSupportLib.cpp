@@ -30,14 +30,14 @@ void insertPre130TextureLookups()
         "  return texture1DLod( s, coord.x, coord.w);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+    hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex1DGrad,
         "vec4 xll_tex1Dgrad(sampler1D s, float coord, float ddx, float ddy) {\n"
         "  return texture1DGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+    hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex2DBias,
         "vec4 xll_tex2Dbias(sampler2D s, vec4 coord) {\n"
@@ -50,28 +50,28 @@ void insertPre130TextureLookups()
         "   return texture2DLod( s, coord.xy, coord.w);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+    hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
     hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTex2DLod,
         "vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {\n"
         "   return texture2DLodEXT( s, coord.xy, coord.w);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DLod, std::make_pair("","#extension GL_EXT_shader_texture_lod : require\n")));
+    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DLod, std::make_pair("","GL_EXT_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex2DGrad,
         "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
         "   return texture2DGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+    hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
     hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTex2DGrad,
         "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
         "   return texture2DGradEXT( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DGrad, std::make_pair("#extension GL_EXT_shader_texture_lod : require\n","#extension GL_EXT_shader_texture_lod : require\n")));
+    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DGrad, std::make_pair("GL_EXT_shader_texture_lod","GL_EXT_shader_texture_lod")));
 
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex3DBias,
@@ -85,14 +85,14 @@ void insertPre130TextureLookups()
         "  return texture3DLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+    hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex3DGrad,
         "vec4 xll_tex3Dgrad(sampler3D s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return texture3DGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+    hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeBias,   
         "vec4 xll_texCUBEbias(samplerCube s, vec4 coord) {\n"
@@ -105,14 +105,14 @@ void insertPre130TextureLookups()
         "  return textureCubeLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+    hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeGrad,  
         "vec4 xll_texCUBEgrad(samplerCUBE s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return textureCubeGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+    hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
     // shadow2D / shadow2Dproj
     hlslSupportLib->insert(CodeMap::value_type(EOpShadow2D,
@@ -121,7 +121,7 @@ void insertPre130TextureLookups()
     hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2D,
         "float xll_shadow2D(sampler2DShadow s, vec3 coord) { return shadow2DEXT (s, coord); }\n"
         ));
-    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2D, std::make_pair("","#extension GL_EXT_shadow_samplers : require\n")));
+    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2D, std::make_pair("","GL_EXT_shadow_samplers")));
 
     hlslSupportLib->insert(CodeMap::value_type(EOpShadow2DProj,
         "float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return shadow2DProj (s, coord).r; }\n"
@@ -129,7 +129,7 @@ void insertPre130TextureLookups()
     hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2DProj,
         "float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return shadow2DProjEXT (s, coord); }\n"
         ));
-    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2DProj, std::make_pair("","#extension GL_EXT_shadow_samplers : require\n")));
+    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2DProj, std::make_pair("","GL_EXT_shadow_samplers")));
 
 }
 
@@ -146,14 +146,14 @@ void insertPost120TextureLookups()
         "  return textureLod( s, coord.x, coord.w);\n"
         "}\n\n" )
         );
-    hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+    hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex1DGrad,
         "vec4 xll_tex1Dgrad(sampler1D s, float coord, float ddx, float ddy) {\n"
         "  return textureGrad( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex2DBias,
         "vec4 xll_tex2Dbias(sampler2D s, vec4 coord) {\n"
@@ -166,28 +166,28 @@ void insertPost120TextureLookups()
         "   return textureLod( s, coord.xy, coord.w);\n"
         "}\n\n" )
         );
-    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
     hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTex2DLod,
         "vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {\n"
         "   return textureLod( s, coord.xy, coord.w);\n"
         "}\n\n" )
         );
-    //hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DLod, std::make_pair("","#extension GL_EXT_shader_texture_lod : require\n")));
+    //hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DLod, std::make_pair("","GL_EXT_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex2DGrad,
         "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
         "   return textureGrad( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
     hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTex2DGrad,
         "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
         "   return textureGrad( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-    //hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DGrad, std::make_pair("#extension GL_EXT_shader_texture_lod : require\n","#extension GL_EXT_shader_texture_lod : require\n")));
+    //hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DGrad, std::make_pair("GL_EXT_shader_texture_lod","GL_EXT_shader_texture_lod")));
 
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex3DBias,
@@ -201,14 +201,14 @@ void insertPost120TextureLookups()
         "  return textureLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
-    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex3DGrad,
         "vec4 xll_tex3Dgrad(sampler3D s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return textureGrad( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeBias,   
         "vec4 xll_texCUBEbias(samplerCube s, vec4 coord) {\n"
@@ -221,14 +221,14 @@ void insertPost120TextureLookups()
         "  return textureLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
-    //hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","#extension GL_ARB_shader_texture_lod : require\n")));
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeGrad,  
         "vec4 xll_texCUBEgrad(samplerCUBE s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return textureGrad( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
-    //hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("#extension GL_ARB_shader_texture_lod : require\n","#extension GL_ARB_shader_texture_lod : require\n")));
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
     // shadow2D / shadow2Dproj
     hlslSupportLib->insert(CodeMap::value_type(EOpShadow2D,
@@ -237,7 +237,7 @@ void insertPost120TextureLookups()
     hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2D,
         "float xll_shadow2D(sampler2DShadow s, vec3 coord) { return texture (s, coord); }\n"
         ));
-    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2D, std::make_pair("","#extension GL_EXT_shadow_samplers : require\n")));
+    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2D, std::make_pair("","GL_EXT_shadow_samplers")));
 
     hlslSupportLib->insert(CodeMap::value_type(EOpShadow2DProj,
         "float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return textureProj (s, coord).r; }\n"
@@ -245,7 +245,7 @@ void insertPost120TextureLookups()
     hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2DProj,
         "float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return textureProj (s, coord); }\n"
         ));
-    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2DProj, std::make_pair("","#extension GL_EXT_shadow_samplers : require\n")));
+    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2DProj, std::make_pair("","GL_EXT_shadow_samplers")));
 
 }
 
