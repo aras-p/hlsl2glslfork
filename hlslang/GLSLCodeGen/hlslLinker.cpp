@@ -711,6 +711,11 @@ bool HlslLinker::buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, c
 	return true;
 }
 
+struct GlslSymbolSorter {
+	bool operator()(const GlslSymbol* a, const GlslSymbol* b) {
+		return a->getName() < b->getName();
+	}
+};
 
 void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions)
 {
@@ -730,7 +735,7 @@ void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions
 	}
 	
     // std::unique only removes contiguous duplicates, so vector must be sorted to remove them all
-    std::sort(constants.begin(), constants.end());
+    std::sort(constants.begin(), constants.end(), GlslSymbolSorter());
 
 	// Remove duplicates
 	constants.resize(std::unique(constants.begin(), constants.end()) - constants.begin());
