@@ -32,8 +32,8 @@ void main() {
 }
 
 // uniforms:
-// worldViewProj:<none> type 21 arrsize 0
 // ambient:<none> type 12 arrsize 0
-// objSpaceLight:<none> type 12 arrsize 0
 // lightColour:<none> type 12 arrsize 0
+// objSpaceLight:<none> type 12 arrsize 0
 // offset:<none> type 12 arrsize 0
+// worldViewProj:<none> type 21 arrsize 0

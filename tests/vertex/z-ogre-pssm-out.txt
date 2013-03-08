@@ -51,9 +51,9 @@ void main() {
 }
 
 // uniforms:
-// lightPosition:<none> type 12 arrsize 0
 // eyePosition:<none> type 11 arrsize 0
-// worldViewProjMatrix:<none> type 21 arrsize 0
+// lightPosition:<none> type 12 arrsize 0
 // texWorldViewProjMatrix0:<none> type 21 arrsize 0
 // texWorldViewProjMatrix1:<none> type 21 arrsize 0
 // texWorldViewProjMatrix2:<none> type 21 arrsize 0
+// worldViewProjMatrix:<none> type 21 arrsize 0

@@ -78,6 +78,6 @@ void main() {
 }
 
 // uniforms:
+// _MainTex:<none> type 25 arrsize 0
 // _SssStretch:<none> type 25 arrsize 0
 // _SssStretch_AddMul:<none> type 12 arrsize 0
-// _MainTex:<none> type 25 arrsize 0

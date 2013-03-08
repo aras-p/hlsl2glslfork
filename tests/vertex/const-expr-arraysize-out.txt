@@ -23,7 +23,7 @@ void main() {
 }
 
 // uniforms:
-// sBonePal:<none> type 12 arrsize 12
-// sFoo:<none> type 9 arrsize 27
-// sBonePal2:<none> type 12 arrsize 4
 // arrNeg:<none> type 9 arrsize 5
+// sBonePal:<none> type 12 arrsize 12
+// sBonePal2:<none> type 12 arrsize 4
+// sFoo:<none> type 9 arrsize 27

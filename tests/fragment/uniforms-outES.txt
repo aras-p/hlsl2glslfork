@@ -21,10 +21,10 @@ void main() {
 }
 
 // uniforms:
-// unicolor:<none> type 12 arrsize 0
-// reg:<none> type 12 arrsize 0
 // lights:<none> type 12 arrsize 2
+// reg:<none> type 12 arrsize 0
 // uni1:<none> type 9 arrsize 0
 // uni2:<none> type 9 arrsize 0
 // uniInit1:<none> type 9 arrsize 0
 // uniInit2:<none> type 9 arrsize 0
+// unicolor:<none> type 12 arrsize 0

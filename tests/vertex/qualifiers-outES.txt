@@ -24,7 +24,7 @@ void main() {
 }
 
 // uniforms:
-// mutable_1:<none> type 9 arrsize 0
-// mutable_2:<none> type 9 arrsize 0
 // uni_1:<none> type 9 arrsize 0
 // uni_2:<none> type 9 arrsize 0
+// mutable_1:<none> type 9 arrsize 0
+// mutable_2:<none> type 9 arrsize 0

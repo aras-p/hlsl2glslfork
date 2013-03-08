@@ -28,9 +28,9 @@ void main() {
 }
 
 // uniforms:
-// texlow:<none> type 25 arrsize 0
-// texmed:<none> type 25 arrsize 0
-// texhigh:<none> type 25 arrsize 0
+// cubehigh:<none> type 28 arrsize 0
 // cubelow:<none> type 28 arrsize 0
 // cubemed:<none> type 28 arrsize 0
-// cubehigh:<none> type 28 arrsize 0
+// texhigh:<none> type 25 arrsize 0
+// texlow:<none> type 25 arrsize 0
+// texmed:<none> type 25 arrsize 0

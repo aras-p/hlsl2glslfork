@@ -164,20 +164,20 @@ void main() {
 }
 
 // uniforms:
+// _Bias:<none> type 9 arrsize 0
+// _BlinkingTimeOffsScale:<none> type 9 arrsize 0
+// _Color:<none> type 12 arrsize 0
+// _FadeOutDistFar:<none> type 9 arrsize 0
+// _FadeOutDistNear:<none> type 9 arrsize 0
+// _MaxGrowSize:<none> type 9 arrsize 0
+// _Multiplier:<none> type 9 arrsize 0
+// _NoiseAmount:<none> type 9 arrsize 0
+// _SizeGrowEndDist:<none> type 9 arrsize 0
+// _SizeGrowStartDist:<none> type 9 arrsize 0
+// _Time:<none> type 12 arrsize 0
+// _TimeOffDuration:<none> type 9 arrsize 0
+// _TimeOnDuration:<none> type 9 arrsize 0
+// _VerticalBillboarding:<none> type 9 arrsize 0
 // _World2Object:<none> type 21 arrsize 0
 // _WorldSpaceCameraPos:<none> type 11 arrsize 0
-// _VerticalBillboarding:<none> type 9 arrsize 0
-// _Time:<none> type 12 arrsize 0
-// _BlinkingTimeOffsScale:<none> type 9 arrsize 0
-// _TimeOnDuration:<none> type 9 arrsize 0
-// _TimeOffDuration:<none> type 9 arrsize 0
-// _NoiseAmount:<none> type 9 arrsize 0
-// _Bias:<none> type 9 arrsize 0
 // glstate_matrix_mvp:<none> type 21 arrsize 0
-// _Color:<none> type 12 arrsize 0
-// _Multiplier:<none> type 9 arrsize 0
-// _SizeGrowStartDist:<none> type 9 arrsize 0
-// _SizeGrowEndDist:<none> type 9 arrsize 0
-// _MaxGrowSize:<none> type 9 arrsize 0
-// _FadeOutDistNear:<none> type 9 arrsize 0
-// _FadeOutDistFar:<none> type 9 arrsize 0

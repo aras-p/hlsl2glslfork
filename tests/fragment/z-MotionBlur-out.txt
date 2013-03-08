@@ -110,13 +110,13 @@ void main() {
 }
 
 // uniforms:
-// _VelBufferSize:<none> type 12 arrsize 0
-// _TileBufferSize:<none> type 12 arrsize 0
-// _NeighbourMaxTex:<none> type 25 arrsize 0
-// _MainTex:<none> type 25 arrsize 0
 // _CameraDepthTexture:<none> type 25 arrsize 0
-// _VelTex:<none> type 25 arrsize 0
+// _MainTex:<none> type 25 arrsize 0
 // _MainTex_TexelSize:<none> type 12 arrsize 0
+// _NeighbourMaxTex:<none> type 25 arrsize 0
 // _NoiseTex:<none> type 25 arrsize 0
-// _ZBufferParams:<none> type 12 arrsize 0
 // _SoftZDistance:<none> type 9 arrsize 0
+// _TileBufferSize:<none> type 12 arrsize 0
+// _VelBufferSize:<none> type 12 arrsize 0
+// _VelTex:<none> type 25 arrsize 0
+// _ZBufferParams:<none> type 12 arrsize 0

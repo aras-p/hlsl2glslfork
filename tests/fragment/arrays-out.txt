@@ -13,5 +13,5 @@ void main() {
 }
 
 // uniforms:
-// table:<none> type 9 arrsize 10
 // index:<none> type 9 arrsize 0
+// table:<none> type 9 arrsize 10

@@ -238,16 +238,14 @@ void main() {
 }
 
 // uniforms:
-// glstate_matrix_mvp:<none> type 21 arrsize 0
-// _MainTex_ST:<none> type 12 arrsize 0
 // _BumpMap_ST:<none> type 12 arrsize 0
+// _MainTex_ST:<none> type 12 arrsize 0
 // _Object2World:<none> type 21 arrsize 0
-// unity_Scale:<none> type 12 arrsize 0
-// unity_LightmapST:<none> type 12 arrsize 0
-// unity_ShadowFadeCenterAndType:<none> type 12 arrsize 0
-// glstate_matrix_modelview0:<none> type 21 arrsize 0
-// _World2Object:<none> type 21 arrsize 0
-// _WorldSpaceLightPos0:<none> type 12 arrsize 0
 // _World2Object:<none> type 21 arrsize 0
 // _WorldSpaceCameraPos:<none> type 11 arrsize 0
+// _WorldSpaceLightPos0:<none> type 12 arrsize 0
+// glstate_matrix_modelview0:<none> type 21 arrsize 0
+// glstate_matrix_mvp:<none> type 21 arrsize 0
+// unity_LightmapST:<none> type 12 arrsize 0
 // unity_Scale:<none> type 12 arrsize 0
+// unity_ShadowFadeCenterAndType:<none> type 12 arrsize 0

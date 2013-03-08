@@ -96,7 +96,7 @@ void main() {
 }
 
 // uniforms:
+// proj:<none> type 21 arrsize 0
+// view:<none> type 21 arrsize 0
 // world:<none> type 21 arrsize 0
 // stupid:<none> type 21 arrsize 10
-// view:<none> type 21 arrsize 0
-// proj:<none> type 21 arrsize 0
