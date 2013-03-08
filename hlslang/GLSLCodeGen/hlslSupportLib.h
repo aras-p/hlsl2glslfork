@@ -9,8 +9,9 @@
 #include <set>
 #include <string>
 #include "../Include/intermediate.h"
+#include "../../include/hlsl2glsl.h" // for ETargetVersion
 
-void initializeHLSLSupportLibrary();
+void initializeHLSLSupportLibrary(ETargetVersion targetVersion);
 void finalizeHLSLSupportLibrary();
 
 typedef std::set<std::string> ExtensionSet;
