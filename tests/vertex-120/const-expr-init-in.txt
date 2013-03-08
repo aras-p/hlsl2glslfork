@@ -12,6 +12,9 @@ float size7 = -kInt1;
 float size8 = -(1.0 / 4.0 + (4.0 * (-(2.0/4.0))));
 float size9 = -(1.0 / 4 + (4.0 * (-(2/4))));
 
+uniform float3 my_vec3a = float3(1,2,3);
+uniform float3 my_vec3b = {1,2,3};
+
 float4 main() : POSITION
 {
 	return float4(kInt1, kInt2, kInt3, size2 + size8);

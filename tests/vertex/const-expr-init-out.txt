@@ -14,9 +14,12 @@ uniform float size7;
 uniform float size8;
 uniform float size9;
 #line 15
+uniform vec3 my_vec3a;
+uniform vec3 my_vec3b;
 vec4 xlat_main(  );
-#line 15
+#line 18
 vec4 xlat_main(  ) {
+    #line 20
     return vec4( 3.0, 7.0, float(kInt3), (size2 + size8));
 }
 void main() {
