@@ -1082,6 +1082,70 @@ void HlslLinker::emitMainStart(const HlslCrossCompiler* compiler, const EGlslSym
 	}
 }
 
+// This function calls itself recursively if it finds structs in structs.
+bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble)
+{
+	const int elem = retStruct->memberCount();
+	for (int ii=0; ii<elem; ii++)
+	{
+		const GlslStruct::StructMember &current = retStruct->getMember(ii);
+		std::string name, ctor;
+		int pad;
+		int arraySize = 1;
+		bool isArray = false;
+
+		if (lang == EShLangVertex) // vertex shader
+		{
+			// If it is an array, loop over each member
+			if ( current.arraySize > 0 )
+			{
+				arraySize = current.arraySize;
+				isArray = true;
+			}
+		}
+
+		for (int idx = 0; idx < arraySize; ++idx)
+		{
+			if (!getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, idx))
+			{
+				GlslStruct *subStruct = current.structType;
+				if (subStruct)
+				{
+					if (!emitReturnStruct(current.structType, parentName+current.name+std::string("."), lang, varying, postamble))
+					{
+						return false;
+					}
+				}
+				else
+				{
+					infoSink.info << (lang==EShLangVertex ? "Unsupported element type in struct for shader return value (" : "Unsupported struct element type in return type for shader entry function (");
+					infoSink.info << getTypeString(current.type) << ")\n";
+					return false;
+				}
+			}
+			else
+			{
+				postamble << "    ";
+				postamble << name;
+				postamble << " = " << ctor;
+				postamble << "(" << parentName << current.name;
+				if (isArray)
+				{
+					postamble << "[" << idx << "]";
+				}
+				for (int ii = 0; ii<pad; ii++)
+					postamble << ", 0.0";
+
+				postamble << ");\n";
+
+				// In vertex shader, add to varyings
+				if (lang == EShLangVertex)
+					AddToVaryings (varying, current.precision, ctor, name);
+			}
+		}
+	}
+	return true;
+}
 
 bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* funcMain, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble)
 {
@@ -1128,54 +1192,7 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 	assert (retType == EgstStruct);
 	GlslStruct *retStruct = funcMain->getStruct();
 	assert (retStruct);
-	
-	const int elem = retStruct->memberCount();
-	for (int ii=0; ii<elem; ii++)
-	{
-		const GlslStruct::StructMember &current = retStruct->getMember(ii);
-		std::string name, ctor;
-		int pad;
-		int arraySize = 1;
-		bool isArray = false;
-		
-		if (lang == EShLangVertex) // vertex shader
-		{
-			// If it is an array, loop over each member
-			if ( current.arraySize > 0 )
-			{
-				arraySize = current.arraySize;
-				isArray = true;
-			}
-		}
-		
-		for (int idx = 0; idx < arraySize; ++idx)
-		{
-			if (!getArgumentData2( current.name, current.semantic, current.type, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, idx))
-			{
-				infoSink.info << (lang==EShLangVertex ? "Unsupported element type in struct for shader return value (" : "Unsupported struct element type in return type for shader entry function (");
-				infoSink.info << getTypeString(current.type) << ")\n";
-				return false;
-			}
-			postamble << "    ";
-			postamble << name;                                                            
-			postamble << " = " << ctor;
-			postamble << "( xl_retval." << current.name;
-			if (isArray)
-			{
-				postamble << "[" << idx << "]";
-			}
-			for (int ii = 0; ii<pad; ii++)
-				postamble << ", 0.0";
-			
-			postamble << ");\n";
-			
-			// In vertex shader, add to varyings
-			if (lang == EShLangVertex)
-				AddToVaryings (varying, current.precision, ctor, name);
-		}
-	}
-	
-	return true;
+	return emitReturnStruct(retStruct, std::string("xl_retval."), lang, varying, postamble);
 }
 
 
