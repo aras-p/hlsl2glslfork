@@ -10,7 +10,7 @@ For an opposite tool (GLSL ES to HLSL translator), look at [Google's ANGLE](http
 Changes from original HLSL2GLSL 0.9
 --------
 
-* Made it build with VS2008 on Windows and XCode 3.2 on Mac. Build as static library.
+* Made it build with VS2010 on Windows and XCode 3.2 on Mac. Build as static library.
 * Feature to produce OpenGL ES-like precision specifiers (fixed/half/float -> lowp/mediump/highp)
 * Fixes to ternary vector selection (float4 ? float4 : float4)
 * Fixes to bool->float promotion in arithmetic ops

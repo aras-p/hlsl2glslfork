@@ -10,7 +10,11 @@ xcuserdata
 *.wwdb
 .svn/
 .DS_Store
+
 _ReSharper.*
+*.sdf
+*.opensdf
+
 CMakeFiles/
 CMakeCache.txt
 Makefile

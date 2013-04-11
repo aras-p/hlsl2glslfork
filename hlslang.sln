@@ -1,12 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hlslang", "hlslang.vcproj", "{3B146CC5-B2B8-4573-9D46-6139E2EDFEA3}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hlslang", "hlslang.vcxproj", "{3B146CC5-B2B8-4573-9D46-6139E2EDFEA3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hlsl2glsltest", "tests\hlsl2glsltest\hlsl2glsltest.vcproj", "{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3B146CC5-B2B8-4573-9D46-6139E2EDFEA3} = {3B146CC5-B2B8-4573-9D46-6139E2EDFEA3}
-	EndProjectSection
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hlsl2glsltest", "tests\hlsl2glsltest\hlsl2glsltest.vcxproj", "{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
