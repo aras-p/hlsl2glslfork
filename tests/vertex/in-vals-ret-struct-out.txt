@@ -26,10 +26,10 @@ varying vec4 xlv_COLOR;
 void main() {
     v2f xl_retval;
     xl_retval = xlat_main( vec4(gl_Vertex), vec2(gl_MultiTexCoord0), vec3(gl_Normal), vec4(gl_Color));
-    gl_Position = vec4( xl_retval.pos);
-    xlv_FOG = float( xl_retval.fog);
-    xlv_TEXCOORD0 = vec2( xl_retval.uv);
-    xlv_COLOR = vec4( xl_retval.color);
+    gl_Position = vec4(xl_retval.pos);
+    xlv_FOG = float(xl_retval.fog);
+    xlv_TEXCOORD0 = vec2(xl_retval.uv);
+    xlv_COLOR = vec4(xl_retval.color);
 }
 
 // uniforms:

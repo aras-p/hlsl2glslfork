@@ -91,8 +91,8 @@ void main() {
     xlt_xlat_var_input.vertex_id = int(gl_VertexID);
     xlt_xlat_var_input.instance_id = int(gl_InstanceIDARB);
     xl_retval = vs_main( xlt_xlat_var_input);
-    gl_Position = vec4( xl_retval.position);
-    xlv_TEXCOORD0 = vec2( xl_retval.uv);
+    gl_Position = vec4(xl_retval.position);
+    xlv_TEXCOORD0 = vec2(xl_retval.uv);
 }
 
 // uniforms:

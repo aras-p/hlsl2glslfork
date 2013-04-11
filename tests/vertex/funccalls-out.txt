@@ -52,10 +52,10 @@ void main() {
     xlt_v.normal = vec3(gl_Normal);
     xlt_v.color = vec4(gl_Color);
     xl_retval = xlat_main( xlt_v);
-    gl_Position = vec4( xl_retval.pos);
-    xlv_FOG = float( xl_retval.fog);
-    xlv_TEXCOORD0 = vec2( xl_retval.uv);
-    xlv_COLOR = vec4( xl_retval.color);
+    gl_Position = vec4(xl_retval.pos);
+    xlv_FOG = float(xl_retval.fog);
+    xlv_TEXCOORD0 = vec2(xl_retval.uv);
+    xlv_COLOR = vec4(xl_retval.color);
 }
 
 // uniforms:

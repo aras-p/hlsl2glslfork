@@ -172,12 +172,12 @@ void main() {
     xlt_v.normal = vec3(gl_Normal);
     xlt_v.texcoord = vec4(gl_MultiTexCoord0);
     xl_retval = xlat_main( xlt_v);
-    gl_Position = vec4( xl_retval.pos);
-    xlv_TEXCOORD0 = vec4( xl_retval.normalInterpolator);
-    xlv_TEXCOORD1 = vec4( xl_retval.viewInterpolator);
-    xlv_TEXCOORD2 = vec4( xl_retval.bumpCoords);
-    xlv_TEXCOORD3 = vec4( xl_retval.screenPos);
-    xlv_TEXCOORD4 = vec4( xl_retval.grabPassPos);
+    gl_Position = vec4(xl_retval.pos);
+    xlv_TEXCOORD0 = vec4(xl_retval.normalInterpolator);
+    xlv_TEXCOORD1 = vec4(xl_retval.viewInterpolator);
+    xlv_TEXCOORD2 = vec4(xl_retval.bumpCoords);
+    xlv_TEXCOORD3 = vec4(xl_retval.screenPos);
+    xlv_TEXCOORD4 = vec4(xl_retval.grabPassPos);
 }
 
 // uniforms:
