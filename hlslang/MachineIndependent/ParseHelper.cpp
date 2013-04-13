@@ -648,14 +648,11 @@ bool TParseContext::constructorErrorCheck(const TSourceLoc& line, TIntermNode* n
    bool constType = true;
    bool full = false;
    bool overFull = false;
-   bool matrixInMatrix = false;
    bool arrayArg = false;
    for (int i = 0; i < function.getParamCount(); ++i)
    {
       size += function[i].type->getObjectSize();
 
-      if (constructingMatrix && function[i].type->isMatrix())
-         matrixInMatrix = true;
       if (full)
          overFull = true;
       if (op != EOpConstructStruct && !type->isArray() && size >= type->getObjectSize())

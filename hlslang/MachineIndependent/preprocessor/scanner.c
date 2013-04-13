@@ -112,11 +112,10 @@ int ScanFromString(char *s)
 static float lBuildFloatValue(const char *str, int len, int exp)
 {
     double val, expval, ten;
-    int ii, llen, absexp;
+    int ii, absexp;
     float rv;
 
     val = 0.0;
-    llen = len;
     for (ii = 0; ii < len; ii++)
         val = val*10.0 + (str[ii] - '0');
     if (exp != 0) {
@@ -151,18 +150,16 @@ static float lBuildFloatValue(const char *str, int len, int exp)
 
 static int lFloatConst(char *str, int len, int ch, yystypepp * yylvalpp)
 {
-    int HasDecimal, declen, exp, ExpSign;
+    int declen, exp, ExpSign;
     int str_len;
     float lval;
     
-    HasDecimal = 0;
     declen = 0;
     exp = 0;
 	
     str_len=len;
     if (ch == '.') {
 		str[len++]=ch;
-        HasDecimal = 1;
         ch = cpp->currentInput->getch(cpp->currentInput);
         while (ch >= '0' && ch <= '9') {
             if (len < MAX_SYMBOL_NAME_LEN) {
