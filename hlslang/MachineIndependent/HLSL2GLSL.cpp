@@ -187,12 +187,12 @@ int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction
    return ret ? 1 : 0;
 }
 
-int C_DECL Hlsl2Glsl_Shutdown()
+void C_DECL Hlsl2Glsl_Shutdown()
 {
-   return DetachProcess();
+	DetachProcess();
 }
 
-int C_DECL Hlsl2Glsl_Finalize()
+void Hlsl2Glsl_Finalize()
 {
    if (PerProcessGPA)
    {
@@ -204,7 +204,6 @@ int C_DECL Hlsl2Glsl_Finalize()
       PerProcessGPA = NULL;
       finalizeHLSLSupportLibrary();
    }
-   return 1;
 }
 
 

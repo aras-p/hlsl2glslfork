@@ -217,14 +217,9 @@ typedef void(*GlobalFreeFunction)(void*, void*);
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction free, void* user, 
                                                  ETargetVersion fixedTargetVersion = ETargetVersionCount);
 
-/// Finalize the HLSL2GLSL translator.  This function should be called to de-initialize the HLSL2GLSL 
+/// Shutdown the HLSL2GLSL translator.  This function should be called to de-initialize the HLSL2GLSL
 /// translator and should only be called once on shutdown.
-/// \return
-///   1 on success, 0 on failure
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Finalize();
-
-/// 
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Shutdown();
+SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_Shutdown();
 
 /// Construct a compiler for the given language (one per shader)
 SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage language );  

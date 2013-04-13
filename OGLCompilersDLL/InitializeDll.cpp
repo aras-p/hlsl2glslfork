@@ -110,6 +110,7 @@ bool DetachProcess()
    if (ThreadInitializeIndex == OS_INVALID_TLS_INDEX)
       return true;
 
+   extern void Hlsl2Glsl_Finalize();
    Hlsl2Glsl_Finalize();
 
    success = DetachThread();

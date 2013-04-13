@@ -624,7 +624,7 @@ int main (int argc, const char** argv)
 			
 			if (!ok)
 				++errors;
-		}
+		}		
 	}
 
 	clock_t time1 = clock();
@@ -633,6 +633,8 @@ int main (int argc, const char** argv)
 		printf ("%i tests, %i FAILED, %.2fs\n", (int)tests, (int)errors, t);
 	else
 		printf ("%i tests succeeded, %.2fs\n", (int)tests, t);
+	
+	Hlsl2Glsl_Shutdown();
 
 	return errors ? 1 : 0;
 }
