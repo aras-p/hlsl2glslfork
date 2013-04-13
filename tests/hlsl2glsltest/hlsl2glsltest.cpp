@@ -164,6 +164,13 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 	return true;
 }
 
+
+#if defined(__APPLE__)
+static AGLPixelFormat s_GLPixelFormat;
+static AGLContext s_GLContext;
+#endif
+
+
 static bool InitializeOpenGL ()
 {
 	bool hasGLSL = false;
@@ -204,9 +211,9 @@ static bool InitializeOpenGL ()
 	attributes[i++]=AGL_NO_RECOVERY;
 	attributes[i++]=AGL_NONE;
 
-	AGLPixelFormat pixelFormat = aglChoosePixelFormat(NULL,0,attributes);
-	AGLContext agl = aglCreateContext(pixelFormat, NULL);
-	aglSetCurrentContext (agl);
+	s_GLPixelFormat = aglChoosePixelFormat(NULL,0,attributes);
+	s_GLContext = aglCreateContext(s_GLPixelFormat, NULL);
+	aglSetCurrentContext (s_GLContext);
 #else
         int argc = 0;
         char** argv = NULL;
@@ -233,6 +240,18 @@ static bool InitializeOpenGL ()
 	
 
 	return hasGLSL;
+}
+
+static void CleanupOpenGL()
+{
+	#if defined(__APPLE__)
+	if (s_GLContext)
+	{
+		aglSetCurrentContext (NULL);
+		aglDestroyContext (s_GLContext);
+		aglDestroyPixelFormat(s_GLPixelFormat);
+	}
+	#endif
 }
 
 
@@ -635,6 +654,7 @@ int main (int argc, const char** argv)
 		printf ("%i tests succeeded, %.2fs\n", (int)tests, t);
 	
 	Hlsl2Glsl_Shutdown();
+	CleanupOpenGL();
 
 	return errors ? 1 : 0;
 }
