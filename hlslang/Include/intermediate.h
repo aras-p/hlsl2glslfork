@@ -513,7 +513,7 @@ protected:
 			values.resize(ix + 1);
 	}
 	
-	typedef std::vector<Value> Values;
+	typedef TVector<Value> Values;
 	Values values;
 };
 
