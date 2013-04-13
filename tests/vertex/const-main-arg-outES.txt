@@ -21,5 +21,5 @@ void main() {
     VertexInput xlt_xlat_var_input;
     xlt_xlat_var_input.pos = vec4(gl_Vertex);
     xl_retval = xlat_main( xlt_xlat_var_input);
-    gl_Position = vec4( xl_retval.pos);
+    gl_Position = vec4(xl_retval.pos);
 }

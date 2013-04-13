@@ -34,9 +34,9 @@ void main() {
     xlt_v.color = vec4(gl_Color);
     xlt_v.texcoord = vec2(gl_MultiTexCoord0);
     xl_retval = xlat_main( xlt_v);
-    gl_Position = vec4( xl_retval.vertex);
-    xlv_COLOR = vec4( xl_retval.color);
-    xlv_TEXCOORD0 = vec2( xl_retval.texcoord);
+    gl_Position = vec4(xl_retval.vertex);
+    xlv_COLOR = vec4(xl_retval.color);
+    xlv_TEXCOORD0 = vec2(xl_retval.texcoord);
 }
 
 // uniforms:
