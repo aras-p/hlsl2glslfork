@@ -5,8 +5,9 @@
 #include <time.h>
 #include <assert.h>
 
+#define USE_REAL_OPENGL_TO_CHECK 1
 
-const bool kDumpShaderAST = false;
+static const bool kDumpShaderAST = false;
 
 
 #ifdef _MSC_VER
@@ -173,6 +174,10 @@ static AGLContext s_GLContext;
 
 static bool InitializeOpenGL ()
 {
+	#if !USE_REAL_OPENGL_TO_CHECK
+	return false;
+	#endif
+	
 	bool hasGLSL = false;
 
 #ifdef _MSC_VER
