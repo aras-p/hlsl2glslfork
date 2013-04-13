@@ -78,6 +78,8 @@ TIntermConstant* FoldBinaryConstantExpression(TOperator op, TIntermConstant* nod
 			return NULL;
 	}
 	newNode->setLine(nodeA->getLine());
+	delete nodeA;
+	delete nodeB;
 	return newNode;
 }
 
@@ -111,5 +113,6 @@ TIntermConstant* FoldUnaryConstantExpression(TOperator op, TIntermConstant* node
 			return NULL;
 	}
 	newNode->setLine(node->getLine());
+	delete node;
 	return newNode;
 }

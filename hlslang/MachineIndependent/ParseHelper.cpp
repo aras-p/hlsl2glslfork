@@ -878,30 +878,30 @@ bool TParseContext::insertBuiltInArrayAtGlobalLevel()
 
 
 
-//
 // Do size checking for an array type's size.
-//
+// NOTE: deletes passed expression!
 // Returns true if there was an error.
-//
 bool TParseContext::arraySizeErrorCheck(const TSourceLoc& line, TIntermTyped* expr, int& size)
 {
-   TIntermConstant* constant = expr->getAsConstant();
-   if (constant == 0 || constant->getBasicType() != EbtInt)
-   {
-      error(line, "array size must be a constant integer expression", "", "");
-      return true;
-   }
+	TIntermConstant* constant = expr->getAsConstant();
+	if (constant == 0 || constant->getBasicType() != EbtInt)
+	{
+		delete expr;
+		error(line, "array size must be a constant integer expression", "", "");
+		return true;
+	}
 
-   size = constant->toInt();
+	size = constant->toInt();
+	delete expr;
 
-   if (size <= 0)
-   {
-      error(line, "array size must be a positive integer", "", "");
-      size = 1;
-      return true;
-   }
+	if (size <= 0)
+	{
+		error(line, "array size must be a positive integer", "", "");
+		size = 1;
+		return true;
+	}
 
-   return false;
+	return false;
 }
 
 //

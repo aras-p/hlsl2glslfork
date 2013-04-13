@@ -230,8 +230,11 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 		TIntermConstant* FoldBinaryConstantExpression(TOperator op, TIntermConstant* nodeA, TIntermConstant* nodeB);
 		TIntermConstant* res = FoldBinaryConstantExpression(node->getOp(), constA, constB);
 		if (res)
+		{
+			delete node;
 			return res;
-	}	
+		}
+	}
 	
 	return node;
 }
@@ -370,8 +373,11 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
 		TIntermConstant* FoldUnaryConstantExpression(TOperator op, TIntermConstant* node);
 		TIntermConstant* res = FoldUnaryConstantExpression(node->getOp(), childConst);
 		if (res)
+		{
+			delete node;
 			return res;
-	}	
+		}
+	}
 	
 
 	return node;
