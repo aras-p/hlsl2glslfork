@@ -22,56 +22,47 @@
 // -----------------------------------------------------------------------------
 
 
-static OS_TLSIndex ThreadInitializeIndex = OS_INVALID_TLS_INDEX;
+static OS_TLSIndex s_ThreadInitialized = OS_INVALID_TLS_INDEX;
 
 
 static bool InitThread()
 {
-	//
-	// This function is re-entrant
-	//
-	if (ThreadInitializeIndex == OS_INVALID_TLS_INDEX)
+	if (s_ThreadInitialized == OS_INVALID_TLS_INDEX)
 	{
 		assert(0 && "InitThread(): Process hasn't been initalised.");
 		return false;
 	}
-	
-	if (OS_GetTLSValue(ThreadInitializeIndex) != 0)
+
+	// already initialized?
+	if (OS_GetTLSValue(s_ThreadInitialized) != 0)
 		return true;
 	
+	// initialize per-thread data
 	InitializeGlobalPools();
 	
 	if (!InitializeGlobalParseContext())
 		return false;
 	
-	if (!OS_SetTLSValue(ThreadInitializeIndex, (void *)1))
+	if (!OS_SetTLSValue(s_ThreadInitialized, (void *)1))
 	{
 		assert(0 && "InitThread(): Unable to set init flag.");
 		return false;
 	}
-	
 	return true;
 }
 
 
 static bool InitProcess()
 {
-	if (ThreadInitializeIndex != OS_INVALID_TLS_INDEX)
-	{
-		//
-		// Function is re-entrant.
-		//
+	if (s_ThreadInitialized != OS_INVALID_TLS_INDEX)
 		return true;
-	}
 	
-	ThreadInitializeIndex = OS_AllocTLSIndex();
-	
-	if (ThreadInitializeIndex == OS_INVALID_TLS_INDEX)
+	s_ThreadInitialized = OS_AllocTLSIndex();
+	if (s_ThreadInitialized == OS_INVALID_TLS_INDEX)
 	{
 		assert(0 && "InitProcess(): Failed to allocate TLS area for init flag");
 		return false;
 	}
-	
 	
 	if (!InitializePoolIndex())
 	{
@@ -89,55 +80,30 @@ static bool InitProcess()
 	return true;
 }
 
+
 static bool DetachThread()
 {
-	bool success = true;
-	
-	if (ThreadInitializeIndex == OS_INVALID_TLS_INDEX)
+	if (s_ThreadInitialized == OS_INVALID_TLS_INDEX)
+		return true;
+	if (OS_GetTLSValue(s_ThreadInitialized) == 0)
 		return true;
 	
-	//
-	// Function is re-entrant and this thread may not have been initalised.
-	//
-	if (OS_GetTLSValue(ThreadInitializeIndex) != 0)
+	bool success = true;
+	if (!OS_SetTLSValue(s_ThreadInitialized, (void *)0))
 	{
-		if (!OS_SetTLSValue(ThreadInitializeIndex, (void *)0))
-		{
-			assert(0 && "DetachThread(): Unable to clear init flag.");
-			success = false;
-		}
-		
-		FreeGlobalPools();
-		
-		if (!FreeParseContext())
-			success = false;
+		assert(0 && "DetachThread(): Unable to clear init flag.");
+		success = false;
 	}
+	
+	FreeGlobalPools();
+	
+	if (!FreeParseContext())
+		success = false;
 	
 	return success;
 }
 
-static bool DetachProcess()
-{
-	bool success = true;
-	
-	if (ThreadInitializeIndex == OS_INVALID_TLS_INDEX)
-		return true;
-	
-	extern void Hlsl2Glsl_Finalize();
-	Hlsl2Glsl_Finalize();
-	
-	success = DetachThread();
-	
-	FreePoolIndex();
-	
-	if (!FreeParseContextIndex())
-		success = false;
-	
-	OS_FreeTLSIndex(ThreadInitializeIndex);
-	ThreadInitializeIndex = OS_INVALID_TLS_INDEX;
-	
-	return success;
-}
+
 
 
 // -----------------------------------------------------------------------------
@@ -269,7 +235,6 @@ int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction
                                 ETargetVersion fixedTargetVersion /*= ETargetVersionCount*/)
 {
    TInfoSink infoSink;
-   bool ret = true;
 
    SetGlobalAllocationAllocator(alloc, free, user);
 	
@@ -278,9 +243,6 @@ int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction
 
    FixedTargetVersion = fixedTargetVersion; 
 
-   // This method should be called once per process. If its called by multiple threads, then 
-   // we need to have thread synchronization code around the initialization of per process
-   // global pool allocator
    if (!PerProcessGPA)
    {
       TPoolAllocator *builtInPoolAllocator = new TPoolAllocator(true);
@@ -310,26 +272,32 @@ int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction
 
    }
 
-   return ret ? 1 : 0;
+   return 1;
 }
 
 void C_DECL Hlsl2Glsl_Shutdown()
 {
-	DetachProcess();
-}
-
-void Hlsl2Glsl_Finalize()
-{
-   if (PerProcessGPA)
-   {
-      SymbolTables[EShLangVertex].pop();
-      SymbolTables[EShLangFragment].pop();
-
-      PerProcessGPA->popAll();
-      delete PerProcessGPA;
-      PerProcessGPA = NULL;
-      finalizeHLSLSupportLibrary();
-   }
+	if (s_ThreadInitialized == OS_INVALID_TLS_INDEX)
+		return;
+	
+	if (PerProcessGPA)
+	{
+		SymbolTables[EShLangVertex].pop();
+		SymbolTables[EShLangFragment].pop();
+		
+		PerProcessGPA->popAll();
+		delete PerProcessGPA;
+		PerProcessGPA = NULL;
+		finalizeHLSLSupportLibrary();
+	}
+	
+	DetachThread();
+	
+	FreePoolIndex();
+	FreeParseContextIndex();
+	
+	OS_FreeTLSIndex(s_ThreadInitialized);
+	s_ThreadInitialized = OS_INVALID_TLS_INDEX;
 }
 
 
