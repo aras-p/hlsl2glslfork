@@ -200,8 +200,6 @@ enum TTranslateOptions
 class HlslCrossCompiler;
 typedef HlslCrossCompiler* ShHandle;
 	
-typedef void*(*GlobalAllocateFunction)(unsigned, void*);
-typedef void(*GlobalFreeFunction)(void*, void*);
 
 /// Initialize the HLSL2GLSL translator.  This function must be called once prior to calling any other
 /// HLSL2GLSL translator functions
@@ -213,8 +211,7 @@ typedef void(*GlobalFreeFunction)(void*, void*);
 ///     * If set, only Hlsl2Glsl_Translate calls of matching target will work, and 
 ///       when set to higher than ETargetGLSL_120, will emit non-deprecated-after-120
 ///       texture lookup calls e.g. texture() & textureLod() instead of texture2D() & textureCubeLod()
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction free, void* user, 
-                                                 ETargetVersion fixedTargetVersion = ETargetVersionCount);
+SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Initialize(ETargetVersion fixedTargetVersion = ETargetVersionCount);
 
 /// Shutdown the HLSL2GLSL translator.  This function should be called to de-initialize the HLSL2GLSL
 /// translator and should only be called once on shutdown.

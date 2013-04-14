@@ -612,7 +612,7 @@ int main (int argc, const char** argv)
 	
 	clock_t time0 = clock();
 	
-	Hlsl2Glsl_Initialize (NULL, NULL, NULL);
+	Hlsl2Glsl_Initialize ();
 
 	std::string baseFolder = argv[1];
 

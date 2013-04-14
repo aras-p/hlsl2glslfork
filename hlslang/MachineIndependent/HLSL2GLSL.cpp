@@ -231,13 +231,10 @@ static bool GenerateBuiltInSymbolTable(TInfoSink& infoSink, TSymbolTable* symbol
 
 
 
-int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction free, void* user, 
-                                ETargetVersion fixedTargetVersion /*= ETargetVersionCount*/)
+int C_DECL Hlsl2Glsl_Initialize(ETargetVersion fixedTargetVersion /*= ETargetVersionCount*/)
 {
    TInfoSink infoSink;
 
-   SetGlobalAllocationAllocator(alloc, free, user);
-	
    if (!InitProcess())
       return 0;
 
