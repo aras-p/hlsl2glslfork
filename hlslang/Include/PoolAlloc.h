@@ -143,15 +143,9 @@ private:
 // different times.  But a simple use is to have a global pop
 // with everyone using the same global allocator.
 //
-typedef TPoolAllocator* PoolAllocatorPointer;
 extern TPoolAllocator& GetGlobalPoolAllocator();
 #define GlobalPoolAllocator GetGlobalPoolAllocator()
 
-
-struct TThreadGlobalPools
-{
-   TPoolAllocator* globalPoolAllocator;
-};
 
 void SetGlobalPoolAllocatorPtr(TPoolAllocator* poolAllocator);
 

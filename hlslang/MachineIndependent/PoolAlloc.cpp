@@ -9,7 +9,7 @@
 #include "../Include/InitializeGlobals.h"
 #include "osinclude.h"
 
-OS_TLSIndex PoolIndex;
+static OS_TLSIndex s_TLSPoolAlloc;
 
 GlobalFreeFunction _delete = 0;
 GlobalAllocateFunction _allocate = 0;
@@ -21,9 +21,14 @@ void SetGlobalAllocationAllocator(GlobalAllocateFunction alloc, GlobalFreeFuncti
 	_user_data = user;
 }
 
+struct TThreadGlobalPools
+{
+	TPoolAllocator* globalPoolAllocator;
+};
+
 void InitializeGlobalPools()
 {
-   TThreadGlobalPools* globalPools= static_cast<TThreadGlobalPools*>(OS_GetTLSValue(PoolIndex));    
+   TThreadGlobalPools* globalPools= static_cast<TThreadGlobalPools*>(OS_GetTLSValue(s_TLSPoolAlloc));    
    if (globalPools)
       return;
 
@@ -43,14 +48,14 @@ void InitializeGlobalPools()
 
 	threadData->globalPoolAllocator = globalPoolAllocator;
 
-	OS_SetTLSValue(PoolIndex, threadData);     
+	OS_SetTLSValue(s_TLSPoolAlloc, threadData);     
 	globalPoolAllocator->push();
 }
 
 void FreeGlobalPools()
 {
    // Release the allocated memory for this thread.
-   TThreadGlobalPools* globalPools= static_cast<TThreadGlobalPools*>(OS_GetTLSValue(PoolIndex));    
+   TThreadGlobalPools* globalPools= static_cast<TThreadGlobalPools*>(OS_GetTLSValue(s_TLSPoolAlloc));    
    if (!globalPools)
       return;
 
@@ -67,7 +72,7 @@ void FreeGlobalPools()
 bool InitializePoolIndex()
 {
    // Allocate a TLS index.
-   if ((PoolIndex = OS_AllocTLSIndex()) == OS_INVALID_TLS_INDEX)
+   if ((s_TLSPoolAlloc = OS_AllocTLSIndex()) == OS_INVALID_TLS_INDEX)
       return false;
 
    return true;
@@ -76,19 +81,19 @@ bool InitializePoolIndex()
 void FreePoolIndex()
 {
    // Release the TLS index.
-   OS_FreeTLSIndex(PoolIndex);
+   OS_FreeTLSIndex(s_TLSPoolAlloc);
 }
 
 TPoolAllocator& GetGlobalPoolAllocator()
 {
-   TThreadGlobalPools* threadData = static_cast<TThreadGlobalPools*>(OS_GetTLSValue(PoolIndex));
+   TThreadGlobalPools* threadData = static_cast<TThreadGlobalPools*>(OS_GetTLSValue(s_TLSPoolAlloc));
 
    return *threadData->globalPoolAllocator;
 }
 
 void SetGlobalPoolAllocatorPtr(TPoolAllocator* poolAllocator)
 {
-   TThreadGlobalPools* threadData = static_cast<TThreadGlobalPools*>(OS_GetTLSValue(PoolIndex));
+   TThreadGlobalPools* threadData = static_cast<TThreadGlobalPools*>(OS_GetTLSValue(s_TLSPoolAlloc));
 
    threadData->globalPoolAllocator = poolAllocator;
 }
