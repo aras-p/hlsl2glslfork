@@ -43,9 +43,6 @@
     <ClCompile Include="hlslang\MachineIndependent\Initialize.cpp">
       <Filter>Machine Independent</Filter>
     </ClCompile>
-    <ClCompile Include="OGLCompilersDLL\InitializeDll.cpp">
-      <Filter>Machine Independent</Filter>
-    </ClCompile>
     <ClCompile Include="hlslang\MachineIndependent\Intermediate.cpp">
       <Filter>Machine Independent</Filter>
     </ClCompile>
@@ -193,9 +190,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="hlslang\Include\InfoSink.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OGLCompilersDLL\InitializeDll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="hlslang\Include\InitializeGlobals.h">

@@ -24,7 +24,6 @@
 		2B951CAB1135197300DBAF46 /* hlslSupportLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E040AF103660045E29C /* hlslSupportLib.cpp */; };
 		2B951CAC1135197300DBAF46 /* InfoSink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E270AF106F40045E29C /* InfoSink.cpp */; };
 		2B951CAD1135197300DBAF46 /* Initialize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E280AF106F40045E29C /* Initialize.cpp */; };
-		2B951CAE1135197300DBAF46 /* InitializeDll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3A9176400A643D5A00E8641B /* InitializeDll.cpp */; };
 		2B951CAF1135197300DBAF46 /* Intermediate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E290AF106F40045E29C /* Intermediate.cpp */; };
 		2B951CB01135197300DBAF46 /* intermOut.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E2A0AF106F40045E29C /* intermOut.cpp */; };
 		2B951CB11135197300DBAF46 /* IntermTraverse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E2B0AF106F40045E29C /* IntermTraverse.cpp */; };
@@ -49,8 +48,6 @@
 		2B951CC011351A2500DBAF46 /* hlsl2glsl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hlsl2glsl.h; path = include/hlsl2glsl.h; sourceTree = SOURCE_ROOT; };
 		2B951CE1113527BC00DBAF46 /* hlslang.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; name = hlslang.l; path = hlslang/MachineIndependent/hlslang.l; sourceTree = SOURCE_ROOT; };
 		2B951CE2113527BC00DBAF46 /* hlslang.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; name = hlslang.y; path = hlslang/MachineIndependent/hlslang.y; sourceTree = SOURCE_ROOT; };
-		3A9176400A643D5A00E8641B /* InitializeDll.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = InitializeDll.cpp; sourceTree = "<group>"; };
-		3A9176410A643D5A00E8641B /* InitializeDll.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = InitializeDll.h; sourceTree = "<group>"; };
 		3AC10DD20AF103020045E29C /* BaseTypes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = BaseTypes.h; path = hlslang/Include/BaseTypes.h; sourceTree = "<group>"; };
 		3AC10DD30AF103020045E29C /* Common.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Common.h; path = hlslang/Include/Common.h; sourceTree = "<group>"; };
 		3AC10DD50AF103020045E29C /* InfoSink.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = InfoSink.h; path = hlslang/Include/InfoSink.h; sourceTree = "<group>"; };
@@ -154,18 +151,8 @@
 				3AC10DB00AF1027A0045E29C /* GenericCodeGen */,
 				3AC10DB90AF102990045E29C /* MachineIndependent */,
 				3AC10DC20AF102BB0045E29C /* OSDependent */,
-				3A91763F0A643D5A00E8641B /* OGLCompilersDLL */,
 			);
 			name = hlslang;
-			sourceTree = "<group>";
-		};
-		3A91763F0A643D5A00E8641B /* OGLCompilersDLL */ = {
-			isa = PBXGroup;
-			children = (
-				3A9176400A643D5A00E8641B /* InitializeDll.cpp */,
-				3A9176410A643D5A00E8641B /* InitializeDll.h */,
-			);
-			path = OGLCompilersDLL;
 			sourceTree = "<group>";
 		};
 		3AC10DB00AF1027A0045E29C /* GenericCodeGen */ = {
@@ -409,7 +396,6 @@
 				2B951CAB1135197300DBAF46 /* hlslSupportLib.cpp in Sources */,
 				2B951CAC1135197300DBAF46 /* InfoSink.cpp in Sources */,
 				2B951CAD1135197300DBAF46 /* Initialize.cpp in Sources */,
-				2B951CAE1135197300DBAF46 /* InitializeDll.cpp in Sources */,
 				2B951CAF1135197300DBAF46 /* Intermediate.cpp in Sources */,
 				2B951CB01135197300DBAF46 /* intermOut.cpp in Sources */,
 				2B951CB11135197300DBAF46 /* IntermTraverse.cpp in Sources */,

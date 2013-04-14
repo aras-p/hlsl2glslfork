@@ -16,7 +16,6 @@ set(HEADER_FILES
   hlslang/Include/Types.h
   hlslang/MachineIndependent/SymbolTable.h
   #hlslang/MachineIndependent/unistd.h
-  OGLCompilersDLL/InitializeDll.h
 )
 source_group("Header Files" FILES ${HEADER_FILES})
 
@@ -52,7 +51,6 @@ set(INCLUDE_FILES
 source_group("include" FILES ${INCLUDE_FILES})
 
 set(MACHINE_INDEPENDENT_FILES
-  OGLCompilersDLL/InitializeDll.cpp
   hlslang/MachineIndependent/HLSL2GLSL.cpp
   hlslang/MachineIndependent/hlslang.l
   hlslang/MachineIndependent/hlslang.y
@@ -205,7 +203,6 @@ endif ()
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/hlslang
   ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent
-  ${CMAKE_CURRENT_SOURCE_DIR}/OGLCompilersDLL
 )
 
 add_library(hlsl2glsl 

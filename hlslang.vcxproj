@@ -78,7 +78,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>hlslang;hlslang\MachineIndependent;hlslang\OSDependent\Windows;OGLCompilersDLL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>hlslang;hlslang\MachineIndependent;hlslang\OSDependent\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_CONSOLE;_LIB;GENERIC_COMPILER;_HAS_ITERATOR_DEBUGGING=0;_CRT_SECURE_NO_DEPRECATE;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -111,7 +111,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>hlslang;hlslang\MachineIndependent;hlslang\OSDependent\Windows;OGLCompilersDLL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>hlslang;hlslang\MachineIndependent;hlslang\OSDependent\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_CONSOLE;_LIB;GENERIC_COMPILER;_HAS_ITERATOR_DEBUGGING=0;_CRT_SECURE_NO_DEPRECATE;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -143,7 +143,7 @@
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>hlslang;hlslang\MachineIndependent;hlslang\OSDependent\Windows;OGLCompilersDLL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>hlslang;hlslang\MachineIndependent;hlslang\OSDependent\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_CONSOLE;_LIB;GENERIC_COMPILER;_COMPILER;_HAS_ITERATOR_DEBUGGING=0;_CRT_SECURE_NO_DEPRECATE;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -182,7 +182,7 @@
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>hlslang;hlslang\MachineIndependent;hlslang\OSDependent\Windows;OGLCompilersDLL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>hlslang;hlslang\MachineIndependent;hlslang\OSDependent\Windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;WIN32;_CONSOLE;_LIB;GENERIC_COMPILER;_COMPILER;_HAS_ITERATOR_DEBUGGING=0;_CRT_SECURE_NO_DEPRECATE;_HAS_EXCEPTIONS=0;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -217,7 +217,6 @@
     <ClCompile Include="hlslang\MachineIndependent\HLSL2GLSL.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\InfoSink.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\Initialize.cpp" />
-    <ClCompile Include="OGLCompilersDLL\InitializeDll.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\Intermediate.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\intermOut.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\IntermTraverse.cpp" />
@@ -351,7 +350,6 @@ rename %(RootDir)%(Directory)%(Filename)_tab.c Gen_%(Filename)_tab.cpp
     <ClInclude Include="hlslang\Include\Common.h" />
     <ClInclude Include="hlslang\Include\ConstantUnion.h" />
     <ClInclude Include="hlslang\Include\InfoSink.h" />
-    <ClInclude Include="OGLCompilersDLL\InitializeDll.h" />
     <ClInclude Include="hlslang\Include\InitializeGlobals.h" />
     <ClInclude Include="hlslang\Include\InitializeParseContext.h" />
     <ClInclude Include="hlslang\Include\intermediate.h" />
