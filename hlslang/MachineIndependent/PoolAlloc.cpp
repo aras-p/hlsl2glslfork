@@ -34,10 +34,10 @@ void InitializeGlobalPools()
 	if (_allocate) {
 		poolMem = _allocate(sizeof(TPoolAllocator), _user_data);
 		threadPoolMem = _allocate(sizeof(TThreadGlobalPools), _user_data);
-		globalPoolAllocator = new (poolMem) TPoolAllocator(true);
+		globalPoolAllocator = new (poolMem) TPoolAllocator();
 		threadData = new (threadPoolMem) TThreadGlobalPools();
 	} else {
-		globalPoolAllocator = new TPoolAllocator(true);
+		globalPoolAllocator = new TPoolAllocator();
 		threadData = new TThreadGlobalPools();
 	}
 
@@ -93,14 +93,11 @@ void SetGlobalPoolAllocatorPtr(TPoolAllocator* poolAllocator)
    threadData->globalPoolAllocator = poolAllocator;
 }
 
-//
-// Implement the functionality of the TPoolAllocator class, which
-// is documented in PoolAlloc.h.
-//
-TPoolAllocator::TPoolAllocator(bool g, int growthIncrement, int allocationAlignment) : 
-global(g),
-pageSize(growthIncrement),
-alignment(allocationAlignment),
+
+
+TPoolAllocator::TPoolAllocator() :
+pageSize(8*1024),
+alignment(16),
 freeList(0),
 inUseList(0),
 numCalls(0),
@@ -145,33 +142,17 @@ totalBytes(0)
 
 TPoolAllocator::~TPoolAllocator()
 {
-   if (!global)
-   {
-      //
-      // Then we know that this object is not being 
-      // allocated after other, globally scoped objects
-      // that depend on it.  So we can delete the "in use" memory.
-      //
-      while (inUseList)
-      {
-         tHeader* next = inUseList->nextPage;
-         inUseList->~tHeader();
-         delete [] reinterpret_cast<char*>(inUseList);
-         inUseList = next;
-      }
-   }
+	assert(inUseList == NULL);
 
-   //
-   // Always delete the free list memory - it can't be being
-   // (correctly) referenced, whether the pool allocator was
-   // global or not.
-   //
-   while (freeList)
-   {
-      tHeader* next = freeList->nextPage;
-      delete [] reinterpret_cast<char*>(freeList);
-      freeList = next;
-   }
+	// Always delete the free list memory - it can't be being
+	// (correctly) referenced, whether the pool allocator was
+	// global or not.
+	while (freeList)
+	{
+		tHeader* next = freeList->nextPage;
+		delete [] reinterpret_cast<char*>(freeList);
+		freeList = next;
+	}
 }
 
 

@@ -245,7 +245,7 @@ int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction
 
    if (!PerProcessGPA)
    {
-      TPoolAllocator *builtInPoolAllocator = new TPoolAllocator(true);
+      TPoolAllocator *builtInPoolAllocator = new TPoolAllocator();
       builtInPoolAllocator->push();
       TPoolAllocator* gPoolAllocator = &GlobalPoolAllocator;
       SetGlobalPoolAllocatorPtr(builtInPoolAllocator);
@@ -253,7 +253,7 @@ int C_DECL Hlsl2Glsl_Initialize(GlobalAllocateFunction alloc, GlobalFreeFunction
       TSymbolTable symTables[EShLangCount];
       GenerateBuiltInSymbolTable(infoSink, symTables, EShLangCount);
 
-      PerProcessGPA = new TPoolAllocator(true);
+      PerProcessGPA = new TPoolAllocator();
       PerProcessGPA->push();
       SetGlobalPoolAllocatorPtr(PerProcessGPA);
 

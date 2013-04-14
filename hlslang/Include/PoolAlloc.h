@@ -67,44 +67,31 @@ private:
 //
 class TPoolAllocator {
 public:
-   TPoolAllocator(bool global = false, int growthIncrement = 8*1024, int allocationAlignment = 16);
-
-   //
-   // Don't call the destructor just to free up the memory, call pop()
-   //
+   TPoolAllocator();
+   // Use popAll() or pop() to free up memory!
    ~TPoolAllocator();
 
-   //
-   // Call push() to establish a new place to pop memory too.  Does not
+   // Establish a new place to pop memory to.  Does not
    // have to be called to get things started.
-   //
    void push();
 
-   //
-   // Call pop() to free all memory allocated since the last call to push(),
+   // Free all memory allocated since the last call to push(),
    // or if no last call to push, frees all memory since first allocation.
-   //
    void pop();
 
-   //
-   // Call popAll() to free all memory allocated.
-   //
+   // Free all memory allocated.
    void popAll();
 
-   //
-   // Call allocate() to actually acquire memory.  Returns 0 if no memory
+   // Actually acquire memory.  Returns 0 if no memory
    // available, otherwise a properly aligned pointer to 'numBytes' of memory.
-   //
    void* allocate(size_t numBytes);
 
-   //
    // There is no deallocate.  The point of this class is that
    // deallocation can be skipped by the user of it, as the model
    // of use is to simultaneously deallocate everything at once
    // by calling pop(), and to not have to solve memory leak problems.
-   //
 
-protected:
+private:
    friend struct tHeader;
 
    struct tHeader
@@ -129,7 +116,6 @@ protected:
    };
    typedef std::vector<tAllocState> tAllocStack;
 
-   bool global;            // should be true if this object is globally scoped
    size_t pageSize;        // granularity of allocation from the OS
    size_t alignment;       // all returned allocations will be aligned at
                          //      this granularity, which will be a power of 2
@@ -144,9 +130,11 @@ protected:
 
    int numCalls;           // just an interesting statistic
    size_t totalBytes;      // just an interesting statistic
+
 private:
-   TPoolAllocator& operator=(const TPoolAllocator&);  // dont allow assignment operator
-   TPoolAllocator(const TPoolAllocator&);  // dont allow default copy constructor
+	// no copying
+	TPoolAllocator& operator=(const TPoolAllocator&);
+	TPoolAllocator(const TPoolAllocator&);
 };
 
 
