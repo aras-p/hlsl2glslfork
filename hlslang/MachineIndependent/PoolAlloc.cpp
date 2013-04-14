@@ -78,6 +78,15 @@ void SetGlobalPoolAllocatorPtr(TPoolAllocator* poolAllocator)
 
 
 
+
+struct TPoolAllocator::AllocHeader
+{
+	AllocHeader(AllocHeader* nextPage, size_t pageCount) : nextPage(nextPage), pageCount(pageCount) { }
+	AllocHeader* nextPage;
+	size_t pageCount;
+};
+
+
 TPoolAllocator::TPoolAllocator() :
 pageSize(8*1024),
 alignment(16),
@@ -117,9 +126,9 @@ totalBytes(0)
    // Align header skip
    //
    headerSkip = minAlign;
-   if (headerSkip < sizeof(tHeader))
+   if (headerSkip < sizeof(AllocHeader))
    {
-      headerSkip = (sizeof(tHeader) + alignmentMask) & ~alignmentMask;
+      headerSkip = (sizeof(AllocHeader) + alignmentMask) & ~alignmentMask;
    }
 }
 
@@ -132,7 +141,7 @@ TPoolAllocator::~TPoolAllocator()
 	// global or not.
 	while (freeList)
 	{
-		tHeader* next = freeList->nextPage;
+		AllocHeader* next = freeList->nextPage;
 		delete [] reinterpret_cast<char*>(freeList);
 		freeList = next;
 	}
@@ -141,7 +150,7 @@ TPoolAllocator::~TPoolAllocator()
 
 void TPoolAllocator::push()
 {
-   tAllocState state = { currentPageOffset, inUseList};
+   AllocState state = { currentPageOffset, inUseList };
 
    stack.push_back(state);
 
@@ -163,15 +172,15 @@ void TPoolAllocator::pop()
    if (stack.size() < 1)
       return;
 
-   tHeader* page = stack.back().page;
+   AllocHeader* page = stack.back().page;
    currentPageOffset = stack.back().offset;
 
    while (inUseList != page)
    {
       // invoke destructor to free allocation list
-      inUseList->~tHeader();
+      inUseList->~AllocHeader();
 
-      tHeader* nextInUse = inUseList->nextPage;
+      AllocHeader* nextInUse = inUseList->nextPage;
       if (inUseList->pageCount > 1)
          delete [] reinterpret_cast<char*>(inUseList);
       else
@@ -228,12 +237,12 @@ void* TPoolAllocator::allocate(size_t numBytes)
       // The OS is efficient and allocating and free-ing multiple pages.
       //
       size_t numBytesToAlloc = allocationSize + headerSkip;
-      tHeader* memory = reinterpret_cast<tHeader*>(::new char[numBytesToAlloc]);
+      AllocHeader* memory = reinterpret_cast<AllocHeader*>(::new char[numBytesToAlloc]);
       if (memory == 0)
          return 0;
 
       // Use placement-new to initialize header
-      new(memory) tHeader(inUseList, (numBytesToAlloc + pageSize - 1) / pageSize);
+      new(memory) AllocHeader(inUseList, (numBytesToAlloc + pageSize - 1) / pageSize);
       inUseList = memory;
 
       currentPageOffset = pageSize;  // make next allocation come from a new page
@@ -244,7 +253,7 @@ void* TPoolAllocator::allocate(size_t numBytes)
    //
    // Need a simple page to allocate from.
    //
-   tHeader* memory;
+   AllocHeader* memory;
    if (freeList)
    {
       memory = freeList;
@@ -252,13 +261,13 @@ void* TPoolAllocator::allocate(size_t numBytes)
    }
    else
    {
-      memory = reinterpret_cast<tHeader*>(::new char[pageSize]);
+      memory = reinterpret_cast<AllocHeader*>(::new char[pageSize]);
       if (memory == 0)
          return 0;
    }
 
    // Use placement-new to initialize header
-   new(memory) tHeader(inUseList, 1);
+   new(memory) AllocHeader(inUseList, 1);
    inUseList = memory;
 
    unsigned char* ret = reinterpret_cast<unsigned char *>(inUseList) + headerSkip;

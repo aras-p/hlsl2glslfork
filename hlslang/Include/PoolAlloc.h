@@ -6,8 +6,7 @@
 #ifndef _POOLALLOC_INCLUDED_
 #define _POOLALLOC_INCLUDED_
 
-//
-// This header defines an allocator that can be used to efficiently
+// Arena allocator that can be used to efficiently
 // allocate a large number of small requests for heap memory, with the
 // intention that they are not individually deallocated, but rather
 // collectively deallocated at one time.
@@ -24,43 +23,13 @@
 //
 // STL containers can use this allocator by using the pool_allocator
 // class as the allocator (second) template argument.
-//
 
 #include <stddef.h>
 #include <vector>
 
 
+// -----------------------------------------------------------------------------
 
-class TAllocation
-{
-public:
-   TAllocation(size_t size, unsigned char* mem, TAllocation* prev = 0) :
-      size(size), mem(mem), prevAlloc(prev)
-   {
-   }
-
-private:
-   unsigned char* data()      const { return mem; }
-
-   size_t size;                  // size of the user data area
-   unsigned char* mem;           // beginning of our allocation (pts to header)
-   TAllocation* prevAlloc;       // prior allocation in the chain
-};
-
-//
-// There are several stacks.  One is to track the pushing and popping
-// of the user, and not yet implemented.  The others are simply a
-// repositories of free pages or used pages.
-//
-// Page stacks are linked together with a simple header at the beginning
-// of each allocation obtained from the underlying OS.  Multi-page allocations
-// are returned to the OS.  Individual page allocations are kept for future
-// re-use.
-//
-// The "page size" used is not, nor must it match, the underlying OS
-// page size.  But, having it be about that size or equal to a set of
-// pages is likely most optimal.
-//
 class TPoolAllocator {
 public:
    TPoolAllocator();
@@ -88,44 +57,28 @@ public:
    // by calling pop(), and to not have to solve memory leak problems.
 
 private:
-   friend struct tHeader;
+	struct AllocHeader;
 
-   struct tHeader
-   {
-      tHeader(tHeader* nextPage, size_t pageCount) :
-         nextPage(nextPage), pageCount(pageCount)
-      {
-      }
+	struct AllocState
+	{
+		size_t offset;
+		AllocHeader* page;
+	};
 
-      ~tHeader()
-      {
-      }
+	size_t pageSize;        // granularity of allocation from the OS
+	size_t alignment;       // all returned allocations will be aligned at
+						 //      this granularity, which will be a power of 2
+	size_t alignmentMask;
+	size_t headerSkip;      // amount of memory to skip to make room for the
+						 //      header (basically, size of header, rounded
+						 //      up to make it aligned
+	size_t currentPageOffset;  // next offset in top of inUseList to allocate from
+	AllocHeader* freeList;      // list of popped memory
+	AllocHeader* inUseList;     // list of all memory currently being used
+	std::vector<AllocState> stack;      // stack of where to allocate from, to partition pool
 
-      tHeader* nextPage;
-      size_t pageCount;
-   };
-
-   struct tAllocState
-   {
-      size_t offset;
-      tHeader* page;
-   };
-   typedef std::vector<tAllocState> tAllocStack;
-
-   size_t pageSize;        // granularity of allocation from the OS
-   size_t alignment;       // all returned allocations will be aligned at
-                         //      this granularity, which will be a power of 2
-   size_t alignmentMask;
-   size_t headerSkip;      // amount of memory to skip to make room for the
-                         //      header (basically, size of header, rounded
-                         //      up to make it aligned
-   size_t currentPageOffset;  // next offset in top of inUseList to allocate from
-   tHeader* freeList;      // list of popped memory
-   tHeader* inUseList;     // list of all memory currently being used
-   tAllocStack stack;      // stack of where to allocate from, to partition pool
-
-   int numCalls;           // just an interesting statistic
-   size_t totalBytes;      // just an interesting statistic
+	int numCalls;           // just an interesting statistic
+	size_t totalBytes;      // just an interesting statistic
 
 private:
 	// no copying
@@ -145,6 +98,9 @@ extern TPoolAllocator& GetGlobalPoolAllocator();
 
 void SetGlobalPoolAllocatorPtr(TPoolAllocator* poolAllocator);
 
+
+
+// -----------------------------------------------------------------------------
 //
 // This STL compatible allocator is intended to be used as the allocator
 // parameter to templatized STL containers, like vector and map.
