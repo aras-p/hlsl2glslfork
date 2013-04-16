@@ -1,0 +1,32 @@
+uniform sampler2D tex1;
+uniform float uni1;
+float xlat_mutable_uni1;
+uniform vec4 uni4;
+vec4 xlat_mutable_uni4;
+vec3 SampleDiffuse( in vec2 uv );
+vec4 xlat_main( in vec4 uv );
+#line 6
+vec3 SampleDiffuse( in vec2 uv ) {
+    xlat_mutable_uni4.xy = uv;
+    return vec3( texture2D( tex1, xlat_mutable_uni4.xy));
+}
+#line 12
+vec4 xlat_main( in vec4 uv ) {
+    vec4 c;
+    c = vec4( 0.0);
+    c.x += xlat_mutable_uni4.x;
+    c.xyz += SampleDiffuse( uv.xy);
+    #line 16
+    c.z += xlat_mutable_uni1;
+    xlat_mutable_uni1 += 2.0;
+    c.w += xlat_mutable_uni1;
+    return c;
+}
+varying vec4 xlv_TEXCOORD0;
+void main() {
+    vec4 xl_retval;
+    xlat_mutable_uni4 = uni4;
+    xlat_mutable_uni1 = uni1;
+    xl_retval = xlat_main( vec4(xlv_TEXCOORD0));
+    gl_FragData[0] = vec4( xl_retval);
+}
