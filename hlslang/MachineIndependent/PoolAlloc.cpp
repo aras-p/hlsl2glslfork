@@ -22,7 +22,6 @@ void InitializeGlobalPools()
    if (globalPools)
       return;
 
-	void* poolMem, *threadPoolMem;
 	TPoolAllocator *globalPoolAllocator;
 	TThreadGlobalPools* threadData;
 	
