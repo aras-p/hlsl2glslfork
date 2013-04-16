@@ -5,7 +5,6 @@
 #include "propagateMutable.h"
 #include <set>
 #include "localintermediate.h"
-#include "glslOutput.h"
 
 
 struct TPropagateMutable : public TIntermTraverser 
@@ -33,43 +32,43 @@ struct TPropagateMutable : public TIntermTraverser
 
 void TPropagateMutable::traverseSymbol( TIntermSymbol *node, TIntermTraverser *it )
 {
-   TPropagateMutable* sit = static_cast<TPropagateMutable*>(it);
+	TPropagateMutable* sit = static_cast<TPropagateMutable*>(it);
 
-   if (sit->abort)
-      return;
+	if (sit->abort)
+		return;
 
-   if (sit->propagating && sit->id == node->getId())
-   {
-      node->getTypePointer()->changeQualifier( EvqMutableUniform );
-   }
-   else if (!sit->propagating && sit->fixedIds.find(node->getId()) == sit->fixedIds.end() )
-   {
-      if (node->getQualifier() == EvqMutableUniform)
-      {
-         sit->abort = true;
-         sit->id = node->getId();
-         sit->fixedIds.insert(sit->id);
-      }
-   }
+	if (sit->propagating && sit->id == node->getId())
+	{
+		node->getTypePointer()->changeQualifier( EvqMutableUniform );
+	}
+	else if (!sit->propagating && sit->fixedIds.find(node->getId()) == sit->fixedIds.end() )
+	{
+		if (node->getQualifier() == EvqMutableUniform)
+		{
+			sit->abort = true;
+			sit->id = node->getId();
+			sit->fixedIds.insert(sit->id);
+		}
+	}
 }
 
 void PropagateMutableUniforms (TIntermNode* root, TInfoSink &info)
 {
-   TPropagateMutable st(info);
+	TPropagateMutable st(info);
 
-   do
-   {
-      st.abort = false;
-      root->traverse(&st);
+	do
+	{
+		st.abort = false;
+		root->traverse(&st);
 
-      // If we aborted, try to type the node we aborted for
-      if (st.abort)
-      {
-         st.propagating = true;
-         st.abort = false;
-         root->traverse(&st);
-         st.propagating = false;
-         st.abort = true;
-      }
-   } while (st.abort);
+		// If we aborted, try to type the node we aborted for
+		if (st.abort)
+		{
+			st.propagating = true;
+			st.abort = false;
+			root->traverse(&st);
+			st.propagating = false;
+			st.abort = true;
+		}
+	} while (st.abort);
 }
