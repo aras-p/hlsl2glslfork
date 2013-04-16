@@ -482,7 +482,7 @@ bool TParseContext::lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTy
 		case EvqAttribute:      message = "can't modify an attribute";   break;
 		case EvqUniform:
 			// mark this uniform as mutable
-			node->getTypePointer()->changeQualifier( EvqMutableUniform);
+			node->getTypePointer()->changeQualifier(EvqMutableUniform);
 			break;
 		default:
 			

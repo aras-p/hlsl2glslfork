@@ -41,7 +41,7 @@ void TPropagateMutable::traverseSymbol( TIntermSymbol *node, TIntermTraverser *i
 	{
 		node->getTypePointer()->changeQualifier( EvqMutableUniform );
 	}
-	else if (!sit->propagating && sit->fixedIds.find(node->getId()) == sit->fixedIds.end() )
+	else if (!sit->propagating && sit->fixedIds.find(node->getId()) == sit->fixedIds.end())
 	{
 		if (node->getQualifier() == EvqMutableUniform)
 		{

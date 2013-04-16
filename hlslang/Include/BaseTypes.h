@@ -67,7 +67,7 @@ enum TQualifier
    EvqStatic,        // Static variables
    EvqAttribute,     // Readonly 
    EvqUniform,       // Readonly, vertex and fragment
-   EvqMutableUniform, //HLSL uniform value, that is not really uniform
+   EvqMutableUniform,// HLSL uniform that is modified by the shader
 
    // parameters
    EvqIn,
