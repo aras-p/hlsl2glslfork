@@ -793,7 +793,7 @@ void HlslLinker::emitGlobals(const GlslFunction* globalFunction, const std::vect
 	for (unsigned i = 0; i != n_constants; ++i) {
 		GlslSymbol* s = constants[i];
 		if (s->getIsMutable()) {
-			s->writeDecl(shader, GlslSymbol::WRITE_DECL_MUTABLE_UNIFORMS);
+			s->writeDecl(shader, GlslSymbol::kWriteDeclMutableDecl);
 			shader << ";\n";	
 		}
 	}	
@@ -1050,9 +1050,19 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 }
 
 
-void HlslLinker::emitMainStart(const HlslCrossCompiler* compiler, const EGlslSymbolType retType, GlslFunction* funcMain, unsigned options, bool usePrecision, std::stringstream& preamble)
+void HlslLinker::emitMainStart(const HlslCrossCompiler* compiler, const EGlslSymbolType retType, GlslFunction* funcMain, unsigned options, bool usePrecision, std::stringstream& preamble, const std::vector<GlslSymbol*>& constants)
 {
 	preamble << "void main() {\n";
+	
+	// initialize mutable uniforms with the original uniform values
+	const unsigned n_constants = constants.size();
+	for (unsigned i = 0; i != n_constants; ++i) {
+		GlslSymbol* s = constants[i];
+		if (s->getIsMutable()) {
+			s->writeDecl(preamble, GlslSymbol::kWriteDeclMutableInit);
+			preamble << ";\n";
+		}
+	}
 	
 	std::string arrayInit = compiler->m_DeferredArrayInit.str();
 	if (!arrayInit.empty())
@@ -1247,7 +1257,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 
 	// Declare return value
 	const EGlslSymbolType retType = funcMain->getReturnType();
-	emitMainStart(compiler, retType, funcMain, options, usePrecision, preamble);
+	emitMainStart(compiler, retType, funcMain, options, usePrecision, preamble, constants);
 	
 
 	// Call the entry point

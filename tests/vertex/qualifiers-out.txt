@@ -7,8 +7,8 @@ const float const_3 = 1e-06;
 #line 8
 uniform float mutable_1;
 uniform float mutable_2;
-float xlat_mutable_mutable_1 = mutable_1;
-float xlat_mutable_mutable_2 = mutable_2;
+float xlat_mutable_mutable_1;
+float xlat_mutable_mutable_2;
 vec4 xlat_main(  );
 #line 11
 vec4 xlat_main(  ) {
@@ -18,6 +18,8 @@ vec4 xlat_main(  ) {
     return vec4( ((((((uni_1 + uni_2) + stat_1) + 1.3) + 1e-06) + xlat_mutable_mutable_1) + xlat_mutable_mutable_2));
 }
 void main() {
+    xlat_mutable_mutable_1 = mutable_1;
+    xlat_mutable_mutable_2 = mutable_2;
     vec4 xl_retval;
     xl_retval = xlat_main( );
     gl_Position = vec4(xl_retval);

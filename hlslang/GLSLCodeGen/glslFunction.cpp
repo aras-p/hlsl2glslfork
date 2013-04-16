@@ -106,7 +106,7 @@ std::string GlslFunction::getPrototype() const
 	{
 		if (it != parameters.begin())
 			out << ", ";
-		(*it)->writeDecl(out,0);
+		(*it)->writeDecl(out,GlslSymbol::kWriteDeclDefault);
 	}
 	
 	out << " )";

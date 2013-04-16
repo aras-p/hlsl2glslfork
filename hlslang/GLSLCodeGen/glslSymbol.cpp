@@ -52,34 +52,29 @@ GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGls
 
 
 
-void GlslSymbol::writeDecl (std::stringstream& out, unsigned flags)
+void GlslSymbol::writeDecl (std::stringstream& out, WriteDeclMode mode)
 {
-	const bool writeMutableUniforms = (flags & WRITE_DECL_MUTABLE_UNIFORMS);
-	
 	switch (qual)
 	{
-	case EqtNone:            break;
-	case EqtUniform:
-		if (writeMutableUniforms)
-			out << "uniform ";
-		break;
-	case EqtMutableUniform:
-		if (!writeMutableUniforms)
-			out << "uniform ";
-		break;
+	case EqtNone:			break;
+	case EqtUniform:		break;
+	case EqtMutableUniform:	break;
 	case EqtConst:           out << "const ";   break;
 	case EqtIn:              out << "in ";      break;
 	case EqtOut:             out << "out ";     break;
 	case EqtInOut:           out << "inout ";   break;
 	}
 
-	writeType (out, type, structPtr, precision);
+	if (mode != kWriteDeclMutableInit)
+		writeType (out, type, structPtr, precision);
+	if (mode == kWriteDeclMutableInit)
+		out << "   ";
 
-	out << " " << (writeMutableUniforms ? mutableMangledName : mangledName);
-	if (arraySize)
+	out << " " << (mode != kWriteDeclDefault ? mutableMangledName : mangledName);
+	if (arraySize && mode != kWriteDeclMutableInit)
 		out << "[" << arraySize << "]";
 	
-	if (writeMutableUniforms && qual == EqtMutableUniform)
+	if (qual == EqtMutableUniform && mode == kWriteDeclMutableInit)
 		out << " = " << mangledName;
 }
 

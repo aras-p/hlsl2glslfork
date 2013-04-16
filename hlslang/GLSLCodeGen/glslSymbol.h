@@ -43,10 +43,12 @@ public:
 	GlslStruct* getStruct() { return structPtr; }
 	void setStruct( GlslStruct *s ) { structPtr = s; }
 
-	enum WriteDeclFlags {
-		WRITE_DECL_MUTABLE_UNIFORMS = (1<<0),
+	enum WriteDeclMode {
+		kWriteDeclDefault = 0,
+		kWriteDeclMutableDecl,
+		kWriteDeclMutableInit,
 	};
-	void writeDecl (std::stringstream& out, unsigned flags); // flags = bitmask of WriteDeclFlags
+	void writeDecl (std::stringstream& out, WriteDeclMode mode);
 	/// Set the mangled name for the symbol
 	void mangleName();    
 

@@ -58,7 +58,7 @@ uniform sampler2D diffuse_map;
 uniform sampler2DShadow shadow_map;
 #line 21
 #line 41
-mat4 xlat_mutable_stupid[10] = stupid;
+mat4 xlat_mutable_stupid[10];
 PS_INPUT vs_main( in VS_INPUT xlat_var_input );
 #line 21
 PS_INPUT vs_main( in VS_INPUT xlat_var_input ) {
@@ -84,6 +84,7 @@ PS_INPUT vs_main( in VS_INPUT xlat_var_input ) {
 }
 varying vec2 xlv_TEXCOORD0;
 void main() {
+    xlat_mutable_stupid = stupid;
     PS_INPUT xl_retval;
     VS_INPUT xlt_xlat_var_input;
     xlt_xlat_var_input.position = vec4(gl_Vertex);
