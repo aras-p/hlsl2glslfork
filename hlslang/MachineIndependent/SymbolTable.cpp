@@ -144,7 +144,7 @@ TType::ECompatibility TType::determineCompatibility ( const TType *pType ) const
 					  getColsCount() >= pType->getColsCount())
 				return IMPLICIT_CAST_WITH_PROMOTION_EXISTS;
 			else
-				NOT_COMPATIBLE;
+				return NOT_COMPATIBLE;
 		}
 	}
 	else if ( getBasicType() == pType->getBasicType() )
