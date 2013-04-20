@@ -11,68 +11,50 @@
 
 static OS_TLSIndex s_TLSPoolAlloc;
 
-struct TThreadGlobalPools
-{
-	TPoolAllocator* globalPoolAllocator;
-};
 
 void InitializeGlobalPools()
 {
-   TThreadGlobalPools* globalPools= static_cast<TThreadGlobalPools*>(OS_GetTLSValue(s_TLSPoolAlloc));    
-   if (globalPools)
-      return;
-
-	TPoolAllocator *globalPoolAllocator;
-	TThreadGlobalPools* threadData;
+	TPoolAllocator* alloc = static_cast<TPoolAllocator*>(OS_GetTLSValue(s_TLSPoolAlloc));
+	if (alloc)
+		return;
 	
-	globalPoolAllocator = new TPoolAllocator();
-	threadData = new TThreadGlobalPools();
-
-	threadData->globalPoolAllocator = globalPoolAllocator;
-
-	OS_SetTLSValue(s_TLSPoolAlloc, threadData);     
-	globalPoolAllocator->push();
+	alloc = new TPoolAllocator();
+	OS_SetTLSValue(s_TLSPoolAlloc, alloc);
+	alloc->push();
 }
 
 void FreeGlobalPools()
 {
-   // Release the allocated memory for this thread.
-   TThreadGlobalPools* globalPools= static_cast<TThreadGlobalPools*>(OS_GetTLSValue(s_TLSPoolAlloc));    
-   if (!globalPools)
-      return;
+	TPoolAllocator* alloc = static_cast<TPoolAllocator*>(OS_GetTLSValue(s_TLSPoolAlloc));
+	if (!alloc)
+		return;
 
-	GlobalPoolAllocator.popAll();
-	delete &GlobalPoolAllocator;
-	delete globalPools;
+	alloc->popAll();
+	delete alloc;
+	OS_SetTLSValue(s_TLSPoolAlloc, NULL);
 }
 
 bool InitializePoolIndex()
 {
-   // Allocate a TLS index.
-   if ((s_TLSPoolAlloc = OS_AllocTLSIndex()) == OS_INVALID_TLS_INDEX)
-      return false;
-
-   return true;
+	if ((s_TLSPoolAlloc = OS_AllocTLSIndex()) == OS_INVALID_TLS_INDEX)
+		return false;
+	return true;
 }
 
 void FreePoolIndex()
 {
-   // Release the TLS index.
-   OS_FreeTLSIndex(s_TLSPoolAlloc);
+	OS_FreeTLSIndex(s_TLSPoolAlloc);
 }
 
 TPoolAllocator& GetGlobalPoolAllocator()
 {
-   TThreadGlobalPools* threadData = static_cast<TThreadGlobalPools*>(OS_GetTLSValue(s_TLSPoolAlloc));
-
-   return *threadData->globalPoolAllocator;
+	TPoolAllocator* alloc = static_cast<TPoolAllocator*>(OS_GetTLSValue(s_TLSPoolAlloc));
+	return *alloc;
 }
 
-void SetGlobalPoolAllocatorPtr(TPoolAllocator* poolAllocator)
+void SetGlobalPoolAllocatorPtr(TPoolAllocator* alloc)
 {
-   TThreadGlobalPools* threadData = static_cast<TThreadGlobalPools*>(OS_GetTLSValue(s_TLSPoolAlloc));
-
-   threadData->globalPoolAllocator = poolAllocator;
+	OS_SetTLSValue(s_TLSPoolAlloc, alloc);
 }
 
 
