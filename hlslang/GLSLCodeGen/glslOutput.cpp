@@ -112,9 +112,9 @@ int getElements( EGlslSymbolType t )
       return 12;
    case EgstFloat4x4:
       return 16;
+   default:
+      return 0;
    }
-
-   return 0;
 }
 
 TString buildArrayConstructorString(const TType& type) {

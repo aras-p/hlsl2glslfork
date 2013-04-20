@@ -1255,6 +1255,7 @@ bool TIntermBinary::promote(TParseContext& ctx)
            case EbtBool:  convert = TOperator( EOpConstructBVec2 + rows - 2); break;
            case EbtInt:   convert = TOperator( EOpConstructIVec2 + rows - 2); break;
            case EbtFloat: convert = TOperator( EOpConstructVec2 +  rows - 2); break;
+           default: break;
            }
        }
        else
@@ -1288,6 +1289,7 @@ bool TIntermBinary::promote(TParseContext& ctx)
            case EbtBool:  convert = TOperator( EOpConstructBVec2 + rows - 2); break;
            case EbtInt:   convert = TOperator( EOpConstructIVec2 + rows - 2); break;
            case EbtFloat: convert = TOperator( EOpConstructVec2  + rows - 2); break;
+           default: break;
            }
        }
        else
@@ -1417,6 +1419,7 @@ bool TIntermBinary::promote(TParseContext& ctx)
             case EbtBool:  convert = TOperator( EOpConstructBVec2 + left->getRowsCount() - 2); break;
             case EbtInt:   convert = TOperator( EOpConstructIVec2 + left->getRowsCount() - 2); break;
             case EbtFloat: convert = TOperator( EOpConstructVec2  + left->getRowsCount() - 2); break;
+            default: break;
             }
          }
          else
@@ -1426,6 +1429,7 @@ bool TIntermBinary::promote(TParseContext& ctx)
             case EbtBool:  convert = EOpConstructBool; break;
             case EbtInt:   convert = EOpConstructInt; break;
             case EbtFloat: convert = EOpConstructFloat; break;
+            default: break;
             }
          }
 

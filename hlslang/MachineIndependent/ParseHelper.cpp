@@ -953,6 +953,15 @@ bool TParseContext::arrayErrorCheck(const TSourceLoc& line, TString& identifier,
    return arrayErrorCheck( line, identifier, 0, type, variable);
 }
 
+
+static inline void AdjustTypeQualifier(TPublicType& type)
+{
+	if (type.qualifier == EvqGlobal)
+		type.qualifier = EvqUniform; // according to hlsl, non static globals are uniforms
+	else if (type.qualifier == EvqStatic)
+		type.qualifier = EvqGlobal;	
+}
+
 //
 // Do all the semantic checking for declaring an array, with and 
 // without a size, and make the right changes to the symbol table.
@@ -967,12 +976,8 @@ bool TParseContext::arrayErrorCheck(const TSourceLoc& line, TString& identifier,
    // Don't check for reserved word use until after we know it's not in the symbol table,
    // because reserved arrays can be redeclared.
    //
-
-   switch (type.qualifier)
-   {
-   case EvqGlobal: type.qualifier = EvqUniform; break; // according to hlsl, non static globals are uniforms
-   case EvqStatic: type.qualifier = EvqGlobal; break;
-   }
+	
+	AdjustTypeQualifier (type);
 
    bool builtIn = false; 
    bool sameScope = false;
@@ -1118,11 +1123,7 @@ bool TParseContext::nonInitErrorCheck(const TSourceLoc& line, TString& identifie
    if (reservedErrorCheck(line, identifier))
       recover();
 
-   switch (type.qualifier)
-   {
-   case EvqGlobal: type.qualifier = EvqUniform; break; // according to hlsl, non static globals are uniforms
-   case EvqStatic: type.qualifier = EvqGlobal; break;
-   }
+	AdjustTypeQualifier (type);
 
    TVariable* variable = new TVariable(&identifier, info, TType(type));
 
@@ -1222,11 +1223,7 @@ bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, TPu
 bool TParseContext::executeInitializer(TSourceLoc line, TString& identifier, const TTypeInfo *info, TPublicType& pType, 
                                        TIntermTyped*& initializer, TIntermSymbol*& intermNode, TVariable* variable)
 {
-	switch (pType.qualifier)
-	{
-		case EvqGlobal: pType.qualifier = EvqUniform; break; // according to hlsl, non static globals are uniforms
-		case EvqStatic: pType.qualifier = EvqGlobal; break;
-	}
+	AdjustTypeQualifier (pType);
 
 	TType type = TType(pType);
 	if (variable == 0)
