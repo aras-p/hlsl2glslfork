@@ -404,6 +404,8 @@ void TSamplerTraverser::typeSampler( TIntermTyped *node, TBasicType samp )
          case EOpIndexDirectStruct:
             infoSink.info << "Warning: " << node->getLine() <<  ": typing of samplers as struct members presently unsupported\n";
             break;
+         default:
+            break;
          }
       }
       else

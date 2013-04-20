@@ -694,7 +694,7 @@ bool TParseContext::constructorErrorCheck(const TSourceLoc& line, TIntermNode* n
    }
 
    if (( size != 1 && size < type->getObjectSize()) ||
-       (op == EOpConstructStruct && size < type->getObjectSize()) && size > 1)
+       ((op == EOpConstructStruct && size < type->getObjectSize()) && size > 1))
    {
       error(line, "not enough data provided for construction", "constructor", "");
       return true;
@@ -1695,7 +1695,7 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
     //
 
 	// Otherwise, skip out early.
-	if (subset || newNode != node && newNode->getType() == *type)
+	if (subset || (newNode != node && newNode->getType() == *type))
 	  return newNode;
 
    //now perform HLSL style matrix conversions

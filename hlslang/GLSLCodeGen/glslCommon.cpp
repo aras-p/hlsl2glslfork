@@ -106,6 +106,8 @@ void writeType (std::stringstream &out, EGlslSymbolType type, GlslStruct *s, TPr
       else
          out << "struct";
       break;
+	case EgstTypeCount:
+		break;
    }
 }
 
@@ -198,8 +200,6 @@ EGlslQualifier translateQualifier( TQualifier qual )
    case EvqIn:            return EqtIn;
    case EvqOut:           return EqtOut;
    case EvqInOut:         return EqtInOut;
-
+   default: return EqtNone;
    }
-
-   return EqtNone;
 }

@@ -1450,8 +1450,8 @@ bool TIntermBinary::promote(TParseContext& ctx)
    case EOpModAssign:
       if (op == EOpMod)
 		  type = EbtFloat;
-      if (left->isMatrix() && right->isVector() ||
-          left->isVector() && right->isMatrix() ||
+      if ((left->isMatrix() && right->isVector()) ||
+          (left->isVector() && right->isMatrix()) ||
           left->getBasicType() != right->getBasicType())
          return false;
       setType(TType(type, left->getPrecision(), EvqTemporary, cols, rows, left->isMatrix() || right->isMatrix()));
@@ -1463,8 +1463,8 @@ bool TIntermBinary::promote(TParseContext& ctx)
    case EOpGreaterThan:
    case EOpLessThanEqual:
    case EOpGreaterThanEqual:
-      if (left->isMatrix() && right->isVector() ||
-          left->isVector() && right->isMatrix() ||
+      if ((left->isMatrix() && right->isVector()) ||
+          (left->isVector() && right->isMatrix()) ||
           left->getBasicType() != right->getBasicType())
          return false;
       setType(TType(EbtBool, higherPrecision, EvqTemporary, cols, rows, false));
