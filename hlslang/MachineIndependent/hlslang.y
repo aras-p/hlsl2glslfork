@@ -632,28 +632,7 @@ function_identifier
             TFunction *function = new TFunction(&tempString, type, EOpConstructStruct);
             $$ = function;
         } else {
-            TOperator op = EOpNull;
-            switch ($1.type) {
-            case EbtFloat:
-				op = ir_get_constructor_op_float($1, parseContext);
-                break;
-            case EbtInt:
-                switch($1.matrows) {
-                case 1: op = EOpConstructInt;   break;
-                case 2: op = EOpConstructIVec2; break;
-                case 3: op = EOpConstructIVec3; break;
-                case 4: op = EOpConstructIVec4; break;
-                }         
-                break;    
-            case EbtBool:
-                switch($1.matrows) {
-                case 1: op = EOpConstructBool;  break;
-                case 2: op = EOpConstructBVec2; break;
-                case 3: op = EOpConstructBVec3; break;
-                case 4: op = EOpConstructBVec4; break;
-                }         
-                break;
-            }
+            TOperator op = ir_get_constructor_op($1, parseContext, false);
             if (op == EOpNull) {
                 parseContext.error($1.line, "cannot construct this type", TType::getBasicString($1.type), "");
                 parseContext.recover();
@@ -731,31 +710,7 @@ unary_expression
     }
     | LEFT_PAREN type_specifier_nonarray RIGHT_PAREN unary_expression {
         // cast operator, insert constructor
-        TOperator op = EOpNull;
-        switch ($2.type) {
-        case EbtFloat:
-			op = ir_get_constructor_op_float($2, parseContext);
-            break;               
-        case EbtInt:
-            switch($2.matrows) {
-            case 1: op = EOpConstructInt;   break;
-            case 2: op = EOpConstructIVec2; break;
-            case 3: op = EOpConstructIVec3; break;
-            case 4: op = EOpConstructIVec4; break;
-            }         
-            break;    
-        case EbtBool:
-            switch($2.matrows) {
-            case 1: op = EOpConstructBool;  break;
-            case 2: op = EOpConstructBVec2; break;
-            case 3: op = EOpConstructBVec3; break;
-            case 4: op = EOpConstructBVec4; break;
-            }         
-            break;
-        case EbtStruct:
-            op = EOpConstructStruct;
-            break;
-        }
+        TOperator op = ir_get_constructor_op($2, parseContext, true);
         if (op == EOpNull) {
             parseContext.error($2.line, "cannot cast this type", TType::getBasicString($2.type), "");
             parseContext.recover();

@@ -50,6 +50,7 @@ TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TIntermSymbol* 
 TIntermAggregate* ir_grow_declaration(TIntermTyped* declaration, TSymbol* symbol, TIntermTyped* initializer, TParseContext& ctx);
 
 TOperator ir_get_constructor_op_float(const TPublicType& t, TParseContext& ctx);
+TOperator ir_get_constructor_op(const TPublicType& t, TParseContext& ctx, bool allowStruct);
 
 
 void ir_output_tree(TIntermNode* root, TInfoSink& infoSink);
