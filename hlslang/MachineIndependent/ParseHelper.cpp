@@ -401,7 +401,7 @@ void TParseContext::binaryOpError(const TSourceLoc& line, const char* op, TStrin
 //
 // Returns true if the was an error.
 //
-bool TParseContext::lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTyped* node)
+bool TParseContext::lValueErrorCheck(const TSourceLoc& line, const char* op, TIntermTyped* node)
 {
 	TIntermSymbol* symNode = node->getAsSymbolNode();
 	TIntermBinary* binaryNode = node->getAsBinaryNode();
@@ -573,7 +573,7 @@ bool TParseContext::scalarErrorCheck(TIntermTyped* node, const char* token)
 //
 // Returns true if the was an error.
 //
-bool TParseContext::globalErrorCheck(const TSourceLoc& line, bool global, char* token)
+bool TParseContext::globalErrorCheck(const TSourceLoc& line, bool global, const char* token)
 {
    if (global)
       return false;

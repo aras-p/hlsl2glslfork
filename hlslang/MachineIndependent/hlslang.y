@@ -722,7 +722,7 @@ unary_expression
 					case EOpBitwiseNot: errorOp = "~"; break;
 					default: break;
 				}
-				parseContext.unaryOpError($1.line, const_cast<char*> (errorOp), $2->getCompleteString());
+				parseContext.unaryOpError($1.line, errorOp, $2->getCompleteString());
 				parseContext.recover();
 				$$ = $2;
 			}

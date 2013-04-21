@@ -44,10 +44,10 @@ struct TParseContext
 	void assignError(const TSourceLoc& line, const char* op, TString left, TString right);
 	void unaryOpError(const TSourceLoc& line, const char* op, TString operand);
 	void binaryOpError(const TSourceLoc& line, const char* op, TString left, TString right);
-	bool lValueErrorCheck(const TSourceLoc& line, char* op, TIntermTyped*);
+	bool lValueErrorCheck(const TSourceLoc& line, const char* op, TIntermTyped*);
 	bool constErrorCheck(TIntermTyped* node);
 	bool scalarErrorCheck(TIntermTyped* node, const char* token);
-	bool globalErrorCheck(const TSourceLoc& line, bool global, char* token);
+	bool globalErrorCheck(const TSourceLoc& line, bool global, const char* token);
 	bool constructorErrorCheck(const TSourceLoc& line, TIntermNode*, TFunction&, TOperator, TType*);
 	bool arraySizeErrorCheck(const TSourceLoc& line, TIntermTyped* expr, int& size);
 	bool arrayQualifierErrorCheck(const TSourceLoc& line, TPublicType type);

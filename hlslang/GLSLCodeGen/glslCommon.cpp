@@ -180,6 +180,8 @@ EGlslSymbolType translateType( const TType *type )
 		  return EgstSamplerRectShadow;
       case EbtStruct:
          return EgstStruct;
+      default:
+         return EgstVoid;
       }
    }
 
