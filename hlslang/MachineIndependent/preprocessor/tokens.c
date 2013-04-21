@@ -182,7 +182,7 @@ void RecordToken(TokenStream *pTok, int token, yystypepp * yylvalpp)
          str=yylvalpp->symbol_name;
          while (*str){
             lAddByte(pTok,(unsigned char) *str);
-            *str++;
+            str++;
          }
          lAddByte(pTok, 0);
          break;
