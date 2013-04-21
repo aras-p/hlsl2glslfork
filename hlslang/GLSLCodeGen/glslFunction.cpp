@@ -40,7 +40,7 @@ GlslFunction::~GlslFunction()
 	}
 }
 
-void GlslFunction::pushDepth(int depth) { this->depth.push_back(depth); }
+void GlslFunction::pushDepth(int d) { this->depth.push_back(d); }
 void GlslFunction::popDepth() { depth.pop_back(); }
 
 bool GlslFunction::hasSymbol( int id )

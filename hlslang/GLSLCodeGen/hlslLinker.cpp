@@ -1143,7 +1143,7 @@ bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName,
 				{
 					postamble << "[" << idx << "]";
 				}
-				for (int ii = 0; ii<pad; ii++)
+				for (int jj = 0; jj<pad; jj++)
 					postamble << ", 0.0";
 
 				postamble << ");\n";

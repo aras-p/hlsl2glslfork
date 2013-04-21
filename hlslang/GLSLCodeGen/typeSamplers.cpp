@@ -149,15 +149,15 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
                TNodeArray& nodes = node->getNodes();
 
                // Grab iterators to both sequences
-               TNodeArray::iterator it = nodes.begin();
+               TNodeArray::iterator symit = nodes.begin();
                TNodeArray::iterator funcIt = funcSequence->begin();
 
                assert (nodes.size() == funcSequence->size());
                if (nodes.size() == funcSequence->size())
                {
-                  while (it != nodes.end())
+                  while (symit != nodes.end())
                   {
-                     TIntermSymbol *sym = (*it)->getAsSymbolNode();
+                     TIntermSymbol *sym = (*symit)->getAsSymbolNode();
                      TIntermSymbol *funcSym = (*funcIt)->getAsSymbolNode();
                      
                      if ( sym != NULL && funcSym != NULL)
@@ -171,7 +171,7 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
                            sit->typeSampler ( sym, funcSym->getBasicType() );
                         }
                      }
-                     it++;
+                     symit++;
                      funcIt++;
                   }
                }

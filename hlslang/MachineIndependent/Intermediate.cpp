@@ -550,8 +550,8 @@ TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* n
          return 0;
       }
 
-      TType type(promoteTo, node->getPrecision(), EvqTemporary, node->getColsCount(), node->getRowsCount(), node->isMatrix(), node->isArray());
-      newNode = new TIntermUnary(newOp, type);
+      TType newtype(promoteTo, node->getPrecision(), EvqTemporary, node->getColsCount(), node->getRowsCount(), node->isMatrix(), node->isArray());
+      newNode = new TIntermUnary(newOp, newtype);
       newNode->setLine(node->getLine());
       newNode->setOperand(node);
 

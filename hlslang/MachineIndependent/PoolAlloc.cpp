@@ -62,7 +62,7 @@ void SetGlobalPoolAllocatorPtr(TPoolAllocator* alloc)
 
 struct TPoolAllocator::AllocHeader
 {
-	AllocHeader(AllocHeader* nextPage, size_t pageCount) : nextPage(nextPage), pageCount(pageCount) { }
+	AllocHeader(AllocHeader* np, size_t pcount) : nextPage(np), pageCount(pcount) { }
 	AllocHeader* nextPage;
 	size_t pageCount;
 };

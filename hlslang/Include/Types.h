@@ -134,7 +134,7 @@ public:
       checkInvariants();
    }
 
-   TType(const TType& type) { *this = type; checkInvariants(); }
+   TType(const TType& t) { *this = t; checkInvariants(); }
 
    void copyType(const TType& copyOf, TStructureMap& remapper)
    {
