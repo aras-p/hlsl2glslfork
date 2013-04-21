@@ -43,13 +43,10 @@ GlslFunction::~GlslFunction()
 void GlslFunction::pushDepth(int d) { this->depth.push_back(d); }
 void GlslFunction::popDepth() { depth.pop_back(); }
 
-bool GlslFunction::hasSymbol( int id )
+bool GlslFunction::hasSymbol( int id ) const
 {
 	if (symbolIdMap.find(id) != symbolIdMap.end())
-	{
 		return true;
-	}
-
 	return false;
 }
 

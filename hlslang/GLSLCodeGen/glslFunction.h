@@ -25,7 +25,7 @@ public:
 
 	bool isGlobalScopeFunction() const { return name == "__global__"; }
 
-	bool hasSymbol( int id );
+	bool hasSymbol( int id ) const;
 	GlslSymbol& getSymbol( int id );
 
 	std::string getPrototype() const;
@@ -42,7 +42,7 @@ public:
 	void addLibFunction( TOperator op ) { libFunctions.insert( op); }
 	const std::set<TOperator>& getLibFunctions() const { return libFunctions; }
 
-	const std::vector<GlslSymbol*>& getSymbols() { return symbols; }
+	const std::vector<GlslSymbol*>& getSymbols() const { return symbols; }
 
 	void increaseDepth() { depth.back()++; }   
 	void decreaseDepth() { depth.back() = depth.back() ? depth.back()-1 : depth.back(); }
@@ -59,10 +59,10 @@ public:
 	void beginStatement() { if (!inStatement) { indent(); inStatement = true;}}
 	void endStatement() { if (inStatement) { *active << ";\n"; inStatement = false;}}
 
-	const std::string &getName() { return name; }
-	const std::string &getMangledName() { return mangledName; }
+	const std::string& getName() const { return name; }
+	const std::string& getMangledName() const { return mangledName; }
 
-	EGlslSymbolType getReturnType() { return returnType; }
+	EGlslSymbolType getReturnType() const { return returnType; }
 	TPrecision getPrecision() const { return precision; }
 	const std::string& getSemantic() const { return semantic; }    
 	GlslStruct* getStruct() { return structPtr; }   
