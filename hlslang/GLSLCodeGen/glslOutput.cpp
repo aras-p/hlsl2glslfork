@@ -367,7 +367,7 @@ TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunctio
 , swizzleAssignTempCounter(0)
 , m_TargetVersion(version)
 , m_UsePrecision(Hlsl2Glsl_VersionUsesPrecision(version))
-, m_ArrayInitWorkaround(options & ETranslateOpEmitGLSL120ArrayInitWorkaround)
+, m_ArrayInitWorkaround(!!(options & ETranslateOpEmitGLSL120ArrayInitWorkaround))
 {
 	m_LastLineOutput.file = NULL;
 	m_LastLineOutput.line = -1;
