@@ -79,6 +79,9 @@ static void logf(const char* format, ...)
 #endif
 #include "../../include/hlsl2glsl.h"
 
+static void replace_string (std::string& target, const std::string& search, const std::string& replace, size_t startPos);
+
+
 bool EndsWith (const std::string& str, const std::string& sub)
 {
 	return (str.size() >= sub.size()) && (strncmp (str.c_str()+str.size()-sub.size(), sub.c_str(), sub.size())==0);
@@ -161,6 +164,8 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 		output.clear();
 		return false;
 	}
+
+	replace_string(output, "\r\n", "\n", 0);
 	
 	return true;
 }
