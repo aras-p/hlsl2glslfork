@@ -15,7 +15,7 @@
 
 typedef struct StringInputSrc {
     InputSrc base;
-    char *p;
+    unsigned char *p;
 } StringInputSrc;
 
 static int eof_scan1(InputSrc *is)
