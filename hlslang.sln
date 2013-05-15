@@ -5,6 +5,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hlslang", "hlslang.vcxproj"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hlsl2glsltest", "tests\hlsl2glsltest\hlsl2glsltest.vcxproj", "{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hlsl2glsl", "hlsl2glsl\hlsl2glsl.vcxproj", "{5AA4D7D6-D190-487D-83A9-BB3D6379EC56}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3B146CC5-B2B8-4573-9D46-6139E2EDFEA3} = {3B146CC5-B2B8-4573-9D46-6139E2EDFEA3}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -29,6 +34,12 @@ Global
 		{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}.Release|Win32.Build.0 = Release|Win32
 		{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}.Release|x64.ActiveCfg = Release|x64
 		{56B380E1-EBFD-41DD-AE6C-A13B3B5AEE6B}.Release|x64.Build.0 = Release|x64
+		{5AA4D7D6-D190-487D-83A9-BB3D6379EC56}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5AA4D7D6-D190-487D-83A9-BB3D6379EC56}.Debug|Win32.Build.0 = Debug|Win32
+		{5AA4D7D6-D190-487D-83A9-BB3D6379EC56}.Debug|x64.ActiveCfg = Debug|Win32
+		{5AA4D7D6-D190-487D-83A9-BB3D6379EC56}.Release|Win32.ActiveCfg = Release|Win32
+		{5AA4D7D6-D190-487D-83A9-BB3D6379EC56}.Release|Win32.Build.0 = Release|Win32
+		{5AA4D7D6-D190-487D-83A9-BB3D6379EC56}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
