@@ -292,6 +292,8 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 		newSrc += "#define texture2DLodEXT texture2DLod\n";
 		newSrc += "#define texture2DProjLodEXT texture2DProjLod\n";
 		newSrc += "#define texture2DGradEXT texture2DGradARB\n";
+		newSrc += "#define textureCubeLodEXT textureCubeLod\n";
+		newSrc += "#define textureCubeGradEXT textureCubeGradARB\n";
 		newSrc += "#define gl_FragDepthEXT gl_FragDepth\n";
 		newSrc += "float shadow2DEXT (sampler2DShadow s, vec3 p) { return shadow2D(s,p).r; }\n";
 		newSrc += "float shadow2DProjEXT (sampler2DShadow s, vec4 p) { return shadow2DProj(s,p).r; }\n";
