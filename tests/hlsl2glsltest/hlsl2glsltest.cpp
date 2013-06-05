@@ -391,7 +391,7 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 		char log[4096];
 		GLsizei logLength;
 		glGetShaderInfoLog (shader, sizeof(log), &logLength, log);
-		printf ("  glsl compile error:\n%s\n  shader:\n%s\n", log, sourcePtr);
+		printf ("  glsl compile error:\n%s\n", log);
 		res = false;
 	}
 	glDeleteShader (shader);
