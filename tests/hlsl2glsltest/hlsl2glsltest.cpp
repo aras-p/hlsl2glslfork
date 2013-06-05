@@ -283,9 +283,11 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 {
 	const char* sourcePtr = source.c_str();
 	std::string newSrc;
-	if (version == ETargetGLSL_ES_100)
+	if (version == ETargetGLSL_ES_100 || version == ETargetGLSL_ES_300)
 	{
 		newSrc.reserve(source.size());
+		if (version == ETargetGLSL_ES_300)
+			newSrc += "#version 150\n";
 		newSrc += "#define lowp\n";
 		newSrc += "#define mediump\n";
 		newSrc += "#define highp\n";
@@ -380,6 +382,15 @@ static const ETargetVersion kTargets2[NUM_RUN_TYPES] = {
 	ETargetVersionCount,
 	ETargetGLSL_120,
 	ETargetGLSL_120,
+	ETargetVersionCount,
+	ETargetVersionCount,
+};
+static const ETargetVersion kTargets3[NUM_RUN_TYPES] = {
+	ETargetGLSL_ES_300,
+	ETargetGLSL_ES_300,
+	ETargetVersionCount,
+	ETargetGLSL_ES_300,
+	ETargetGLSL_ES_300,
 	ETargetVersionCount,
 	ETargetVersionCount,
 };
@@ -595,6 +606,8 @@ static bool TestFile (TestRun type,
 	const char* suffix = "-out.txt";
 	if (version == ETargetGLSL_ES_100)
 		suffix = "-outES.txt";
+	else if (version == ETargetGLSL_ES_300)
+		suffix = "-outES3.txt";
 	else if (options & ETranslateOpEmitGLSL120ArrayInitWorkaround)
 		suffix = "-out120arr.txt";
 	
@@ -630,6 +643,7 @@ int main (int argc, const char** argv)
 		printf ("TESTING %s...\n", kTypeName[type]);
 		const ETargetVersion version1 = kTargets1[type];
 		const ETargetVersion version2 = kTargets2[type];
+		//const ETargetVersion version3 = kTargets3[type];
 		std::string testFolder = baseFolder + "/" + kTypeName[type];
 		StringVector inputFiles = GetFiles (testFolder, "-in.txt");
 
@@ -651,6 +665,8 @@ int main (int argc, const char** argv)
 				ok = TestFile(TestRun(type), testFolder + "/" + inname, version1, 0, hasOpenGL);
 				if (ok && version2 != ETargetVersionCount)
 					ok = TestFile(TestRun(type), testFolder + "/" + inname, version2, ETranslateOpEmitGLSL120ArrayInitWorkaround, hasOpenGL);
+				//if (ok && version3 != ETargetVersionCount)
+				//	ok = TestFile(TestRun(type), testFolder + "/" + inname, version3, ETranslateOpEmitGLSL120ArrayInitWorkaround, hasOpenGL);
 			}
 			
 			if (!ok)
