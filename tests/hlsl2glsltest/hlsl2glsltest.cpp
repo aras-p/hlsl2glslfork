@@ -64,7 +64,8 @@ static void logf(const char* format, ...)
 #elif defined(__APPLE__)
 
 #include <OpenGL/OpenGL.h>
-#include <AGL/agl.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/CGLTypes.h>
 #include <dirent.h>
 
 #else
@@ -172,8 +173,8 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 
 
 #if defined(__APPLE__)
-static AGLPixelFormat s_GLPixelFormat;
-static AGLContext s_GLContext;
+static CGLPixelFormatObj s_GLPixelFormat;
+static CGLContextObj s_GLContext;
 #endif
 
 
@@ -213,17 +214,20 @@ static bool InitializeOpenGL ()
 	wglMakeCurrent( dc, rc );
 
 #elif defined(__APPLE__)
-	GLint attributes[16];
-	int i = 0;
-	attributes[i++]=AGL_RGBA;
-	attributes[i++]=AGL_PIXEL_SIZE;
-	attributes[i++]=32;
-	attributes[i++]=AGL_NO_RECOVERY;
-	attributes[i++]=AGL_NONE;
-
-	s_GLPixelFormat = aglChoosePixelFormat(NULL,0,attributes);
-	s_GLContext = aglCreateContext(s_GLPixelFormat, NULL);
-	aglSetCurrentContext (s_GLContext);
+	CGLPixelFormatAttribute attributes[4] = {
+		kCGLPFAAccelerated,   // no software rendering
+		//kCGLPFAOpenGLProfile, // core profile with the version stated below
+		//(CGLPixelFormatAttribute) kCGLOGLPVersion_3_2_Core,
+		(CGLPixelFormatAttribute) 0
+	};
+	CGLError errorCode;
+	GLint num;
+	//@TODO: error checking
+	errorCode = CGLChoosePixelFormat(attributes, &s_GLPixelFormat, &num);
+	errorCode = CGLCreateContext(s_GLPixelFormat, NULL, &s_GLContext);
+	CGLDestroyPixelFormat(s_GLPixelFormat);
+	errorCode = CGLSetCurrentContext(s_GLContext);
+	
 #else
         int argc = 0;
         char** argv = NULL;
@@ -257,9 +261,8 @@ static void CleanupOpenGL()
 	#if defined(__APPLE__)
 	if (s_GLContext)
 	{
-		aglSetCurrentContext (NULL);
-		aglDestroyContext (s_GLContext);
-		aglDestroyPixelFormat(s_GLPixelFormat);
+		CGLSetCurrentContext(NULL);
+		CGLDestroyContext(s_GLContext);
 	}
 	#endif
 }
