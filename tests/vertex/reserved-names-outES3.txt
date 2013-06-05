@@ -1,7 +1,6 @@
 uniform highp vec4 xlat_var_attribute;
 uniform highp vec4 xlat_var_varying;
 #line 4
-highp vec4 xlat_main(  );
 #line 4
 highp vec4 xlat_main(  ) {
     return (xlat_var_attribute + xlat_var_varying);

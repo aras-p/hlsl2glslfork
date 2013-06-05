@@ -1,5 +1,5 @@
 #version 120
-vec4 xlat_main( in vec4 c );
+
 #line 1
 vec4 xlat_main( in vec4 c ) {
     #line 4

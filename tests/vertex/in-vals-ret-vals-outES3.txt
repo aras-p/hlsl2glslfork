@@ -2,7 +2,6 @@
 #line 1
 uniform highp mat4 mvp;
 #line 12
-void xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in highp vec4 color, out highp vec4 opos, out highp float ofog, out highp vec2 ouv, out highp vec4 ocolor );
 #line 12
 void xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in highp vec4 color, out highp vec4 opos, out highp float ofog, out highp vec2 ouv, out highp vec4 ocolor ) {
     opos = (mvp * pos);

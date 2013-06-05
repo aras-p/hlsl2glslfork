@@ -1,7 +1,6 @@
 
 #line 3
 uniform sampler2DShadow shadowmap;
-vec4 xlat_main( in vec4 pos );
 #line 6
 vec4 xlat_main( in vec4 pos ) {
     #line 8

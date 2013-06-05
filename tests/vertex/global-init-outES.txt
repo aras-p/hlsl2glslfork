@@ -6,8 +6,6 @@ uniform highp vec4 unusedVar;
 uniform highp float uninitializedVar;
 #line 7
 #line 12
-highp float test(  );
-highp vec4 xlat_main(  );
 #line 7
 highp float test(  ) {
     return (((staticVar.x * 2.0) + uninitializedVar) + staticVar2.y);

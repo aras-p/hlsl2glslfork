@@ -13,7 +13,6 @@ struct appdata {
 uniform vec4 unity_LightColor[4];
 uniform mat4 UNITY_MATRIX_MVP;
 #line 15
-v2f xlat_main( in appdata v );
 #line 15
 v2f xlat_main( in appdata v ) {
     v2f o;

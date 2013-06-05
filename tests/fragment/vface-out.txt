@@ -1,4 +1,4 @@
-vec4 xlat_main( in float face );
+
 #line 1
 vec4 xlat_main( in float face ) {
     #line 2

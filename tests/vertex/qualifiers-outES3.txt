@@ -9,7 +9,6 @@ uniform highp float mutable_1;
 uniform highp float mutable_2;
 highp float xlat_mutable_mutable_1;
 highp float xlat_mutable_mutable_2;
-highp vec4 xlat_main(  );
 #line 11
 highp vec4 xlat_main(  ) {
     #line 13

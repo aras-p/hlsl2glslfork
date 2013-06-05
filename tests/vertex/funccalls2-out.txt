@@ -14,10 +14,6 @@ uniform mat4 mvp;
 uniform vec4 _LightColor;
 uniform vec3 _LightPos;
 #line 33
-float ComputeShadow( in vec3 pos );
-float ComputeAtten( in vec3 pos, in vec3 lightPos );
-vec4 ComputeSomeLighting( in vec3 pos );
-v2f xlat_main( in a2v v );
 #line 15
 float ComputeShadow( in vec3 pos ) {
     #line 17

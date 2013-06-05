@@ -1,7 +1,6 @@
 
 #line 1
 uniform vec4 _Color;
-vec4 xlat_main(  );
 #line 3
 vec4 xlat_main(  ) {
     #line 6

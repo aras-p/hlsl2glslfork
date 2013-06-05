@@ -15,8 +15,6 @@ uniform mat4 glstate_matrix_mvp;
 uniform mat4 glstate_matrix_modelview0;
 uniform vec4 _ProjectionParams;
 #line 24
-vec4 ComputeScreenPos( in vec4 pos );
-v2f xlat_main( in appdata v );
 #line 4
 vec4 ComputeScreenPos( in vec4 pos ) {
     #line 6

@@ -10,7 +10,6 @@ uniform float sFoo[27];
 const int kNeg = -5;
 #line 12
 uniform float arrNeg[5];
-vec4 xlat_main(  );
 #line 15
 vec4 xlat_main(  ) {
     #line 17

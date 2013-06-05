@@ -17,19 +17,16 @@ struct a2v {
 uniform highp mat4 mvp;
 #line 17
 #line 22
-highp vec4 DoPosMul( in highp vec4 pos, in highp mat4 mvp );
-highp vec4 DoColor( in highp vec4 color, in highp vec3 normal );
-v2f xlat_main( in a2v v );
-#line 17
-highp vec4 DoPosMul( in highp vec4 pos, in highp mat4 mvp ) {
-    return (mvp * pos);
-}
 #line 22
 highp vec4 DoColor( in highp vec4 color, in highp vec3 normal ) {
     highp vec4 c = color;
     c.xyz += normal;
     #line 26
     return c;
+}
+#line 17
+highp vec4 DoPosMul( in highp vec4 pos, in highp mat4 mvp ) {
+    return (mvp * pos);
 }
 #line 29
 v2f xlat_main( in a2v v ) {

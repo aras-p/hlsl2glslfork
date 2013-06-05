@@ -1,4 +1,4 @@
-vec4 xlat_main( in vec2 pos );
+
 #line 1
 vec4 xlat_main( in vec2 pos ) {
     #line 2

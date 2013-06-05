@@ -2,7 +2,6 @@ uniform vec3 uniColor1;
 uniform vec3 uniColor2;
 #line 3
 uniform float uniFactor;
-vec4 xlat_main(  );
 #line 5
 vec4 xlat_main(  ) {
     #line 7

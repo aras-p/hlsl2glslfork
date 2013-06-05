@@ -1,4 +1,4 @@
-mediump vec4 xlat_main( in highp vec2 pos );
+
 #line 1
 mediump vec4 xlat_main( in highp vec2 pos ) {
     #line 2

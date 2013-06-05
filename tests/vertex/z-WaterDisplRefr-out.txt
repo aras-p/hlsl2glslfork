@@ -74,28 +74,21 @@ uniform vec4 _GSpeed;
 uniform vec4 _GDirectionAB;
 #line 138
 uniform vec4 _GDirectionCD;
-vec3 GerstnerOffset4( in vec2 xzVtx, in vec4 steepness, in vec4 amp, in vec4 freq, in vec4 speed, in vec4 dirAB, in vec4 dirCD );
-vec3 GerstnerNormal4( in vec2 xzVtx, in vec4 amp, in vec4 freq, in vec4 speed, in vec4 dirAB, in vec4 dirCD );
-void Gerstner( out vec3 offs, out vec3 nrml, in vec3 vtx, in vec3 tileableVtx, in vec4 amplitude, in vec4 frequency, in vec4 steepness, in vec4 speed, in vec4 directionAB, in vec4 directionCD );
-vec4 ComputeScreenPos( in vec4 pos );
-void ComputeScreenAndGrabPassPos( in vec4 pos, out vec4 screenPos, out vec4 grabPassPos );
-v2f xlat_main( in appdata_full v );
-#line 79
-vec3 GerstnerOffset4( in vec2 xzVtx, in vec4 steepness, in vec4 amp, in vec4 freq, in vec4 speed, in vec4 dirAB, in vec4 dirCD ) {
-    #line 81
-    vec3 offsets;
-    vec4 AB = ((steepness.xxyy * amp.xxyy) * dirAB.xyzw);
-    vec4 CD = ((steepness.zzww * amp.zzww) * dirCD.xyzw);
-    vec4 dotABCD = (freq.xyzw * vec4( dot( dirAB.xy, xzVtx), dot( dirAB.zw, xzVtx), dot( dirCD.xy, xzVtx), dot( dirCD.zw, xzVtx)));
-    #line 85
-    vec4 TIME = (_Time.yyyy * speed);
-    vec4 COS = cos((dotABCD + TIME));
-    vec4 SIN = sin((dotABCD + TIME));
-    offsets.x = dot( COS, vec4( AB.xz, CD.xz));
-    #line 89
-    offsets.z = dot( COS, vec4( AB.yw, CD.yw));
-    offsets.y = dot( SIN, amp);
-    return offsets;
+#line 35
+vec4 ComputeScreenPos( in vec4 pos ) {
+    #line 37
+    vec4 o = (pos * 0.5);
+    o.xy = (vec2( o.x, (o.y * _ProjectionParams.x)) + o.w);
+    o.zw = pos.zw;
+    return o;
+}
+#line 57
+void ComputeScreenAndGrabPassPos( in vec4 pos, out vec4 screenPos, out vec4 grabPassPos ) {
+    #line 59
+    float scale = 1.0;
+    screenPos = ComputeScreenPos( pos);
+    grabPassPos.xy = ((vec2( pos.x, (pos.y * scale)) + pos.w) * 0.5);
+    grabPassPos.zw = pos.zw;
 }
 #line 100
 vec3 GerstnerNormal4( in vec2 xzVtx, in vec4 amp, in vec4 freq, in vec4 speed, in vec4 dirAB, in vec4 dirCD ) {
@@ -114,26 +107,27 @@ vec3 GerstnerNormal4( in vec2 xzVtx, in vec4 amp, in vec4 freq, in vec4 speed, i
     nrml = normalize(nrml);
     return nrml;
 }
+#line 79
+vec3 GerstnerOffset4( in vec2 xzVtx, in vec4 steepness, in vec4 amp, in vec4 freq, in vec4 speed, in vec4 dirAB, in vec4 dirCD ) {
+    #line 81
+    vec3 offsets;
+    vec4 AB = ((steepness.xxyy * amp.xxyy) * dirAB.xyzw);
+    vec4 CD = ((steepness.zzww * amp.zzww) * dirCD.xyzw);
+    vec4 dotABCD = (freq.xyzw * vec4( dot( dirAB.xy, xzVtx), dot( dirAB.zw, xzVtx), dot( dirCD.xy, xzVtx), dot( dirCD.zw, xzVtx)));
+    #line 85
+    vec4 TIME = (_Time.yyyy * speed);
+    vec4 COS = cos((dotABCD + TIME));
+    vec4 SIN = sin((dotABCD + TIME));
+    offsets.x = dot( COS, vec4( AB.xz, CD.xz));
+    #line 89
+    offsets.z = dot( COS, vec4( AB.yw, CD.yw));
+    offsets.y = dot( SIN, amp);
+    return offsets;
+}
 #line 114
 void Gerstner( out vec3 offs, out vec3 nrml, in vec3 vtx, in vec3 tileableVtx, in vec4 amplitude, in vec4 frequency, in vec4 steepness, in vec4 speed, in vec4 directionAB, in vec4 directionCD ) {
     offs = GerstnerOffset4( tileableVtx.xz, steepness, amplitude, frequency, speed, directionAB, directionCD);
     nrml = GerstnerNormal4( (tileableVtx.xz + offs.xz), amplitude, frequency, speed, directionAB, directionCD);
-}
-#line 35
-vec4 ComputeScreenPos( in vec4 pos ) {
-    #line 37
-    vec4 o = (pos * 0.5);
-    o.xy = (vec2( o.x, (o.y * _ProjectionParams.x)) + o.w);
-    o.zw = pos.zw;
-    return o;
-}
-#line 57
-void ComputeScreenAndGrabPassPos( in vec4 pos, out vec4 screenPos, out vec4 grabPassPos ) {
-    #line 59
-    float scale = 1.0;
-    screenPos = ComputeScreenPos( pos);
-    grabPassPos.xy = ((vec2( pos.x, (pos.y * scale)) + pos.w) * 0.5);
-    grabPassPos.zw = pos.zw;
 }
 #line 140
 v2f xlat_main( in appdata_full v ) {

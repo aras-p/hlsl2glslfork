@@ -23,7 +23,6 @@ mat4 xll_saturate(mat4 m) {
 uniform sampler2D tex;
 float samples[10];
 #line 21
-vec4 xlat_main( in vec4 Pos, in vec2 texCoord, float sampleDist, float sampleStrength );
 #line 21
 vec4 xlat_main( in vec4 Pos, in vec2 texCoord, float sampleDist, float sampleStrength ) {
     vec2 dir = (0.5 - texCoord);

@@ -1,4 +1,4 @@
-void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLight, out vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, float fixedDepthBias, float gradientClamp, float gradientScaleBias );
+
 #line 17
 void xlat_main( in vec4 position, in vec4 shadowUV, in vec3 uv, in vec4 vertexLight, out vec4 oColour, sampler2D shadowMap, sampler2D diffuseMap, float fixedDepthBias, float gradientClamp, float gradientScaleBias ) {
     #line 19

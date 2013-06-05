@@ -14,7 +14,6 @@ struct appdata {
 #line 1
 uniform mat4 glstate_matrix_mvp;
 #line 14
-v2f xlat_main( in appdata v );
 #line 14
 v2f xlat_main( in appdata v ) {
     v2f o;

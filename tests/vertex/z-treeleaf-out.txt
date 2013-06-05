@@ -51,44 +51,25 @@ uniform float _TranslucencyViewDependency;
 uniform float _ShadowStrength;
 #line 115
 uniform vec4 _MainTex_ST;
-vec4 Squash( in vec4 pos );
-void ExpandBillboard( in mat4 mat, inout vec4 pos, inout vec3 normal, inout vec4 tangent );
-vec4 TriangleWave( in vec4 x );
-vec4 SmoothCurve( in vec4 x );
-vec4 SmoothTriangleWave( in vec4 x );
-vec4 AnimateVertex( in vec4 pos, in vec3 normal, in vec4 animParams );
-void TreeVertLeaf( inout appdata_full v );
-vec3 ObjSpaceViewDir( in vec4 v );
-vec3 ObjSpaceLightDir( in vec4 v );
-v2f_surf xlat_main( in appdata_full v );
-#line 45
-vec4 Squash( in vec4 pos ) {
-    #line 47
-    vec3 planeNormal = _SquashPlaneNormal.xyz;
-    vec3 projectedVertex = (pos.xyz - ((dot( planeNormal, vec3( pos)) + _SquashPlaneNormal.w) * planeNormal));
-    pos = vec4( mix( projectedVertex, pos.xyz, vec3( _SquashAmount)), 1.0);
-    return pos;
+#line 20
+vec3 ObjSpaceLightDir( in vec4 v ) {
+    vec3 objSpaceLightPos = (_World2Object * _WorldSpaceLightPos0).xyz;
+    return objSpaceLightPos.xyz;
 }
-#line 53
-void ExpandBillboard( in mat4 mat, inout vec4 pos, inout vec3 normal, inout vec4 tangent ) {
-    float isBillboard = (1.0 - abs(tangent.w));
-    #line 56
-    vec3 norb = vec3( normalize((vec4( normal, 0.0) * mat)));
-    vec3 tanb = vec3( normalize((vec4( tangent.xyz, 0.0) * mat)));
-    pos += ((vec4( normal.xy, 0.0, 0.0) * mat) * isBillboard);
-    normal = mix( normal, norb, vec3( isBillboard));
-    #line 60
-    tangent = mix( tangent, vec4( tanb, -1.0), vec4( isBillboard));
-}
-#line 66
-vec4 TriangleWave( in vec4 x ) {
-    #line 68
-    return abs(((fract((x + 0.5)) * 2.0) - 1.0));
+#line 25
+vec3 ObjSpaceViewDir( in vec4 v ) {
+    vec3 objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.0)).xyz * unity_Scale.w);
+    return (objSpaceCameraPos - v.xyz);
 }
 #line 62
 vec4 SmoothCurve( in vec4 x ) {
     #line 64
     return ((x * x) * (3.0 - (2.0 * x)));
+}
+#line 66
+vec4 TriangleWave( in vec4 x ) {
+    #line 68
+    return abs(((fract((x + 0.5)) * 2.0) - 1.0));
 }
 #line 70
 vec4 SmoothTriangleWave( in vec4 x ) {
@@ -116,6 +97,25 @@ vec4 AnimateVertex( in vec4 pos, in vec3 normal, in vec4 animParams ) {
     pos.xyz += (animParams.z * _Wind.xyz);
     return pos;
 }
+#line 53
+void ExpandBillboard( in mat4 mat, inout vec4 pos, inout vec3 normal, inout vec4 tangent ) {
+    float isBillboard = (1.0 - abs(tangent.w));
+    #line 56
+    vec3 norb = vec3( normalize((vec4( normal, 0.0) * mat)));
+    vec3 tanb = vec3( normalize((vec4( tangent.xyz, 0.0) * mat)));
+    pos += ((vec4( normal.xy, 0.0, 0.0) * mat) * isBillboard);
+    normal = mix( normal, norb, vec3( isBillboard));
+    #line 60
+    tangent = mix( tangent, vec4( tanb, -1.0), vec4( isBillboard));
+}
+#line 45
+vec4 Squash( in vec4 pos ) {
+    #line 47
+    vec3 planeNormal = _SquashPlaneNormal.xyz;
+    vec3 projectedVertex = (pos.xyz - ((dot( planeNormal, vec3( pos)) + _SquashPlaneNormal.w) * planeNormal));
+    pos = vec4( mix( projectedVertex, pos.xyz, vec3( _SquashAmount)), 1.0);
+    return pos;
+}
 #line 91
 void TreeVertLeaf( inout appdata_full v ) {
     #line 93
@@ -127,16 +127,6 @@ void TreeVertLeaf( inout appdata_full v ) {
     v.color = vec4( 1.0, 1.0, 1.0, v.color.w);
     v.normal = normalize(v.normal);
     v.tangent.xyz = normalize(v.tangent.xyz);
-}
-#line 25
-vec3 ObjSpaceViewDir( in vec4 v ) {
-    vec3 objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.0)).xyz * unity_Scale.w);
-    return (objSpaceCameraPos - v.xyz);
-}
-#line 20
-vec3 ObjSpaceLightDir( in vec4 v ) {
-    vec3 objSpaceLightPos = (_World2Object * _WorldSpaceLightPos0).xyz;
-    return objSpaceLightPos.xyz;
 }
 #line 116
 v2f_surf xlat_main( in appdata_full v ) {

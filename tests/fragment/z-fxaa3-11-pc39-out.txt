@@ -35,9 +35,6 @@ struct v2f {
 uniform vec4 _MainTex_TexelSize;
 uniform sampler2D _MainTex;
 #line 978
-float FxaaLuma( in vec4 rgba );
-vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, in sampler2D fxaaConsole360TexExpBiasNegOne, in sampler2D fxaaConsole360TexExpBiasNegTwo, in vec2 fxaaQualityRcpFrame, in vec4 fxaaConsoleRcpFrameOpt, in vec4 fxaaConsoleRcpFrameOpt2, in vec4 fxaaConsole360RcpFrameOpt2, in float fxaaQualitySubpix, in float fxaaQualityEdgeThreshold, in float fxaaQualityEdgeThresholdMin, in float fxaaConsoleEdgeSharpness, in float fxaaConsoleEdgeThreshold, in float fxaaConsoleEdgeThresholdMin, in vec4 fxaaConsole360ConstDir );
-vec4 xlat_main( in v2f i );
 #line 342
 float FxaaLuma( in vec4 rgba ) {
     return rgba.w;

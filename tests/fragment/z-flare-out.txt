@@ -86,7 +86,6 @@ uniform vec4 unity_LightShadowBias;
 uniform sampler2D _FlareTexture;
 #line 269
 uniform vec4 _FlareTexture_ST;
-vec4 xlat_main( in vec4 color, in vec2 texcoord );
 #line 270
 vec4 xlat_main( in vec4 color, in vec2 texcoord ) {
     return (texture2D( _FlareTexture, texcoord) * color);

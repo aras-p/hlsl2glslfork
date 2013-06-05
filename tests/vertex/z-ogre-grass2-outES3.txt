@@ -1,4 +1,4 @@
-void xlat_main( in highp vec4 position, in highp vec4 normal, in highp vec2 uv, out highp vec4 oPosition, out highp vec4 oShadowUV, out highp vec3 oUv, out highp vec4 oColour, highp mat4 world, highp mat4 worldViewProj, highp mat4 texViewProj, highp vec4 camObjPos, highp vec4 objSpaceLight, highp vec4 lightColour, highp vec4 offset );
+
 #line 22
 void xlat_main( in highp vec4 position, in highp vec4 normal, in highp vec2 uv, out highp vec4 oPosition, out highp vec4 oShadowUV, out highp vec3 oUv, out highp vec4 oColour, highp mat4 world, highp mat4 worldViewProj, highp mat4 texViewProj, highp vec4 camObjPos, highp vec4 objSpaceLight, highp vec4 lightColour, highp vec4 offset ) {
     #line 24

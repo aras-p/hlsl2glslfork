@@ -53,7 +53,6 @@ vec4 xll_texCUBEgrad(samplerCube s, vec3 coord, vec3 ddx, vec3 ddy) {
 #line 1
 uniform sampler2D tex;
 uniform samplerCube cub;
-vec4 xlat_main( in vec4 uv );
 #line 4
 vec4 xlat_main( in vec4 uv ) {
     #line 5

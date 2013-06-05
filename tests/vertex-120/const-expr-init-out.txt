@@ -17,7 +17,6 @@ uniform float size9 = -0.25;
 #line 15
 uniform vec3 my_vec3a = vec3( 1.0, 2.0, 3.0);
 uniform vec3 my_vec3b = vec3( 1.0, 2.0, 3.0);
-vec4 xlat_main(  );
 #line 18
 vec4 xlat_main(  ) {
     #line 20

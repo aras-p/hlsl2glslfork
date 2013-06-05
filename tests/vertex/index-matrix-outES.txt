@@ -33,7 +33,6 @@ vec2 xll_matrixindexdynamic (mat2 m, int i) { return xll_matrixindex (m, i); }
 vec3 xll_matrixindexdynamic (mat3 m, int i) { return xll_matrixindex (m, i); }
 vec4 xll_matrixindexdynamic (mat4 m, int i) { return xll_matrixindex (m, i); }
 #endif
-highp vec4 xlat_main( in highp vec4 pos );
 #line 1
 highp vec4 xlat_main( in highp vec4 pos ) {
     #line 3

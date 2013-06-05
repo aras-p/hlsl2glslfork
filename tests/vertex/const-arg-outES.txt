@@ -9,21 +9,6 @@ struct fake4 {
 #line 9
 #line 31
 #line 36
-highp vec4 fake_to_float( const fake4 fake );
-fake4 fake_splat( const highp float f );
-highp vec4 splat( const highp float f );
-highp vec4 xlat_main(  );
-#line 20
-highp vec4 fake_to_float( const fake4 fake ) {
-    #line 22
-    highp vec4 real;
-    real.x = fake.fx;
-    real.y = fake.fy;
-    real.z = fake.fz;
-    #line 26
-    real.w = fake.fw;
-    return real;
-}
 #line 9
 fake4 fake_splat( const highp float f ) {
     fake4 fake;
@@ -34,6 +19,17 @@ fake4 fake_splat( const highp float f ) {
     fake.fw = f;
     #line 17
     return fake;
+}
+#line 20
+highp vec4 fake_to_float( const fake4 fake ) {
+    #line 22
+    highp vec4 real;
+    real.x = fake.fx;
+    real.y = fake.fy;
+    real.z = fake.fz;
+    #line 26
+    real.w = fake.fw;
+    return real;
 }
 #line 31
 highp vec4 splat( const highp float f ) {

@@ -92,7 +92,6 @@ uniform highp vec4 unity_LightShadowBias;
 uniform sampler2D _FlareTexture;
 #line 269
 uniform highp vec4 _FlareTexture_ST;
-void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, out highp vec2 otexcoord );
 #line 270
 void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, out highp vec2 otexcoord ) {
     overtex = (glstate_matrix_mvp * v.vertex);

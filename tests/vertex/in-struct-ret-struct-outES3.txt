@@ -16,7 +16,6 @@ struct a2v {
 #line 1
 uniform highp mat4 mvp;
 #line 17
-v2f xlat_main( in a2v v );
 #line 17
 v2f xlat_main( in a2v v ) {
     v2f o;

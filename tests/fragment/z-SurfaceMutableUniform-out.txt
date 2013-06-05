@@ -39,17 +39,6 @@ uniform vec4 ololo;
 #line 51
 uniform vec4 _MainTex_ST;
 vec4 xlat_mutable_ololo;
-void surf( in Input IN, inout SurfaceOutput o );
-vec4 LightingNoLight( in SurfaceOutput s, in vec3 lightDir, in float atten );
-vec4 xlat_main( in v2f_surf IN );
-#line 39
-void surf( in Input IN, inout SurfaceOutput o ) {
-    #line 40
-    vec4 c = texture2D( _MainTex, IN.uv_MainTex);
-    xlat_mutable_ololo = c;
-    o.Albedo = c.xyz;
-    o.Alpha = c.w;
-}
 #line 32
 vec4 LightingNoLight( in SurfaceOutput s, in vec3 lightDir, in float atten ) {
     vec4 c;
@@ -57,6 +46,14 @@ vec4 LightingNoLight( in SurfaceOutput s, in vec3 lightDir, in float atten ) {
     c.w = 1.0;
     #line 36
     return c;
+}
+#line 39
+void surf( in Input IN, inout SurfaceOutput o ) {
+    #line 40
+    vec4 c = texture2D( _MainTex, IN.uv_MainTex);
+    xlat_mutable_ololo = c;
+    o.Albedo = c.xyz;
+    o.Alpha = c.w;
 }
 #line 62
 vec4 xlat_main( in v2f_surf IN ) {

@@ -58,23 +58,16 @@ uniform highp vec4 _BumpTiling;
 uniform highp vec4 _BumpDirection;
 #line 99
 uniform highp vec4 _Foam;
-mediump vec3 PerPixelNormal( in sampler2D bumpMap, in mediump vec4 coords, in mediump vec3 vertexNormal, in mediump float bumpStrength );
-highp float LinearEyeDepth( in highp float z );
-mediump float Fresnel( in mediump vec3 viewVector, in mediump vec3 worldNormal, in mediump float bias, in mediump float power );
-mediump vec4 Foam( in sampler2D shoreTex, in mediump vec4 coords );
-mediump vec4 ExtinctColor( in mediump vec4 baseColor, in mediump float extinctionAmount );
-mediump vec4 xlat_main( in v2f i );
-#line 18
-mediump vec3 PerPixelNormal( in sampler2D bumpMap, in mediump vec4 coords, in mediump vec3 vertexNormal, in mediump float bumpStrength ) {
-    mediump vec4 bump = (texture( bumpMap, coords.xy) + texture( bumpMap, coords.zw));
-    bump.xy = (bump.wy - vec2( 1.0, 1.0));
-    #line 22
-    mediump vec3 worldNormal = (vertexNormal + ((bump.xxy * bumpStrength) * vec3( 1.0, 0.0, 1.0)));
-    return normalize(worldNormal);
+#line 68
+mediump vec4 ExtinctColor( in mediump vec4 baseColor, in mediump float extinctionAmount ) {
+    #line 70
+    return (baseColor - (extinctionAmount * vec4( 0.15, 0.03, 0.01, 0.0)));
 }
-#line 12
-highp float LinearEyeDepth( in highp float z ) {
-    return (1.0 / ((_ZBufferParams.z * z) + _ZBufferParams.w));
+#line 50
+mediump vec4 Foam( in sampler2D shoreTex, in mediump vec4 coords ) {
+    #line 52
+    mediump vec4 foam = ((texture( shoreTex, coords.xy) * texture( shoreTex, coords.zw)) - 0.125);
+    return foam;
 }
 #line 55
 mediump float Fresnel( in mediump vec3 viewVector, in mediump vec3 worldNormal, in mediump float bias, in mediump float power ) {
@@ -83,16 +76,17 @@ mediump float Fresnel( in mediump vec3 viewVector, in mediump vec3 worldNormal, 
     mediump float refl2Refr = xll_saturate((bias + ((1.0 - bias) * pow( facing, power))));
     return refl2Refr;
 }
-#line 50
-mediump vec4 Foam( in sampler2D shoreTex, in mediump vec4 coords ) {
-    #line 52
-    mediump vec4 foam = ((texture( shoreTex, coords.xy) * texture( shoreTex, coords.zw)) - 0.125);
-    return foam;
+#line 12
+highp float LinearEyeDepth( in highp float z ) {
+    return (1.0 / ((_ZBufferParams.z * z) + _ZBufferParams.w));
 }
-#line 68
-mediump vec4 ExtinctColor( in mediump vec4 baseColor, in mediump float extinctionAmount ) {
-    #line 70
-    return (baseColor - (extinctionAmount * vec4( 0.15, 0.03, 0.01, 0.0)));
+#line 18
+mediump vec3 PerPixelNormal( in sampler2D bumpMap, in mediump vec4 coords, in mediump vec3 vertexNormal, in mediump float bumpStrength ) {
+    mediump vec4 bump = (texture( bumpMap, coords.xy) + texture( bumpMap, coords.zw));
+    bump.xy = (bump.wy - vec2( 1.0, 1.0));
+    #line 22
+    mediump vec3 worldNormal = (vertexNormal + ((bump.xxy * bumpStrength) * vec3( 1.0, 0.0, 1.0)));
+    return normalize(worldNormal);
 }
 #line 101
 mediump vec4 xlat_main( in v2f i ) {

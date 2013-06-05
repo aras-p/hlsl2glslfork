@@ -2,7 +2,6 @@ uniform highp vec3 uniColor1;
 uniform highp vec3 uniColor2;
 #line 3
 uniform highp float uniFactor;
-highp vec4 xlat_main(  );
 #line 5
 highp vec4 xlat_main(  ) {
     #line 7

@@ -3,7 +3,6 @@ const float[3] lut1 = float[3]( 0.1, 0.2, 0.3);
 const vec2[2] lut2 = vec2[2]( vec2( 0.1, 0.2), vec2( 0.2, 0.3));
 #line 3
 const vec4[1] lut4 = vec4[1]( vec4( 0.1, 0.2, 0.3, 0.4));
-vec4 xlat_main(  );
 #line 5
 vec4 xlat_main(  ) {
     #line 7

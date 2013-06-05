@@ -1,7 +1,6 @@
 uniform mat4 matrix_mvp;
 uniform mat4 matrix_normal;
 #line 4
-void xlat_main( in vec4 vertex, out vec4 overtex, in vec3 normal, out vec3 onormal );
 #line 4
 void xlat_main( in vec4 vertex, out vec4 overtex, in vec3 normal, out vec3 onormal ) {
     overtex = (matrix_mvp * vertex);

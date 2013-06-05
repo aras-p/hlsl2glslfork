@@ -18,8 +18,6 @@ uniform highp mat4 UNITY_MATRIX_MVP;
 uniform highp mat4 UNITY_MATRIX_MV;
 uniform highp mat4 UNITY_MATRIX_IT_MV;
 #line 19
-highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal );
-v2f xlat_main( in appdata v );
 #line 19
 highp vec3 ShadeMyVertexLights( in highp vec4 vertex, in highp vec3 normal ) {
     highp vec3 viewpos = (UNITY_MATRIX_MV * vertex).xyz;

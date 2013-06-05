@@ -1,4 +1,4 @@
-mediump vec4 xlat_main( in highp vec4 uv, in highp vec4 foobar_xlv_foo );
+
 #line 1
 mediump vec4 xlat_main( in highp vec4 uv, in highp vec4 foobar_xlv_foo ) {
     #line 2

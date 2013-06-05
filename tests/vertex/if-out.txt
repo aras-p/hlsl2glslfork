@@ -1,4 +1,4 @@
-void xlat_main( in vec4 vertex, out vec4 overtex );
+
 #line 1
 void xlat_main( in vec4 vertex, out vec4 overtex ) {
     #line 3

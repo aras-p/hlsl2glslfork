@@ -2,7 +2,6 @@ highp float lut1[3];
 highp vec2 lut2[2];
 #line 3
 highp vec4 lut4[1];
-highp vec4 xlat_main(  );
 #line 5
 highp vec4 xlat_main(  ) {
     #line 7

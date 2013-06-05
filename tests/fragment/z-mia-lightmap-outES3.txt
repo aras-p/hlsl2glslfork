@@ -233,63 +233,158 @@ uniform sampler2D unity_LightmapInd;
 uniform sampler2D unity_LightmapThird;
 uniform highp vec4 unity_LightmapFade;
 #line 456
-lowp vec3 UnpackNormal( in lowp vec4 packednormal );
-highp float RemapToRange( in highp float v, in highp vec4 range );
-mediump vec3 ShadeSH9( in mediump vec4 normal );
-highp vec4 SamplePlanarReflection( in sampler2D s, in PlanarMapping p, in highp vec3 rayStart, in highp vec3 rayDir, in ContinuousSamplerLOD level );
-highp vec4 tex2Dclod( in sampler2D s, in highp vec2 uv, in ContinuousSamplerLOD level );
-highp vec4 SampleMirrorReflection( in highp vec3 worldPos, in ContinuousSamplerLOD level );
-highp vec4 texCUBEclod( in samplerCube s, in highp vec3 dir, in ContinuousSamplerLOD level );
-highp vec4 SampleCubeReflection( in samplerCube s, in highp vec3 rayDir, in ContinuousSamplerLOD level );
-highp vec4 GlossyReflectionTerm( in Input IN, in samplerCube crefl, in PlanarMapping pm0, in sampler2D prefl0, in PlanarMapping pm1, in sampler2D prefl1, in PlanarMapping pm2, in sampler2D prefl2, in highp vec3 normal, in highp float Q, in highp float lod );
-highp float EvalMipLevel( in highp vec3 uvw, in highp float texResolution );
-highp vec3 GlobalIllumination( in Input IN, in MySurfaceOutput s, out highp vec3 spec );
-highp vec3 CombineNormals( in highp vec3 n1, in highp vec3 n2 );
-void surf( in Input IN, inout MySurfaceOutput o );
-highp float OrenNayarTerm( in highp float roughness, in highp vec3 normal, in highp vec3 lightDir, in highp vec3 viewDir );
-highp float LambertTermWithRolloff( in highp vec3 normal, in highp vec3 lightDir );
-highp float FresnelTerm( in highp float refl0, in highp float refl90, in highp float cosA );
-highp float CTRoughnessTerm( in highp float roughness, in highp float NdotH );
-highp float CTGeometricTerm( in highp float NdotL, in highp float NdotH, in highp float NdotV, in highp float VdotH );
-highp float BlinnTermWithRolloff( in highp vec3 normal, in highp vec3 halfDir );
-highp float CookTorranceTerm( in highp float roughness, in highp float refl0, in highp float refl90, in highp vec3 normal, in highp vec3 lightDir, in highp vec3 viewDir );
-lowp vec4 LightingOrenNayar_CookTorrance( in MySurfaceOutput s, in highp vec3 lightDir, in highp vec3 viewDir, in highp float atten );
-lowp vec3 DecodeLightmap( in lowp vec4 color );
-lowp vec4 LightingOrenNayar_CookTorrance_DualLightmap( in MySurfaceOutput s, in lowp vec4 indirect, in lowp vec4 total, in mediump float blendFactor, in highp vec3 lightDir, in highp vec3 viewDir, in highp float atten );
-lowp vec4 xlat_main( in v2f_surf IN );
-#line 68
-lowp vec3 UnpackNormal( in lowp vec4 packednormal ) {
-    #line 70
-    lowp vec3 normal;
-    normal.xy = ((packednormal.wy * 2.0) - 1.0);
-    normal.z = sqrt(((1.0 - (normal.x * normal.x)) - (normal.y * normal.y)));
-    return normal;
+#line 64
+lowp vec3 DecodeLightmap( in lowp vec4 color ) {
+    #line 66
+    return ((8.0 * color.w) * color.xyz);
 }
-#line 204
-highp float RemapToRange( in highp float v, in highp vec4 range ) {
-    #line 206
-    v *= range.y;
-    v += range.x;
-    return v;
+#line 120
+highp float BlinnTermWithRolloff( in highp vec3 normal, in highp vec3 halfDir ) {
+    return (max( 0.0, (dot( normal, halfDir) + (_Rolloff * 2.0))) / (1.0 + (_Rolloff * 2.0)));
 }
-#line 46
-mediump vec3 ShadeSH9( in mediump vec4 normal ) {
-    mediump vec3 x1;
-    mediump vec3 x2;
-    mediump vec3 x3;
-    x1.x = dot( unity_SHAr, normal);
-    #line 50
-    x1.y = dot( unity_SHAg, normal);
-    x1.z = dot( unity_SHAb, normal);
-    mediump vec4 vB = (normal.xyzz * normal.yzzx);
-    x2.x = dot( unity_SHBr, vB);
-    #line 54
-    x2.y = dot( unity_SHBg, vB);
-    x2.z = dot( unity_SHBb, vB);
-    highp float vC = ((normal.x * normal.x) - (normal.y * normal.y));
-    x3 = (unity_SHC.xyz * vC);
-    #line 58
-    return ((x1 + x2) + x3);
+#line 130
+highp float CTGeometricTerm( in highp float NdotL, in highp float NdotH, in highp float NdotV, in highp float VdotH ) {
+    #line 132
+    return min( 1.0, min( (((2.0 * NdotH) * NdotV) / VdotH), (((2.0 * NdotH) * NdotL) / VdotH)));
+}
+#line 134
+highp float CTRoughnessTerm( in highp float roughness, in highp float NdotH ) {
+    #line 136
+    highp float mSq = (roughness * roughness);
+    highp float a = (1.0 / ((4.0 * mSq) * pow( NdotH, 4.0)));
+    highp float b = ((NdotH * NdotH) - 1.0);
+    highp float c = ((mSq * NdotH) * NdotH);
+    #line 140
+    return (a * exp((b / c)));
+}
+#line 125
+highp float FresnelTerm( in highp float refl0, in highp float refl90, in highp float cosA ) {
+    highp float t = pow( abs((1.0 - cosA)), _Falloff);
+    #line 128
+    return ((refl0 * (1.0 - t)) + (refl90 * t));
+}
+#line 116
+highp float LambertTermWithRolloff( in highp vec3 normal, in highp vec3 lightDir ) {
+    return (max( 0.0, (dot( normal, lightDir) + _Rolloff)) / (1.0 + (_Rolloff * 2.0)));
+}
+#line 142
+highp float CookTorranceTerm( in highp float roughness, in highp float refl0, in highp float refl90, in highp vec3 normal, in highp vec3 lightDir, in highp vec3 viewDir ) {
+    #line 144
+    highp vec3 halfDir = normalize((lightDir + viewDir));
+    highp float nl = LambertTermWithRolloff( normal, lightDir);
+    highp float nh = BlinnTermWithRolloff( normal, halfDir);
+    highp float nv = max( 0.0, dot( normal, viewDir));
+    #line 148
+    highp float vh = max( 0.0, dot( viewDir, halfDir));
+    highp float F = FresnelTerm( refl0, refl90, vh);
+    highp float G = CTGeometricTerm( nl, nh, nv, vh);
+    highp float R = CTRoughnessTerm( roughness, nh);
+    #line 152
+    R = max( 0.0, R);
+    return max( 0.0, (((F * G) * R) / (nv * nl)));
+}
+#line 155
+highp float OrenNayarTerm( in highp float roughness, in highp vec3 normal, in highp vec3 lightDir, in highp vec3 viewDir ) {
+    #line 157
+    const highp float PI = 3.14159;
+    const highp float INVERSE_PI = 0.31831;
+    const highp float INVERSE_PI_SQ = 0.101321;
+    highp float rSq = (roughness * roughness);
+    #line 161
+    highp float NdotL = LambertTermWithRolloff( normal, lightDir);
+    highp float NdotV = dot( normal, viewDir);
+    highp float a = max( acos(NdotV), acos(NdotL));
+    highp float b = min( acos(NdotV), acos(NdotL));
+    #line 165
+    highp float y = dot( (viewDir - (normal * NdotV)), (lightDir - (normal * NdotL)));
+    highp float K1 = (rSq / (rSq + 0.33));
+    highp float K2 = (rSq / (rSq + 0.09));
+    highp float c1 = (1.0 - (0.5 * K1));
+    #line 169
+    highp float c2 = (0.45 * K2);
+    c2 *= (sin(a) - (( (y >= 0.0) ) ? ( 0.0 ) : ( pow( ((2.0 * b) * 0.31831), 3.0) )));
+    highp float c3 = ((0.125 * K2) * pow( (((4.0 * a) * b) * 0.101321), 2.0));
+    highp float x = ((y * c2) * tan(b));
+    #line 173
+    highp float e = (((1.0 - abs(y)) * c3) * tan(((a + b) / 2.0)));
+    return ((c1 + x) + e);
+}
+#line 223
+lowp vec4 LightingOrenNayar_CookTorrance( in MySurfaceOutput s, in highp vec3 lightDir, in highp vec3 viewDir, in highp float atten ) {
+    highp vec3 normal = normalize(s.Normal);
+    #line 226
+    lightDir = normalize(lightDir);
+    viewDir = normalize(viewDir);
+    highp float nl = LambertTermWithRolloff( normal, lightDir);
+    highp float diffRoughness = _Roughness2;
+    #line 230
+    highp float specRoughness = max( 0.02, (_Roughness * s.Roughness));
+    highp float refl0 = (_Refl0 * _Reflectivity);
+    highp float refl90 = (_Refl90 * _Reflectivity);
+    highp float spec = (CookTorranceTerm( specRoughness, refl0, refl90, normal, lightDir, viewDir) * _SpecOnlyIntensity);
+    #line 234
+    highp vec3 specColor = ((_LightColor0.xyz * 2.0) * mix( s.Specular, (s.Specular * s.Albedo), vec3( _Metalic)));
+    highp vec3 diffColor = (_LightColor0.xyz * 2.0);
+    highp float diffScatter = OrenNayarTerm( diffRoughness, normal, lightDir, viewDir);
+    lowp vec4 c;
+    #line 238
+    c.xyz = ((mix( ((s.Albedo * diffColor) * diffScatter), (specColor * spec), vec3( s.Reflectivity)) * nl) * atten);
+    c.w = (s.Alpha + ((((length(specColor) * spec) * s.Reflectivity) * nl) * atten));
+    return c;
+}
+#line 242
+lowp vec4 LightingOrenNayar_CookTorrance_DualLightmap( in MySurfaceOutput s, in lowp vec4 indirect, in lowp vec4 total, in mediump float blendFactor, in highp vec3 lightDir, in highp vec3 viewDir, in highp float atten ) {
+    highp vec3 lmInd = (DecodeLightmap( indirect) - (glstate_lightmodel_ambient.xyz * 2.0));
+    highp vec3 lmTotal = (DecodeLightmap( total) - (glstate_lightmodel_ambient.xyz * 2.0));
+    #line 246
+    highp vec3 lmTotalBumped = mix( lmInd, lmTotal, vec3( pow( s.Normal.z, 2.0)));
+    highp vec4 rtLight = LightingOrenNayar_CookTorrance( s, lightDir, viewDir, atten);
+    lowp vec4 c;
+    c.xyz = (((mix( lmInd, lmTotalBumped, vec3( blendFactor)) * s.Albedo) * (1.0 - s.Reflectivity)) + (rtLight.xyz * (1.0 - blendFactor)));
+    #line 250
+    c.w = (rtLight.w * (1.0 - blendFactor));
+    return c;
+}
+#line 210
+highp vec3 CombineNormals( in highp vec3 n1, in highp vec3 n2 ) {
+    highp vec3 n = normalize(n1);
+    highp mat3 nBasis = xll_transpose(mat3( vec3( n.z, n.x, (-n.y)), vec3( n.x, n.z, (-n.y)), vec3( n.x, n.y, n.z)));
+    #line 214
+    return normalize((((n2.x * xll_matrixindex (nBasis, 0)) + (n2.y * xll_matrixindex (nBasis, 1))) + (n2.z * xll_matrixindex (nBasis, 2))));
+}
+#line 192
+highp float EvalMipLevel( in highp vec3 uvw, in highp float texResolution ) {
+    #line 194
+    highp vec3 dxSize = xll_dFdx(uvw);
+    highp vec3 dySize = xll_dFdy(uvw);
+    highp float fMipLevel;
+    highp float fMinTexCoordDelta;
+    #line 198
+    highp vec3 dTexCoords;
+    dTexCoords = ((dxSize * dxSize) + (dySize * dySize));
+    fMinTexCoordDelta = (max( dTexCoords.z, max( dTexCoords.x, dTexCoords.y)) * texResolution);
+    fMipLevel = max( (0.5 * log2(fMinTexCoordDelta)), 0.0);
+    #line 202
+    return fMipLevel;
+}
+#line 264
+highp vec4 texCUBEclod( in samplerCube s, in highp vec3 dir, in ContinuousSamplerLOD level ) {
+    return mix( xll_texCUBElod( s, vec4( dir, level.mip0)), xll_texCUBElod( s, vec4( dir, level.mip1)), vec4( level.mipFrac));
+}
+#line 283
+highp vec4 SampleCubeReflection( in samplerCube s, in highp vec3 rayDir, in ContinuousSamplerLOD level ) {
+    #line 285
+    return texCUBEclod( s, rayDir, level);
+}
+#line 260
+highp vec4 tex2Dclod( in sampler2D s, in highp vec2 uv, in ContinuousSamplerLOD level ) {
+    return mix( xll_tex2Dlod( s, vec4( uv, 0.0, level.mip0)), xll_tex2Dlod( s, vec4( uv, 0.0, level.mip1)), vec4( level.mipFrac));
+}
+#line 278
+highp vec4 SampleMirrorReflection( in highp vec3 worldPos, in ContinuousSamplerLOD level ) {
+    #line 280
+    highp vec4 ppos = (_WorldToMirrorProjMatrix * vec4( worldPos, 1.0));
+    return tex2Dclod( _MirrorTex, (ppos.xy / ppos.w), level);
 }
 #line 287
 highp vec4 SamplePlanarReflection( in sampler2D s, in PlanarMapping p, in highp vec3 rayStart, in highp vec3 rayDir, in ContinuousSamplerLOD level ) {
@@ -314,25 +409,6 @@ highp vec4 SamplePlanarReflection( in sampler2D s, in PlanarMapping p, in highp 
         return vec4( 0.0, 0.0, 0.0, 0.0);
     }
     return tex2Dclod( s, vec2( u, v), level);
-}
-#line 260
-highp vec4 tex2Dclod( in sampler2D s, in highp vec2 uv, in ContinuousSamplerLOD level ) {
-    return mix( xll_tex2Dlod( s, vec4( uv, 0.0, level.mip0)), xll_tex2Dlod( s, vec4( uv, 0.0, level.mip1)), vec4( level.mipFrac));
-}
-#line 278
-highp vec4 SampleMirrorReflection( in highp vec3 worldPos, in ContinuousSamplerLOD level ) {
-    #line 280
-    highp vec4 ppos = (_WorldToMirrorProjMatrix * vec4( worldPos, 1.0));
-    return tex2Dclod( _MirrorTex, (ppos.xy / ppos.w), level);
-}
-#line 264
-highp vec4 texCUBEclod( in samplerCube s, in highp vec3 dir, in ContinuousSamplerLOD level ) {
-    return mix( xll_texCUBElod( s, vec4( dir, level.mip0)), xll_texCUBElod( s, vec4( dir, level.mip1)), vec4( level.mipFrac));
-}
-#line 283
-highp vec4 SampleCubeReflection( in samplerCube s, in highp vec3 rayDir, in ContinuousSamplerLOD level ) {
-    #line 285
-    return texCUBEclod( s, rayDir, level);
 }
 #line 302
 highp vec4 GlossyReflectionTerm( in Input IN, in samplerCube crefl, in PlanarMapping pm0, in sampler2D prefl0, in PlanarMapping pm1, in sampler2D prefl1, in PlanarMapping pm2, in sampler2D prefl2, in highp vec3 normal, in highp float Q, in highp float lod ) {
@@ -381,20 +457,24 @@ highp vec4 GlossyReflectionTerm( in Input IN, in samplerCube crefl, in PlanarMap
     #line 338
     return mix( o2, o1, vec4( o1.w));
 }
-#line 192
-highp float EvalMipLevel( in highp vec3 uvw, in highp float texResolution ) {
-    #line 194
-    highp vec3 dxSize = xll_dFdx(uvw);
-    highp vec3 dySize = xll_dFdy(uvw);
-    highp float fMipLevel;
-    highp float fMinTexCoordDelta;
-    #line 198
-    highp vec3 dTexCoords;
-    dTexCoords = ((dxSize * dxSize) + (dySize * dySize));
-    fMinTexCoordDelta = (max( dTexCoords.z, max( dTexCoords.x, dTexCoords.y)) * texResolution);
-    fMipLevel = max( (0.5 * log2(fMinTexCoordDelta)), 0.0);
-    #line 202
-    return fMipLevel;
+#line 46
+mediump vec3 ShadeSH9( in mediump vec4 normal ) {
+    mediump vec3 x1;
+    mediump vec3 x2;
+    mediump vec3 x3;
+    x1.x = dot( unity_SHAr, normal);
+    #line 50
+    x1.y = dot( unity_SHAg, normal);
+    x1.z = dot( unity_SHAb, normal);
+    mediump vec4 vB = (normal.xyzz * normal.yzzx);
+    x2.x = dot( unity_SHBr, vB);
+    #line 54
+    x2.y = dot( unity_SHBg, vB);
+    x2.z = dot( unity_SHBb, vB);
+    highp float vC = ((normal.x * normal.x) - (normal.y * normal.y));
+    x3 = (unity_SHC.xyz * vC);
+    #line 58
+    return ((x1 + x2) + x3);
 }
 #line 350
 highp vec3 GlobalIllumination( in Input IN, in MySurfaceOutput s, out highp vec3 spec ) {
@@ -433,12 +513,20 @@ highp vec3 GlobalIllumination( in Input IN, in MySurfaceOutput s, out highp vec3
     #line 378
     return mix( ambient, refl, vec3( xll_saturate(s.Reflectivity)));
 }
-#line 210
-highp vec3 CombineNormals( in highp vec3 n1, in highp vec3 n2 ) {
-    highp vec3 n = normalize(n1);
-    highp mat3 nBasis = xll_transpose(mat3( vec3( n.z, n.x, (-n.y)), vec3( n.x, n.z, (-n.y)), vec3( n.x, n.y, n.z)));
-    #line 214
-    return normalize((((n2.x * xll_matrixindex (nBasis, 0)) + (n2.y * xll_matrixindex (nBasis, 1))) + (n2.z * xll_matrixindex (nBasis, 2))));
+#line 204
+highp float RemapToRange( in highp float v, in highp vec4 range ) {
+    #line 206
+    v *= range.y;
+    v += range.x;
+    return v;
+}
+#line 68
+lowp vec3 UnpackNormal( in lowp vec4 packednormal ) {
+    #line 70
+    lowp vec3 normal;
+    normal.xy = ((packednormal.wy * 2.0) - 1.0);
+    normal.z = sqrt(((1.0 - (normal.x * normal.x)) - (normal.y * normal.y)));
+    return normal;
 }
 #line 389
 void surf( in Input IN, inout MySurfaceOutput o ) {
@@ -461,118 +549,6 @@ void surf( in Input IN, inout MySurfaceOutput o ) {
     o.Roughness = RemapToRange( texture( _MainRoughnessTex, IN.uv_MainTex).x, _MainRoughnessTex_AddMul);
     highp vec3 globalSpec;
     o.Emission = GlobalIllumination( IN, o, globalSpec);
-}
-#line 155
-highp float OrenNayarTerm( in highp float roughness, in highp vec3 normal, in highp vec3 lightDir, in highp vec3 viewDir ) {
-    #line 157
-    const highp float PI = 3.14159;
-    const highp float INVERSE_PI = 0.31831;
-    const highp float INVERSE_PI_SQ = 0.101321;
-    highp float rSq = (roughness * roughness);
-    #line 161
-    highp float NdotL = LambertTermWithRolloff( normal, lightDir);
-    highp float NdotV = dot( normal, viewDir);
-    highp float a = max( acos(NdotV), acos(NdotL));
-    highp float b = min( acos(NdotV), acos(NdotL));
-    #line 165
-    highp float y = dot( (viewDir - (normal * NdotV)), (lightDir - (normal * NdotL)));
-    highp float K1 = (rSq / (rSq + 0.33));
-    highp float K2 = (rSq / (rSq + 0.09));
-    highp float c1 = (1.0 - (0.5 * K1));
-    #line 169
-    highp float c2 = (0.45 * K2);
-    c2 *= (sin(a) - (( (y >= 0.0) ) ? ( 0.0 ) : ( pow( ((2.0 * b) * 0.31831), 3.0) )));
-    highp float c3 = ((0.125 * K2) * pow( (((4.0 * a) * b) * 0.101321), 2.0));
-    highp float x = ((y * c2) * tan(b));
-    #line 173
-    highp float e = (((1.0 - abs(y)) * c3) * tan(((a + b) / 2.0)));
-    return ((c1 + x) + e);
-}
-#line 116
-highp float LambertTermWithRolloff( in highp vec3 normal, in highp vec3 lightDir ) {
-    return (max( 0.0, (dot( normal, lightDir) + _Rolloff)) / (1.0 + (_Rolloff * 2.0)));
-}
-#line 125
-highp float FresnelTerm( in highp float refl0, in highp float refl90, in highp float cosA ) {
-    highp float t = pow( abs((1.0 - cosA)), _Falloff);
-    #line 128
-    return ((refl0 * (1.0 - t)) + (refl90 * t));
-}
-#line 134
-highp float CTRoughnessTerm( in highp float roughness, in highp float NdotH ) {
-    #line 136
-    highp float mSq = (roughness * roughness);
-    highp float a = (1.0 / ((4.0 * mSq) * pow( NdotH, 4.0)));
-    highp float b = ((NdotH * NdotH) - 1.0);
-    highp float c = ((mSq * NdotH) * NdotH);
-    #line 140
-    return (a * exp((b / c)));
-}
-#line 130
-highp float CTGeometricTerm( in highp float NdotL, in highp float NdotH, in highp float NdotV, in highp float VdotH ) {
-    #line 132
-    return min( 1.0, min( (((2.0 * NdotH) * NdotV) / VdotH), (((2.0 * NdotH) * NdotL) / VdotH)));
-}
-#line 120
-highp float BlinnTermWithRolloff( in highp vec3 normal, in highp vec3 halfDir ) {
-    return (max( 0.0, (dot( normal, halfDir) + (_Rolloff * 2.0))) / (1.0 + (_Rolloff * 2.0)));
-}
-#line 142
-highp float CookTorranceTerm( in highp float roughness, in highp float refl0, in highp float refl90, in highp vec3 normal, in highp vec3 lightDir, in highp vec3 viewDir ) {
-    #line 144
-    highp vec3 halfDir = normalize((lightDir + viewDir));
-    highp float nl = LambertTermWithRolloff( normal, lightDir);
-    highp float nh = BlinnTermWithRolloff( normal, halfDir);
-    highp float nv = max( 0.0, dot( normal, viewDir));
-    #line 148
-    highp float vh = max( 0.0, dot( viewDir, halfDir));
-    highp float F = FresnelTerm( refl0, refl90, vh);
-    highp float G = CTGeometricTerm( nl, nh, nv, vh);
-    highp float R = CTRoughnessTerm( roughness, nh);
-    #line 152
-    R = max( 0.0, R);
-    return max( 0.0, (((F * G) * R) / (nv * nl)));
-}
-#line 223
-lowp vec4 LightingOrenNayar_CookTorrance( in MySurfaceOutput s, in highp vec3 lightDir, in highp vec3 viewDir, in highp float atten ) {
-    highp vec3 normal = normalize(s.Normal);
-    #line 226
-    lightDir = normalize(lightDir);
-    viewDir = normalize(viewDir);
-    highp float nl = LambertTermWithRolloff( normal, lightDir);
-    highp float diffRoughness = _Roughness2;
-    #line 230
-    highp float specRoughness = max( 0.02, (_Roughness * s.Roughness));
-    highp float refl0 = (_Refl0 * _Reflectivity);
-    highp float refl90 = (_Refl90 * _Reflectivity);
-    highp float spec = (CookTorranceTerm( specRoughness, refl0, refl90, normal, lightDir, viewDir) * _SpecOnlyIntensity);
-    #line 234
-    highp vec3 specColor = ((_LightColor0.xyz * 2.0) * mix( s.Specular, (s.Specular * s.Albedo), vec3( _Metalic)));
-    highp vec3 diffColor = (_LightColor0.xyz * 2.0);
-    highp float diffScatter = OrenNayarTerm( diffRoughness, normal, lightDir, viewDir);
-    lowp vec4 c;
-    #line 238
-    c.xyz = ((mix( ((s.Albedo * diffColor) * diffScatter), (specColor * spec), vec3( s.Reflectivity)) * nl) * atten);
-    c.w = (s.Alpha + ((((length(specColor) * spec) * s.Reflectivity) * nl) * atten));
-    return c;
-}
-#line 64
-lowp vec3 DecodeLightmap( in lowp vec4 color ) {
-    #line 66
-    return ((8.0 * color.w) * color.xyz);
-}
-#line 242
-lowp vec4 LightingOrenNayar_CookTorrance_DualLightmap( in MySurfaceOutput s, in lowp vec4 indirect, in lowp vec4 total, in mediump float blendFactor, in highp vec3 lightDir, in highp vec3 viewDir, in highp float atten ) {
-    highp vec3 lmInd = (DecodeLightmap( indirect) - (glstate_lightmodel_ambient.xyz * 2.0));
-    highp vec3 lmTotal = (DecodeLightmap( total) - (glstate_lightmodel_ambient.xyz * 2.0));
-    #line 246
-    highp vec3 lmTotalBumped = mix( lmInd, lmTotal, vec3( pow( s.Normal.z, 2.0)));
-    highp vec4 rtLight = LightingOrenNayar_CookTorrance( s, lightDir, viewDir, atten);
-    lowp vec4 c;
-    c.xyz = (((mix( lmInd, lmTotalBumped, vec3( blendFactor)) * s.Albedo) * (1.0 - s.Reflectivity)) + (rtLight.xyz * (1.0 - blendFactor)));
-    #line 250
-    c.w = (rtLight.w * (1.0 - blendFactor));
-    return c;
 }
 #line 456
 lowp vec4 xlat_main( in v2f_surf IN ) {

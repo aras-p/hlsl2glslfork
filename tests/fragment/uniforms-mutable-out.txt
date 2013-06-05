@@ -5,8 +5,6 @@ uniform sampler2D tex1;
 #line 12
 float xlat_mutable_uni1;
 vec4 xlat_mutable_uni4;
-vec3 SampleDiffuse( in vec2 uv );
-vec4 xlat_main( in vec4 uv );
 #line 6
 vec3 SampleDiffuse( in vec2 uv ) {
     #line 8

@@ -30,7 +30,6 @@ uniform sampler2D _MainTex;
 uniform sampler2D _SssStretch;
 uniform vec4 _SssStretch_AddMul;
 #line 17
-vec4 xlat_main( in v2f_withBlurCoords i );
 #line 17
 vec4 xlat_main( in v2f_withBlurCoords i ) {
     vec2 uv = i.uv.xy;

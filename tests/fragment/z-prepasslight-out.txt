@@ -61,22 +61,6 @@ uniform samplerCube _ShadowMapTexture;
 uniform mat4 unity_World2Shadow;
 #line 55
 #line 64
-float Luminance( in vec3 c );
-float Linear01Depth( in float z );
-float DecodeFloatRGBA( in vec4 enc );
-float SampleCubeDistance( in vec3 vec );
-float unitySampleShadow( in vec3 vec, in float mydist );
-float ComputeShadow( in vec3 vec, in float z, in vec2 uv );
-vec4 xlat_main( in v2f i );
-#line 4
-float Luminance( in vec3 c ) {
-    #line 6
-    return dot( c, vec3( 0.22, 0.707, 0.071));
-}
-#line 14
-float Linear01Depth( in float z ) {
-    return (1.0 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
-}
 #line 8
 float DecodeFloatRGBA( in vec4 enc ) {
     #line 10
@@ -111,6 +95,15 @@ float ComputeShadow( in vec3 vec, in float z, in vec2 uv ) {
     mydist *= 0.97;
     return unitySampleShadow( vec, mydist);
     return 1.0;
+}
+#line 14
+float Linear01Depth( in float z ) {
+    return (1.0 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
+}
+#line 4
+float Luminance( in vec3 c ) {
+    #line 6
+    return dot( c, vec3( 0.22, 0.707, 0.071));
 }
 #line 64
 vec4 xlat_main( in v2f i ) {

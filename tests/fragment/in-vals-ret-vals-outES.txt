@@ -1,4 +1,4 @@
-mediump vec4 xlat_main( in highp vec2 uv, in highp vec4 color );
+
 #line 4
 mediump vec4 xlat_main( in highp vec2 uv, in highp vec4 color ) {
     #line 6

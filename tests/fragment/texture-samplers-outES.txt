@@ -6,7 +6,6 @@ uniform samplerCube cubelow;
 uniform mediump samplerCube cubemed;
 #line 7
 uniform highp samplerCube cubehigh;
-mediump vec4 xlat_main( in highp vec4 uv );
 #line 9
 mediump vec4 xlat_main( in highp vec4 uv ) {
     #line 11

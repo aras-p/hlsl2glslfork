@@ -1,7 +1,6 @@
 uniform highp float index;
 uniform highp float table[10];
 #line 3
-highp vec4 xlat_main(  );
 #line 3
 highp vec4 xlat_main(  ) {
     return vec4( table[int(index)]);

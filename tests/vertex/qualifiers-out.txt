@@ -9,7 +9,6 @@ uniform float mutable_1;
 uniform float mutable_2;
 float xlat_mutable_mutable_1;
 float xlat_mutable_mutable_2;
-vec4 xlat_main(  );
 #line 11
 vec4 xlat_main(  ) {
     #line 13

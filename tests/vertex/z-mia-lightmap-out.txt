@@ -161,18 +161,15 @@ uniform vec4 unity_ShadowFadeCenterAndType;
 uniform vec4 _MainTex_ST;
 uniform vec4 _BumpMap_ST;
 #line 424
-vec3 ObjSpaceViewDir( in vec4 v );
-vec3 ObjSpaceLightDir( in vec4 v );
-v2f_surf xlat_main( in appdata_full v );
-#line 41
-vec3 ObjSpaceViewDir( in vec4 v ) {
-    vec3 objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.0)).xyz * unity_Scale.w);
-    return (objSpaceCameraPos - v.xyz);
-}
 #line 32
 vec3 ObjSpaceLightDir( in vec4 v ) {
     vec3 objSpaceLightPos = (_World2Object * _WorldSpaceLightPos0).xyz;
     return objSpaceLightPos.xyz;
+}
+#line 41
+vec3 ObjSpaceViewDir( in vec4 v ) {
+    vec3 objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.0)).xyz * unity_Scale.w);
+    return (objSpaceCameraPos - v.xyz);
 }
 #line 424
 v2f_surf xlat_main( in appdata_full v ) {

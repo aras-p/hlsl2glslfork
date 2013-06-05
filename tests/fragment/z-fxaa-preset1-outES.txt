@@ -14,42 +14,34 @@ vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {
 #line 468
 uniform sampler2D _MainTex;
 uniform highp vec4 _MainTex_TexelSize;
-highp vec4 FxaaTexOff( in sampler2D tex, in highp vec2 pos, in highp vec2 off, in highp vec2 rcpFrame );
-highp vec4 FxaaTexLod0( in sampler2D tex, in highp vec2 pos );
-highp vec4 FxaaTexGrad( in sampler2D tex, in highp vec2 pos, in highp vec2 grad );
-highp float FxaaLuma( in highp vec3 rgb );
-highp vec3 FxaaLerp3( in highp vec3 a, in highp vec3 b, in highp float amountOfA );
-highp vec3 FxaaFilterReturn( in highp vec3 rgb );
-highp vec3 FxaaPixelShader( in highp vec2 pos, in sampler2D tex, in highp vec2 rcpFrame );
-highp vec4 xlat_main( in highp vec2 uv );
-#line 120
-highp vec4 FxaaTexOff( in sampler2D tex, in highp vec2 pos, in highp vec2 off, in highp vec2 rcpFrame ) {
-    #line 128
-    return xll_tex2Dlod( tex, vec4( (pos.xy + (off * rcpFrame)), 0.0, 0.0));
-}
-#line 90
-highp vec4 FxaaTexLod0( in sampler2D tex, in highp vec2 pos ) {
-    #line 98
-    return xll_tex2Dlod( tex, vec4( pos.xy, 0.0, 0.0));
-}
-#line 105
-highp vec4 FxaaTexGrad( in sampler2D tex, in highp vec2 pos, in highp vec2 grad ) {
-    #line 113
-    return xll_tex2Dgrad( tex, pos.xy, grad, grad);
-}
-#line 281
-highp float FxaaLuma( in highp vec3 rgb ) {
-    return ((rgb.y * 1.96321) + rgb.x);
+#line 289
+highp vec3 FxaaFilterReturn( in highp vec3 rgb ) {
+    #line 299
+    return rgb;
 }
 #line 284
 highp vec3 FxaaLerp3( in highp vec3 a, in highp vec3 b, in highp float amountOfA ) {
     #line 285
     return ((vec3( (-amountOfA), (-amountOfA), (-amountOfA)) * b) + ((a * vec3( amountOfA, amountOfA, amountOfA)) + b));
 }
-#line 289
-highp vec3 FxaaFilterReturn( in highp vec3 rgb ) {
-    #line 299
-    return rgb;
+#line 281
+highp float FxaaLuma( in highp vec3 rgb ) {
+    return ((rgb.y * 1.96321) + rgb.x);
+}
+#line 105
+highp vec4 FxaaTexGrad( in sampler2D tex, in highp vec2 pos, in highp vec2 grad ) {
+    #line 113
+    return xll_tex2Dgrad( tex, pos.xy, grad, grad);
+}
+#line 90
+highp vec4 FxaaTexLod0( in sampler2D tex, in highp vec2 pos ) {
+    #line 98
+    return xll_tex2Dlod( tex, vec4( pos.xy, 0.0, 0.0));
+}
+#line 120
+highp vec4 FxaaTexOff( in sampler2D tex, in highp vec2 pos, in highp vec2 off, in highp vec2 rcpFrame ) {
+    #line 128
+    return xll_tex2Dlod( tex, vec4( (pos.xy + (off * rcpFrame)), 0.0, 0.0));
 }
 #line 313
 highp vec3 FxaaPixelShader( in highp vec2 pos, in sampler2D tex, in highp vec2 rcpFrame ) {

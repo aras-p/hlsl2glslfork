@@ -24,7 +24,6 @@ uniform float _Cutoff;
 uniform vec3 _TranslucencyColor;
 #line 28
 uniform vec4 _SpecColor;
-vec4 xlat_main( in v2f i );
 #line 30
 vec4 xlat_main( in v2f i ) {
     #line 32

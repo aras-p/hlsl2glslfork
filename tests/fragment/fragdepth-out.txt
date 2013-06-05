@@ -1,4 +1,4 @@
-void xlat_main( out vec4 ocol, out float oz );
+
 #line 1
 void xlat_main( out vec4 ocol, out float oz ) {
     #line 3

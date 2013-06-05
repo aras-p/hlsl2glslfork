@@ -1,4 +1,4 @@
-mediump vec4 xlat_main( in highp float face );
+
 #line 1
 mediump vec4 xlat_main( in highp float face ) {
     #line 2

@@ -6,20 +6,16 @@ vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2
 #line 9
 #line 15
 uniform float val;
-void vec_upcast( in vec4 f );
-void vec_downcast( in vec2 f );
-vec2 mat_downcast( in mat3x2 m );
-vec4 xlat_main(  );
-#line 1
-void vec_upcast( in vec4 f ) {
-}
-#line 5
-void vec_downcast( in vec2 f ) {
-}
 #line 9
 vec2 mat_downcast( in mat3x2 m ) {
     mat2 m22 = mat2( m);
     return xll_matrixindex (m22, 0).xx;
+}
+#line 5
+void vec_downcast( in vec2 f ) {
+}
+#line 1
+void vec_upcast( in vec4 f ) {
 }
 #line 16
 vec4 xlat_main(  ) {

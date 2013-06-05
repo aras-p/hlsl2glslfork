@@ -14,42 +14,34 @@ vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {
 #line 468
 uniform sampler2D _MainTex;
 uniform vec4 _MainTex_TexelSize;
-vec4 FxaaTexOff( in sampler2D tex, in vec2 pos, in vec2 off, in vec2 rcpFrame );
-vec4 FxaaTexLod0( in sampler2D tex, in vec2 pos );
-vec4 FxaaTexGrad( in sampler2D tex, in vec2 pos, in vec2 grad );
-float FxaaLuma( in vec3 rgb );
-vec3 FxaaLerp3( in vec3 a, in vec3 b, in float amountOfA );
-vec3 FxaaFilterReturn( in vec3 rgb );
-vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame );
-vec4 xlat_main( in vec2 uv );
-#line 120
-vec4 FxaaTexOff( in sampler2D tex, in vec2 pos, in vec2 off, in vec2 rcpFrame ) {
-    #line 128
-    return xll_tex2Dlod( tex, vec4( (pos.xy + (off * rcpFrame)), 0.0, 0.0));
-}
-#line 90
-vec4 FxaaTexLod0( in sampler2D tex, in vec2 pos ) {
-    #line 98
-    return xll_tex2Dlod( tex, vec4( pos.xy, 0.0, 0.0));
-}
-#line 105
-vec4 FxaaTexGrad( in sampler2D tex, in vec2 pos, in vec2 grad ) {
-    #line 113
-    return xll_tex2Dgrad( tex, pos.xy, grad, grad);
-}
-#line 281
-float FxaaLuma( in vec3 rgb ) {
-    return ((rgb.y * 1.96321) + rgb.x);
+#line 289
+vec3 FxaaFilterReturn( in vec3 rgb ) {
+    #line 299
+    return rgb;
 }
 #line 284
 vec3 FxaaLerp3( in vec3 a, in vec3 b, in float amountOfA ) {
     #line 285
     return ((vec3( (-amountOfA), (-amountOfA), (-amountOfA)) * b) + ((a * vec3( amountOfA, amountOfA, amountOfA)) + b));
 }
-#line 289
-vec3 FxaaFilterReturn( in vec3 rgb ) {
-    #line 299
-    return rgb;
+#line 281
+float FxaaLuma( in vec3 rgb ) {
+    return ((rgb.y * 1.96321) + rgb.x);
+}
+#line 105
+vec4 FxaaTexGrad( in sampler2D tex, in vec2 pos, in vec2 grad ) {
+    #line 113
+    return xll_tex2Dgrad( tex, pos.xy, grad, grad);
+}
+#line 90
+vec4 FxaaTexLod0( in sampler2D tex, in vec2 pos ) {
+    #line 98
+    return xll_tex2Dlod( tex, vec4( pos.xy, 0.0, 0.0));
+}
+#line 120
+vec4 FxaaTexOff( in sampler2D tex, in vec2 pos, in vec2 off, in vec2 rcpFrame ) {
+    #line 128
+    return xll_tex2Dlod( tex, vec4( (pos.xy + (off * rcpFrame)), 0.0, 0.0));
 }
 #line 313
 vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {

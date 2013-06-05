@@ -1,4 +1,4 @@
-vec4 xlat_main( in vec4 uv, in vec4 foobar_xlv_foo );
+
 #line 1
 vec4 xlat_main( in vec4 uv, in vec4 foobar_xlv_foo ) {
     #line 2

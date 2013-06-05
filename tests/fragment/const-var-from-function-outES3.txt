@@ -1,7 +1,6 @@
 
 #line 1
 uniform mediump vec4 _Color;
-mediump vec4 xlat_main(  );
 #line 3
 mediump vec4 xlat_main(  ) {
     #line 6

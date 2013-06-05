@@ -23,7 +23,6 @@ uniform sampler2D diffuse_map;
 uniform sampler2DShadow shadow_map;
 #line 21
 #line 41
-vec4 ps_main( in PS_INPUT xlat_var_input, in int primitive_id );
 #line 41
 vec4 ps_main( in PS_INPUT xlat_var_input, in int primitive_id ) {
     vec4 c = vec4( 1.0, 1.0, 1.0, float(primitive_id));

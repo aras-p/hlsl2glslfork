@@ -9,7 +9,6 @@ struct a2v {
 #line 1
 uniform highp mat4 mvp;
 #line 15
-void xlat_main( in a2v v, out highp vec4 opos, out highp float ofog, out highp vec2 ouv, out highp vec4 ocolor );
 #line 15
 void xlat_main( in a2v v, out highp vec4 opos, out highp float ofog, out highp vec2 ouv, out highp vec4 ocolor ) {
     opos = (mvp * v.pos);

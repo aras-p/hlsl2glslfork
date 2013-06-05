@@ -8,7 +8,6 @@ struct v2f {
 #line 16
 uniform vec4 _TintColor;
 uniform sampler2D _MainTex;
-vec4 xlat_main( in v2f i );
 #line 18
 vec4 xlat_main( in v2f i ) {
     #line 20

@@ -6,7 +6,6 @@ struct PS_IN {
 #line 9
 uniform sampler2D Sampler_sDiffuseMap;
 #line 20
-vec4 xlat_main( in PS_IN inStruct );
 #line 20
 vec4 xlat_main( in PS_IN inStruct ) {
     vec4 tex = texture2D( Sampler_sDiffuseMap, inStruct.texCoord0);

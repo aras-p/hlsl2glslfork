@@ -16,7 +16,6 @@ uniform highp float size9;
 #line 15
 uniform highp vec3 my_vec3a;
 uniform highp vec3 my_vec3b;
-highp vec4 xlat_main(  );
 #line 18
 highp vec4 xlat_main(  ) {
     #line 20

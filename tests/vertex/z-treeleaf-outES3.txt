@@ -51,44 +51,25 @@ uniform mediump float _TranslucencyViewDependency;
 uniform mediump float _ShadowStrength;
 #line 115
 uniform highp vec4 _MainTex_ST;
-highp vec4 Squash( in highp vec4 pos );
-void ExpandBillboard( in highp mat4 mat, inout highp vec4 pos, inout highp vec3 normal, inout highp vec4 tangent );
-highp vec4 TriangleWave( in highp vec4 x );
-highp vec4 SmoothCurve( in highp vec4 x );
-highp vec4 SmoothTriangleWave( in highp vec4 x );
-highp vec4 AnimateVertex( in highp vec4 pos, in highp vec3 normal, in highp vec4 animParams );
-void TreeVertLeaf( inout appdata_full v );
-highp vec3 ObjSpaceViewDir( in highp vec4 v );
-highp vec3 ObjSpaceLightDir( in highp vec4 v );
-v2f_surf xlat_main( in appdata_full v );
-#line 45
-highp vec4 Squash( in highp vec4 pos ) {
-    #line 47
-    highp vec3 planeNormal = _SquashPlaneNormal.xyz;
-    highp vec3 projectedVertex = (pos.xyz - ((dot( planeNormal, vec3( pos)) + _SquashPlaneNormal.w) * planeNormal));
-    pos = vec4( mix( projectedVertex, pos.xyz, vec3( _SquashAmount)), 1.0);
-    return pos;
+#line 20
+highp vec3 ObjSpaceLightDir( in highp vec4 v ) {
+    highp vec3 objSpaceLightPos = (_World2Object * _WorldSpaceLightPos0).xyz;
+    return objSpaceLightPos.xyz;
 }
-#line 53
-void ExpandBillboard( in highp mat4 mat, inout highp vec4 pos, inout highp vec3 normal, inout highp vec4 tangent ) {
-    highp float isBillboard = (1.0 - abs(tangent.w));
-    #line 56
-    highp vec3 norb = vec3( normalize((vec4( normal, 0.0) * mat)));
-    highp vec3 tanb = vec3( normalize((vec4( tangent.xyz, 0.0) * mat)));
-    pos += ((vec4( normal.xy, 0.0, 0.0) * mat) * isBillboard);
-    normal = mix( normal, norb, vec3( isBillboard));
-    #line 60
-    tangent = mix( tangent, vec4( tanb, -1.0), vec4( isBillboard));
-}
-#line 66
-highp vec4 TriangleWave( in highp vec4 x ) {
-    #line 68
-    return abs(((fract((x + 0.5)) * 2.0) - 1.0));
+#line 25
+highp vec3 ObjSpaceViewDir( in highp vec4 v ) {
+    highp vec3 objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.0)).xyz * unity_Scale.w);
+    return (objSpaceCameraPos - v.xyz);
 }
 #line 62
 highp vec4 SmoothCurve( in highp vec4 x ) {
     #line 64
     return ((x * x) * (3.0 - (2.0 * x)));
+}
+#line 66
+highp vec4 TriangleWave( in highp vec4 x ) {
+    #line 68
+    return abs(((fract((x + 0.5)) * 2.0) - 1.0));
 }
 #line 70
 highp vec4 SmoothTriangleWave( in highp vec4 x ) {
@@ -116,6 +97,25 @@ highp vec4 AnimateVertex( in highp vec4 pos, in highp vec3 normal, in highp vec4
     pos.xyz += (animParams.z * _Wind.xyz);
     return pos;
 }
+#line 53
+void ExpandBillboard( in highp mat4 mat, inout highp vec4 pos, inout highp vec3 normal, inout highp vec4 tangent ) {
+    highp float isBillboard = (1.0 - abs(tangent.w));
+    #line 56
+    highp vec3 norb = vec3( normalize((vec4( normal, 0.0) * mat)));
+    highp vec3 tanb = vec3( normalize((vec4( tangent.xyz, 0.0) * mat)));
+    pos += ((vec4( normal.xy, 0.0, 0.0) * mat) * isBillboard);
+    normal = mix( normal, norb, vec3( isBillboard));
+    #line 60
+    tangent = mix( tangent, vec4( tanb, -1.0), vec4( isBillboard));
+}
+#line 45
+highp vec4 Squash( in highp vec4 pos ) {
+    #line 47
+    highp vec3 planeNormal = _SquashPlaneNormal.xyz;
+    highp vec3 projectedVertex = (pos.xyz - ((dot( planeNormal, vec3( pos)) + _SquashPlaneNormal.w) * planeNormal));
+    pos = vec4( mix( projectedVertex, pos.xyz, vec3( _SquashAmount)), 1.0);
+    return pos;
+}
 #line 91
 void TreeVertLeaf( inout appdata_full v ) {
     #line 93
@@ -127,16 +127,6 @@ void TreeVertLeaf( inout appdata_full v ) {
     v.color = vec4( 1.0, 1.0, 1.0, v.color.w);
     v.normal = normalize(v.normal);
     v.tangent.xyz = normalize(v.tangent.xyz);
-}
-#line 25
-highp vec3 ObjSpaceViewDir( in highp vec4 v ) {
-    highp vec3 objSpaceCameraPos = ((_World2Object * vec4( _WorldSpaceCameraPos.xyz, 1.0)).xyz * unity_Scale.w);
-    return (objSpaceCameraPos - v.xyz);
-}
-#line 20
-highp vec3 ObjSpaceLightDir( in highp vec4 v ) {
-    highp vec3 objSpaceLightPos = (_World2Object * _WorldSpaceLightPos0).xyz;
-    return objSpaceLightPos.xyz;
 }
 #line 116
 v2f_surf xlat_main( in appdata_full v ) {

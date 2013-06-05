@@ -77,7 +77,6 @@ vec4 xll_trunc (vec4 v) { return vec4(
   v.z < 0.0 ? -floor(-v.z) : floor(v.z),
   v.w < 0.0 ? -floor(-v.w) : floor(v.w)
 ); }
-mediump vec4 xlat_main( in highp vec4 uv );
 #line 1
 mediump vec4 xlat_main( in highp vec4 uv ) {
     #line 2

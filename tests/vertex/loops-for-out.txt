@@ -20,8 +20,6 @@ uniform mat4 UNITY_MATRIX_MVP;
 uniform mat4 UNITY_MATRIX_MV;
 uniform mat4 UNITY_MATRIX_IT_MV;
 #line 19
-vec3 ShadeMyVertexLights( in vec4 vertex, in vec3 normal );
-v2f xlat_main( in appdata v );
 #line 19
 vec3 ShadeMyVertexLights( in vec4 vertex, in vec3 normal ) {
     vec3 viewpos = (UNITY_MATRIX_MV * vertex).xyz;

@@ -10,7 +10,6 @@ uniform highp float sFoo[27];
 const highp int kNeg = -5;
 #line 12
 uniform highp float arrNeg[5];
-highp vec4 xlat_main(  );
 #line 15
 highp vec4 xlat_main(  ) {
     #line 17

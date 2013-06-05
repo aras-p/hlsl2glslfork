@@ -23,7 +23,6 @@ uniform mat4 fmat4;
 uniform mat3 fmat3;
 uniform mat2 fmat2;
 #line 23
-v2f xlat_main( in a2v v );
 #line 23
 v2f xlat_main( in a2v v ) {
     v2f o;

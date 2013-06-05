@@ -6,7 +6,6 @@ uniform samplerCube cubelow;
 uniform samplerCube cubemed;
 #line 7
 uniform samplerCube cubehigh;
-vec4 xlat_main( in vec4 uv );
 #line 9
 vec4 xlat_main( in vec4 uv ) {
     #line 11

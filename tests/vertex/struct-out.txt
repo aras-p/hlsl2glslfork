@@ -11,8 +11,6 @@ struct Outer {
 };
 #line 13
 #line 18
-vec4 StructTakingFunc( in Outer outer, in Inner inner );
-vec4 xlat_main(  );
 #line 13
 vec4 StructTakingFunc( in Outer outer, in Inner inner ) {
     return vec4( (outer.inner.member2 + inner.member2), outer.inner.member1);

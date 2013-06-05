@@ -1,6 +1,5 @@
 uniform mediump vec4 _Color;
 #line 3
-mediump vec4 xlat_main(  );
 #line 3
 mediump vec4 xlat_main(  ) {
     mediump float c1 = max( _Color.x, _Color.y);

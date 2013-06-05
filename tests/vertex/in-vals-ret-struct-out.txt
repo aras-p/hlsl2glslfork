@@ -9,7 +9,6 @@ struct v2f {
 #line 1
 uniform mat4 mvp;
 #line 15
-v2f xlat_main( in vec4 pos, in vec2 uv, in vec3 normal, in vec4 color );
 #line 15
 v2f xlat_main( in vec4 pos, in vec2 uv, in vec3 normal, in vec4 color ) {
     v2f o;

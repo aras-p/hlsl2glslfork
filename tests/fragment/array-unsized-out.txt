@@ -1,4 +1,4 @@
-vec4 xlat_main(  );
+
 #line 1
 vec4 xlat_main(  ) {
     vec2 lut[3];

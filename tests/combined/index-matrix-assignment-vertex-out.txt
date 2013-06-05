@@ -59,7 +59,6 @@ uniform sampler2DShadow shadow_map;
 #line 21
 #line 41
 mat4 xlat_mutable_stupid[10];
-PS_INPUT vs_main( in VS_INPUT xlat_var_input );
 #line 21
 PS_INPUT vs_main( in VS_INPUT xlat_var_input ) {
     PS_INPUT o;

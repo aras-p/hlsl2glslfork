@@ -1,4 +1,4 @@
-highp vec4 xlat_main(  );
+
 #line 1
 highp vec4 xlat_main(  ) {
     #line 3

@@ -1,4 +1,4 @@
-void xlat_main( in vec4 position, in vec2 uv, in vec2 depth, out vec4 result, sampler2D diffuseMap );
+
 #line 10
 void xlat_main( in vec4 position, in vec2 uv, in vec2 depth, out vec4 result, sampler2D diffuseMap ) {
     #line 12

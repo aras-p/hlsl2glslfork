@@ -78,16 +78,11 @@ uniform highp float _VerticalBillboarding;
 uniform highp vec4 _Color;
 #line 35
 #line 64
-void CalcOrthonormalBasis( in highp vec3 dir, out highp vec3 right, out highp vec3 up );
-highp float CalcFadeOutFactor( in highp float dist );
-highp float CalcDistScale( in highp float dist );
-v2f xlat_main( in appdata_full v );
-#line 35
-void CalcOrthonormalBasis( in highp vec3 dir, out highp vec3 right, out highp vec3 up ) {
-    up = (( (abs(dir.y) > 0.999) ) ? ( vec3( 0.0, 0.0, 1.0) ) : ( vec3( 0.0, 1.0, 0.0) ));
-    right = normalize(cross( up, dir));
-    #line 39
-    up = cross( dir, right);
+#line 57
+highp float CalcDistScale( in highp float dist ) {
+    #line 59
+    highp float distScale = min( (max( (dist - _SizeGrowStartDist), 0.0) / _SizeGrowEndDist), 1.0);
+    return ((distScale * distScale) * _MaxGrowSize);
 }
 #line 42
 highp float CalcFadeOutFactor( in highp float dist ) {
@@ -102,11 +97,12 @@ highp float CalcFadeOutFactor( in highp float dist ) {
     #line 54
     return nfadeout;
 }
-#line 57
-highp float CalcDistScale( in highp float dist ) {
-    #line 59
-    highp float distScale = min( (max( (dist - _SizeGrowStartDist), 0.0) / _SizeGrowEndDist), 1.0);
-    return ((distScale * distScale) * _MaxGrowSize);
+#line 35
+void CalcOrthonormalBasis( in highp vec3 dir, out highp vec3 right, out highp vec3 up ) {
+    up = (( (abs(dir.y) > 0.999) ) ? ( vec3( 0.0, 0.0, 1.0) ) : ( vec3( 0.0, 1.0, 0.0) ));
+    right = normalize(cross( up, dir));
+    #line 39
+    up = cross( dir, right);
 }
 #line 64
 v2f xlat_main( in appdata_full v ) {

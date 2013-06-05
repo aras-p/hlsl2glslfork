@@ -150,22 +150,6 @@ uniform vec4 _Color;
 #line 48
 uniform vec4 _MainTex_ST;
 #line 80
-float unitySampleShadow( in vec4 shadowCoord );
-void surf( in Input IN, inout SurfaceOutput o );
-vec4 LightingLambert( in SurfaceOutput s, in vec3 lightDir, in float atten );
-vec4 xlat_main( in v2f_surf IN );
-#line 844
-float unitySampleShadow( in vec4 shadowCoord ) {
-    #line 846
-    float shadow = texture2DProj( _ShadowMapTexture, shadowCoord).x;
-    return shadow;
-}
-#line 22
-void surf( in Input IN, inout SurfaceOutput o ) {
-    vec4 c = (texture2D( _MainTex, IN.uv_MainTex) * _Color);
-    o.Albedo = c.xyz;
-    o.Alpha = c.w;
-}
 #line 749
 vec4 LightingLambert( in SurfaceOutput s, in vec3 lightDir, in float atten ) {
     #line 751
@@ -175,6 +159,18 @@ vec4 LightingLambert( in SurfaceOutput s, in vec3 lightDir, in float atten ) {
     #line 755
     c.w = s.Alpha;
     return c;
+}
+#line 22
+void surf( in Input IN, inout SurfaceOutput o ) {
+    vec4 c = (texture2D( _MainTex, IN.uv_MainTex) * _Color);
+    o.Albedo = c.xyz;
+    o.Alpha = c.w;
+}
+#line 844
+float unitySampleShadow( in vec4 shadowCoord ) {
+    #line 846
+    float shadow = texture2DProj( _ShadowMapTexture, shadowCoord).x;
+    return shadow;
 }
 #line 80
 vec4 xlat_main( in v2f_surf IN ) {

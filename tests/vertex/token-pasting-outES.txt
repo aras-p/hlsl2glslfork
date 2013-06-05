@@ -1,6 +1,5 @@
 uniform highp vec4 pastedName;
 #line 5
-highp vec4 xlat_main(  );
 #line 5
 highp vec4 xlat_main(  ) {
     return pastedName;

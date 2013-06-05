@@ -2,7 +2,6 @@
 
 #line 3
 uniform lowp sampler2DShadow shadowmap;
-highp vec4 xlat_main( in highp vec4 pos );
 #line 6
 highp vec4 xlat_main( in highp vec4 pos ) {
     #line 8

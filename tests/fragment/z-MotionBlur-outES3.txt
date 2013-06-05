@@ -32,27 +32,22 @@ uniform highp float _SoftZDistance;
 #line 42
 #line 47
 #line 52
-highp float softDepthCompare( in highp float za, in highp float zb );
-highp float cylinder( in highp vec2 x, in highp vec2 y, in highp vec2 v );
-highp float cone( in highp vec2 x, in highp vec2 y, in highp vec2 v );
-highp float Linear01Depth( in highp float z );
-highp vec4 xlat_main( in v2f i );
-#line 47
-highp float softDepthCompare( in highp float za, in highp float zb ) {
-    return clamp( (1.0 - ((za - zb) / _SoftZDistance)), 0.0, 1.0);
+#line 4
+highp float Linear01Depth( in highp float z ) {
+    return (1.0 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
+}
+#line 38
+highp float cone( in highp vec2 x, in highp vec2 y, in highp vec2 v ) {
+    return clamp( (1.0 - (length((x - y)) / length(v))), 0.0, 1.0);
 }
 #line 42
 highp float cylinder( in highp vec2 x, in highp vec2 y, in highp vec2 v ) {
     highp float lv = length(v);
     return (1.0 - smoothstep( (0.95 * lv), (1.05 * lv), length((x - y))));
 }
-#line 38
-highp float cone( in highp vec2 x, in highp vec2 y, in highp vec2 v ) {
-    return clamp( (1.0 - (length((x - y)) / length(v))), 0.0, 1.0);
-}
-#line 4
-highp float Linear01Depth( in highp float z ) {
-    return (1.0 / ((_ZBufferParams.x * z) + _ZBufferParams.y));
+#line 47
+highp float softDepthCompare( in highp float za, in highp float zb ) {
+    return clamp( (1.0 - ((za - zb) / _SoftZDistance)), 0.0, 1.0);
 }
 #line 52
 highp vec4 xlat_main( in v2f i ) {

@@ -2,7 +2,6 @@ float lut1[3];
 vec2 lut2[2];
 #line 3
 vec4 lut4[1];
-vec4 xlat_main(  );
 #line 5
 vec4 xlat_main(  ) {
     #line 7
