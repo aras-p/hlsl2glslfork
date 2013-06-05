@@ -16,23 +16,22 @@ static const bool kDumpShaderAST = false;
 #include <cstdarg>
 
 extern "C" {
-typedef char GLcharARB;		/* native character */
-typedef unsigned int GLhandleARB;	/* shader object handle */
-#define GL_VERTEX_SHADER_ARB              0x8B31
-#define GL_FRAGMENT_SHADER_ARB            0x8B30
-#define GL_OBJECT_COMPILE_STATUS_ARB      0x8B81
-typedef void (WINAPI * PFNGLDELETEOBJECTARBPROC) (GLhandleARB obj);
-typedef GLhandleARB (WINAPI * PFNGLCREATESHADEROBJECTARBPROC) (GLenum shaderType);
-typedef void (WINAPI * PFNGLSHADERSOURCEARBPROC) (GLhandleARB shaderObj, GLsizei count, const GLcharARB* *string, const GLint *length);
-typedef void (WINAPI * PFNGLCOMPILESHADERARBPROC) (GLhandleARB shaderObj);
-typedef void (WINAPI * PFNGLGETINFOLOGARBPROC) (GLhandleARB obj, GLsizei maxLength, GLsizei *length, GLcharARB *infoLog);
-typedef void (WINAPI * PFNGLGETOBJECTPARAMETERIVARBPROC) (GLhandleARB obj, GLenum pname, GLint *params);
-static PFNGLDELETEOBJECTARBPROC glDeleteObjectARB;
-static PFNGLCREATESHADEROBJECTARBPROC glCreateShaderObjectARB;
-static PFNGLSHADERSOURCEARBPROC glShaderSourceARB;
-static PFNGLCOMPILESHADERARBPROC glCompileShaderARB;
-static PFNGLGETINFOLOGARBPROC glGetInfoLogARB;
-static PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
+typedef char GLchar;		/* native character */
+#define GL_VERTEX_SHADER              0x8B31
+#define GL_FRAGMENT_SHADER            0x8B30
+#define GL_COMPILE_STATUS      0x8B81
+typedef void (WINAPI * PFNGLDELETESHADERPROC) (GLuint obj);
+typedef GLuint (WINAPI * PFNGLCREATESHADERPROC) (GLenum shaderType);
+typedef void (WINAPI * PFNGLSHADERSOURCEPROC) (GLuint shaderObj, GLsizei count, const GLchar* *string, const GLint *length);
+typedef void (WINAPI * PFNGLCOMPILESHADERPROC) (GLuint shaderObj);
+typedef void (WINAPI * PFNGLGETSHADERINFOLOGPROC) (GLuint obj, GLsizei maxLength, GLsizei *length, GLchar *infoLog);
+typedef void (WINAPI * PFNGLGETSHADERIVPROC) (GLuint obj, GLenum pname, GLint *params);
+static PFNGLDELETESHADERPROC glDeleteShader;
+static PFNGLCREATESHADERPROC glCreateShader;
+static PFNGLSHADERSOURCEPROC glShaderSource;
+static PFNGLCOMPILESHADERPROC glCompileShader;
+static PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
+static PFNGLGETSHADERIVPROC glGetShaderiv;
 }
 
 // forks stdio to debug console so when you hit a breakpoint you can more easily see what test is running:
@@ -173,8 +172,9 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 
 
 #if defined(__APPLE__)
-static CGLPixelFormatObj s_GLPixelFormat;
 static CGLContextObj s_GLContext;
+static CGLContextObj s_GLContext3;
+static bool s_GL3Active = false;
 #endif
 
 
@@ -214,19 +214,37 @@ static bool InitializeOpenGL ()
 	wglMakeCurrent( dc, rc );
 
 #elif defined(__APPLE__)
-	CGLPixelFormatAttribute attributes[4] = {
+	CGLPixelFormatAttribute attributes[] = {
 		kCGLPFAAccelerated,   // no software rendering
-		//kCGLPFAOpenGLProfile, // core profile with the version stated below
-		//(CGLPixelFormatAttribute) kCGLOGLPVersion_3_2_Core,
 		(CGLPixelFormatAttribute) 0
 	};
-	CGLError errorCode;
+	CGLPixelFormatAttribute attributes3[] = {
+		kCGLPFAAccelerated,   // no software rendering
+		kCGLPFAOpenGLProfile, // core profile with the version stated below
+		(CGLPixelFormatAttribute) kCGLOGLPVersion_3_2_Core,
+		(CGLPixelFormatAttribute) 0
+	};
 	GLint num;
-	//@TODO: error checking
-	errorCode = CGLChoosePixelFormat(attributes, &s_GLPixelFormat, &num);
-	errorCode = CGLCreateContext(s_GLPixelFormat, NULL, &s_GLContext);
-	CGLDestroyPixelFormat(s_GLPixelFormat);
-	errorCode = CGLSetCurrentContext(s_GLContext);
+	CGLPixelFormatObj pix;
+	
+	// create legacy context
+	CGLChoosePixelFormat(attributes, &pix, &num);
+	if (pix == NULL)
+		return false;
+	CGLCreateContext(pix, NULL, &s_GLContext);
+	if (s_GLContext == NULL)
+		return false;
+	CGLDestroyPixelFormat(pix);
+	CGLSetCurrentContext(s_GLContext);
+	
+	// create core 3.2 context
+	CGLChoosePixelFormat(attributes3, &pix, &num);
+	if (pix == NULL)
+		return false;
+	CGLCreateContext(pix, NULL, &s_GLContext3);
+	if (s_GLContext3 == NULL)
+		return false;
+	CGLDestroyPixelFormat(pix);
 	
 #else
         int argc = 0;
@@ -238,17 +256,23 @@ static bool InitializeOpenGL ()
 	
 	// check if we have GLSL
 	const char* extensions = (const char*)glGetString(GL_EXTENSIONS);
-	hasGLSL = strstr(extensions, "GL_ARB_shader_objects") && strstr(extensions, "GL_ARB_vertex_shader") && strstr(extensions, "GL_ARB_fragment_shader");
+	hasGLSL = extensions != NULL && strstr(extensions, "GL_ARB_shader_objects") && strstr(extensions, "GL_ARB_vertex_shader") && strstr(extensions, "GL_ARB_fragment_shader");
+	
+	#if defined(__APPLE__)
+	// using core profile; always has GLSL
+	hasGLSL = true;
+	#endif
+	
 	
 #ifdef _MSC_VER
 	if (hasGLSL)
 	{
-		glDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC)wglGetProcAddress("glDeleteObjectARB");
-		glCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC)wglGetProcAddress("glCreateShaderObjectARB");
-		glShaderSourceARB = (PFNGLSHADERSOURCEARBPROC)wglGetProcAddress("glShaderSourceARB");
-		glCompileShaderARB = (PFNGLCOMPILESHADERARBPROC)wglGetProcAddress("glCompileShaderARB");
-		glGetInfoLogARB = (PFNGLGETINFOLOGARBPROC)wglGetProcAddress("glGetInfoLogARB");
-		glGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC)wglGetProcAddress("glGetObjectParameterivARB");
+		glDeleteShader = (PFNGLDELETESHADERPROC)wglGetProcAddress("glDeleteShader");
+		glCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
+		glShaderSource = (PFNGLSHADERSOURCEPROC)wglGetProcAddress("glShaderSource");
+		glCompileShader = (PFNGLCOMPILESHADERPROC)wglGetProcAddress("glCompileShader");
+		glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)wglGetProcAddress("glGetShaderInfoLog");
+		glGetShaderiv = (PFNGLGETSHADERIVPROC)wglGetProcAddress("glGetShaderiv");
 	}
 #endif
 	
@@ -259,11 +283,11 @@ static bool InitializeOpenGL ()
 static void CleanupOpenGL()
 {
 	#if defined(__APPLE__)
+	CGLSetCurrentContext(NULL);
 	if (s_GLContext)
-	{
-		CGLSetCurrentContext(NULL);
 		CGLDestroyContext(s_GLContext);
-	}
+	if (s_GLContext3)
+		CGLDestroyContext(s_GLContext3);
 	#endif
 }
 
@@ -286,22 +310,67 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 {
 	const char* sourcePtr = source.c_str();
 	std::string newSrc;
+
+	
+#	ifdef __APPLE__
+	// Mac core context does not accept any older shader versions, so need to switch to
+	// either legacy context or core one.
+	const bool need3 = (version >= ETargetGLSL_ES_300);
+	if (need3)
+	{
+		if (!s_GL3Active)
+			CGLSetCurrentContext(s_GLContext3);
+		s_GL3Active = true;
+	}
+	else
+	{
+		if (s_GL3Active)
+			CGLSetCurrentContext(s_GLContext);
+		s_GL3Active = false;
+	}
+#	endif
+	
+	
 	if (version == ETargetGLSL_ES_100 || version == ETargetGLSL_ES_300)
 	{
 		newSrc.reserve(source.size());
 		if (version == ETargetGLSL_ES_300)
+		{
 			newSrc += "#version 150\n";
+		}
 		newSrc += "#define lowp\n";
 		newSrc += "#define mediump\n";
 		newSrc += "#define highp\n";
-		newSrc += "#define texture2DLodEXT texture2DLod\n";
-		newSrc += "#define texture2DProjLodEXT texture2DProjLod\n";
-		newSrc += "#define texture2DGradEXT texture2DGradARB\n";
-		newSrc += "#define textureCubeLodEXT textureCubeLod\n";
-		newSrc += "#define textureCubeGradEXT textureCubeGradARB\n";
-		newSrc += "#define gl_FragDepthEXT gl_FragDepth\n";
-		newSrc += "float shadow2DEXT (sampler2DShadow s, vec3 p) { return shadow2D(s,p).r; }\n";
-		newSrc += "float shadow2DProjEXT (sampler2DShadow s, vec4 p) { return shadow2DProj(s,p).r; }\n";
+		if (version == ETargetGLSL_ES_300)
+		{
+			newSrc += "#define gl_Vertex _glesVertex\n";
+			newSrc += "#define gl_Normal _glesNormal\n";
+			newSrc += "#define gl_Color _glesColor\n";
+			newSrc += "#define gl_MultiTexCoord0 _glesMultiTexCoord0\n";
+			newSrc += "#define gl_MultiTexCoord1 _glesMultiTexCoord1\n";
+			newSrc += "#define gl_MultiTexCoord2 _glesMultiTexCoord2\n";
+			newSrc += "#define gl_MultiTexCoord3 _glesMultiTexCoord3\n";
+			newSrc += "in highp vec4 _glesVertex;\n";
+			newSrc += "in highp vec3 _glesNormal;\n";
+			newSrc += "in lowp vec4 _glesColor;\n";
+			newSrc += "in highp vec4 _glesMultiTexCoord0;\n";
+			newSrc += "in highp vec4 _glesMultiTexCoord1;\n";
+			newSrc += "in highp vec4 _glesMultiTexCoord2;\n";
+			newSrc += "in highp vec4 _glesMultiTexCoord3;\n";
+			newSrc += "#define gl_FragData _glesFragData\n";
+			newSrc += "out lowp vec4 _glesFragData[4];\n";
+		}
+		if (version < ETargetGLSL_ES_300)
+		{
+			newSrc += "#define texture2DLodEXT texture2DLod\n";
+			newSrc += "#define texture2DProjLodEXT texture2DProjLod\n";
+			newSrc += "#define texture2DGradEXT texture2DGradARB\n";
+			newSrc += "#define textureCubeLodEXT textureCubeLod\n";
+			newSrc += "#define textureCubeGradEXT textureCubeGradARB\n";
+			newSrc += "#define gl_FragDepthEXT gl_FragDepth\n";
+			newSrc += "float shadow2DEXT (sampler2DShadow s, vec3 p) { return shadow2D(s,p).r; }\n";
+			newSrc += "float shadow2DProjEXT (sampler2DShadow s, vec4 p) { return shadow2DProj(s,p).r; }\n";
+		}
 		newSrc += source;
 		replace_string (newSrc, "GL_EXT_shader_texture_lod", "GL_ARB_shader_texture_lod", 0);
 		replace_string (newSrc, "#extension GL_OES_standard_derivatives : require", "", 0);
@@ -311,21 +380,27 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 		sourcePtr = newSrc.c_str();
 	}
 	
-	GLhandleARB shader = glCreateShaderObjectARB (vertex ? GL_VERTEX_SHADER_ARB : GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB (shader, 1, &sourcePtr, NULL);
-	glCompileShaderARB (shader);
+	GLuint shader = glCreateShader (vertex ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
+	glShaderSource (shader, 1, &sourcePtr, NULL);
+	glCompileShader (shader);
 	GLint status;
-	glGetObjectParameterivARB (shader, GL_OBJECT_COMPILE_STATUS_ARB, &status);
+	glGetShaderiv (shader, GL_COMPILE_STATUS, &status);
 	bool res = true;
 	if (status == 0)
 	{
 		char log[4096];
 		GLsizei logLength;
-		glGetInfoLogARB (shader, sizeof(log), &logLength, log);
-		printf ("  glsl compile error:\n%s\n", log);
+		glGetShaderInfoLog (shader, sizeof(log), &logLength, log);
+		printf ("  glsl compile error:\n%s\n  shader:\n%s\n", log, sourcePtr);
 		res = false;
 	}
-	glDeleteObjectARB (shader);
+	glDeleteShader (shader);
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR)
+	{
+		printf("  GL error: 0x%x\n", err);
+		res = false;
+	}
 	return res;
 }
 
@@ -632,6 +707,8 @@ int main (int argc, const char** argv)
 	}
 
 	bool hasOpenGL = InitializeOpenGL ();
+	if (!hasOpenGL)
+		printf("NOTE: will not check GLSL with actual driver (no GL/GLSL)\n");
 	
 	clock_t time0 = clock();
 	
@@ -646,7 +723,7 @@ int main (int argc, const char** argv)
 		printf ("TESTING %s...\n", kTypeName[type]);
 		const ETargetVersion version1 = kTargets1[type];
 		const ETargetVersion version2 = kTargets2[type];
-		//const ETargetVersion version3 = kTargets3[type];
+		const ETargetVersion version3 = kTargets3[type];
 		std::string testFolder = baseFolder + "/" + kTypeName[type];
 		StringVector inputFiles = GetFiles (testFolder, "-in.txt");
 
@@ -668,8 +745,8 @@ int main (int argc, const char** argv)
 				ok = TestFile(TestRun(type), testFolder + "/" + inname, version1, 0, hasOpenGL);
 				if (ok && version2 != ETargetVersionCount)
 					ok = TestFile(TestRun(type), testFolder + "/" + inname, version2, ETranslateOpEmitGLSL120ArrayInitWorkaround, hasOpenGL);
-				//if (ok && version3 != ETargetVersionCount)
-				//	ok = TestFile(TestRun(type), testFolder + "/" + inname, version3, ETranslateOpEmitGLSL120ArrayInitWorkaround, hasOpenGL);
+				if (ok && version3 != ETargetVersionCount)
+					ok = TestFile(TestRun(type), testFolder + "/" + inname, version3, ETranslateOpEmitGLSL120ArrayInitWorkaround, hasOpenGL);
 			}
 			
 			if (!ok)
