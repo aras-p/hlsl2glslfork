@@ -1,6 +1,6 @@
-vec2 xll_matrixindex (mat2 m, int i) { vec2 v; v.x=m[0][i]; v.y=m[1][i]; return v; }
-vec3 xll_matrixindex (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }
-vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }
+vec2 xll_matrixindex_mf2x2_i (mat2 m, int i) { vec2 v; v.x=m[0][i]; v.y=m[1][i]; return v; }
+vec3 xll_matrixindex_mf3x3_i (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }
+vec4 xll_matrixindex_mf4x4_i (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }
 #line 10
 struct appdata_full {
     highp vec4 vertex;
@@ -81,7 +81,7 @@ highp vec4 AnimateVertex( in highp vec4 pos, in highp vec3 normal, in highp vec4
     #line 76
     highp float fDetailAmp = 0.1;
     highp float fBranchAmp = 0.3;
-    highp float fObjPhase = dot( xll_matrixindex (_Object2World, 3).xyz, vec3( 1.0));
+    highp float fObjPhase = dot( xll_matrixindex_mf4x4_i (_Object2World, 3).xyz, vec3( 1.0));
     highp float fBranchPhase = (fObjPhase + animParams.x);
     #line 80
     highp float fVtxPhase = dot( pos.xyz, vec3( (animParams.y + fBranchPhase)));

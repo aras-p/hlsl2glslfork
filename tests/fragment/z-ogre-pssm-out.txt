@@ -1,4 +1,4 @@
-vec4 xll_lit( float n_dot_l, float n_dot_h, float m ) {
+vec4 xll_lit_f_f_f( float n_dot_l, float n_dot_h, float m ) {
    return vec4(1, max(0.0, n_dot_l), pow(max(0.0, n_dot_h) * step(0.0, n_dot_l), m), 1.0);
 }
 #line 1
@@ -49,7 +49,7 @@ void xlat_main( in vec3 uv, in vec3 OSlightDir, in vec3 OShalfAngle, in vec4 Lig
     float shininess = specularColour.w;
     specularColour.w = 1.0;
     #line 80
-    vec4 lighting = (xll_lit( dot( normal, lightVec), dot( normal, halfAngle), (shininess * 128.0)) * shadowing);
+    vec4 lighting = (xll_lit_f_f_f( dot( normal, lightVec), dot( normal, halfAngle), (shininess * 128.0)) * shadowing);
     oColour = ((diffuseColour * clamp( (ambient + (lightDiffuse * lighting.y)), vec4( 0.0), vec4( 1.0))) + ((lightSpecular * specularColour) * lighting.z));
     #line 84
     oColour.w = diffuseColour.w;

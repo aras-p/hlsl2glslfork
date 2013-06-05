@@ -1,4 +1,4 @@
-void xll_clip(float x) {
+void xll_clip_f(float x) {
   if ( x<0.0 ) discard;
 }
 #line 11
@@ -28,7 +28,7 @@ uniform vec4 _SpecColor;
 vec4 xlat_main( in v2f i ) {
     #line 32
     vec4 col = texture2D( _MainTex, i.uv);
-    xll_clip((col.w - _Cutoff));
+    xll_clip_f((col.w - _Cutoff));
     vec3 albedo = (col.xyz * i.color);
     #line 37
     float specular = (texture2D( _BumpSpecMap, i.uv).x * 128.0);

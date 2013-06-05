@@ -1,22 +1,22 @@
-float xll_saturate( float x) {
+float xll_saturate_f( float x) {
   return clamp( x, 0.0, 1.0);
 }
-vec2 xll_saturate( vec2 x) {
+vec2 xll_saturate_vf2( vec2 x) {
   return clamp( x, 0.0, 1.0);
 }
-vec3 xll_saturate( vec3 x) {
+vec3 xll_saturate_vf3( vec3 x) {
   return clamp( x, 0.0, 1.0);
 }
-vec4 xll_saturate( vec4 x) {
+vec4 xll_saturate_vf4( vec4 x) {
   return clamp( x, 0.0, 1.0);
 }
-mat2 xll_saturate(mat2 m) {
+mat2 xll_saturate_mf2x2(mat2 m) {
   return mat2( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0));
 }
-mat3 xll_saturate(mat3 m) {
+mat3 xll_saturate_mf3x3(mat3 m) {
   return mat3( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0), clamp(m[2], 0.0, 1.0));
 }
-mat4 xll_saturate(mat4 m) {
+mat4 xll_saturate_mf4x4(mat4 m) {
   return mat4( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0), clamp(m[2], 0.0, 1.0), clamp(m[3], 0.0, 1.0));
 }
 #line 11
@@ -45,7 +45,7 @@ highp vec4 xlat_main( in v2f_withBlurCoords i ) {
     for ( ; (l < 7); (l++)) {
         #line 30
         highp vec4 tap = texture( _MainTex, coords);
-        highp float weight = ((2.0 * xll_saturate((tap.w - 0.5))) * curve[l]);
+        highp float weight = ((2.0 * xll_saturate_f((tap.w - 0.5))) * curve[l]);
         sum += (tap * weight);
         weightSum += weight;
         #line 34
