@@ -21,7 +21,7 @@ mat4 xll_saturate(mat4 m) {
 }
 #line 11
 struct v2f_withBlurCoords {
-    mediump vec4 pos;
+    highp vec4 pos;
     mediump vec4 uv;
     mediump vec2 offs;
 };

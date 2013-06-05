@@ -3,7 +3,7 @@ mat3 xll_constructMat3( mat4 m) {
 }
 #line 14
 struct v2f {
-    mediump vec4 pos;
+    highp vec4 pos;
     mediump vec4 color;
 };
 #line 9
