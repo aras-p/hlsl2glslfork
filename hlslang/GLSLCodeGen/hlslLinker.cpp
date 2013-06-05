@@ -646,12 +646,12 @@ static const char* kShaderTypeNames[2] = { "Vertex", "Fragment" };
 
 
 static void add_extension_from_semantic(EAttribSemantic sem, ExtensionSet& extensions)
-{
-	if (sem == EAttrSemPrimitiveID || sem == EAttrSemVertexID)
-		extensions.insert("GL_EXT_gpu_shader4");
-	if (sem == EAttrSemInstanceID)
-		extensions.insert("GL_ARB_draw_instanced");
-}
+	{
+		if (sem == EAttrSemPrimitiveID || sem == EAttrSemVertexID)
+			extensions.insert("GL_EXT_gpu_shader4");
+		if (sem == EAttrSemInstanceID)
+			extensions.insert("GL_ARB_draw_instanced");
+	}
 
 
 bool HlslLinker::linkerSanityCheck(HlslCrossCompiler* compiler, const char* entryFunc)
@@ -702,12 +702,12 @@ bool HlslLinker::buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, c
 		infoSink.info << "Failed to find entry function: '" << entryPoint <<"'\n";
 		return false;
 	}
-	
+
 	//add all the called functions to the list
 	calledFunctions.push_back (funcMain);
 	if (!addCalledFunctions (funcMain, calledFunctions, functionList))
 		infoSink.info << "Failed to resolve all called functions in the " << kShaderTypeNames[lang] << " shader\n";
-	
+
 	return true;
 }
 
@@ -989,7 +989,20 @@ void HlslLinker::emitOutputNonStructParam(GlslSymbol* sym, EShLanguage lang, boo
 	if (sym->getQualifier() != EqtInOut)
 	{
 		preamble << "    ";
-		writeType (preamble, sym->getType(), NULL, usePrecision?sym->getPrecision():EbpUndefined);
+
+        // UNITY CUSTOM: for vprog output with position semantic - force highp
+        TPrecision prec = usePrecision ? sym->getPrecision() : EbpUndefined;
+        if(sym->hasSemantic() && usePrecision)
+        {
+            const char* str = sym->getSemantic().c_str();
+            int         len = sym->getSemantic().length();
+
+            extern bool IsPositionSemantics(const char* sem, int len);
+            if(IsPositionSemantics(str, len))
+                prec = EbpHigh;
+        }
+
+        writeType (preamble, sym->getType(), NULL,prec);
 		preamble << " xlt_" << sym->getName() << ";\n";                     
 	}
 	

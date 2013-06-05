@@ -616,6 +616,17 @@ void TGlslOutputTraverser::traverseParameterSymbol(TIntermSymbol *node, TIntermT
    const char* semantic = "";
    if (node->getInfo())
       semantic = node->getInfo()->getSemantic().c_str();
+
+    TPrecision prec = goit->m_UsePrecision ? node->getPrecision() : EbpUndefined;
+    if(semantic[0] && goit->m_UsePrecision)
+    {
+        int len = ::strlen(semantic);
+
+        extern bool IsPositionSemantics(const char* sem, int len);
+        if(IsPositionSemantics(semantic, len))
+            prec = EbpHigh;
+    }
+
    GlslSymbol * sym = new GlslSymbol( node->getSymbol().c_str(), semantic, node->getId(),
                                       translateType(node->getTypePointer()), goit->m_UsePrecision?node->getPrecision():EbpUndefined, translateQualifier(node->getQualifier()), array);
    current->addParameter(sym);
@@ -1189,7 +1200,7 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
 
    case EOpLength:         op = "length";  funcStyle = true; prefix = true; break;
    case EOpNormalize:      op = "normalize";  funcStyle = true; prefix = true; break;
-   case EOpDPdx:           
+   case EOpDPdx:
 	   current->addLibFunction(EOpDPdx);
 	   op = "xll_dFdx";
 	   funcStyle = true;
@@ -1628,7 +1639,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpTexCube:
       if (argCount == 2)
-         writeTex( "textureCube", node, goit);
+              writeTex("textureCube", node, goit);
       else
       {
          current->addLibFunction(EOpTexCubeGrad);
@@ -1829,6 +1840,18 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
          m.type = translateType( it->type);
          m.arraySize = it->type->isArray() ? it->type->getArraySize() : 0;
 		 m.precision = m_UsePrecision ? it->type->getPrecision() : EbpUndefined;
+
+         if(it->type->hasSemantic() && m_UsePrecision)
+         {
+            const char* str = it->type->getSemantic().c_str();
+            int         len = it->type->getSemantic().length();
+
+            extern bool IsPositionSemantics(const char* sem, int len);
+            if(IsPositionSemantics(str, len))
+                m.precision = EbpHigh;
+         }
+
+
          s->addMember(m);
       }
 
