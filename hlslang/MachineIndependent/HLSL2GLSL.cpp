@@ -117,12 +117,6 @@ TSymbolTable SymbolTables[EShLangCount];
 // Global pool allocator (per process)
 TPoolAllocator* PerProcessGPA = 0;
 
-///ACS: added fixedTargetVersion
-///     * If left as default (ETargetVersionCount) Hlsl2Glsl operates as normal
-///     * If set, only Hlsl2Glsl_Translate calls of matching target will work, and 
-///       when set to higher than ETargetGLSL_120, will emit non-deprecated-after-120
-///       texture lookup calls e.g. texture() & textureLod() instead of texture2D() & textureCubeLod()
-ETargetVersion FixedTargetVersion = ETargetVersionCount;
 
 /// Initializize the symbol table
 /// \param BuiltInStrings
@@ -230,15 +224,12 @@ static bool GenerateBuiltInSymbolTable(TInfoSink& infoSink, TSymbolTable* symbol
 }
 
 
-// \todo [2013-05-14 pyry] Remove fixed target version.
-int C_DECL Hlsl2Glsl_Initialize(ETargetVersion fixedTargetVersion /*= ETargetVersionCount*/)
+int C_DECL Hlsl2Glsl_Initialize()
 {
    TInfoSink infoSink;
 
    if (!InitProcess())
       return 0;
-
-   FixedTargetVersion = fixedTargetVersion; 
 
    if (!PerProcessGPA)
    {
@@ -412,14 +403,6 @@ int C_DECL Hlsl2Glsl_Translate(
 
    HlslCrossCompiler* compiler = handle;
    compiler->infoSink.info.erase();
-
-   //ACS: added FixedTargetVersion
-   if (FixedTargetVersion!=ETargetVersionCount) {
-       if(targetVersion!=FixedTargetVersion) {
-           compiler->infoSink.info.message(EPrefixError, "Hlsl2Glsl was initialized with fixed target. Requested target does not match.");
-           return 0;
-       }
-   }
 
    // \todo [2013-05-14 pyry] Maintain different support library per target version.
    initializeHLSLSupportLibrary(targetVersion);
