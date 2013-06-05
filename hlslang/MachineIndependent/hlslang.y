@@ -1836,13 +1836,13 @@ type_specifier_nonarray
         SET_BASIC_TYPE($$,$1,EbtSamplerRect,EbpUndefined);
     }
     | SAMPLERRECTSHADOW {
-        SET_BASIC_TYPE($$,$1,EbtSamplerRectShadow,EbpUndefined);
+        SET_BASIC_TYPE($$,$1,EbtSamplerRectShadow,EbpLow); // ES3 doesn't have default precision for shadow samplers, so always emit lowp
     } 
     | SAMPLER1DSHADOW {
-        SET_BASIC_TYPE($$,$1,EbtSampler1DShadow,EbpUndefined);
+        SET_BASIC_TYPE($$,$1,EbtSampler1DShadow,EbpLow); // ES3 doesn't have default precision for shadow samplers, so always emit lowp
     } 
     | SAMPLER2DSHADOW {
-        SET_BASIC_TYPE($$,$1,EbtSampler2DShadow,EbpMedium);
+        SET_BASIC_TYPE($$,$1,EbtSampler2DShadow,EbpLow); // ES3 doesn't have default precision for shadow samplers, so always emit lowp
     }     
     | struct_specifier {
         $$ = $1;

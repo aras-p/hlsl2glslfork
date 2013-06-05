@@ -1,7 +1,7 @@
 #extension GL_EXT_shadow_samplers : require
 
 #line 3
-uniform sampler2DShadow shadowmap;
+uniform lowp sampler2DShadow shadowmap;
 highp vec4 xlat_main( in highp vec4 pos );
 #line 6
 highp vec4 xlat_main( in highp vec4 pos ) {
