@@ -642,12 +642,8 @@ static void EmitCalledFunctions (std::stringstream& shader, const FunctionSet& f
 	if (functions.empty())
 		return;
 
-	for (FunctionSet::const_reverse_iterator fit = functions.rbegin(); fit != functions.rend(); fit++) // emit backwards, will put least used ones in front
-	{
-		shader << (*fit)->getPrototype() << ";\n";
-	}
-
-	for (FunctionSet::const_reverse_iterator fit = functions.rbegin(); fit != functions.rend(); fit++) // emit backwards, will put least used ones in front
+	// Functions must be emitted in reverse order as they are sorted topologically in top to bottom.
+	for (FunctionSet::const_reverse_iterator fit = functions.rbegin(); fit != functions.rend(); fit++)
 	{
 		shader << "\n";
 		OutputLineDirective(shader, (*fit)->getLine());
@@ -708,6 +704,71 @@ bool HlslLinker::linkerSanityCheck(HlslCrossCompiler* compiler, const char* entr
 	return true;
 }
 
+typedef std::map<std::string, int> FunctionUseCounts;
+
+static GlslFunction* resolveFunctionByMangledName (const std::vector<GlslFunction*>& functions, const std::string& mangledName)
+{
+	for (std::vector<GlslFunction*>::const_iterator iter = functions.begin(); iter != functions.end(); ++iter)
+	{
+		if ((*iter)->getMangledName() == mangledName)
+			return *iter;
+	}
+	return 0;
+}
+
+static bool sortFunctionsTopologically (std::vector<GlslFunction*>& dst, const std::vector<GlslFunction*>& src)
+{
+	dst.clear();
+
+	// Build function use counts.
+	FunctionUseCounts useCounts;
+	for (std::vector<GlslFunction*>::const_iterator funcIter = src.begin(); funcIter != src.end(); ++funcIter)
+		useCounts[(*funcIter)->getMangledName()] = 0;
+
+	for (std::vector<GlslFunction*>::const_iterator funcIter = src.begin(); funcIter != src.end(); ++funcIter)
+	{
+		std::set<std::string> calledNames = (*funcIter)->getCalledFunctions();
+		for (std::set<std::string>::const_iterator callIter = calledNames.begin(); callIter != calledNames.end(); ++callIter)
+			useCounts[*callIter] += 1;
+	}
+
+	std::vector<GlslFunction*> liveSet;
+
+	// Init live set with functions that have use count 0 (should be only main())
+	for (std::vector<GlslFunction*>::const_iterator funcIter = src.begin(); funcIter != src.end(); ++funcIter)
+	{
+		if (useCounts[(*funcIter)->getMangledName()] == 0)
+			liveSet.push_back(*funcIter);
+	}
+
+	// Process until live set is empty.
+	while (!liveSet.empty())
+	{
+		GlslFunction* curFunction = liveSet.back();
+		liveSet.pop_back();
+
+		dst.push_back(curFunction);
+
+		// Decrement use counts and add to live set if reaches zero.
+		std::set<std::string> calledNames = curFunction->getCalledFunctions();
+		for (std::set<std::string>::const_iterator callIter = calledNames.begin(); callIter != calledNames.end(); ++callIter)
+		{
+			int& useCount = useCounts[*callIter];
+			useCount -= 1;
+			if (useCount == 0)
+			{
+				GlslFunction* newLiveFunc = resolveFunctionByMangledName(src, *callIter);
+				if (!newLiveFunc)
+					return false; // Not found - why?
+				liveSet.push_back(newLiveFunc);
+			}
+		}
+	}
+
+	// If dependency graph contains cycles, some functions will never end up in live set and from there
+	// to sorted list. This checks if sort succeeded.
+	return dst.size() == src.size();
+}
 
 bool HlslLinker::buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, const std::string& entryPoint, GlslFunction*& globalFunction, std::vector<GlslFunction*>& functionList, FunctionSet& calledFunctions, GlslFunction*& funcMain)
 {
@@ -743,9 +804,16 @@ bool HlslLinker::buildFunctionLists(HlslCrossCompiler* comp, EShLanguage lang, c
 	}
 
 	//add all the called functions to the list
-	calledFunctions.push_back (funcMain);
-	if (!addCalledFunctions (funcMain, calledFunctions, functionList))
+	std::vector<GlslFunction*> functionsToSort;
+	functionsToSort.push_back (funcMain);
+	if (!addCalledFunctions (funcMain, functionsToSort, functionList))
 		infoSink.info << "Failed to resolve all called functions in the " << kShaderTypeNames[lang] << " shader\n";
+
+	if (!sortFunctionsTopologically (calledFunctions, functionsToSort))
+	{
+		infoSink.info << "Failed to sort functions topologically, shader may contain recursion\n";
+		return false;
+	}
 
 	return true;
 }
