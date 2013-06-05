@@ -230,7 +230,7 @@ static bool GenerateBuiltInSymbolTable(TInfoSink& infoSink, TSymbolTable* symbol
 }
 
 
-
+// \todo [2013-05-14 pyry] Remove fixed target version.
 int C_DECL Hlsl2Glsl_Initialize(ETargetVersion fixedTargetVersion /*= ETargetVersionCount*/)
 {
    TInfoSink infoSink;
@@ -262,8 +262,6 @@ int C_DECL Hlsl2Glsl_Initialize(ETargetVersion fixedTargetVersion /*= ETargetVer
       symTables[EShLangVertex].pop();
       symTables[EShLangFragment].pop();
 
-      initializeHLSLSupportLibrary(FixedTargetVersion);
-
       builtInPoolAllocator->popAll();
       delete builtInPoolAllocator;        
 
@@ -285,7 +283,6 @@ void C_DECL Hlsl2Glsl_Shutdown()
 		PerProcessGPA->popAll();
 		delete PerProcessGPA;
 		PerProcessGPA = NULL;
-		finalizeHLSLSupportLibrary();
 	}
 	
 	DetachThread();
@@ -424,6 +421,9 @@ int C_DECL Hlsl2Glsl_Translate(
        }
    }
 
+   // \todo [2013-05-14 pyry] Maintain different support library per target version.
+   initializeHLSLSupportLibrary(targetVersion);
+
 	if (!compiler->IsASTTransformed() || !compiler->IsGlslProduced())
 	{
 		compiler->infoSink.info.message(EPrefixError, "Shader does not have valid object code.");
@@ -431,6 +431,8 @@ int C_DECL Hlsl2Glsl_Translate(
 	}
 
    bool ret = compiler->GetLinker()->link(compiler, entry, targetVersion, options);
+
+   finalizeHLSLSupportLibrary();
 
    return ret ? 1 : 0;
 }
@@ -515,6 +517,7 @@ static bool kVersionUsesPrecision[ETargetVersionCount] = {
 	false,	// 1.10
 	false,	// 1.20
     false,	// 1.40
+	true,	// ES 3.0
 };
 
 bool C_DECL Hlsl2Glsl_VersionUsesPrecision (ETargetVersion version)

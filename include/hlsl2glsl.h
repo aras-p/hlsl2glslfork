@@ -10,6 +10,7 @@
    #define SH_IMPORT_EXPORT
 #else
    #define SH_IMPORT_EXPORT
+   #define __fastcall
    #define C_DECL
 #endif
 
@@ -156,8 +157,8 @@ enum ETargetVersion
 	ETargetGLSL_ES_100,
 	ETargetGLSL_110,
 	ETargetGLSL_120,
-    ETargetGLSL_140,
-	// ETargetGLSL_ES_300,
+	ETargetGLSL_140,
+	ETargetGLSL_ES_300,
 	// ETargetGLSL_330,
 	ETargetVersionCount
 };

@@ -30,6 +30,7 @@ Jutta Degener, 1995
     #define YYPARSE_PARAM_DECL TParseContext&
     #define YY_DECL int yylex(YYSTYPE* pyylval, TParseContext& parseContext)
     #define YYLEX_PARAM parseContext
+	void yyerror(const char*);
 #else
     #define YYPARSE_PARAM parseContextLocal
     #define parseContext (*((TParseContext*)(parseContextLocal)))
@@ -1841,7 +1842,7 @@ type_specifier_nonarray
         SET_BASIC_TYPE($$,$1,EbtSampler1DShadow,EbpUndefined);
     } 
     | SAMPLER2DSHADOW {
-        SET_BASIC_TYPE($$,$1,EbtSampler2DShadow,EbpUndefined);
+        SET_BASIC_TYPE($$,$1,EbtSampler2DShadow,EbpMedium);
     }     
     | struct_specifier {
         $$ = $1;

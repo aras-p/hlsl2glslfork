@@ -17,7 +17,7 @@ typedef std::map< TOperator, std::pair<std::string,std::string> > CodeExtensionM
 static CodeExtensionMap *hlslSupportLibExtensions = 0;
 static CodeExtensionMap *hlslSupportLibExtensionsESOverrides = 0;
 
-void insertPre130TextureLookups() 
+void insertPre130TextureLookups()
 {
     hlslSupportLib->insert( CodeMap::value_type( EOpTex1DBias,
         "vec4 xll_tex1Dbias(sampler1D s, vec4 coord) {\n"
@@ -94,40 +94,31 @@ void insertPre130TextureLookups()
         );
     hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
-    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeBias,   
+    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeBias,
         "vec4 xll_texCUBEbias(samplerCube s, vec4 coord) {\n"
         "  return textureCube( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
 
-    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeLod,   
+    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeLod,
         "vec4 xll_texCUBElod(samplerCube s, vec4 coord) {\n"
         "  return textureCubeLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
     hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
-	hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTexCubeLod,
-	   "vec4 xll_texCUBElod(samplerCube s, vec4 coord) {\n"
-	   "  return textureCubeLodEXT( s, coord.xyz, coord.w);\n"
-	   "}\n\n" )
-	  );
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","GL_EXT_shader_texture_lod")));
-
-
     hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeGrad,  
-        "vec4 xll_texCUBEgrad(samplerCube s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
+        "vec4 xll_texCUBEgrad(samplerCUBE s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return textureCubeGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
     hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
-	
-	hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTexCubeGrad,
-	   "vec4 xll_texCUBEgrad(samplerCube s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
-	   "  return textureCubeGradEXT( s, coord, ddx, ddy);\n"
-	   "}\n\n" )
-	  );
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("GL_EXT_shader_texture_lod","GL_EXT_shader_texture_lod")));
+    hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTexCubeLod,
+		"vec4 xll_texCUBElod(samplerCube s, vec4 coord) {\n"
+		"  return textureCubeLodEXT( s, coord.xyz, coord.w);\n"
+		"}\n\n" )
+		);
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","GL_EXT_shader_texture_lod")));
 
     // shadow2D / shadow2Dproj
     hlslSupportLib->insert(CodeMap::value_type(EOpShadow2D,
@@ -148,7 +139,7 @@ void insertPre130TextureLookups()
 
 }
 
-void insertPost120TextureLookups() 
+void insertPost120TextureLookups()
 {
     hlslSupportLib->insert( CodeMap::value_type( EOpTex1DBias,
         "vec4 xll_tex1Dbias(sampler1D s, vec4 coord) {\n"
@@ -163,13 +154,7 @@ void insertPost120TextureLookups()
         );
     hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
-    hlslSupportLib->insert( CodeMap::value_type( EOpTex1DGrad,
-        "vec4 xll_tex1Dgrad(sampler1D s, float coord, float ddx, float ddy) {\n"
-        "  return textureGrad( s, coord, ddx, ddy);\n"
-        "}\n\n" )
-        );
-    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
-
+        
     hlslSupportLib->insert( CodeMap::value_type( EOpTex2DBias,
         "vec4 xll_tex2Dbias(sampler2D s, vec4 coord) {\n"
         "  return texture( s, coord.xy, coord.w);\n"
@@ -189,20 +174,36 @@ void insertPost120TextureLookups()
         "}\n\n" )
         );
     //hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DLod, std::make_pair("","GL_EXT_shader_texture_lod")));
+    hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
+
+    hlslSupportLib->insert( CodeMap::value_type( EOpTex1DGrad,
+        "vec4 xll_tex1Dgrad(sampler1D s, float coord, float ddx, float ddy) {\n"
+        "  return textureGrad( s, coord, ddx, ddy);\n"
+        "}\n\n" )
+        );
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex1DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
+
+    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DBias,
+        "vec4 xll_tex2Dbias(sampler2D s, vec4 coord) {\n"
+        "  return texture( s, coord.xy, coord.w);\n"
+        "}\n\n" )
+        );
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex2DGrad,
         "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
         "   return textureGrad( s, coord, ddx, ddy);\n"
+		"}\n\n" )
+		);
+    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DLod,
+        "vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {\n"
+        "   return textureLod( s, coord.xy, coord.w);\n"
         "}\n\n" )
         );
     //hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
-    hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTex2DGrad,
-        "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
-        "   return textureGrad( s, coord, ddx, ddy);\n"
-        "}\n\n" )
-        );
     //hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DGrad, std::make_pair("GL_EXT_shader_texture_lod","GL_EXT_shader_texture_lod")));
+    //hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DLod, std::make_pair("","GL_EXT_shader_texture_lod")));
 
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex3DBias,
@@ -210,13 +211,25 @@ void insertPost120TextureLookups()
         "  return texture( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
+    hlslSupportLib->insert( CodeMap::value_type( EOpTex2DGrad,
+        "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
+        "   return textureGrad( s, coord, ddx, ddy);\n"
+        "}\n\n" )
+        );
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex2DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex3DLod,
         "vec4 xll_tex3Dlod(sampler3D s, vec4 coord) {\n"
         "  return textureLod( s, coord.xyz, coord.w);\n"
+		"}\n\n" )
+		);
+    hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTex2DGrad,
+        "vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {\n"
+        "   return textureGrad( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
     //hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
+    //hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTex2DGrad, std::make_pair("GL_EXT_shader_texture_lod","GL_EXT_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTex3DGrad,
         "vec4 xll_tex3Dgrad(sampler3D s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
@@ -225,9 +238,20 @@ void insertPost120TextureLookups()
         );
     //hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
 
+    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DBias,
+        "vec4 xll_tex3Dbias(sampler3D s, vec4 coord) {\n"
+        "  return texture( s, coord.xyz, coord.w);\n"
+        "}\n\n" )
+        );
+
     hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeBias,   
         "vec4 xll_texCUBEbias(samplerCube s, vec4 coord) {\n"
         "  return texture( s, coord.xyz, coord.w);\n"
+		"}\n\n" )
+		);
+    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DLod,
+        "vec4 xll_tex3Dlod(sampler3D s, vec4 coord) {\n"
+        "  return textureLod( s, coord.xyz, coord.w);\n"
         "}\n\n" )
         );
 
@@ -244,27 +268,42 @@ void insertPost120TextureLookups()
         "}\n\n" )
         );
     //hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DLod, std::make_pair("","GL_ARB_shader_texture_lod")));
+
+    hlslSupportLib->insert( CodeMap::value_type( EOpTex3DGrad,
+        "vec4 xll_tex3Dgrad(sampler3D s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
+        "  return textureGrad( s, coord, ddx, ddy);\n"
+        "}\n\n" )
+        );
+    //hlslSupportLibExtensions->insert (std::make_pair(EOpTex3DGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
+
+    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeBias,
+        "vec4 xll_texCUBEbias(samplerCube s, vec4 coord) {\n"
+        "  return texture( s, coord.xyz, coord.w);\n"
+        "}\n\n" )
+        );
 
     // shadow2D / shadow2Dproj
     hlslSupportLib->insert(CodeMap::value_type(EOpShadow2D,
-        "float xll_shadow2D(sampler2DShadow s, vec3 coord) { return texture (s, coord).r; }\n"
-        ));
-    hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2D,
         "float xll_shadow2D(sampler2DShadow s, vec3 coord) { return texture (s, coord); }\n"
         ));
-    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2D, std::make_pair("","GL_EXT_shadow_samplers")));
+    hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2D,
+        "float xll_shadow2D(mediump sampler2DShadow s, vec3 coord) { return texture (s, coord); }\n"
+        ));
+    //hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2D, std::make_pair("","GL_EXT_shadow_samplers")));
 
     hlslSupportLib->insert(CodeMap::value_type(EOpShadow2DProj,
-        "float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return textureProj (s, coord).r; }\n"
-        ));
-    hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2DProj,
         "float xll_shadow2Dproj(sampler2DShadow s, vec4 coord) { return textureProj (s, coord); }\n"
         ));
-    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2DProj, std::make_pair("","GL_EXT_shadow_samplers")));
+    hlslSupportLibESOverrides->insert(CodeMap::value_type(EOpShadow2DProj,
+        "float xll_shadow2Dproj(mediump sampler2DShadow s, vec4 coord) { return textureProj (s, coord); }\n"
+        ));
+    //hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpShadow2DProj, std::make_pair("","GL_EXT_shadow_samplers")));
 
 }
 
-void initializeHLSLSupportLibrary(ETargetVersion targetVersion) 
+
+void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
 {
     assert (hlslSupportLib == 0);
     assert (hlslSupportLibExtensions == 0);
@@ -280,7 +319,7 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
     bool usePost120TextureLookups = false;
     if(targetVersion!=ETargetVersionCount) //default
     {
-        usePost120TextureLookups = (targetVersion>ETargetGLSL_120); 
+        usePost120TextureLookups = (targetVersion>ETargetGLSL_120);
     }
 
    // Initialize GLSL code for the op codes that require support helper functions
@@ -370,7 +409,9 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
       "  return mat4( dFdx(m[0]), dFdx(m[1]), dFdx(m[2]), dFdx(m[3]));\n"
       "}\n\n")
       );
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpDPdx, std::make_pair("","GL_OES_standard_derivatives")));
+
+	if (targetVersion < ETargetGLSL_ES_300)
+		hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpDPdx, std::make_pair("","GL_OES_standard_derivatives")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpDPdy,
 	  "float xll_dFdy(float f) {\n"
@@ -395,7 +436,9 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
       "  return mat4( dFdy(m[0]), dFdy(m[1]), dFdy(m[2]), dFdy(m[3]));\n"
       "}\n\n")
       );
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpDPdy, std::make_pair("","GL_OES_standard_derivatives")));
+
+	if (targetVersion < ETargetGLSL_ES_300)
+		hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpDPdy, std::make_pair("","GL_OES_standard_derivatives")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpExp,
       "mat2 xll_exp(mat2 m) {\n"
@@ -432,7 +475,7 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
       "  return mat4( log(m[0]), log(m[1]), log(m[2]), log(m[3]));\n"
       "}\n\n")
       );
-   
+
    hlslSupportLib->insert( CodeMap::value_type( EOpLog2,
       "mat2 xll_log2(mat2 m) {\n"
       "  return mat2( log2(m[0]), log2(m[1]));\n"
@@ -456,7 +499,7 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
       "  return mat4( tan(m[0]), tan(m[1]), tan(m[2]), tan(m[3]));\n"
       "}\n\n")
       );
-   
+
    hlslSupportLib->insert( CodeMap::value_type( EOpAtan,
       "mat2 xll_atan(mat2 m) {\n"
       "  return mat2( atan(m[0]), atan(m[1]));\n"
@@ -588,7 +631,8 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
       "  return mat4( fwidth(m[0]), fwidth(m[1]), fwidth(m[2]), fwidth(m[3]));\n"
       "}\n\n")
       );
-    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpFwidth, std::make_pair("","GL_OES_standard_derivatives")));
+	if (targetVersion < ETargetGLSL_ES_300)
+		hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpFwidth, std::make_pair("","GL_OES_standard_derivatives")));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpFclip,
 	   "void xll_clip(float x) {\n"
@@ -668,10 +712,10 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
 		"vec3 xll_matrixindex (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }\n"
 		"vec4 xll_matrixindex (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }\n")
 		);
-	
-	// The GLSL ES implementation on NaCl does not support dynamic indexing 
-	// (except when the operand is a uniform in vertex shaders). The GLSL specification 
-	// leaves it open to vendors to support this or not. So, for NaCl we use if statements to 
+
+	// The GLSL ES implementation on NaCl does not support dynamic indexing
+	// (except when the operand is a uniform in vertex shaders). The GLSL specification
+	// leaves it open to vendors to support this or not. So, for NaCl we use if statements to
 	// simulate the indexing.
 	hlslSupportLib->insert( CodeMap::value_type( EOpMatrixIndexDynamic,
 		"#if defined(SHADER_API_GLES) && defined(SHADER_API_DESKTOP)\n"
@@ -715,7 +759,7 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
         "    return m[0][0]*m[1][1] - m[0][1]*m[1][0];\n"
         "}\n\n"
         "float xll_determinant( mat3 m) {\n"
-        "    vec3 temp;\n"    
+        "    vec3 temp;\n"
         "    temp.x = m[1][1]*m[2][2] - m[1][2]*m[2][1];\n"
         "    temp.y = - (m[0][1]*m[2][2] - m[0][2]*m[2][1]);\n"
         "    temp.z = m[0][1]*m[1][2] - m[0][2]*m[1][1];\n"
@@ -755,6 +799,7 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
         "}\n\n")
         );
 
+	// \todo [pyry] There is mod() built-in in GLSL
    hlslSupportLib->insert( CodeMap::value_type( EOpMod,
 	   "float xll_mod( float x, float y ) {\n"
 	   "  float d = x / y;\n"
@@ -779,6 +824,7 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
 	   )
 	   );
 
+	// \todo [pyry] GLSL ES 3 includes built-in function for this
    hlslSupportLib->insert( CodeMap::value_type( EOpModf,
         "float xll_modf( float x, out int ip) {\n"
 		"  ip = int (x);\n"
@@ -818,14 +864,16 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
 		"}\n\n"
 		)
         );
-	
+
+	// \todo [pyry] Built-in function exists in GLSL ES 3
 	hlslSupportLib->insert (CodeMap::value_type(EOpRound,
 		"float xll_round (float x) { return floor (x+0.5); }\n"
 		"vec2 xll_round (vec2 x) { return floor (x+vec2(0.5)); }\n"
 		"vec3 xll_round (vec3 x) { return floor (x+vec3(0.5)); }\n"
 		"vec4 xll_round (vec4 x) { return floor (x+vec4(0.5)); }\n"
 	));
-	
+
+	// \todo [pyry] Built-in function exists in GLSL ES 3
 	hlslSupportLib->insert (CodeMap::value_type(EOpTrunc,
 		"float xll_trunc (float x) { return x < 0.0 ? -floor(-x) : floor(x); }\n"
 		"vec2 xll_trunc (vec2 v) { return vec2(\n"
@@ -844,7 +892,8 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
 		"  v.w < 0.0 ? -floor(-v.w) : floor(v.w)\n"
 		"); }\n"
 	));
-	
+
+	// \todo [pyry] Built-in function exists in GLSL ES 3
    hlslSupportLib->insert( CodeMap::value_type( EOpLdexp,
         "float xll_ldexp( float x, float expon) {\n"
         "  return x * exp2 ( expon );\n"
@@ -868,7 +917,8 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
         "  return x * mat4( exp2 ( expon[0] ), exp2 ( expon[1] ), exp2 ( expon[2] ), exp2 ( expon[3] ) );\n"
         "}\n\n" )
         );
-
+		
+	// \todo [pyry] Built-in function exists in GLSL ES 3
    hlslSupportLib->insert( CodeMap::value_type( EOpSinCos,
         "void xll_sincos( float x, out float s, out float c) {\n"
         "  s = sin(x); \n"
@@ -877,29 +927,29 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
         "void xll_sincos( vec2 x, out vec2 s, out vec2 c) {\n"
         "  s = sin(x); \n"
         "  c = cos(x); \n"
-        "}\n\n"        
+        "}\n\n"
         "void xll_sincos( vec3 x, out vec3 s, out vec3 c) {\n"
         "  s = sin(x); \n"
         "  c = cos(x); \n"
-        "}\n\n"        
+        "}\n\n"
         "void xll_sincos( vec4 x, out vec4 s, out vec4 c) {\n"
         "  s = sin(x); \n"
         "  c = cos(x); \n"
-        "}\n\n"        
+        "}\n\n"
         "void xll_sincos( mat2 x, out mat2 s, out mat2 c) {\n"
         "  s = mat2( sin ( x[0] ), sin ( x[1] ) ); \n"
         "  c = mat2( cos ( x[0] ), cos ( x[1] ) ); \n"
-        "}\n\n"        
+        "}\n\n"
         "void xll_sincos( mat3 x, out mat3 s, out mat3 c) {\n"
         "  s = mat3( sin ( x[0] ), sin ( x[1] ), sin ( x[2] ) ); \n"
         "  c = mat3( cos ( x[0] ), cos ( x[1] ), cos ( x[2] ) ); \n"
-        "}\n\n"        
+        "}\n\n"
         "void xll_sincos( mat4 x, out mat4 s, out mat4 c) {\n"
         "  s = mat4( sin ( x[0] ), sin ( x[1] ), sin ( x[2] ), sin ( x[3] ) ); \n"
         "  c = mat4( cos ( x[0] ), cos ( x[1] ), cos ( x[2] ), cos ( x[3] ) ); \n"
         "}\n\n" )
         );
-   
+
    hlslSupportLib->insert( CodeMap::value_type( EOpLog10,
         "float xll_log10( float x ) {\n"
         "  return log2 ( x ) / 3.32192809; \n"
@@ -923,7 +973,7 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
         "  return mat4( xll_log10(m[0]), xll_log10(m[1]), xll_log10(m[2]), xll_log10(m[3]));\n"
         "}\n\n")
         );
-   
+
    hlslSupportLib->insert( CodeMap::value_type( EOpMix,
         "mat2 xll_mix( mat2 x, mat2 y, mat2 s ) {\n"
         "  return mat2( mix(x[0],y[0],s[0]), mix(x[1],y[1],s[1]) ); \n"
@@ -933,7 +983,7 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
         "}\n\n"
         "mat4 xll_mix( mat4 x, mat4 y, mat4 s ) {\n"
         "  return mat4( mix(x[0],y[0],s[0]), mix(x[1],y[1],s[1]), mix(x[2],y[2],s[2]), mix(x[3],y[3],s[3]) ); \n"
-        "}\n\n")      
+        "}\n\n")
         );
 
    hlslSupportLib->insert( CodeMap::value_type( EOpLit,
@@ -977,7 +1027,7 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
       "  return mat4( step(m[0],y[0]), step(m[1],y[1]), step(m[2],y[2]), step(m[3],y[3]));\n"
       "}\n\n")
       );
-   
+
    //ACS: if we're post-1.20 use the newer, non-deprecated, texture lookups
    if(usePost120TextureLookups) {
        insertPost120TextureLookups();
@@ -986,13 +1036,13 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
        insertPre130TextureLookups();
    }
 
-   hlslSupportLib->insert( CodeMap::value_type( EOpD3DCOLORtoUBYTE4,  
+   hlslSupportLib->insert( CodeMap::value_type( EOpD3DCOLORtoUBYTE4,
         "ivec4 xll_D3DCOLORtoUBYTE4(vec4 x) {\n"
         "  return ivec4 ( x.zyxw * 255.001953 );\n"
         "}\n\n" )
         );
-	
-	hlslSupportLib->insert( CodeMap::value_type( EOpVecTernarySel,  
+
+	hlslSupportLib->insert( CodeMap::value_type( EOpVecTernarySel,
 		"vec2 xll_vecTSel (bvec2 a, vec2 b, vec2 c) {\n"
 		"  return vec2 (a.x ? b.x : c.x, a.y ? b.y : c.y);\n"
 		"}\n"
@@ -1003,11 +1053,11 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
 		"  return vec4 (a.x ? b.x : c.x, a.y ? b.y : c.y, a.z ? b.z : c.z, a.w ? b.w : c.w);\n"
 		"}\n\n"
 		)
-   );	
+   );
 }
 
 
-void finalizeHLSLSupportLibrary() 
+void finalizeHLSLSupportLibrary()
 {
 	delete hlslSupportLib;
 	hlslSupportLib = 0;
@@ -1048,7 +1098,7 @@ std::string getHLSLSupportCode (TOperator op, ExtensionSet& extensions, bool ver
 				extensions.insert(ext);
 		}
 	}
-	
+
 	assert (hlslSupportLib);
 	assert (hlslSupportLibESOverrides);
 

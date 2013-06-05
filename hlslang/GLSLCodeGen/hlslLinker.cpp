@@ -19,6 +19,7 @@ static const char* kTargetVersionStrings[ETargetVersionCount] = {
 	"", // 1.10
 	"#version 120\n", // 1.20
     "#version 140\n", // 1.40
+	"", // ES 3.0 - #version 300 es is added later in shader build pipe
 };
 
 
@@ -245,10 +246,39 @@ static const char* resultString[EAttrSemCount] = {
 
 static const char* kUserVaryingPrefix = "xlv_";
 
-static inline void AddToVaryings (std::stringstream& s, TPrecision prec, const std::string& type, const std::string& name)
+static inline const char* GetVertexInputQualifier (ETargetVersion targetVersion)
+{
+	return targetVersion>=ETargetGLSL_ES_300 ? "in" : "attribute";
+}
+
+static inline const char* GetVertexOutputQualifier (ETargetVersion targetVersion)
+{
+	return targetVersion>=ETargetGLSL_ES_300 ? "out" : "varying";
+}
+
+static inline const char* GetFragmentInputQualifier (ETargetVersion targetVersion)
+{
+	return targetVersion>=ETargetGLSL_ES_300 ? "in" : "varying";
+}
+
+static inline void AddVertexOutput (std::stringstream& s, ETargetVersion targetVersion, TPrecision prec, const std::string& type, const std::string& name)
 {
 	if (strstr (name.c_str(), kUserVaryingPrefix) == name.c_str())
-		s << "varying " << getGLSLPrecisiontring(prec) << type << " " << name << ";\n";
+		s << GetVertexOutputQualifier(targetVersion) << " " << getGLSLPrecisiontring(prec) << type << " " << name << ";\n";
+}
+
+static inline void AddFragmentInput (std::stringstream& s, ETargetVersion targetVersion, TPrecision prec, const std::string& type, const std::string& name)
+{
+	if (strstr (name.c_str(), kUserVaryingPrefix) == name.c_str())
+		s << GetFragmentInputQualifier(targetVersion) << " " << getGLSLPrecisiontring(prec) << type << " " << name << ";\n";
+}
+
+static inline void AddToVaryings (std::stringstream& s, EShLanguage language, ETargetVersion targetVersion, TPrecision prec, const std::string& type, const std::string& name)
+{
+	if (language == EShLangVertex)
+		AddVertexOutput(s, targetVersion, prec, type, name);
+	else
+		AddFragmentInput(s, targetVersion, prec, type, name);
 }
 
 HlslLinker::HlslLinker(TInfoSink& infoSink_)
@@ -645,13 +675,22 @@ static const char* GetEntryName (const char* entryFunc)
 static const char* kShaderTypeNames[2] = { "Vertex", "Fragment" };
 
 
-static void add_extension_from_semantic(EAttribSemantic sem, ExtensionSet& extensions)
+static void add_extension_from_semantic(EAttribSemantic sem, ETargetVersion targetVersion, ExtensionSet& extensions)
+{
+	if (targetVersion == ETargetGLSL_ES_300)
+	{
+		// \todo [2013-05-14 pyry] Not supported in any platform yet.
+		if (sem == EAttrSemPrimitiveID)
+			extensions.insert("GL_ARB_geometry_shader4");
+	}
+	else
 	{
 		if (sem == EAttrSemPrimitiveID || sem == EAttrSemVertexID)
 			extensions.insert("GL_EXT_gpu_shader4");
 		if (sem == EAttrSemInstanceID)
 			extensions.insert("GL_ARB_draw_instanced");
 	}
+}
 
 
 bool HlslLinker::linkerSanityCheck(HlslCrossCompiler* compiler, const char* entryFunc)
@@ -835,7 +874,7 @@ static void emitSymbolWithPad (std::stringstream& str, const std::string& ctor, 
 }
 
 
-static void emitSingleInputVariable (EShLanguage lang, const std::string& name, const std::string& ctor, EGlslSymbolType type, TPrecision prec, std::stringstream& attrib, std::stringstream& varying)
+static void emitSingleInputVariable (EShLanguage lang, ETargetVersion targetVersion, const std::string& name, const std::string& ctor, EGlslSymbolType type, TPrecision prec, std::stringstream& attrib, std::stringstream& varying)
 {
 	// vertex shader: emit custom attributes
 	if (lang == EShLangVertex && strncmp(name.c_str(), "gl_", 3) != 0)
@@ -851,13 +890,13 @@ static void emitSingleInputVariable (EShLanguage lang, const std::string& name, 
 		if (type >= EgstBool && type <= EgstBool4)
 			typeOffset += 8;
 		
-		attrib << "attribute " << getTypeString((EGlslSymbolType)(type + typeOffset)) << " " << name << ";\n";
+		attrib << GetVertexInputQualifier(targetVersion) << " " << getTypeString((EGlslSymbolType)(type + typeOffset)) << " " << name << ";\n";
 	}
 	
 	// fragment shader: emit varying
 	if (lang == EShLangFragment)
 	{
-		AddToVaryings (varying, prec, ctor, name);
+		AddFragmentInput(varying, targetVersion, prec, ctor, name);
 	}
 }
 	
@@ -898,7 +937,7 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 		preamble << ";\n";
 	}
 	
-	emitSingleInputVariable (lang, name, ctor, sym->getType(), sym->getPrecision(), attrib, varying);
+	emitSingleInputVariable (lang, m_Target, name, ctor, sym->getType(), sym->getPrecision(), attrib, varying);
 }
 
 
@@ -920,7 +959,7 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::st
 		const GlslStruct::StructMember &current = str->getMember(jj);
 		EAttribSemantic memberSem = parseAttributeSemantic (current.semantic);
 		
-		add_extension_from_semantic(memberSem, m_Extensions);
+		add_extension_from_semantic(memberSem, m_Target, m_Extensions);
 		
 		// if member of the struct is an array, we have to loop over all array elements
 		int arraySize = 1;
@@ -965,7 +1004,7 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::st
 			}
 
 			
-			emitSingleInputVariable (lang, name, ctor, current.type, current.precision, attrib, varying);
+			emitSingleInputVariable (lang, m_Target, name, ctor, current.type, current.precision, attrib, varying);
 		}
 	}
 }
@@ -1008,7 +1047,7 @@ void HlslLinker::emitOutputNonStructParam(GlslSymbol* sym, EShLanguage lang, boo
 	
 	// In vertex shader, add to varyings
 	if (lang == EShLangVertex)
-		AddToVaryings (varying, sym->getPrecision(), ctor, name);
+		AddVertexOutput (varying, m_Target, sym->getPrecision(), ctor, name);
 	
 	call << "xlt_" << sym->getName();
 	
@@ -1058,7 +1097,7 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 
 		// In vertex shader, add to varyings
 		if (lang == EShLangVertex)
-			AddToVaryings (varying, current.precision, ctor, name);
+			AddVertexOutput (varying, m_Target, current.precision, ctor, name);
 	}
 }
 
@@ -1163,7 +1202,7 @@ bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName,
 
 				// In vertex shader, add to varyings
 				if (lang == EShLangVertex)
-					AddToVaryings (varying, current.precision, ctor, name);
+					AddVertexOutput (varying, m_Target, current.precision, ctor, name);
 			}
 		}
 	}
@@ -1206,8 +1245,7 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 		
 		// In vertex shader, add to varyings
 		if (lang == EShLangVertex)
-			AddToVaryings (varying, funcMain->getPrecision(), ctor, name);
-		
+			AddToVaryings (varying, lang, m_Target, funcMain->getPrecision(), ctor, name);
 		return true;
 	}
 	
@@ -1287,7 +1325,7 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 		GlslSymbol *sym = funcMain->getParameter(ii);
 		EAttribSemantic attrSem = parseAttributeSemantic( sym->getSemantic());
 		
-		add_extension_from_semantic(attrSem, m_Extensions);
+		add_extension_from_semantic(attrSem, m_Target, m_Extensions);
 
 		switch (sym->getQualifier())
 		{

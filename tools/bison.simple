@@ -36,7 +36,7 @@ char *alloca ();
 #endif /* not HAVE_ALLOCA_H */
 #endif /* not __GNUC__ */
 
-extern void yyerror(const char* s);
+extern void yyerror(char* s);
 
 #ifndef alloca
 #ifdef __GNUC__
