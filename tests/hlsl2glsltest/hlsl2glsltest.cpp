@@ -458,8 +458,8 @@ static const ETargetVersion kTargets2[NUM_RUN_TYPES] = {
 	ETargetGLSL_ES_100,
 	ETargetGLSL_ES_100,
 	ETargetVersionCount,
-	ETargetGLSL_120,
-	ETargetGLSL_120,
+	ETargetVersionCount,
+	ETargetVersionCount,
 	ETargetVersionCount,
 	ETargetVersionCount,
 };
@@ -746,7 +746,7 @@ int main (int argc, const char** argv)
 				if (ok && version2 != ETargetVersionCount)
 					ok = TestFile(TestRun(type), testFolder + "/" + inname, version2, ETranslateOpEmitGLSL120ArrayInitWorkaround, hasOpenGL);
 				if (ok && version3 != ETargetVersionCount)
-					ok = TestFile(TestRun(type), testFolder + "/" + inname, version3, ETranslateOpEmitGLSL120ArrayInitWorkaround, hasOpenGL);
+					ok = TestFile(TestRun(type), testFolder + "/" + inname, version3, 0, hasOpenGL);
 			}
 			
 			if (!ok)

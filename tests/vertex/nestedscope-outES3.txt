@@ -30,9 +30,9 @@ v2f xlat_main( in a2v v ) {
     o.uv = v.uv;
     return o;
 }
-varying highp float xlv_FOG;
-varying highp vec2 xlv_TEXCOORD0;
-varying highp vec4 xlv_COLOR;
+out highp float xlv_FOG;
+out highp vec2 xlv_TEXCOORD0;
+out highp vec4 xlv_COLOR;
 void main() {
     v2f xl_retval;
     a2v xlt_v;
