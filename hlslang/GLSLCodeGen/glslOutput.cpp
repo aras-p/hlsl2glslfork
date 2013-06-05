@@ -248,7 +248,7 @@ void writeComparison( const TString &compareOp, const TString &compareCall, TInt
 }
 
 
-void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTraverser* goit, bool bGenMatrix = false )
+void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTraverser* goit, bool bGenMatrix = false, bool mangleName = false )
 {
    TNodeArray::iterator sit;
    TNodeArray& nodes = node->getNodes(); 
@@ -266,7 +266,19 @@ void writeFuncCall( const TString &name, TIntermAggregate *node, TGlslOutputTrav
       }
    }      
 
-   out << name << "( ";
+   out << name;
+
+	if (mangleName || (bGenMatrix && node->isMatrix()))
+	{
+		for (sit = nodes.begin(); sit != nodes.end(); ++sit)
+		{
+			TString mangledType;
+			(*sit)->getAsTyped()->getType().buildMangledName(mangledType);
+			out << "_" << mangledType;
+		}
+	}
+   
+   out << "( ";
 
 	for (sit = nodes.begin(); sit != nodes.end(); ++sit)
 	{
@@ -289,7 +301,8 @@ void setupUnaryBuiltInFuncCall( const TString &name, TIntermUnary *node, TString
    if ( node->isMatrix() )
    {
       current->addLibFunction( node->getOp() );
-      opStr = "xll_" + name;
+      opStr = "xll_" + name + "_";
+	  node->getType().buildMangledName(opStr);
    }
    else
    {
@@ -628,7 +641,7 @@ void TGlslOutputTraverser::traverseParameterSymbol(TIntermSymbol *node, TIntermT
     }
 
    GlslSymbol * sym = new GlslSymbol( node->getSymbol().c_str(), semantic, node->getId(),
-                                      translateType(node->getTypePointer()), goit->m_UsePrecision?node->getPrecision():EbpUndefined, translateQualifier(node->getQualifier()), array);
+                                      translateType(node->getTypePointer()), prec, translateQualifier(node->getQualifier()), array);
    current->addParameter(sym);
 
    if (sym->getType() == EgstStruct)
@@ -754,7 +767,11 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 			 if (right->getAsConstant())
 			 {
 				 current->addLibFunction (EOpMatrixIndex);
-				 out << "xll_matrixindex (";
+				 TString opName = "xll_matrixindex_";
+				 left->getType().buildMangledName(opName);
+				 opName += "_";
+				 right->getType().buildMangledName(opName);
+				 out << opName << " (";
 				 left->traverse(goit);
 				 out << ", ";
 				 right->traverse(goit);
@@ -766,7 +783,11 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 				 current->addLibFunction (EOpTranspose);
 				 current->addLibFunction (EOpMatrixIndex);
 				 current->addLibFunction (EOpMatrixIndexDynamic);
-				 out << "xll_matrixindexdynamic (";
+				 TString opName = "xll_matrixindexdynamic_";
+				 left->getType().buildMangledName(opName);
+				 opName += "_";
+				 right->getType().buildMangledName(opName);
+				 out << opName << " (";
 				 left->traverse(goit);
 				 out << ", ";
 				 right->traverse(goit);
@@ -813,7 +834,11 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 		  if (right->getAsConstant())
 		  {
 			  current->addLibFunction (EOpMatrixIndex);
-			  out << "xll_matrixindex (";
+			  TString opName = "xll_matrixindex_";
+			  left->getType().buildMangledName(opName);
+			  opName += "_";
+			  right->getType().buildMangledName(opName);
+			  out << opName << " (";
 			  left->traverse(goit);
 			  out << ", ";
 			  right->traverse(goit);
@@ -825,7 +850,11 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 			  current->addLibFunction (EOpTranspose);
 			  current->addLibFunction (EOpMatrixIndex);
 			  current->addLibFunction (EOpMatrixIndexDynamic);
-			  out << "xll_matrixindexdynamic (";
+			  TString opName = "xll_matrixindexdynamic_";
+			  left->getType().buildMangledName(opName);
+			  opName += "_";
+			  right->getType().buildMangledName(opName);
+			  out << opName << " (";
 			  left->traverse(goit);
 			  out << ", ";
 			  right->traverse(goit);
@@ -1202,38 +1231,44 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
    case EOpNormalize:      op = "normalize";  funcStyle = true; prefix = true; break;
    case EOpDPdx:
 	   current->addLibFunction(EOpDPdx);
-	   op = "xll_dFdx";
+	   op = "xll_dFdx_";
+	   node->getOperand()->getType().buildMangledName(op);
 	   funcStyle = true;
 	   prefix = true;
 	   break;
    case EOpDPdy:
 	   current->addLibFunction(EOpDPdy);
-	   op = "xll_dFdy";
+	   op = "xll_dFdy_";
+	   node->getOperand()->getType().buildMangledName(op);
 	   funcStyle = true;
 	   prefix = true;
 	   break;
    case EOpFwidth:
 	   current->addLibFunction(EOpFwidth);
-	   op = "xll_fwidth";
+	   op = "xll_fwidth_";
+	   node->getOperand()->getType().buildMangledName(op);
 	   funcStyle = true;
 	   prefix = true;
 	   break;
    case EOpFclip:		   
 	  current->addLibFunction(EOpFclip);
-      op = "xll_clip";
+      op = "xll_clip_";
+	  node->getOperand()->getType().buildMangledName(op);
       funcStyle = true;
       prefix = true;
       break;    
 
 	case EOpRound:
 		current->addLibFunction(EOpRound);
-		op = "xll_round";
+		op = "xll_round_";
+	    node->getOperand()->getType().buildMangledName(op);
 		funcStyle = true;
 		prefix = true;
 		break;
 	case EOpTrunc:
 	   current->addLibFunction(EOpTrunc);
-	   op = "xll_trunc";
+	   op = "xll_trunc_";
+	   node->getOperand()->getType().buildMangledName(op);
 	   funcStyle = true;
 	   prefix = true;
 	   break;
@@ -1244,28 +1279,32 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
       //these are HLSL specific and they map to the lib functions
    case EOpSaturate:
       current->addLibFunction(EOpSaturate);
-      op = "xll_saturate";
+      op = "xll_saturate_";
+	  node->getOperand()->getType().buildMangledName(op);
       funcStyle = true;
       prefix = true;
       break;    
 
    case EOpTranspose:
       current->addLibFunction(EOpTranspose);
-      op = "xll_transpose";
+      op = "xll_transpose_";
+	  node->getOperand()->getType().buildMangledName(op);
       funcStyle = true;
       prefix = true;
       break;
 
    case EOpDeterminant:
       current->addLibFunction(EOpDeterminant);
-      op = "xll_determinant";
+      op = "xll_determinant_";
+	  node->getOperand()->getType().buildMangledName(op);
       funcStyle = true;
       prefix = true;
       break;
 
    case EOpLog10:        
       current->addLibFunction(EOpLog10);
-      op = "xll_log10";
+      op = "xll_log10_";
+	  node->getOperand()->getType().buildMangledName(op);
       funcStyle = true;
       prefix = true;
       break;       
@@ -1333,7 +1372,17 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 		// ?: selection on vectors, e.g. bvec4 ? vec4 : vec4
 		// emulate HLSL's component-wise selection here
 		current->addLibFunction(EOpVecTernarySel);
-		out << "xll_vecTSel (";
+		// \todo [pyry] Somehow true and false blocks have invalid types and mangling fails.
+		//				I don't have energy to investigate that so mangling is done manually here.
+		int vecSize = node->getCondition()->getAsTyped()->getType().getRowsCount();
+		out << "xll_vecTSel_vb" << vecSize << "_vf" << vecSize << "_vf" << vecSize << " (";
+//		TString op = "xll_vecTSel_";
+//		node->getCondition()->getAsTyped()->getType().buildMangledName(op);
+//		op += "_";
+//		node->getTrueBlock()->getAsTyped()->getType().buildMangledName(op);
+//		op += "_";
+//		node->getFalseBlock()->getAsTyped()->getType().buildMangledName(op);
+//		out << op << " (";
 		node->getCondition()->traverse(goit);
 		out << ", ";
 		assert(node->getTrueBlock());
@@ -1467,11 +1516,12 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpConstructMat2x2FromMat:
       current->addLibFunction(EOpConstructMat2x2FromMat);
-      writeFuncCall( "xll_constructMat2", node, goit);
+      writeFuncCall("xll_constructMat2", node, goit, false, true);
       return false;
+
    case EOpConstructMat3x3FromMat:
       current->addLibFunction(EOpConstructMat3x3FromMat);
-      writeFuncCall( "xll_constructMat3", node, goit);
+      writeFuncCall("xll_constructMat3", node, goit, false, true);
       return false;
 
    case EOpConstructStruct:  writeFuncCall( node->getTypePointer()->getTypeName(), node, goit); return false;
@@ -1504,7 +1554,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpMod:
 	   current->addLibFunction(EOpMod);
-	   writeFuncCall( "xll_mod", node, goit);
+	   writeFuncCall( "xll_mod", node, goit, false, true);
 	   return false;
 
    case EOpPow:           writeFuncCall( "pow", node, goit, true); return false;
@@ -1690,22 +1740,22 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 		   
    case EOpModf:
       current->addLibFunction(EOpModf);
-      writeFuncCall( "xll_modf", node, goit);
+      writeFuncCall( "xll_modf", node, goit, false, true);
       break;
 
    case EOpLdexp:
       current->addLibFunction(EOpLdexp);
-      writeFuncCall( "xll_ldexp", node, goit);
+      writeFuncCall( "xll_ldexp", node, goit, false, true);
       break;
 
    case EOpSinCos:        
       current->addLibFunction(EOpSinCos);
-      writeFuncCall ( "xll_sincos", node, goit);
+      writeFuncCall ( "xll_sincos", node, goit, false, true);
       break;
 
    case EOpLit:
       current->addLibFunction(EOpLit);
-      writeFuncCall( "xll_lit", node, goit);
+      writeFuncCall( "xll_lit", node, goit, false, true);
       break;
 
    default: goit->infoSink.info << "Bad aggregation op\n";

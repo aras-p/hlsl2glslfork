@@ -42,29 +42,35 @@ void TType::buildMangledName(TString& mangledName) const
 		case EbtSamplerRect:        mangledName += "sR2";    break;  // ARB_texture_rectangle
 		case EbtSamplerRectShadow:  mangledName += "sSR2";   break;  // ARB_texture_rectangle
 		case EbtStruct:
-			mangledName += "struct-";
+			mangledName += "struct_";
 			if (typeName)
 				mangledName += *typeName;
 		{// support MSVC++6.0
 			for (unsigned int i = 0; i < structure->size(); ++i)
 			{
-				mangledName += '-';
+				mangledName += '_';
 				(*structure)[i].type->buildMangledName(mangledName);
 			}
 		}
 		default: 
 			break;
 	}
-	
-	mangledName += static_cast<char>('0' + getColsCount());
-	mangledName += static_cast<char>('0' + getRowsCount());
+
+	if (isMatrix())
+	{
+		mangledName += static_cast<char>('0' + getColsCount());
+		mangledName += "x";
+	}
+
+	if (isMatrix() || isVector())
+		mangledName += static_cast<char>('0' + getRowsCount());
+
 	if (isArray())
 	{
 		char buf[10];
 		sprintf(buf, "%d", arraySize);
-		mangledName += '[';
+		mangledName += 'a';
 		mangledName += buf;
-		mangledName += ']';
 	}
 }
 
