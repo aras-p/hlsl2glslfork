@@ -1639,7 +1639,12 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpTexCube:
       if (argCount == 2)
+	  {
+          if (usePost120TextureLookups)
+              writeTex("texture", node, goit);
+          else
               writeTex("textureCube", node, goit);
+	  }
       else
       {
          current->addLibFunction(EOpTexCubeGrad);
