@@ -838,7 +838,7 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
 		"  ip = int (x);\n"
 		"  return x-float(ip);\n"
         "}\n\n"
-        "float xll_modf_f_i( float x, out float ip) {\n"
+        "float xll_modf_f_f( float x, out float ip) {\n"
 		"  int i = int (x);\n"
 		"  ip = float(i);\n"
 		"  return x-ip;\n"
