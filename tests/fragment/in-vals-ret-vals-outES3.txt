@@ -7,8 +7,8 @@ mediump vec4 xlat_main( in highp vec2 uv, in highp vec4 color ) {
     c.xy += uv;
     return c;
 }
-varying highp vec2 xlv_TEXCOORD0;
-varying highp vec4 xlv_COLOR;
+in highp vec2 xlv_TEXCOORD0;
+in highp vec4 xlv_COLOR;
 void main() {
     mediump vec4 xl_retval;
     xl_retval = xlat_main( vec2(xlv_TEXCOORD0), vec4(xlv_COLOR));

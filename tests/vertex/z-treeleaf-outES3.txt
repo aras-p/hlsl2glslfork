@@ -155,12 +155,12 @@ v2f_surf xlat_main( in appdata_full v ) {
     o._LightCoord = (_LightMatrix0 * (_Object2World * v.vertex)).xy;
     return o;
 }
-attribute vec4 TANGENT;
-varying highp vec2 xlv_TEXCOORD0;
-varying highp vec4 xlv_COLOR0;
-varying highp vec3 xlv_TEXCOORD1;
-varying highp vec3 xlv_TEXCOORD2;
-varying highp vec2 xlv_TEXCOORD3;
+in vec4 TANGENT;
+out highp vec2 xlv_TEXCOORD0;
+out highp vec4 xlv_COLOR0;
+out highp vec3 xlv_TEXCOORD1;
+out highp vec3 xlv_TEXCOORD2;
+out highp vec2 xlv_TEXCOORD3;
 void main() {
     v2f_surf xl_retval;
     appdata_full xlt_v;

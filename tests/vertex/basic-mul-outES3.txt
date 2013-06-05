@@ -6,7 +6,7 @@ void xlat_main( in highp vec4 vertex, out highp vec4 overtex, in highp vec3 norm
 void xlat_main( in highp vec4 vertex, out highp vec4 overtex, in highp vec3 normal, out highp vec3 onormal ) {
     overtex = (matrix_mvp * vertex);
 }
-varying highp vec3 xlv_TEXCOORD0;
+out highp vec3 xlv_TEXCOORD0;
 void main() {
     highp vec4 xlt_overtex;
     highp vec3 xlt_onormal;

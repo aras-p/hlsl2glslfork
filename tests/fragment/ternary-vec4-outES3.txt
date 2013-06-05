@@ -20,7 +20,7 @@ mediump vec4 xlat_main( in highp vec4 uv ) {
     a += xll_vecTSel (bvec4(fract(uv)), vec4( 1.0), vec4( 2.0));
     return a;
 }
-varying highp vec4 xlv_TEXCOORD0;
+in highp vec4 xlv_TEXCOORD0;
 void main() {
     mediump vec4 xl_retval;
     xl_retval = xlat_main( vec4(xlv_TEXCOORD0));

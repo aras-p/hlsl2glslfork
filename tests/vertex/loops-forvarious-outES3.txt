@@ -71,7 +71,7 @@ v2f xlat_main( in appdata v ) {
     #line 80
     return o;
 }
-varying mediump vec4 xlv_TEXCOORD0;
+out mediump vec4 xlv_TEXCOORD0;
 void main() {
     v2f xl_retval;
     appdata xlt_v;

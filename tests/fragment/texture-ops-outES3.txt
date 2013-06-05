@@ -1,5 +1,3 @@
-#extension GL_EXT_shader_texture_lod : require
-#extension GL_OES_standard_derivatives : require
 float xll_dFdx(float f) {
   return dFdx(f);
 }
@@ -43,13 +41,13 @@ mat4 xll_dFdy(mat4 m) {
   return mat4( dFdy(m[0]), dFdy(m[1]), dFdy(m[2]), dFdy(m[3]));
 }
 vec4 xll_tex2Dgrad(sampler2D s, vec2 coord, vec2 ddx, vec2 ddy) {
-   return texture2DGradEXT( s, coord, ddx, ddy);
+   return textureGrad( s, coord, ddx, ddy);
 }
 vec4 xll_texCUBElod(samplerCube s, vec4 coord) {
-  return textureCubeLodEXT( s, coord.xyz, coord.w);
+  return textureLod( s, coord.xyz, coord.w);
 }
 vec4 xll_texCUBEgrad(samplerCube s, vec3 coord, vec3 ddx, vec3 ddy) {
-  return textureCubeGradEXT( s, coord, ddx, ddy);
+  return textureGrad( s, coord, ddx, ddy);
 }
 #line 1
 uniform sampler2D tex;
@@ -65,7 +63,7 @@ mediump vec4 xlat_main( in highp vec4 uv ) {
     #line 9
     return c;
 }
-varying highp vec4 xlv_TEXCOORD0;
+in highp vec4 xlv_TEXCOORD0;
 void main() {
     mediump vec4 xl_retval;
     xl_retval = xlat_main( vec4(xlv_TEXCOORD0));

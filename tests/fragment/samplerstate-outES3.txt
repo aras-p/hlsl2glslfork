@@ -9,10 +9,10 @@ uniform sampler2D Sampler_sDiffuseMap;
 highp vec4 xlat_main( in PS_IN inStruct );
 #line 20
 highp vec4 xlat_main( in PS_IN inStruct ) {
-    highp vec4 tex = texture2D( Sampler_sDiffuseMap, inStruct.texCoord0);
+    highp vec4 tex = texture( Sampler_sDiffuseMap, inStruct.texCoord0);
     return tex;
 }
-varying highp vec2 xlv_TEXCOORD0;
+in highp vec2 xlv_TEXCOORD0;
 void main() {
     highp vec4 xl_retval;
     PS_IN xlt_inStruct;

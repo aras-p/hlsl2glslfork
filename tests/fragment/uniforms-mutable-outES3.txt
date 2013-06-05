@@ -11,7 +11,7 @@ lowp vec4 xlat_main( in highp vec4 uv );
 highp vec3 SampleDiffuse( in highp vec2 uv ) {
     #line 8
     xlat_mutable_uni4.xy = uv;
-    return vec3( texture2D( tex1, xlat_mutable_uni4.xy));
+    return vec3( texture( tex1, xlat_mutable_uni4.xy));
 }
 #line 12
 lowp vec4 xlat_main( in highp vec4 uv ) {
@@ -24,7 +24,7 @@ lowp vec4 xlat_main( in highp vec4 uv ) {
     c.w += xlat_mutable_uni1;
     return c;
 }
-varying highp vec4 xlv_TEXCOORD0;
+in highp vec4 xlv_TEXCOORD0;
 void main() {
     xlat_mutable_uni1 = uni1;
     xlat_mutable_uni4 = uni4;

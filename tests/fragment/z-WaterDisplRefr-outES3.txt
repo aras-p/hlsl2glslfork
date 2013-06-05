@@ -66,7 +66,7 @@ mediump vec4 ExtinctColor( in mediump vec4 baseColor, in mediump float extinctio
 mediump vec4 xlat_main( in v2f i );
 #line 18
 mediump vec3 PerPixelNormal( in sampler2D bumpMap, in mediump vec4 coords, in mediump vec3 vertexNormal, in mediump float bumpStrength ) {
-    mediump vec4 bump = (texture2D( bumpMap, coords.xy) + texture2D( bumpMap, coords.zw));
+    mediump vec4 bump = (texture( bumpMap, coords.xy) + texture( bumpMap, coords.zw));
     bump.xy = (bump.wy - vec2( 1.0, 1.0));
     #line 22
     mediump vec3 worldNormal = (vertexNormal + ((bump.xxy * bumpStrength) * vec3( 1.0, 0.0, 1.0)));
@@ -86,7 +86,7 @@ mediump float Fresnel( in mediump vec3 viewVector, in mediump vec3 worldNormal, 
 #line 50
 mediump vec4 Foam( in sampler2D shoreTex, in mediump vec4 coords ) {
     #line 52
-    mediump vec4 foam = ((texture2D( shoreTex, coords.xy) * texture2D( shoreTex, coords.zw)) - 0.125);
+    mediump vec4 foam = ((texture( shoreTex, coords.xy) * texture( shoreTex, coords.zw)) - 0.125);
     return foam;
 }
 #line 68
@@ -103,11 +103,11 @@ mediump vec4 xlat_main( in v2f i ) {
     mediump vec4 screenWithOffset = (i.screenPos + distortOffset);
     #line 107
     mediump vec4 grabWithOffset = (i.grabPassPos + distortOffset);
-    mediump vec4 rtRefractionsNoDistort = texture2DProj( _RefractionTex, i.grabPassPos);
-    mediump float refrFix = texture2DProj( _CameraDepthTexture, grabWithOffset).x;
-    mediump vec4 rtRefractions = texture2DProj( _RefractionTex, grabWithOffset);
+    mediump vec4 rtRefractionsNoDistort = textureProj( _RefractionTex, i.grabPassPos);
+    mediump float refrFix = textureProj( _CameraDepthTexture, grabWithOffset).x;
+    mediump vec4 rtRefractions = textureProj( _RefractionTex, grabWithOffset);
     #line 111
-    mediump vec4 rtReflections = texture2DProj( _ReflectionTex, screenWithOffset);
+    mediump vec4 rtReflections = textureProj( _ReflectionTex, screenWithOffset);
     if ((LinearEyeDepth( refrFix) < i.screenPos.z)){
         rtRefractions = rtRefractionsNoDistort;
     }
@@ -117,7 +117,7 @@ mediump vec4 xlat_main( in v2f i ) {
     highp float nh = max( 0.0, dot( worldNormal, (-h)));
     highp float spec = max( 0.0, pow( nh, _Shininess));
     mediump vec4 edgeBlendFactors = vec4( 1.0, 0.0, 0.0, 0.0);
-    mediump float depth = texture2DProj( _CameraDepthTexture, i.screenPos).x;
+    mediump float depth = textureProj( _CameraDepthTexture, i.screenPos).x;
     #line 119
     depth = LinearEyeDepth( depth);
     edgeBlendFactors = xll_saturate((_InvFadeParemeter * (depth - i.screenPos.w)));
@@ -136,11 +136,11 @@ mediump vec4 xlat_main( in v2f i ) {
     #line 131
     return baseColor;
 }
-varying highp vec4 xlv_TEXCOORD0;
-varying highp vec4 xlv_TEXCOORD1;
-varying highp vec4 xlv_TEXCOORD2;
-varying highp vec4 xlv_TEXCOORD3;
-varying highp vec4 xlv_TEXCOORD4;
+in highp vec4 xlv_TEXCOORD0;
+in highp vec4 xlv_TEXCOORD1;
+in highp vec4 xlv_TEXCOORD2;
+in highp vec4 xlv_TEXCOORD3;
+in highp vec4 xlv_TEXCOORD4;
 void main() {
     mediump vec4 xl_retval;
     v2f xlt_i;

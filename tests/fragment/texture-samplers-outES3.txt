@@ -11,16 +11,16 @@ mediump vec4 xlat_main( in highp vec4 uv );
 mediump vec4 xlat_main( in highp vec4 uv ) {
     #line 11
     mediump vec4 c;
-    c = texture2D( texlow, uv.xy);
-    c += texture2D( texmed, uv.xy);
-    c += texture2D( texhigh, uv.xy);
+    c = texture( texlow, uv.xy);
+    c += texture( texmed, uv.xy);
+    c += texture( texhigh, uv.xy);
     #line 15
-    c += textureCube( cubelow, uv.xyz);
-    c += textureCube( cubemed, uv.xyz);
-    c += textureCube( cubehigh, uv.xyz);
+    c += texture( cubelow, uv.xyz);
+    c += texture( cubemed, uv.xyz);
+    c += texture( cubehigh, uv.xyz);
     return c;
 }
-varying highp vec4 xlv_TEXCOORD0;
+in highp vec4 xlv_TEXCOORD0;
 void main() {
     mediump vec4 xl_retval;
     xl_retval = xlat_main( vec4(xlv_TEXCOORD0));

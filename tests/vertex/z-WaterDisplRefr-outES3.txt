@@ -158,12 +158,12 @@ v2f xlat_main( in appdata_full v ) {
     o.normalInterpolator.w = 1.0;
     return o;
 }
-attribute vec4 TANGENT;
-varying highp vec4 xlv_TEXCOORD0;
-varying highp vec4 xlv_TEXCOORD1;
-varying highp vec4 xlv_TEXCOORD2;
-varying highp vec4 xlv_TEXCOORD3;
-varying highp vec4 xlv_TEXCOORD4;
+in vec4 TANGENT;
+out highp vec4 xlv_TEXCOORD0;
+out highp vec4 xlv_TEXCOORD1;
+out highp vec4 xlv_TEXCOORD2;
+out highp vec4 xlv_TEXCOORD3;
+out highp vec4 xlv_TEXCOORD4;
 void main() {
     v2f xl_retval;
     appdata_full xlt_v;

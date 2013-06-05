@@ -85,7 +85,7 @@ highp float DecodeFloatRGBA( in highp vec4 enc ) {
 }
 #line 39
 highp float SampleCubeDistance( in highp vec3 vec ) {
-    highp vec4 packDist = textureCube( _ShadowMapTexture, vec);
+    highp vec4 packDist = texture( _ShadowMapTexture, vec);
     #line 42
     return DecodeFloatRGBA( packDist);
 }
@@ -117,10 +117,10 @@ mediump vec4 xlat_main( in v2f i ) {
     i.ray = (i.ray * (_ProjectionParams.z / i.ray.z));
     highp vec2 uv = (i.uv.xy / i.uv.w);
     #line 68
-    mediump vec4 nspec = texture2D( _CameraNormalsTexture, uv);
+    mediump vec4 nspec = texture( _CameraNormalsTexture, uv);
     mediump vec3 normal = ((nspec.xyz * 2.0) - 1.0);
     normal = normalize(normal);
-    highp float depth = texture2D( _CameraDepthTexture, uv).x;
+    highp float depth = texture( _CameraDepthTexture, uv).x;
     #line 72
     depth = Linear01Depth( depth);
     highp vec4 vpos = vec4( (i.ray * depth), 1.0);
@@ -129,10 +129,10 @@ mediump vec4 xlat_main( in v2f i ) {
     #line 76
     mediump vec3 lightDir = (-normalize(tolight));
     highp float att = (dot( tolight, tolight) * _LightPos.w);
-    highp float atten = texture2D( _LightTextureB0, vec2( att)).w;
+    highp float atten = texture( _LightTextureB0, vec2( att)).w;
     atten *= ComputeShadow( tolight, vpos.z, uv);
     #line 80
-    atten *= textureCube( _LightTexture0, (_LightMatrix0 * vec4( wpos, 1.0)).xyz).w;
+    atten *= texture( _LightTexture0, (_LightMatrix0 * vec4( wpos, 1.0)).xyz).w;
     mediump float diff = max( 0.0, dot( lightDir, normal));
     mediump vec3 h = normalize((lightDir - normalize((wpos - _WorldSpaceCameraPos))));
     highp float spec = pow( max( 0.0, dot( h, normal)), (nspec.w * 128.0));
@@ -146,8 +146,8 @@ mediump vec4 xlat_main( in v2f i ) {
     res *= xll_saturate((1.0 - fade));
     return exp2((-res));
 }
-varying highp vec4 xlv_TEXCOORD0;
-varying highp vec3 xlv_TEXCOORD1;
+in highp vec4 xlv_TEXCOORD0;
+in highp vec3 xlv_TEXCOORD1;
 void main() {
     mediump vec4 xl_retval;
     v2f xlt_i;

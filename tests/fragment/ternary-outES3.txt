@@ -11,7 +11,7 @@ mediump vec4 xlat_main( in highp vec4 uv ) {
     c.x += (( bool(fract(uv.x)) ) ? ( 0.9 ) : ( 0.1 ));
     return c;
 }
-varying highp vec4 xlv_TEXCOORD0;
+in highp vec4 xlv_TEXCOORD0;
 void main() {
     mediump vec4 xl_retval;
     xl_retval = xlat_main( vec4(xlv_TEXCOORD0));

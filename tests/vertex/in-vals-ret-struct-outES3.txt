@@ -20,9 +20,9 @@ v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in hig
     o.uv = uv;
     return o;
 }
-varying highp float xlv_FOG;
-varying highp vec2 xlv_TEXCOORD0;
-varying highp vec4 xlv_COLOR;
+out highp float xlv_FOG;
+out highp vec2 xlv_TEXCOORD0;
+out highp vec4 xlv_COLOR;
 void main() {
     v2f xl_retval;
     xl_retval = xlat_main( vec4(gl_Vertex), vec2(gl_MultiTexCoord0), vec3(gl_Normal), vec4(gl_Color));

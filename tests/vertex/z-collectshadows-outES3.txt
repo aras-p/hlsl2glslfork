@@ -24,8 +24,8 @@ v2f xlat_main( in appdata v ) {
     o.ray = v.texcoord1;
     return o;
 }
-varying highp vec2 xlv_TEXCOORD0;
-varying highp vec3 xlv_TEXCOORD1;
+out highp vec2 xlv_TEXCOORD0;
+out highp vec3 xlv_TEXCOORD1;
 void main() {
     v2f xl_retval;
     appdata xlt_v;

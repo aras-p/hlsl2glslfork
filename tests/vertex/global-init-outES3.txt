@@ -1,8 +1,8 @@
-uniform highp vec4 uniVar;
-highp vec4 staticVar;
+uniform highp vec4 uniVar = vec4( 1.0);
+highp vec4 staticVar = uniVar;
 #line 3
-highp vec4 staticVar2;
-uniform highp vec4 unusedVar;
+highp vec4 staticVar2 = staticVar;
+uniform highp vec4 unusedVar = vec4( 50.0);
 uniform highp float uninitializedVar;
 #line 7
 #line 12

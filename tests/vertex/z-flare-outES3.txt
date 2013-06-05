@@ -100,8 +100,8 @@ void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, o
     ocolor = v.color;
     otexcoord = ((v.texcoord.xy * _FlareTexture_ST.xy) + _FlareTexture_ST.zw);
 }
-varying highp vec4 xlv_COLOR;
-varying highp vec2 xlv_TEXCOORD0;
+out highp vec4 xlv_COLOR;
+out highp vec2 xlv_TEXCOORD0;
 void main() {
     appdata_t xlt_v;
     xlt_v.vertex = vec4(gl_Vertex);

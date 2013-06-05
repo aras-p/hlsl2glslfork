@@ -1,5 +1,3 @@
-#extension GL_EXT_shader_texture_lod : require
-#extension GL_OES_standard_derivatives : require
 float xll_dFdx(float f) {
   return dFdx(f);
 }
@@ -43,10 +41,10 @@ mat4 xll_dFdy(mat4 m) {
   return mat4( dFdy(m[0]), dFdy(m[1]), dFdy(m[2]), dFdy(m[3]));
 }
 vec4 xll_tex2Dlod(sampler2D s, vec4 coord) {
-   return texture2DLodEXT( s, coord.xy, coord.w);
+   return textureLod( s, coord.xy, coord.w);
 }
 vec4 xll_texCUBElod(samplerCube s, vec4 coord) {
-  return textureCubeLodEXT( s, coord.xyz, coord.w);
+  return textureLod( s, coord.xyz, coord.w);
 }
 mat2 xll_transpose(mat2 m) {
   return mat2( m[0][0], m[1][0], m[0][1], m[1][1]);
@@ -445,22 +443,22 @@ highp vec3 CombineNormals( in highp vec3 n1, in highp vec3 n2 ) {
 #line 389
 void surf( in Input IN, inout MySurfaceOutput o ) {
     #line 391
-    mediump vec4 c = texture2D( _MainTex, IN.uv_MainTex);
+    mediump vec4 c = texture( _MainTex, IN.uv_MainTex);
     o.Albedo = (c.xyz * _Color.xyz);
     o.Alpha = c.w;
     o.Specular = _ReflColor.xyz;
     #line 395
     highp vec2 uv_BumpMap2 = ((IN.uv_MainTex.xy * _BumpMap2_ST.xy) + _BumpMap2_ST.zw);
     highp vec3 up = vec3( 0.0, 0.0, 1.0);
-    highp vec3 n1 = mix( up, max( vec3( -1.0, -1.0, 0.01), UnpackNormal( texture2D( _BumpMap, IN.uv_BumpMap))), vec3( _BumpMapFactor));
-    highp vec3 n2 = mix( up, max( vec3( -1.0, -1.0, 0.01), UnpackNormal( texture2D( _BumpMap2, uv_BumpMap2))), vec3( _BumpMapFactor2));
+    highp vec3 n1 = mix( up, max( vec3( -1.0, -1.0, 0.01), UnpackNormal( texture( _BumpMap, IN.uv_BumpMap))), vec3( _BumpMapFactor));
+    highp vec3 n2 = mix( up, max( vec3( -1.0, -1.0, 0.01), UnpackNormal( texture( _BumpMap2, uv_BumpMap2))), vec3( _BumpMapFactor2));
     #line 399
     o.Normal = CombineNormals( n1, n2);
     highp float NdotV = max( 0.0, dot( o.Normal, normalize(IN.viewDir)));
     highp float F = FresnelTerm( (_Refl0 * _Reflectivity), (_Refl90 * _Reflectivity), NdotV);
-    o.Reflectivity = (RemapToRange( texture2D( _MainReflectivityTex, IN.uv_MainTex).x, _MainReflectivityTex_AddMul) * F);
+    o.Reflectivity = (RemapToRange( texture( _MainReflectivityTex, IN.uv_MainTex).x, _MainReflectivityTex_AddMul) * F);
     #line 403
-    o.Roughness = RemapToRange( texture2D( _MainRoughnessTex, IN.uv_MainTex).x, _MainRoughnessTex_AddMul);
+    o.Roughness = RemapToRange( texture( _MainRoughnessTex, IN.uv_MainTex).x, _MainRoughnessTex_AddMul);
     highp vec3 globalSpec;
     o.Emission = GlobalIllumination( IN, o, globalSpec);
 }
@@ -601,13 +599,13 @@ lowp vec4 xlat_main( in v2f_surf IN ) {
     o.Specular = vec3( 0.0);
     o.Alpha = 0.0;
     #line 476
-    lowp vec4 lmtex2 = texture2D( unity_LightmapThird, IN.lmap.xy);
+    lowp vec4 lmtex2 = texture( unity_LightmapThird, IN.lmap.xy);
     surf( surfIN, o);
     lowp float atten = 1.0;
     lowp vec4 c = vec4( 0.0);
     #line 480
-    lowp vec4 lmtex0 = texture2D( unity_LightmapInd, IN.lmap.xy);
-    lowp vec4 lmtex1 = texture2D( unity_Lightmap, IN.lmap.xy);
+    lowp vec4 lmtex0 = texture( unity_LightmapInd, IN.lmap.xy);
+    lowp vec4 lmtex1 = texture( unity_Lightmap, IN.lmap.xy);
     lowp float lmFade = xll_saturate(((IN.lmap.z * unity_LightmapFade.z) + unity_LightmapFade.w));
     mediump float lmShadow = lmtex2.x;
     #line 484
@@ -618,14 +616,14 @@ lowp vec4 xlat_main( in v2f_surf IN ) {
     #line 488
     return c;
 }
-varying highp vec4 xlv_TEXCOORD0;
-varying highp vec3 xlv_TEXCOORD1;
-varying highp vec3 xlv_TEXCOORD2;
-varying lowp vec4 xlv_TEXCOORD3;
-varying lowp vec4 xlv_TEXCOORD4;
-varying lowp vec4 xlv_TEXCOORD5;
-varying highp vec4 xlv_TEXCOORD6;
-varying lowp vec3 xlv_TEXCOORD7;
+in highp vec4 xlv_TEXCOORD0;
+in highp vec3 xlv_TEXCOORD1;
+in highp vec3 xlv_TEXCOORD2;
+in lowp vec4 xlv_TEXCOORD3;
+in lowp vec4 xlv_TEXCOORD4;
+in lowp vec4 xlv_TEXCOORD5;
+in highp vec4 xlv_TEXCOORD6;
+in lowp vec3 xlv_TEXCOORD7;
 void main() {
     lowp vec4 xl_retval;
     v2f_surf xlt_IN;

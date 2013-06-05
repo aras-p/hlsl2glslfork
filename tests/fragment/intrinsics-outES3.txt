@@ -114,7 +114,7 @@ mediump vec4 xlat_main( in highp vec4 uv ) {
     c.xy += xll_trunc(vec2( 2.5, 3.5));
     return c;
 }
-varying highp vec4 xlv_TEXCOORD0;
+in highp vec4 xlv_TEXCOORD0;
 void main() {
     mediump vec4 xl_retval;
     xl_retval = xlat_main( vec4(xlv_TEXCOORD0));

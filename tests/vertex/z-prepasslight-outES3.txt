@@ -35,8 +35,8 @@ v2f xlat_main( in appdata v ) {
     o.ray = mix( o.ray, v.normal, vec3( float((v.normal.z != 0.0))));
     return o;
 }
-varying highp vec4 xlv_TEXCOORD0;
-varying highp vec3 xlv_TEXCOORD1;
+out highp vec4 xlv_TEXCOORD0;
+out highp vec3 xlv_TEXCOORD1;
 void main() {
     v2f xl_retval;
     appdata xlt_v;
