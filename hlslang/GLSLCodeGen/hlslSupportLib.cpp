@@ -107,18 +107,26 @@ void insertPre130TextureLookups()
         );
     hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
-    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeGrad,  
-        "vec4 xll_texCUBEgrad(samplerCUBE s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
+    hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTexCubeLod,
+        "vec4 xll_texCUBElod(samplerCube s, vec4 coord) {\n"
+        "  return textureCubeLodEXT( s, coord.xyz, coord.w);\n"
+        "}\n\n" )
+        );
+	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","GL_EXT_shader_texture_lod")));
+	
+    hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeGrad,
+        "vec4 xll_texCUBEgrad(samplerCube s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return textureCubeGradARB( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
     hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("GL_ARB_shader_texture_lod","GL_ARB_shader_texture_lod")));
-    hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTexCubeLod,
-		"vec4 xll_texCUBElod(samplerCube s, vec4 coord) {\n"
-		"  return textureCubeLodEXT( s, coord.xyz, coord.w);\n"
-		"}\n\n" )
+	
+    hlslSupportLibESOverrides->insert( CodeMap::value_type( EOpTexCubeGrad,
+        "vec4 xll_texCUBEgrad(samplerCube s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
+        "  return textureCubeGradEXT( s, coord, ddx, ddy);\n"
+        "}\n\n" )
 		);
-	hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","GL_EXT_shader_texture_lod")));
+    hlslSupportLibExtensionsESOverrides->insert (std::make_pair(EOpTexCubeGrad, std::make_pair("GL_EXT_shader_texture_lod","GL_EXT_shader_texture_lod")));
 
     // shadow2D / shadow2Dproj
     hlslSupportLib->insert(CodeMap::value_type(EOpShadow2D,
@@ -263,7 +271,7 @@ void insertPost120TextureLookups()
     //hlslSupportLibExtensions->insert (std::make_pair(EOpTexCubeLod, std::make_pair("","GL_ARB_shader_texture_lod")));
 
     hlslSupportLib->insert( CodeMap::value_type( EOpTexCubeGrad,  
-        "vec4 xll_texCUBEgrad(samplerCUBE s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
+        "vec4 xll_texCUBEgrad(samplerCube s, vec3 coord, vec3 ddx, vec3 ddy) {\n"
         "  return textureGrad( s, coord, ddx, ddy);\n"
         "}\n\n" )
         );
