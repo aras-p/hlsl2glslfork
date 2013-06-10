@@ -375,18 +375,22 @@ postfix_expression
             TVectorFields fields;
 
             // Check to make sure only the "x" component is accessed.
-            if (! parseContext.parseVectorFields(*$3.string, 1, fields, $3.line)) {
+            if (! parseContext.parseVectorFields(*$3.string, 1, fields, $3.line))
+			{
                 fields.num = 1;
                 fields.offsets[0] = 0;
                 parseContext.recover();
+				$$ = $1;
             }
-
-            // Create the appropriate constructor based on the number of ".x"'s there are in the selection field
-            TString vectorString = *$3.string;
-            TQualifier qualifier = $1->getType().getQualifier() == EvqConst ? EvqConst : EvqTemporary;
-            TType type($1->getBasicType(), $1->getPrecision(), qualifier, 1, (int) vectorString.size());
-            $$ = parseContext.constructBuiltIn(&type, parseContext.getConstructorOp(type),
-                                               $$, $1->getLine(), false);
+			else
+			{
+				// Create the appropriate constructor based on the number of ".x"'s there are in the selection field
+				TString vectorString = *$3.string;
+				TQualifier qualifier = $1->getType().getQualifier() == EvqConst ? EvqConst : EvqTemporary;
+				TType type($1->getBasicType(), $1->getPrecision(), qualifier, 1, (int) vectorString.size());
+				$$ = parseContext.constructBuiltIn(&type, parseContext.getConstructorOp(type),
+												   $$, $1->getLine(), false);
+			}
         } else {
             parseContext.error($2.line, " field selection requires structure, vector, or matrix on left hand side", $3.string->c_str(), "");
             parseContext.recover();

@@ -10,7 +10,7 @@ struct appdata {
 
 float4x4 UNITY_MATRIX_IT_MV;
 
-v2f main (appdata)
+v2f main (appdata v)
 {
 	v2f o;
 	o.pos = v.vertex;
