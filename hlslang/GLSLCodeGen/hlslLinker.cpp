@@ -281,6 +281,13 @@ static inline void AddToVaryings (std::stringstream& s, EShLanguage language, ET
 		AddFragmentInput(s, targetVersion, prec, type, name);
 }
 
+// Later non-ES targets should also return false for this.
+static inline bool UsesBuiltinAttribStrings(ETargetVersion targetVersion)
+{
+	return (targetVersion == ETargetGLSL_ES_100 || targetVersion == ETargetGLSL_ES_300) ? false : true;
+}
+
+
 HlslLinker::HlslLinker(TInfoSink& infoSink_)
 : infoSink(infoSink_)
 , m_Target(ETargetVersionCount)
@@ -373,7 +380,7 @@ bool HlslLinker::getArgumentData2( const std::string &name, const std::string &s
 			// Otherwise, use the built-in attribute name
 			else
 			{
-				outName = attribString[sem];
+				outName = UsesBuiltinAttribStrings(m_Target) ? attribString[sem] : "\0";
 				if (sem == EAttrSemNormal && size == 4)
 					pad = 1;
 				else if ( sem == EAttrSemUnknown || outName[0] == '\0' )
