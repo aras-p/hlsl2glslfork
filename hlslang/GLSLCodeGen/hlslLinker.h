@@ -103,6 +103,7 @@ private:
 	
 	ExtensionSet m_Extensions;
 	ETargetVersion m_Target;
+	unsigned m_Options;
 };
 
 #endif //HLSL_LINKER_H
