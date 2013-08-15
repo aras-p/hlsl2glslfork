@@ -1009,8 +1009,9 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 		emitSymbolWithPad (preamble, ctor, name, pad);
 		preamble << ";\n";
 	}
-	
-	emitSingleInputVariable (lang, m_Target, name, ctor, sym->getType(), sym->getPrecision(), attrib, varying);
+
+	if (!sym->outputSuppressed())
+		emitSingleInputVariable (lang, m_Target, name, ctor, sym->getType(), sym->getPrecision(), attrib, varying);
 }
 
 
@@ -1075,8 +1076,8 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::st
 				preamble << ";\n";
 			}
 
-			
-			emitSingleInputVariable (lang, m_Target, name, ctor, current.type, current.precision, attrib, varying);
+			if (!current.outputSuppressed())
+				emitSingleInputVariable (lang, m_Target, name, ctor, current.type, current.precision, attrib, varying);
 		}
 	}
 }
@@ -1330,6 +1331,57 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 	return emitReturnStruct(retStruct, std::string("xl_retval."), lang, varying, postamble);
 }
 
+// Called recursively and appends (to list) any symbols that have semantic sem.
+void HlslLinker::appendDuplicatedSemantics(GlslSymbolOrStructMemberBase* sym, std::string const& sem, std::vector<GlslSymbolOrStructMemberBase*>& list)
+{
+	if (!_stricmp(sym->getSemantic().c_str(), sem.c_str()))
+		list.push_back(sym);
+	else if (sym->getStruct())
+	{
+		int mc = sym->getStruct()->memberCount();
+		for (int i = 0; i < mc; ++i)
+			appendDuplicatedSemantics(const_cast<GlslStruct::StructMember*>(&sym->getStruct()->getMember(i)),sem,list);
+	}
+}
+
+// For each re-used semantic (e.g. TEXCOORD0) record the symbol for which it is output.
+// This is so that you can specify the same semantic in multiple structures without
+// having multiply defined attribute or varying symbols in the output. The one that is
+// output is the one found with the largest dimension.
+void HlslLinker::markDuplicatedSemantics(GlslFunction* func)
+{
+	int pCount = func->getParameterCount();
+	for (int asi=0; asi < sizeof(kAttributeSemantic)/sizeof(kAttributeSemantic[0]); ++asi)
+	{
+		std::vector<GlslSymbolOrStructMemberBase*> symsUsingSem;
+		AttrSemanticMapping* sem = &kAttributeSemantic[asi];
+		for (int ii=0; ii<pCount; ii++)
+		{
+			GlslSymbol *sym = func->getParameter(ii);
+			appendDuplicatedSemantics(sym, sem->name, symsUsingSem);
+		}
+		if (symsUsingSem.size() > 1)
+		{
+			int index_of_largest = -1;
+			int largest_array_size = 0;
+			for (unsigned int ii=0; ii < symsUsingSem.size(); ii++)
+			{
+				if (!ii || largest_array_size < getElements(symsUsingSem[ii]->type))
+				{
+					index_of_largest = ii;
+					largest_array_size = getElements(symsUsingSem[ii]->type);
+				}
+			}
+			for (unsigned int ii=0; ii < symsUsingSem.size(); ii++)
+			{
+				if (ii != index_of_largest)
+				{
+					symsUsingSem[ii]->suppressOutput();
+				}
+			}
+		}
+	}
+}
 
 bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETargetVersion targetVersion, unsigned options)
 {
@@ -1379,6 +1431,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 	std::stringstream postamble;
 	std::stringstream varying;
 	std::stringstream call;
+
+	markDuplicatedSemantics(funcMain);
 
 	// Declare return value
 	const EGlslSymbolType retType = funcMain->getReturnType();

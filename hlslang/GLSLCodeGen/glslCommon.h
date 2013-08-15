@@ -74,6 +74,7 @@ public:
    type(t),
    precision(prec),
    arraySize(as),
+   outputIsSuppressed(false),
    name(n)
    {
    }
@@ -82,12 +83,15 @@ public:
    const std::string &getSemantic() const { return semantic; }
    virtual const GlslStruct* getStruct() const { return 0; }
    virtual GlslStruct* getStruct() { return 0; }
+   void suppressOutput() { outputIsSuppressed = true; }
+   bool outputSuppressed() const { return outputIsSuppressed; }
 public:
    std::string name;
    std::string semantic;
    EGlslSymbolType type;
    TPrecision precision;
    int arraySize;
+   bool outputIsSuppressed;
 };
 
 
