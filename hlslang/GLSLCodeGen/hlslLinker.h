@@ -57,7 +57,7 @@ private:
 	EAttribSemantic parseAttributeSemantic(const std::string &semantic);
 	
 	bool addCalledFunctions( GlslFunction *func, FunctionSet& funcSet, std::vector<GlslFunction*> &funcList);
-	bool getArgumentData2( const std::string &name, const std::string &semantic, EGlslSymbolType type,
+	bool getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStructMember,
 							   EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset);
 	bool getArgumentData( GlslSymbol* sym, EClassifier c, std::string &outName,
 				  std::string &ctor, int &pad);
@@ -67,6 +67,9 @@ private:
 	void buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions);
 	void buildUniformReflection(const std::vector<GlslSymbol*>& constants);
 	
+	void appendDuplicatedInSemantics(GlslSymbolOrStructMemberBase* sym, std::string const& sem, std::vector<GlslSymbolOrStructMemberBase*>& list);
+	void markDuplicatedInSemantics(GlslFunction* func);
+
 	void emitLibraryFunctions(const std::set<TOperator>& libFunctions, EShLanguage lang, bool usePrecision);
 	void emitStructs(HlslCrossCompiler* comp);
 	void emitGlobals(const GlslFunction* globalFunction, const std::vector<GlslSymbol*>& constants);

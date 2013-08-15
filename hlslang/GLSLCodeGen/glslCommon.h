@@ -64,6 +64,41 @@ enum EGlslQualifier
 // Forward Declarations
 class GlslStruct;
 
+// Contains everything that is shared by
+// GlslSymbol and GlslStruct::StructMember
+class GlslSymbolOrStructMemberBase
+{
+public:
+   GlslSymbolOrStructMemberBase::GlslSymbolOrStructMemberBase(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as) :
+   semantic(s),
+   type(t),
+   qual(q),
+   precision(prec),
+   arraySize(as),
+   outputIsSuppressed(false),
+   name(n)
+   {
+   }
+   bool isArray() const { return (arraySize > 0); }
+   int getArraySize() const { return arraySize; }
+   const std::string &getSemantic() const { return semantic; }
+   virtual const GlslStruct* getStruct() const { return 0; }
+   virtual GlslStruct* getStruct() { return 0; }
+   EGlslSymbolType getType() const { return type; }
+   EGlslQualifier getQualifier() const { return qual; }
+   void suppressOutput() { outputIsSuppressed = true; }
+   bool outputSuppressed() const { return outputIsSuppressed; }
+public:
+   std::string name;
+   std::string semantic;
+   EGlslSymbolType type;
+   EGlslQualifier qual;
+   TPrecision precision;
+   int arraySize;
+   bool outputIsSuppressed;
+};
+
+
 /// Outputs the type of the symbol to the output buffer
 void writeType(std::stringstream &out, EGlslSymbolType type, GlslStruct *s, TPrecision precision);
 

@@ -17,11 +17,12 @@ v2f xlat_main( in highp vec4 pos ) {
     o.ss.color = pos;
     return o;
 }
+attribute vec4 xlat_attrib_POSITION;
 varying highp vec4 xlv_TEXCOORD;
 varying highp vec4 xlv_COLOR;
 void main() {
     v2f xl_retval;
-    xl_retval = xlat_main( vec4(gl_Vertex));
+    xl_retval = xlat_main( vec4(xlat_attrib_POSITION));
     xlv_TEXCOORD = vec4(xl_retval.pos);
     xlv_COLOR = vec4(xl_retval.ss.color);
 }

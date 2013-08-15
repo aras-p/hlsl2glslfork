@@ -1,5 +1,5 @@
 
-#line 10
+#line 14
 struct v2f {
     highp vec4 pos;
     highp float fog;
@@ -7,40 +7,46 @@ struct v2f {
     highp vec4 color;
 };
 #line 3
-struct a2v {
+struct a2v1 {
     highp vec4 pos;
     highp vec2 uv;
     highp vec3 normal;
     highp vec4 color;
 };
+#line 10
+struct a2v2 {
+    highp vec4 uvFloat4;
+};
 #line 1
 uniform highp mat4 mvp;
-#line 17
-#line 17
-v2f xlat_main( in a2v v ) {
+#line 21
+#line 21
+v2f xlat_main( in a2v1 v, in a2v2 v2 ) {
     v2f o;
     o.pos = (mvp * v.pos);
-    #line 21
+    #line 25
     o.color = v.color;
     o.color.xyz += v.normal;
     o.uv = v.uv;
     return o;
 }
 in vec4 xlat_attrib_POSITION;
-in vec2 xlat_attrib_TEXCOORD0;
 in vec3 xlat_attrib_NORMAL;
 in vec4 xlat_attrib_COLOR;
+in vec4 xlat_attrib_TEXCOORD0;
 out highp float xlv_FOG;
 out highp vec2 xlv_TEXCOORD0;
 out highp vec4 xlv_COLOR;
 void main() {
     v2f xl_retval;
-    a2v xlt_v;
+    a2v1 xlt_v;
     xlt_v.pos = vec4(xlat_attrib_POSITION);
     xlt_v.uv = vec2(xlat_attrib_TEXCOORD0);
     xlt_v.normal = vec3(xlat_attrib_NORMAL);
     xlt_v.color = vec4(xlat_attrib_COLOR);
-    xl_retval = xlat_main( xlt_v);
+    a2v2 xlt_v2;
+    xlt_v2.uvFloat4 = vec4(xlat_attrib_TEXCOORD0);
+    xl_retval = xlat_main( xlt_v, xlt_v2);
     gl_Position = vec4(xl_retval.pos);
     xlv_FOG = float(xl_retval.fog);
     xlv_TEXCOORD0 = vec2(xl_retval.uv);

@@ -97,7 +97,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 		// compound type
 		unsigned n_members = structure->memberCount();
 		for (unsigned i = 0; i != n_members; ++i) {
-			const GlslStruct::StructMember &m = structure->getMember(i);
+			const StructMember &m = structure->getMember(i);
 			if (construct && i > 0)
 				out << ", ";
 			writeConstantConstructor (out, m.type, m.precision, c);
@@ -1806,6 +1806,7 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
 {
    GlslStruct *s = 0;
    std::string structName = type->getTypeName().c_str();
+   EGlslQualifier structQual = translateQualifier(type->getQualifier());
 
    //check for anonymous structures
    if (structName.size() == 0)
@@ -1836,23 +1837,7 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
 
       for (TTypeList::iterator it = tList.begin(); it != tList.end(); it++)
       {
-         GlslStruct::StructMember m;
-         m.name = it->type->getFieldName().c_str();
-
-         if (it->type->hasSemantic())
-            m.semantic = it->type->getSemantic().c_str();
-
-        if (it->type->getBasicType() == EbtStruct)
-        {
-            m.structType = createStructFromType(it->type);
-        }
-        else
-            m.structType = NULL;
-
-         m.type = translateType( it->type);
-         m.arraySize = it->type->isArray() ? it->type->getArraySize() : 0;
-		 m.precision = m_UsePrecision ? it->type->getPrecision() : EbpUndefined;
-
+         TPrecision prec = m_UsePrecision ? it->type->getPrecision() : EbpUndefined;
          if(it->type->hasSemantic() && m_UsePrecision)
          {
             const char* str = it->type->getSemantic().c_str();
@@ -1860,11 +1845,16 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
 
             extern bool IsPositionSemantics(const char* sem, int len);
             if(IsPositionSemantics(str, len))
-                m.precision = EbpHigh;
+                prec = EbpHigh;
          }
-
-
-         s->addMember(m);
+         StructMember* m = new StructMember( it->type->getFieldName().c_str(),
+                                            (it->type->hasSemantic()) ? it->type->getSemantic().c_str() : "",
+                                             translateType(it->type),
+                                             structQual,
+                                             prec,
+                                             it->type->isArray() ? it->type->getArraySize() : 0,
+                                            (it->type->getBasicType() == EbtStruct) ? createStructFromType(it->type) : NULL);
+         s->addMember(*m);
       }
 
       //add it to the list

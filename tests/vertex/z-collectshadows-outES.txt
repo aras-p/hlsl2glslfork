@@ -23,14 +23,17 @@ v2f xlat_main( in appdata v ) {
     o.ray = v.texcoord1;
     return o;
 }
+attribute vec4 xlat_attrib_POSITION;
+attribute vec2 xlat_attrib_TEXCOORD0;
+attribute vec3 xlat_attrib_TEXCOORD1;
 varying highp vec2 xlv_TEXCOORD0;
 varying highp vec3 xlv_TEXCOORD1;
 void main() {
     v2f xl_retval;
     appdata xlt_v;
-    xlt_v.vertex = vec4(gl_Vertex);
-    xlt_v.texcoord = vec2(gl_MultiTexCoord0);
-    xlt_v.texcoord1 = vec3(gl_MultiTexCoord1);
+    xlt_v.vertex = vec4(xlat_attrib_POSITION);
+    xlt_v.texcoord = vec2(xlat_attrib_TEXCOORD0);
+    xlt_v.texcoord1 = vec3(xlat_attrib_TEXCOORD1);
     xl_retval = xlat_main( xlt_v);
     gl_Position = vec4(xl_retval.pos);
     xlv_TEXCOORD0 = vec2(xl_retval.uv);

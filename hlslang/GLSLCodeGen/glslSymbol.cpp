@@ -22,13 +22,8 @@ static bool IsReservedGlslKeyword (const std::string& name)
 }
 
 
-GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, TPrecision prec, EGlslQualifier q, int as ) :
-   semantic(s),
+GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, TPrecision prec, EGlslQualifier q, int as ) : GlslSymbolOrStructMemberBase(n, s, t, q, prec, as),
    identifier(id),
-   type(t),
-   precision(prec),
-   qual(q),
-   arraySize(as),
    mangleCounter(0),
    structPtr(0),
    isParameter(false),
@@ -37,10 +32,6 @@ GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGls
 	if (IsReservedGlslKeyword(n))
 	{
 		name = "xlat_var_" + n;
-	}
-	else
-	{
-		name = n;
 	}
 	mangledName = name;
 
