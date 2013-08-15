@@ -152,7 +152,10 @@ v2f xlat_main( in appdata_full v ) {
     o.normalInterpolator.w = 1.0;
     return o;
 }
+in vec4 xlat_attrib_POSITION;
 in vec4 TANGENT;
+in vec3 xlat_attrib_NORMAL;
+in vec4 xlat_attrib_TEXCOORD0;
 out highp vec4 xlv_TEXCOORD0;
 out highp vec4 xlv_TEXCOORD1;
 out highp vec4 xlv_TEXCOORD2;
@@ -161,10 +164,10 @@ out highp vec4 xlv_TEXCOORD4;
 void main() {
     v2f xl_retval;
     appdata_full xlt_v;
-    xlt_v.vertex = vec4(gl_Vertex);
+    xlt_v.vertex = vec4(xlat_attrib_POSITION);
     xlt_v.tangent = vec4(TANGENT);
-    xlt_v.normal = vec3(gl_Normal);
-    xlt_v.texcoord = vec4(gl_MultiTexCoord0);
+    xlt_v.normal = vec3(xlat_attrib_NORMAL);
+    xlt_v.texcoord = vec4(xlat_attrib_TEXCOORD0);
     xl_retval = xlat_main( xlt_v);
     gl_Position = vec4(xl_retval.pos);
     xlv_TEXCOORD0 = vec4(xl_retval.normalInterpolator);

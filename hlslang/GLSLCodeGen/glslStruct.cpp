@@ -5,6 +5,11 @@
 
 #include "glslStruct.h"
 
+StructMember::StructMember(const std::string &n, const std::string &s, EGlslSymbolType t, TPrecision prec, int as, GlslStruct* st) : GlslSymbolOrStructMemberBase(n, s, t, prec, as),
+structType(st)
+{
+}
+
 std::string GlslStruct::getDecl() const
 {
 	std::stringstream out;

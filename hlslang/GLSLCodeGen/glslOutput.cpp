@@ -74,49 +74,6 @@ bool isShadowSampler(TBasicType t) {
 	}
 }
 
-int getElements( EGlslSymbolType t )
-{
-   switch (t)
-   {
-   case EgstBool:
-   case EgstInt:
-   case EgstFloat:
-   case EgstStruct:
-      return 1;
-   case EgstBool2:
-   case EgstInt2:
-   case EgstFloat2:
-      return 2;
-   case EgstBool3:
-   case EgstInt3:
-   case EgstFloat3:
-      return 3;
-   case EgstBool4:
-   case EgstInt4:
-   case EgstFloat4:
-   case EgstFloat2x2:
-      return 4;
-   case EgstFloat2x3:
-      return 6;
-   case EgstFloat2x4:
-      return 8;
-   case EgstFloat3x2:
-      return 6;
-   case EgstFloat3x3:
-      return 9;
-   case EgstFloat3x4:
-      return 12;
-   case EgstFloat4x2:
-      return 8;
-   case EgstFloat4x3:
-      return 12;
-   case EgstFloat4x4:
-      return 16;
-   default:
-      return 0;
-   }
-}
-
 TString buildArrayConstructorString(const TType& type) {
 	std::stringstream constructor;
 	constructor << getTypeString(translateType(&type))
@@ -140,7 +97,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 		// compound type
 		unsigned n_members = structure->memberCount();
 		for (unsigned i = 0; i != n_members; ++i) {
-			const GlslStruct::StructMember &m = structure->getMember(i);
+			const StructMember &m = structure->getMember(i);
 			if (construct && i > 0)
 				out << ", ";
 			writeConstantConstructor (out, m.type, m.precision, c);
@@ -1879,23 +1836,7 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
 
       for (TTypeList::iterator it = tList.begin(); it != tList.end(); it++)
       {
-         GlslStruct::StructMember m;
-         m.name = it->type->getFieldName().c_str();
-
-         if (it->type->hasSemantic())
-            m.semantic = it->type->getSemantic().c_str();
-
-        if (it->type->getBasicType() == EbtStruct)
-        {
-            m.structType = createStructFromType(it->type);
-        }
-        else
-            m.structType = NULL;
-
-         m.type = translateType( it->type);
-         m.arraySize = it->type->isArray() ? it->type->getArraySize() : 0;
-		 m.precision = m_UsePrecision ? it->type->getPrecision() : EbpUndefined;
-
+         TPrecision prec = m_UsePrecision ? it->type->getPrecision() : EbpUndefined;
          if(it->type->hasSemantic() && m_UsePrecision)
          {
             const char* str = it->type->getSemantic().c_str();
@@ -1903,11 +1844,15 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
 
             extern bool IsPositionSemantics(const char* sem, int len);
             if(IsPositionSemantics(str, len))
-                m.precision = EbpHigh;
+                prec = EbpHigh;
          }
-
-
-         s->addMember(m);
+         StructMember* m = new StructMember( it->type->getFieldName().c_str(),
+                                            (it->type->hasSemantic()) ? it->type->getSemantic().c_str() : "",
+                                             translateType(it->type),
+                                             prec,
+                                             it->type->isArray() ? it->type->getArraySize() : 0,
+                                            (it->type->getBasicType() == EbtStruct) ? createStructFromType(it->type) : NULL);
+         s->addMember(*m);
       }
 
       //add it to the list
