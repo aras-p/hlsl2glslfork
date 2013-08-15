@@ -74,49 +74,6 @@ bool isShadowSampler(TBasicType t) {
 	}
 }
 
-int getElements( EGlslSymbolType t )
-{
-   switch (t)
-   {
-   case EgstBool:
-   case EgstInt:
-   case EgstFloat:
-   case EgstStruct:
-      return 1;
-   case EgstBool2:
-   case EgstInt2:
-   case EgstFloat2:
-      return 2;
-   case EgstBool3:
-   case EgstInt3:
-   case EgstFloat3:
-      return 3;
-   case EgstBool4:
-   case EgstInt4:
-   case EgstFloat4:
-   case EgstFloat2x2:
-      return 4;
-   case EgstFloat2x3:
-      return 6;
-   case EgstFloat2x4:
-      return 8;
-   case EgstFloat3x2:
-      return 6;
-   case EgstFloat3x3:
-      return 9;
-   case EgstFloat3x4:
-      return 12;
-   case EgstFloat4x2:
-      return 8;
-   case EgstFloat4x3:
-      return 12;
-   case EgstFloat4x4:
-      return 16;
-   default:
-      return 0;
-   }
-}
-
 TString buildArrayConstructorString(const TType& type) {
 	std::stringstream constructor;
 	constructor << getTypeString(translateType(&type))

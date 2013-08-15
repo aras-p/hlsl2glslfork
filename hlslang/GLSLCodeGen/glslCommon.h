@@ -103,4 +103,7 @@ EGlslSymbolType translateType( const TType *type );
 /// Translates the qualifier to a GLSL qualifier enumerant
 EGlslQualifier translateQualifier( TQualifier qual);
 
+// Gets the number of elements in EGlslSymbolType.
+int getElements( EGlslSymbolType t );
+
 #endif //GLSL_COMMON_H
