@@ -9,7 +9,7 @@
 #include "glslCommon.h"
 #include "glslStruct.h"
 
-class GlslSymbol 
+class GlslSymbol : public GlslSymbolOrStructMemberBase
 {
 public:
 	GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, TPrecision precision, EGlslQualifier q, int as = 0 );
@@ -26,12 +26,8 @@ public:
 	const std::string &getName( bool local = true ) const { return ( (local ) ? mutableMangledName : mangledName ); }
 
 	bool hasSemantic() const { return (semantic.size() > 0); }
-	const std::string &getSemantic() const { return semantic; }
 
 	int getId() const { return identifier; }
-
-	bool isArray() const { return (arraySize > 0); }
-	int getArraySize() const { return arraySize; }
 
 	EGlslSymbolType getType() const { return type; }
 	EGlslQualifier getQualifier() const { return qual; }
@@ -57,15 +53,10 @@ public:
 	int getRef() const { return refCount; }
 
 private:
-	std::string name;
 	std::string mangledName;
 	std::string mutableMangledName;
-	std::string semantic;
 	int identifier;
-	EGlslSymbolType type;
 	EGlslQualifier qual;
-	TPrecision precision;
-	int arraySize;
 	int mangleCounter;
 	GlslStruct *structPtr;
 	bool isParameter;

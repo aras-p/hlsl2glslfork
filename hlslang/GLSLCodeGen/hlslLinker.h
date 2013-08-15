@@ -57,7 +57,7 @@ private:
 	EAttribSemantic parseAttributeSemantic(const std::string &semantic);
 	
 	bool addCalledFunctions( GlslFunction *func, FunctionSet& funcSet, std::vector<GlslFunction*> &funcList);
-	bool getArgumentData2( const std::string &name, const std::string &semantic, EGlslSymbolType type,
+	bool getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStructMember,
 							   EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset);
 	bool getArgumentData( GlslSymbol* sym, EClassifier c, std::string &outName,
 				  std::string &ctor, int &pad);
