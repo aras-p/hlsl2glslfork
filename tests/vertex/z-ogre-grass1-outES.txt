@@ -19,13 +19,16 @@ uniform highp vec4 xlu_ambient;
 uniform highp vec4 xlu_objSpaceLight;
 uniform highp vec4 xlu_lightColour;
 uniform highp vec4 xlu_offset;
+attribute vec4 xlat_attrib_POSITION;
+attribute vec3 xlat_attrib_NORMAL;
+attribute vec2 xlat_attrib_TEXCOORD0;
 varying highp vec2 xlv_TEXCOORD0;
 varying highp vec4 xlv_COLOR;
 void main() {
     highp vec4 xlt_oPosition;
     highp vec2 xlt_oUv;
     highp vec4 xlt_oColour;
-    xlat_main( vec4(gl_Vertex), vec3(gl_Normal), vec2(gl_MultiTexCoord0), xlt_oPosition, xlt_oUv, xlt_oColour, xlu_worldViewProj, xlu_ambient, xlu_objSpaceLight, xlu_lightColour, xlu_offset);
+    xlat_main( vec4(xlat_attrib_POSITION), vec3(xlat_attrib_NORMAL), vec2(xlat_attrib_TEXCOORD0), xlt_oPosition, xlt_oUv, xlt_oColour, xlu_worldViewProj, xlu_ambient, xlu_objSpaceLight, xlu_lightColour, xlu_offset);
     gl_Position = vec4(xlt_oPosition);
     xlv_TEXCOORD0 = vec2(xlt_oUv);
     xlv_COLOR = vec4(xlt_oColour);

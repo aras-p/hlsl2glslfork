@@ -71,8 +71,9 @@ highp vec4 xlat_main( in highp vec4 pos ) {
     v.xyzw += xll_matrixindex_mf4x4_i (m4b, 1);
     return v;
 }
+in vec4 xlat_attrib_POSITION;
 void main() {
     highp vec4 xl_retval;
-    xl_retval = xlat_main( vec4(gl_Vertex));
+    xl_retval = xlat_main( vec4(xlat_attrib_POSITION));
     gl_Position = vec4(xl_retval);
 }
