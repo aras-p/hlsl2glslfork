@@ -197,6 +197,11 @@ enum TTranslateOptions
 	//  we will output an attribute "xlat_attrib_TEXCOORD0". Targeting GLSL ES forces this
 	//  as there are no built-in attributes in that variant.
 	ETranslateOpAvoidBuiltinAttribNames = (1<<2),
+
+	// When not using built-in attribute names (due to ETranslateOpAvoidBuiltinAttribNames or GLSL ES),
+	//  instead of outputting e.g. "xlat_attrib_TEXCOORD0" for "appdata_t.texcoord : TEXCOORD0"
+	//  we will output "appdata_t_texcoord"
+	ETranslateOpPropogateOriginalAttribNames = (1<<3),
 };
 
 

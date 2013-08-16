@@ -1853,7 +1853,8 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
                                              structQual,
                                              prec,
                                              it->type->isArray() ? it->type->getArraySize() : 0,
-                                            (it->type->getBasicType() == EbtStruct) ? createStructFromType(it->type) : NULL);
+                                            (it->type->getBasicType() == EbtStruct) ? createStructFromType(it->type) : NULL,
+                                             structName);
          s->addMember(*m);
       }
 

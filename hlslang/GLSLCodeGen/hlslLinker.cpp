@@ -318,6 +318,39 @@ HlslLinker::~HlslLinker()
 }
 
 
+void HlslLinker::getAttributeName( GlslSymbolOrStructMemberBase const* symOrStructMember, std::string &outName, EAttribSemantic sem, int semanticOffset )
+{
+	if (m_Options & ETranslateOpPropogateOriginalAttribNames && !UsesBuiltinAttribStrings(m_Target, m_Options))
+	{
+		GlslSymbolOrStructMemberBase const* dominant =	 (symOrStructMember->outputSuppressedBy())
+														? symOrStructMember->outputSuppressedBy()
+														: symOrStructMember;
+		outName = dominant->baseName+dominant->name;
+		if ( semanticOffset > 0 )
+			outName += ( semanticOffset + '0' );
+	}
+	else
+	{
+		if ( semanticOffset > 0 )
+			sem = (EAttribSemantic)((int)sem+semanticOffset);
+		// If the user has specified a user attrib name, use a user attribute
+		if ( userAttribString[sem][0] != '\0' )
+		{
+			outName = userAttribString[sem];
+		}
+		// Otherwise, use the built-in attribute name
+		else
+		{
+			outName = UsesBuiltinAttribStrings(m_Target, m_Options) ? attribString[sem] : "\0";
+			if ( sem == EAttrSemUnknown || outName[0] == '\0' )
+			{
+				//handle the blind data
+				outName = "xlat_attrib_";
+				outName += symOrStructMember->semantic;
+			}
+		}
+	}
+}
 
 bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStructMember,
 								 EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset)
@@ -380,24 +413,9 @@ bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStru
 			return false;
 
 		case EClassAttrib:
-			// If the user has specified a user attrib name, use a user attribute
-			if ( userAttribString[sem][0] != '\0')
-			{
-				outName = userAttribString[sem];
-			}
-			// Otherwise, use the built-in attribute name
-			else
-			{
-				outName = UsesBuiltinAttribStrings(m_Target, m_Options) ? attribString[sem] : "\0";
-				if (sem == EAttrSemNormal && size == 4)
-					pad = 1;
-				if ( sem == EAttrSemUnknown || outName[0] == '\0' )
-				{
-					//handle the blind data
-					outName = "xlat_attrib_";
-					outName += semantic;
-				}
-			}
+			if (sem == EAttrSemNormal && size == 4)
+				pad = 1;
+			getAttributeName( symOrStructMember, outName, sem, semanticOffset );
 			break;
 
 		case EClassVarOut:
@@ -1016,7 +1034,7 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 		preamble << ";\n";
 	}
 
-	if (!sym->outputSuppressed())
+	if (!sym->outputSuppressedBy())
 		emitSingleInputVariable (lang, m_Target, name, ctor, sym->getType(), sym->getPrecision(), attrib, varying);
 }
 
@@ -1082,7 +1100,7 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::st
 				preamble << ";\n";
 			}
 
-			if (!current.outputSuppressed())
+			if (!current.outputSuppressedBy())
 				emitSingleInputVariable (lang, m_Target, name, ctor, current.type, current.precision, attrib, varying);
 		}
 	}
@@ -1371,11 +1389,13 @@ void HlslLinker::markDuplicatedInSemantics(GlslFunction* func)
 		{
 			int index_of_largest = -1;
 			int largest_array_size = 0;
+			GlslSymbolOrStructMemberBase* sym_of_largest = 0;
 			for (unsigned int ii=0; ii < symsUsingSem.size(); ii++)
 			{
 				if (!ii || largest_array_size < getElements(symsUsingSem[ii]->type))
 				{
 					index_of_largest = ii;
+					sym_of_largest = symsUsingSem[ii];
 					largest_array_size = getElements(symsUsingSem[ii]->type);
 				}
 			}
@@ -1383,7 +1403,7 @@ void HlslLinker::markDuplicatedInSemantics(GlslFunction* func)
 			{
 				if (ii != index_of_largest)
 				{
-					symsUsingSem[ii]->suppressOutput();
+					symsUsingSem[ii]->suppressOutput(sym_of_largest);
 				}
 			}
 		}

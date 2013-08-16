@@ -69,14 +69,15 @@ class GlslStruct;
 class GlslSymbolOrStructMemberBase
 {
 public:
-   GlslSymbolOrStructMemberBase::GlslSymbolOrStructMemberBase(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as) :
+   GlslSymbolOrStructMemberBase::GlslSymbolOrStructMemberBase(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as, std::string const& bn = "") :
    semantic(s),
    type(t),
    qual(q),
    precision(prec),
    arraySize(as),
-   outputIsSuppressed(false),
-   name(n)
+   suppressedBy(NULL),
+   name(n),
+   baseName((bn=="")?bn:bn+"_")
    {
    }
    bool isArray() const { return (arraySize > 0); }
@@ -86,16 +87,18 @@ public:
    virtual GlslStruct* getStruct() { return 0; }
    EGlslSymbolType getType() const { return type; }
    EGlslQualifier getQualifier() const { return qual; }
-   void suppressOutput() { outputIsSuppressed = true; }
-   bool outputSuppressed() const { return outputIsSuppressed; }
+   void suppressOutput(GlslSymbolOrStructMemberBase* suppressor) { suppressedBy = suppressor; }
+   GlslSymbolOrStructMemberBase const* outputSuppressedBy() const { return suppressedBy; }
 public:
    std::string name;
+   std::string baseName;
    std::string semantic;
    EGlslSymbolType type;
    EGlslQualifier qual;
    TPrecision precision;
    int arraySize;
-   bool outputIsSuppressed;
+private:
+   GlslSymbolOrStructMemberBase const* suppressedBy;
 };
 
 
