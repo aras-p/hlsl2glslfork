@@ -1009,17 +1009,9 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 }
 
 
-void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
+// This function calls itself recursively if it finds structs in structs.
+bool HlslLinker::emitInputStruct(const GlslStruct* str, std::string parentName, EShLanguage lang, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble)
 {
-	GlslStruct* str = sym->getStruct();
-	assert(str);
-
-	// temporary variable for the struct
-	const std::string tempVar = "xlt_" + sym->getName();
-	preamble << "    " << str->getName() << " ";
-	preamble << tempVar <<";\n";
-	call << tempVar;
-	
 	// process struct members
 	const int elem = str->memberCount();
 	for (int jj=0; jj<elem; jj++)
@@ -1045,15 +1037,23 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::st
 			if (!getArgumentData2 (current.name, current.semantic, current.type,
 								  lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, idx))
 			{
-				//should deal with fall through cases here
-				assert(0);
-				infoSink.info << "Unsupported type for struct element in shader entry parameter (";
-				infoSink.info << getTypeString(current.type) << ")\n";
-				continue;
+				const GlslStruct* subStruct = current.structType;
+				if (subStruct)
+				{
+					//should deal with fall through cases here
+					emitInputStruct(subStruct, parentName+current.name+std::string("."), lang, attrib, varying, preamble);
+					continue;
+				}
+				else
+				{
+					infoSink.info << "Unsupported type for struct element in shader entry parameter (";
+					infoSink.info << getTypeString(current.type) << ")\n";
+					return false;
+				}
 			}
-			
+
 			preamble << "    ";
-			preamble << tempVar << "." << current.name;
+			preamble << parentName << current.name;
 			
 			if (isArray)
 				preamble << "[" << idx << "]";
@@ -1075,6 +1075,20 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::st
 			emitSingleInputVariable (lang, m_Target, name, ctor, current.type, current.precision, attrib, varying);
 		}
 	}
+	return true;
+}
+
+void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, std::stringstream& call)
+{
+	GlslStruct* str = sym->getStruct();
+	assert(str);
+
+	// temporary variable for the struct
+	const std::string tempVar = "xlt_" + sym->getName();
+	preamble << "    " << str->getName() << " ";
+	preamble << tempVar <<";\n";
+	call << tempVar;
+	emitInputStruct(str, "xlt_" + sym->getName() + ".", lang, attrib, varying, preamble);
 }
 
 
