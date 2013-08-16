@@ -1072,7 +1072,7 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::st
 		for (int idx = 0; idx < arraySize; ++idx)
 		{
 			int pad;
-			if (!getArgumentData2 (&current, lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, idx))
+			if (!getArgumentData2 (&current, lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, isArray?idx:-1))
 			{
 				//should deal with fall through cases here
 				assert(0);
@@ -1179,7 +1179,7 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 		std::string name, ctor;
 		int pad;
 		
-		if (!getArgumentData2( &current, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, 0))
+		if (!getArgumentData2( &current, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, -1))
 		{
 			//should deal with fall through cases here
 			assert(0);
@@ -1265,7 +1265,7 @@ bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName,
 
 		for (int idx = 0; idx < arraySize; ++idx)
 		{
-			if (!getArgumentData2( &current, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, idx))
+			if (!getArgumentData2( &current, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, isArray?idx:-1))
 			{
 				GlslStruct *subStruct = current.structType;
 				if (subStruct)
@@ -1329,7 +1329,7 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 		GlslSymbolOrStructMemberBase fakedMainSym("", funcMain->getSemantic(), retType, EqtNone, EbpMedium, 0);
 
 		if (!getArgumentData2(&fakedMainSym, lang==EShLangVertex ? EClassVarOut : EClassRes,
-								name, ctor, pad, 0))
+								name, ctor, pad, -1))
 		{
 			assert(0);
 			infoSink.info << (lang==EShLangVertex ? "Unsupported type for shader return value (" : "Unsupported return type for shader entry function (");
