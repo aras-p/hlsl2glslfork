@@ -1,0 +1,72 @@
+
+#line 14
+struct v2f {
+    highp vec4 pos;
+    highp float fog;
+    highp vec2 uv;
+    highp vec4 color;
+};
+
+
+#line 0
+struct a2v_sub {
+    highp vec4 color;
+};
+
+
+#line 7
+struct a2v {
+    highp vec4 pos;
+    highp vec2 uv;
+    highp vec3 normal;
+    a2v_sub ss;
+};
+
+
+#line 1
+uniform highp mat4 mvp;
+
+#line 21
+v2f xlat_main( in a2v v );
+
+#line 21
+v2f xlat_main( in a2v v ) {
+    v2f o;
+    o.pos = (mvp * v.pos);
+
+    #line 25
+    o.color = v.ss.color;
+    o.uv = v.uv;
+    return o;
+}
+
+
+attribute vec4 a2v_pos;
+attribute vec2 a2v_uv;
+attribute vec3 a2v_normal;
+attribute vec4 a2v_sub_color;
+
+varying highp float xlv_FOG;
+varying highp vec2 xlv_TEXCOORD0;
+varying highp vec4 xlv_COLOR;
+
+void main() {
+    v2f xl_retval;
+    a2v xlt_v;
+    xlt_v.pos = vec4(a2v_pos);
+    xlt_v.uv = vec2(a2v_uv);
+    xlt_v.normal = vec3(a2v_normal);
+    xlt_v.ss.color = vec4(a2v_sub_color);
+
+    xl_retval = xlat_main( xlt_v);
+
+    gl_Position = vec4(xl_retval.pos);
+    xlv_FOG = float(xl_retval.fog);
+    xlv_TEXCOORD0 = vec2(xl_retval.uv);
+    xlv_COLOR = vec4(xl_retval.color);
+}
+
+
+
+// uniforms:
+// mvp:<none> type 21 arrsize 0
