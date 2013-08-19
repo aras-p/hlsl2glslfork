@@ -413,9 +413,9 @@ bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStru
 			return false;
 
 		case EClassAttrib:
-			if (sem == EAttrSemNormal && size == 4)
-				pad = 1;
 			getAttributeName( symOrStructMember, outName, sem, semanticOffset );
+			if (outName == "gl_Normal" && size == 4)
+				pad = 1;
 			break;
 
 		case EClassVarOut:
