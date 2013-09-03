@@ -7,8 +7,9 @@ void xlat_main( in highp vec4 vertex, out highp vec4 overtex ) {
     #line 7
     overtex.xyzw = vec4( 0.0);
 }
+in vec4 xlat_attrib_POSITION;
 void main() {
     highp vec4 xlt_overtex;
-    xlat_main( vec4(gl_Vertex), xlt_overtex);
+    xlat_main( vec4(xlat_attrib_POSITION), xlt_overtex);
     gl_Position = vec4(xlt_overtex);
 }

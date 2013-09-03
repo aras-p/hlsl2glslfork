@@ -8,20 +8,18 @@
 
 #include "glslCommon.h"
 
-class GlslStruct 
+class GlslStruct;
+
+class StructMember : public GlslSymbolOrStructMemberBase
 {
 public:
-	// Struct member description, presently does not handle structs of structs
-	struct StructMember    
-	{
-		std::string name;
-		std::string semantic;
-		EGlslSymbolType type;
-		GlslStruct*     structType; // NULL if type != EgstStruct
-		int arraySize;
-		TPrecision precision;
-	};
+	StructMember(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as, GlslStruct* st, const std::string &bn);
+	GlslStruct* structType; // NULL if type != EgstStruct
+};
 
+class GlslStruct
+{
+public:
 	GlslStruct (const std::string &n, const TSourceLoc& line) : name(n), m_Line(line) {}
 
 	const std::string& getName() const { return name; }
