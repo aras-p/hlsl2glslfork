@@ -20,9 +20,6 @@ public:
 class GlslStruct
 {
 public:
-	// Struct member description
-	typedef StructMember StructMember;
-
 	GlslStruct (const std::string &n, const TSourceLoc& line) : name(n), m_Line(line) {}
 
 	const std::string& getName() const { return name; }

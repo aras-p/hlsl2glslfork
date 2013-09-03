@@ -1054,7 +1054,7 @@ void HlslLinker::emitInputStructParam(GlslSymbol* sym, EShLanguage lang, std::st
 	const int elem = str->memberCount();
 	for (int jj=0; jj<elem; jj++)
 	{
-		const GlslStruct::StructMember &current = str->getMember(jj);
+		const StructMember &current = str->getMember(jj);
 		EAttribSemantic memberSem = parseAttributeSemantic (current.semantic);
 		
 		add_extension_from_semantic(memberSem, m_Target, m_Extensions);
@@ -1175,7 +1175,7 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 	const int elem = Struct->memberCount();
 	for (int ii=0; ii<elem; ii++)
 	{
-		const GlslStruct::StructMember &current = Struct->getMember(ii);
+		const StructMember &current = Struct->getMember(ii);
 		std::string name, ctor;
 		int pad;
 		
@@ -1247,7 +1247,7 @@ bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName,
 	const int elem = retStruct->memberCount();
 	for (int ii=0; ii<elem; ii++)
 	{
-		const GlslStruct::StructMember &current = retStruct->getMember(ii);
+		const StructMember &current = retStruct->getMember(ii);
 		std::string name, ctor;
 		int pad;
 		int arraySize = 1;
@@ -1365,7 +1365,7 @@ void HlslLinker::appendDuplicatedInSemantics(GlslSymbolOrStructMemberBase* sym, 
 	{
 		int mc = sym->getStruct()->memberCount();
 		for (int i = 0; i < mc; ++i)
-			appendDuplicatedInSemantics(const_cast<GlslStruct::StructMember*>(&sym->getStruct()->getMember(i)),sem,list);
+			appendDuplicatedInSemantics(const_cast<StructMember*>(&sym->getStruct()->getMember(i)),sem,list);
 	}
 }
 

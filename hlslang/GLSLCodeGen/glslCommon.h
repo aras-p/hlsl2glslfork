@@ -69,7 +69,7 @@ class GlslStruct;
 class GlslSymbolOrStructMemberBase
 {
 public:
-   GlslSymbolOrStructMemberBase::GlslSymbolOrStructMemberBase(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as, std::string const& bn = "") :
+   GlslSymbolOrStructMemberBase(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as, std::string const& bn = "") :
    semantic(s),
    type(t),
    qual(q),
