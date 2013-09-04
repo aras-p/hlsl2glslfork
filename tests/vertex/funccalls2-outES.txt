@@ -41,7 +41,7 @@ v2f xlat_main( in a2v v ) {
     o.color = ComputeSomeLighting( v.pos.xyz);
     return o;
 }
-attribute vec4 xlat_attrib_POSITION;
+attribute highp vec4 xlat_attrib_POSITION;
 varying highp vec4 xlv_COLOR;
 void main() {
     v2f xl_retval;

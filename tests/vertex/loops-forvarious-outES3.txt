@@ -70,8 +70,8 @@ v2f xlat_main( in appdata v ) {
     #line 80
     return o;
 }
-in vec4 xlat_attrib_POSITION;
-in vec3 xlat_attrib_NORMAL;
+in highp vec4 xlat_attrib_POSITION;
+in highp vec3 xlat_attrib_NORMAL;
 out mediump vec4 xlv_TEXCOORD0;
 void main() {
     v2f xl_retval;

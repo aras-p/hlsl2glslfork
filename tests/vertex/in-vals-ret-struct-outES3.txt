@@ -19,10 +19,10 @@ v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in hig
     o.uv = uv;
     return o;
 }
-in vec4 xlat_attrib_POSITION;
-in vec2 xlat_attrib_TEXCOORD0;
-in vec3 xlat_attrib_NORMAL;
-in vec4 xlat_attrib_COLOR;
+in highp vec4 xlat_attrib_POSITION;
+in highp vec2 xlat_attrib_TEXCOORD0;
+in highp vec3 xlat_attrib_NORMAL;
+in highp vec4 xlat_attrib_COLOR;
 out highp float xlv_FOG;
 out highp vec2 xlv_TEXCOORD0;
 out highp vec4 xlv_COLOR;

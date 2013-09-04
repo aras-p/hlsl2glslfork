@@ -152,10 +152,10 @@ v2f xlat_main( in appdata_full v ) {
     o.normalInterpolator.w = 1.0;
     return o;
 }
-in vec4 xlat_attrib_POSITION;
-in vec4 TANGENT;
-in vec3 xlat_attrib_NORMAL;
-in vec4 xlat_attrib_TEXCOORD0;
+in highp vec4 xlat_attrib_POSITION;
+in highp vec4 TANGENT;
+in highp vec3 xlat_attrib_NORMAL;
+in highp vec4 xlat_attrib_TEXCOORD0;
 out highp vec4 xlv_TEXCOORD0;
 out highp vec4 xlv_TEXCOORD1;
 out highp vec4 xlv_TEXCOORD2;

@@ -15,7 +15,7 @@ VertexOutput xlat_main( const VertexInput xlat_var_input ) {
     #line 15
     return xlat_var_output;
 }
-in vec4 xlat_attrib_POSITION;
+in highp vec4 xlat_attrib_POSITION;
 void main() {
     VertexOutput xl_retval;
     VertexInput xlt_xlat_var_input;

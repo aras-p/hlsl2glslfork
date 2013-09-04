@@ -31,7 +31,7 @@ void xlat_main( in highp vec4 vertex, out highp vec4 overtex ) {
     #line 11
     overtex = vertex;
 }
-attribute vec4 xlat_attrib_POSITION;
+attribute highp vec4 xlat_attrib_POSITION;
 void main() {
     highp vec4 xlt_overtex;
     xlat_main( vec4(xlat_attrib_POSITION), xlt_overtex);

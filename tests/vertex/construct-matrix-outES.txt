@@ -39,7 +39,7 @@ highp vec4 xlat_main( in highp vec4 pos ) {
     v.xyzw += (m4b * pos.xyzw);
     return v;
 }
-attribute vec4 xlat_attrib_POSITION;
+attribute highp vec4 xlat_attrib_POSITION;
 void main() {
     highp vec4 xl_retval;
     xl_retval = xlat_main( vec4(xlat_attrib_POSITION));

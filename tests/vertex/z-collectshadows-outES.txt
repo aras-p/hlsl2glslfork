@@ -23,9 +23,9 @@ v2f xlat_main( in appdata v ) {
     o.ray = v.texcoord1;
     return o;
 }
-attribute vec4 xlat_attrib_POSITION;
-attribute vec2 xlat_attrib_TEXCOORD0;
-attribute vec3 xlat_attrib_TEXCOORD1;
+attribute highp vec4 xlat_attrib_POSITION;
+attribute highp vec2 xlat_attrib_TEXCOORD0;
+attribute highp vec3 xlat_attrib_TEXCOORD1;
 varying highp vec2 xlv_TEXCOORD0;
 varying highp vec3 xlv_TEXCOORD1;
 void main() {

@@ -19,9 +19,9 @@ uniform highp vec4 xlu_ambient;
 uniform highp vec4 xlu_objSpaceLight;
 uniform highp vec4 xlu_lightColour;
 uniform highp vec4 xlu_offset;
-attribute vec4 xlat_attrib_POSITION;
-attribute vec3 xlat_attrib_NORMAL;
-attribute vec2 xlat_attrib_TEXCOORD0;
+attribute highp vec4 xlat_attrib_POSITION;
+attribute highp vec3 xlat_attrib_NORMAL;
+attribute highp vec2 xlat_attrib_TEXCOORD0;
 varying highp vec2 xlv_TEXCOORD0;
 varying highp vec4 xlv_COLOR;
 void main() {

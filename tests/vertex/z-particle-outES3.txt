@@ -24,9 +24,9 @@ v2f xlat_main( in appdata_t v ) {
     o.texcoord = ((v.texcoord.xy * _MainTex_ST.xy) + _MainTex_ST.zw);
     return o;
 }
-in vec4 xlat_attrib_POSITION;
-in vec4 xlat_attrib_COLOR;
-in vec2 xlat_attrib_TEXCOORD0;
+in highp vec4 xlat_attrib_POSITION;
+in lowp vec4 xlat_attrib_COLOR;
+in highp vec2 xlat_attrib_TEXCOORD0;
 out lowp vec4 xlv_COLOR;
 out mediump vec2 xlv_TEXCOORD0;
 void main() {

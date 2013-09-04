@@ -5,8 +5,8 @@ uniform highp mat4 matrix_normal;
 void xlat_main( in highp vec4 vertex, out highp vec4 overtex, in highp vec3 normal, out highp vec3 onormal ) {
     overtex = (matrix_mvp * vertex);
 }
-attribute vec4 xlat_attrib_POSITION;
-attribute vec3 xlat_attrib_NORMAL;
+attribute highp vec4 xlat_attrib_POSITION;
+attribute highp vec3 xlat_attrib_NORMAL;
 varying highp vec3 xlv_TEXCOORD0;
 void main() {
     highp vec4 xlt_overtex;

@@ -9,8 +9,8 @@ highp vec4 xlat_main( in highp vec4 pos, in highp vec2 uv ) {
     #line 5
     return (pos + c);
 }
-in vec4 xlat_attrib_POSITION;
-in vec2 xlat_attrib_TEXCOORD0;
+in highp vec4 xlat_attrib_POSITION;
+in highp vec2 xlat_attrib_TEXCOORD0;
 void main() {
     highp vec4 xl_retval;
     xl_retval = xlat_main( vec4(xlat_attrib_POSITION), vec2(xlat_attrib_TEXCOORD0));

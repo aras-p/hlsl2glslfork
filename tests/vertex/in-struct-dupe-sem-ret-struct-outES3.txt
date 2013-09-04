@@ -30,10 +30,10 @@ v2f xlat_main( in a2v1 v, in a2v2 v2 ) {
     o.uv = v.uv;
     return o;
 }
-in vec4 xlat_attrib_POSITION;
-in vec3 xlat_attrib_NORMAL;
-in vec4 xlat_attrib_COLOR;
-in vec4 xlat_attrib_TEXCOORD0;
+in highp vec4 xlat_attrib_POSITION;
+in highp vec3 xlat_attrib_NORMAL;
+in highp vec4 xlat_attrib_COLOR;
+in highp vec4 xlat_attrib_TEXCOORD0;
 out highp float xlv_FOG;
 out highp vec2 xlv_TEXCOORD0;
 out highp vec4 xlv_COLOR;

@@ -198,12 +198,12 @@ v2f_surf xlat_main( in appdata_full v ) {
     o._LightCoord = (_LightMatrix0 * (_Object2World * v.vertex)).xy;
     return o;
 }
-in vec4 xlat_attrib_POSITION;
-in vec4 TANGENT;
-in vec3 xlat_attrib_NORMAL;
-in vec4 xlat_attrib_TEXCOORD0;
-in vec4 xlat_attrib_TEXCOORD1;
-in vec4 xlat_attrib_COLOR;
+in highp vec4 xlat_attrib_POSITION;
+in highp vec4 TANGENT;
+in highp vec3 xlat_attrib_NORMAL;
+in highp vec4 xlat_attrib_TEXCOORD0;
+in highp vec4 xlat_attrib_TEXCOORD1;
+in lowp vec4 xlat_attrib_COLOR;
 out highp vec4 xlv_TEXCOORD0;
 out highp vec3 xlv_TEXCOORD1;
 out highp vec3 xlv_TEXCOORD2;

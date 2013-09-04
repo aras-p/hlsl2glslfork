@@ -33,8 +33,8 @@ v2f xlat_main( in appdata v ) {
     o.ray = mix( o.ray, v.normal, vec3( float((v.normal.z != 0.0))));
     return o;
 }
-in vec4 xlat_attrib_POSITION;
-in vec3 xlat_attrib_NORMAL;
+in highp vec4 xlat_attrib_POSITION;
+in highp vec3 xlat_attrib_NORMAL;
 out highp vec4 xlv_TEXCOORD0;
 out highp vec3 xlv_TEXCOORD1;
 void main() {

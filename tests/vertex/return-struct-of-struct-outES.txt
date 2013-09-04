@@ -17,7 +17,7 @@ v2f xlat_main( in highp vec4 pos ) {
     o.ss.color = pos;
     return o;
 }
-attribute vec4 xlat_attrib_POSITION;
+attribute highp vec4 xlat_attrib_POSITION;
 varying highp vec4 xlv_TEXCOORD;
 varying highp vec4 xlv_COLOR;
 void main() {

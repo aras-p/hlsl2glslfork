@@ -99,9 +99,9 @@ void xlat_main( in appdata_t v, out highp vec4 overtex, out highp vec4 ocolor, o
     ocolor = v.color;
     otexcoord = ((v.texcoord.xy * _FlareTexture_ST.xy) + _FlareTexture_ST.zw);
 }
-attribute vec4 xlat_attrib_POSITION;
-attribute vec4 xlat_attrib_COLOR;
-attribute vec2 xlat_attrib_TEXCOORD0;
+attribute highp vec4 xlat_attrib_POSITION;
+attribute highp vec4 xlat_attrib_COLOR;
+attribute highp vec2 xlat_attrib_TEXCOORD0;
 varying highp vec4 xlv_COLOR;
 varying highp vec2 xlv_TEXCOORD0;
 void main() {

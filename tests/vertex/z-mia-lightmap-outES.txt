@@ -204,12 +204,12 @@ v2f_surf xlat_main( in appdata_full v ) {
     o.viewDir = viewDirForLight;
     return o;
 }
-attribute vec4 xlat_attrib_POSITION;
-attribute vec4 TANGENT;
-attribute vec3 xlat_attrib_NORMAL;
-attribute vec4 xlat_attrib_TEXCOORD0;
-attribute vec4 xlat_attrib_TEXCOORD1;
-attribute vec4 xlat_attrib_COLOR;
+attribute highp vec4 xlat_attrib_POSITION;
+attribute highp vec4 TANGENT;
+attribute highp vec3 xlat_attrib_NORMAL;
+attribute highp vec4 xlat_attrib_TEXCOORD0;
+attribute highp vec4 xlat_attrib_TEXCOORD1;
+attribute lowp vec4 xlat_attrib_COLOR;
 varying highp vec4 xlv_TEXCOORD0;
 varying highp vec3 xlv_TEXCOORD1;
 varying highp vec3 xlv_TEXCOORD2;

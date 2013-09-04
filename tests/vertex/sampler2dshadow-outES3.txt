@@ -6,7 +6,7 @@ highp vec4 xlat_main( in highp vec4 pos ) {
     #line 8
     return pos;
 }
-in vec4 xlat_attrib_POSITION;
+in highp vec4 xlat_attrib_POSITION;
 void main() {
     highp vec4 xl_retval;
     xl_retval = xlat_main( vec4(xlat_attrib_POSITION));
