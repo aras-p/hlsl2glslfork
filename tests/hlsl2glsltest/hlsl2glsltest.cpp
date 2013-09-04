@@ -66,6 +66,7 @@ static void logf(const char* format, ...)
 #include <OpenGL/gl.h>
 #include <OpenGL/CGLTypes.h>
 #include <dirent.h>
+#include <unistd.h>
 
 #else
 
