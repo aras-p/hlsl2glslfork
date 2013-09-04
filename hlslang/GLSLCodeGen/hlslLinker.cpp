@@ -987,7 +987,7 @@ static void emitSingleInputVariable (EShLanguage lang, ETargetVersion targetVers
 		if (type >= EgstBool && type <= EgstBool4)
 			typeOffset += 8;
 		
-		attrib << GetVertexInputQualifier(targetVersion) << " " << getTypeString((EGlslSymbolType)(type + typeOffset)) << " " << name << ";\n";
+		attrib << GetVertexInputQualifier(targetVersion) << " " << getGLSLPrecisiontring(prec) << getTypeString((EGlslSymbolType)(type + typeOffset)) << " " << name << ";\n";
 	}
 	
 	// fragment shader: emit varying
