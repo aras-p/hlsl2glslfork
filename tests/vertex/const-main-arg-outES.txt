@@ -15,10 +15,11 @@ VertexOutput xlat_main( const VertexInput xlat_var_input ) {
     #line 15
     return xlat_var_output;
 }
+attribute vec4 xlat_attrib_POSITION;
 void main() {
     VertexOutput xl_retval;
     VertexInput xlt_xlat_var_input;
-    xlt_xlat_var_input.pos = vec4(gl_Vertex);
+    xlt_xlat_var_input.pos = vec4(xlat_attrib_POSITION);
     xl_retval = xlat_main( xlt_xlat_var_input);
     gl_Position = vec4(xl_retval.pos);
 }

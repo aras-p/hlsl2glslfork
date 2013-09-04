@@ -17,15 +17,19 @@ void xlat_main( in a2v v, out highp vec4 opos, out highp float ofog, out highp v
     ocolor.xyz += v.normal;
     ouv = v.uv;
 }
+attribute vec4 xlat_attrib_POSITION;
+attribute vec2 xlat_attrib_TEXCOORD0;
+attribute vec3 xlat_attrib_NORMAL;
+attribute vec4 xlat_attrib_COLOR;
 varying highp float xlv_FOG;
 varying highp vec2 xlv_TEXCOORD0;
 varying highp vec4 xlv_COLOR;
 void main() {
     a2v xlt_v;
-    xlt_v.pos = vec4(gl_Vertex);
-    xlt_v.uv = vec2(gl_MultiTexCoord0);
-    xlt_v.normal = vec3(gl_Normal);
-    xlt_v.color = vec4(gl_Color);
+    xlt_v.pos = vec4(xlat_attrib_POSITION);
+    xlt_v.uv = vec2(xlat_attrib_TEXCOORD0);
+    xlt_v.normal = vec3(xlat_attrib_NORMAL);
+    xlt_v.color = vec4(xlat_attrib_COLOR);
     highp vec4 xlt_opos;
     highp float xlt_ofog;
     highp vec2 xlt_ouv;

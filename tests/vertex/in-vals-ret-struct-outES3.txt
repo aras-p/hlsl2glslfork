@@ -19,12 +19,16 @@ v2f xlat_main( in highp vec4 pos, in highp vec2 uv, in highp vec3 normal, in hig
     o.uv = uv;
     return o;
 }
+in vec4 xlat_attrib_POSITION;
+in vec2 xlat_attrib_TEXCOORD0;
+in vec3 xlat_attrib_NORMAL;
+in vec4 xlat_attrib_COLOR;
 out highp float xlv_FOG;
 out highp vec2 xlv_TEXCOORD0;
 out highp vec4 xlv_COLOR;
 void main() {
     v2f xl_retval;
-    xl_retval = xlat_main( vec4(gl_Vertex), vec2(gl_MultiTexCoord0), vec3(gl_Normal), vec4(gl_Color));
+    xl_retval = xlat_main( vec4(xlat_attrib_POSITION), vec2(xlat_attrib_TEXCOORD0), vec3(xlat_attrib_NORMAL), vec4(xlat_attrib_COLOR));
     gl_Position = vec4(xl_retval.pos);
     xlv_FOG = float(xl_retval.fog);
     xlv_TEXCOORD0 = vec2(xl_retval.uv);

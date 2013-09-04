@@ -33,6 +33,9 @@ uniform highp vec4 xlu_camObjPos;
 uniform highp vec4 xlu_objSpaceLight;
 uniform highp vec4 xlu_lightColour;
 uniform highp vec4 xlu_offset;
+attribute vec4 xlat_attrib_POSITION;
+attribute vec4 xlat_attrib_NORMAL;
+attribute vec2 xlat_attrib_TEXCOORD0;
 varying highp vec4 xlv_TEXCOORD0;
 varying highp vec3 xlv_TEXCOORD1;
 varying highp vec4 xlv_COLOR;
@@ -41,7 +44,7 @@ void main() {
     highp vec4 xlt_oShadowUV;
     highp vec3 xlt_oUv;
     highp vec4 xlt_oColour;
-    xlat_main( vec4(gl_Vertex), vec4(gl_Normal, 0.0), vec2(gl_MultiTexCoord0), xlt_oPosition, xlt_oShadowUV, xlt_oUv, xlt_oColour, xlu_world, xlu_worldViewProj, xlu_texViewProj, xlu_camObjPos, xlu_objSpaceLight, xlu_lightColour, xlu_offset);
+    xlat_main( vec4(xlat_attrib_POSITION), vec4(xlat_attrib_NORMAL), vec2(xlat_attrib_TEXCOORD0), xlt_oPosition, xlt_oShadowUV, xlt_oUv, xlt_oColour, xlu_world, xlu_worldViewProj, xlu_texViewProj, xlu_camObjPos, xlu_objSpaceLight, xlu_lightColour, xlu_offset);
     gl_Position = vec4(xlt_oPosition);
     xlv_TEXCOORD0 = vec4(xlt_oShadowUV);
     xlv_TEXCOORD1 = vec3(xlt_oUv);
