@@ -70,14 +70,14 @@ class GlslSymbolOrStructMemberBase
 {
 public:
    GlslSymbolOrStructMemberBase(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as, std::string const& bn = "") :
+   name(n),
+   baseName((bn=="")?bn:bn+"_"),
    semantic(s),
    type(t),
    qual(q),
    precision(prec),
    arraySize(as),
-   suppressedBy(NULL),
-   name(n),
-   baseName((bn=="")?bn:bn+"_")
+   suppressedBy(NULL)
    {
    }
    bool isArray() const { return (arraySize > 0); }

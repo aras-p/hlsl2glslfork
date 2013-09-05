@@ -395,12 +395,12 @@ public:
 	// per process globalpoolallocator, then it causes increased memory usage per compile
 	// it is essential to use "symbol = sym" to assign to symbol
 	TIntermSymbol(int i, const TString& sym, const TType& t) : 
-		TIntermTyped(t), id(i), info(0), global(false)
+		TIntermTyped(t), id(i), global(false), info(0)
 	{
 		symbol = sym;
 	} 
 	TIntermSymbol(int i, const TString& sym, const TTypeInfo *inf, const TType& t) : 
-		TIntermTyped(t), id(i), info(inf), global(false)
+		TIntermTyped(t), id(i), global(false), info(inf)
 	{
 		symbol = sym;
 	} 
@@ -674,13 +674,13 @@ public:
 	POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
 
 	TIntermTraverser() : 
+		visitDeclaration(0),
 		visitSymbol(0), 
 		visitConstant(0),
 		visitBinary(0),
 		visitUnary(0),
 		visitSelection(0),
 		visitAggregate(0),
-		visitDeclaration(0),
 		visitLoop(0),
 		visitBranch(0),
 		depth(0),
