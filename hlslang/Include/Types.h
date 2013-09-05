@@ -107,15 +107,15 @@ public:
 
    explicit TType() { }
    explicit TType(TBasicType t, TPrecision p, TQualifier q = EvqTemporary, int cols = 1, int rows = 1, bool m = false, bool a = false) :
-      type(t), precision(p), qualifier(q), matcols(cols), matrows(rows), line(gNullSourceLoc), matrix(m), array(a), arraySize(0),
+      precision(p), type(t), qualifier(q), matrows(rows), matcols(cols), matrix(m), array(a), arraySize(0), line(gNullSourceLoc),
       structure(0), structureSize(0), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), typeName(0),
       semantic(0)
    {
       checkInvariants();
    }
    explicit TType(const TPublicType &p) :
-      type(p.type), precision(p.precision), qualifier(p.qualifier), matrows(p.matrows), matcols(p.matcols), line(p.line), matrix(p.matrix),
-      array(p.array), arraySize(p.arraySize), structure(0), structureSize(0), maxArraySize(0),
+      precision(p.precision), type(p.type), qualifier(p.qualifier), matrows(p.matrows), matcols(p.matcols), matrix(p.matrix),
+      array(p.array), arraySize(p.arraySize), line(p.line), structure(0), structureSize(0), maxArraySize(0),
       arrayInformationType(0), fieldName(0), mangled(0), typeName(0), semantic(0)
    {
       if (p.userDef)
@@ -127,7 +127,7 @@ public:
       checkInvariants();
    }
    explicit TType(TTypeList* userDef, const TString& n, TPrecision p = EbpUndefined, const TSourceLoc& l = gNullSourceLoc) :
-      type(EbtStruct), precision(p), qualifier(EvqTemporary), matrows(1), matcols(1), line(l), matrix(false), array(false), arraySize(0),
+      precision(p), type(EbtStruct), qualifier(EvqTemporary), matrows(1), matcols(1), matrix(false), array(false), arraySize(0), line(l),
       structure(userDef), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), semantic(0)
    {
       typeName = NewPoolTString(n.c_str());
