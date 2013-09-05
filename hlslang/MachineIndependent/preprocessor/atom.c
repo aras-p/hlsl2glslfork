@@ -13,6 +13,9 @@
 #undef realloc
 #undef free
 
+// For debugging purposes, can cause warnings
+// that variables are written to but not used
+/* #define COUNT_COLLISIONS */
 
 // -------- String table --------------------------------------------------
 
@@ -323,13 +326,16 @@ static int FindHashLoc(AtomTable *atable, const char *s)
 {
     int hashloc, hashdelta, count;
     int FoundEmptySlot = 0;
+#if defined(COUNT_COLLISIONS)
     int collision[HASH_TABLE_MAX_COLLISIONS + 1] = { 0 };
-
+#endif
     hashloc = HashString(s) % atable->htable.size;
     if (!Empty(&atable->htable, hashloc)) {
         if (Match(&atable->htable, &atable->stable, s, hashloc))
             return hashloc;
+#if defined(COUNT_COLLISIONS)
         collision[0] = hashloc;
+#endif
         hashdelta = HashString2(s);
         count = 0;
         while (count < HASH_TABLE_MAX_COLLISIONS) {
@@ -343,7 +349,9 @@ static int FindHashLoc(AtomTable *atable, const char *s)
                 break;
             }
             count++;
+#if defined(COUNT_COLLISIONS)
             collision[count] = hashloc;
+#endif
         }
 
         if (!FoundEmptySlot) {
