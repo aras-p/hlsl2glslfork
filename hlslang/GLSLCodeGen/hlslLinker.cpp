@@ -346,8 +346,8 @@ void HlslLinker::getAttributeName( GlslSymbolOrStructMemberBase const* symOrStru
 		// Otherwise, use the built-in attribute name
 		else
 		{
-			outName = UsesBuiltinAttribStrings(m_Target, m_Options) ? attribString[sem] : "\0";
-			if ( sem == EAttrSemUnknown || outName[0] == '\0' )
+			outName = UsesBuiltinAttribStrings(m_Target, m_Options) ? attribString[sem] : "";
+			if ( sem == EAttrSemUnknown || !outName.length() )
 			{
 				//handle the blind data
 				outName = "xlat_attrib_";
