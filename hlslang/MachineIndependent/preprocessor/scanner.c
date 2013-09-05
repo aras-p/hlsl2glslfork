@@ -8,8 +8,13 @@
 #include <string.h>
 
 #include "slglobals.h"
-#include <math.h>
 
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+# include <float.h>
+# define isfinite(_d) _finite(_d)
+#else
+# include <math.h>
+#endif
 
 typedef struct StringInputSrc {
     InputSrc base;
@@ -111,7 +116,6 @@ static float lBuildFloatValue(const char *str, int len, int exp)
 {
     double val, expval, ten;
     int ii, absexp;
-    float rv;
 
     val = 0.0;
     for (ii = 0; ii < len; ii++)
@@ -132,11 +136,10 @@ static float lBuildFloatValue(const char *str, int len, int exp)
             val /= expval;
         }
     }
-    rv = (float)val;
-    if (!isfinite(rv)) {
+    if (!isfinite(val)) {
 		CPPErrorToInfoLog(" ERROR___FP_CONST_OVERFLOW");
     }
-    return rv;
+    return (float)val;
 } // lBuildFloatValue
 
 
