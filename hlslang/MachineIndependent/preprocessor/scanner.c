@@ -8,9 +8,7 @@
 #include <string.h>
 
 #include "slglobals.h"
-
-#define isinff(x) (((*(int *)&(x) & 0x7f800000L)==0x7f800000L) && ((*(int *)&(x) & 0x007fffffL)==0000000000L))
-
+#include <math.h>
 
 
 typedef struct StringInputSrc {
@@ -135,7 +133,7 @@ static float lBuildFloatValue(const char *str, int len, int exp)
         }
     }
     rv = (float)val;
-    if (isinff(rv)) {
+    if (!isfinite(rv)) {
 		CPPErrorToInfoLog(" ERROR___FP_CONST_OVERFLOW");
     }
     return rv;
