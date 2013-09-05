@@ -240,7 +240,7 @@ struct AtomTable_Rec {
     int size;
 };
 
-static AtomTable latable = { { 0 } };
+static AtomTable latable = { { 0, 0, 0 }, { 0, 0, 0, { 0 } }, 0, 0, 0, 0 };
 AtomTable *atable = &latable;
 
 static int AddAtomFixed(AtomTable *atable, const char *s, int atom);
@@ -323,7 +323,7 @@ static int FindHashLoc(AtomTable *atable, const char *s)
 {
     int hashloc, hashdelta, count;
     int FoundEmptySlot = 0;
-    int collision[HASH_TABLE_MAX_COLLISIONS + 1];
+    int collision[HASH_TABLE_MAX_COLLISIONS + 1] = { 0 };
 
     hashloc = HashString(s) % atable->htable.size;
     if (!Empty(&atable->htable, hashloc)) {
