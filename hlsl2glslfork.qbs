@@ -25,7 +25,7 @@ Project {
         id: flex
         inputs: ["lex"]
         Artifact {
-            fileName: product.sourceDirectory + "/" + input.baseDir + "/Gen_" + input.baseName + ".cpp"
+            fileName: product.sourceDirectory + "/Generated/" + input.baseDir + "/Gen_" + input.baseName + ".cpp"
             fileTags: ["cpp"]
         }
 
@@ -92,12 +92,18 @@ Project {
         inputs: ["bison"]
 
         Artifact {
-            fileName: product.sourceDirectory + "/" + input.baseDir + "/Gen_" + input.baseName + "_tab.cpp"
+            fileName: product.sourceDirectory + "/Generated/" + input.baseDir + "/Gen_" + input.baseName + "_tab.cpp"
             fileTags: ["cpp"]
+        }
+
+        Artifact {
+            fileName: product.sourceDirectory + "/Generated/" + input.baseDir + "/" + input.baseName + "_tab.h"
+            fileTags: ["h"]
         }
 
         prepare: {
             var commands = [];
+
             var args = [input.fileName, "-d", "-t", "-v"];
             args.push("--output=" + FileInfo.path(input.fileName) + "/hlslang_tab.c");
             var commandName = product.moduleProperty("qbs", "targetOS").contains('windows') ? product.sourceDirectory + "/tools/bison.exe" : "bison";
@@ -106,7 +112,9 @@ Project {
             cmd.environment.push( "BISON_HAIRY=" + product.sourceDirectory + "/tools/bison.simple");
             cmd.description = 'bisoning ' + FileInfo.fileName(input.fileName)
             commands.push(cmd);
+
             var cmd = new JavaScriptCommand();
+            var output = outputs["cpp"][0]
             cmd.src = FileInfo.path(input.fileName) + "/hlslang_tab.c";
             cmd.dst = output.fileName;
             cmd.sourceCode = function() {
@@ -115,12 +123,25 @@ Project {
             }
             cmd.description = 'moving ' + cmd.src + ' to ' + cmd.dst;
             commands.push(cmd);
+
+            var cmd = new JavaScriptCommand();
+            var output = outputs["h"][0]
+            cmd.src = FileInfo.path(input.fileName) + "/hlslang_tab.h";
+            cmd.dst = output.fileName;
+            cmd.sourceCode = function() {
+                File.copy(src, dst);
+                File.remove(src);
+            }
+            cmd.description = 'moving ' + cmd.src + ' to ' + cmd.dst;
+            commands.push(cmd);
+
             return commands;
         }
     }
 
     StaticLibrary {
         name: "hlsl2glsl"
+        property bool maintainerMode: true
         property string OSDepPath: {
             if (qbs.targetOS.contains("windows"))
                 return "Windows";
@@ -134,33 +155,62 @@ Project {
         Group {
             name: "OSDependent-Windows"
             condition: qbs.targetOS.contains("windows")
-            files: ["hlslang/OSDependent/Windows/ossource.cpp", "hlslang/OSDependent/Windows/osinclude.h"]
+            files: ["hlslang/OSDependent/Windows/ossource.cpp",
+                    "hlslang/OSDependent/Windows/osinclude.h"]
         }
         Group {
             name: "OSDependent-Linux"
             condition: qbs.targetOS.contains("linux")
-            files: ["hlslang/OSDependent/Linux/ossource.cpp", "hlslang/OSDependent/Linux/osinclude.h"]
+            files: ["hlslang/OSDependent/Linux/ossource.cpp",
+                    "hlslang/OSDependent/Linux/osinclude.h"]
         }
         Group {
             name: "OSDependent-Mac"
             condition: qbs.targetOS.contains("darwin")
-            files: ["hlslang/OSDependent/Mac/ossource.cpp", "hlslang/OSDependent/Mac/osinclude.h"]
+            files: ["hlslang/OSDependent/Mac/ossource.cpp",
+                    "hlslang/OSDependent/Mac/osinclude.h"]
         }
         Group {
             name: "GLSLCodeGen"
-            files: ["hlslang/GLSLCodeGen/*.cpp", "hlslang/GLSLCodeGen/*.h"]
+            files: ["hlslang/GLSLCodeGen/*.cpp",
+                    "hlslang/GLSLCodeGen/*.h"]
         }
         Group {
             name: "MachineIndependent"
-            files: ["hlslang/MachineIndependent/**/*.c", "hlslang/MachineIndependent/**/*.cpp", "hlslang/MachineIndependent/**/*.h",
-                    "hlslang/MachineIndependent/hlslang.l", "hlslang/MachineIndependent/hlslang.y"]
+            files: ["hlslang/MachineIndependent/**/*.c",
+                    "hlslang/MachineIndependent/**/*.cpp",
+                    "hlslang/MachineIndependent/**/*.h"]
         }
+        Group {
+            name: "GrammarAndParserSource"
+            condition: maintainerMode
+            files: ["hlslang/MachineIndependent/hlslang.l",
+                    "hlslang/MachineIndependent/hlslang.y"]
+        }
+
+        Group {
+            name: "GrammarAndParserArtefacts"
+            condition: !maintainerMode
+            files: {
+                if (!maintainerMode) {
+                    return ["Generated/hlslang/MachineIndependent/Gen_hlslang.cpp",
+                            "Generated/hlslang/MachineIndependent/Gen_hlslang_tab.cpp",
+                            "Generated/hlslang/MachineIndependent/hlslang_tab.h"];
+                }
+                return [];
+            }
+        }
+
         Group {
             name: "Include"
             files: ["hlslang/Include/*.h"]
         }
         Depends { name: "cpp" }
-        cpp.includePaths: base.concat(["hlslang", "hlslang/Include", "hlslang/MachineIndependent", "hlslang/OSDependent/"+OSDepPath])
+        cpp.includePaths: base.concat(["hlslang",
+                                       "hlslang/Include",
+                                       "hlslang/MachineIndependent",
+                                       "hlslang/OSDependent/"+OSDepPath,
+                                       "Generated/hlslang/MachineIndependent"])
         Properties {
             condition: !qbs.toolchain.contains("msvc")
             // Annoyingly, a bug in flex forces -Wno-sign-compare into this list:
@@ -183,7 +233,10 @@ Project {
             if (qbs.targetOS.contains("windows"))
                 return ["opengl32", "Gdi32.lib", "User32.lib"];
             else if (qbs.targetOS.contains("linux"))
-                return ["GLEW", "GLU", "GL", "glut"];
+                if (qbs.toolchain.contains("clang"))
+                    return ["GLEW", "GLU", "GL", "glut", "pthread"];
+                else
+                    return ["GLEW", "GLU", "GL", "glut"];
             else
                 return [];
         }
