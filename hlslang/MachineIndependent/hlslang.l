@@ -487,7 +487,7 @@ void SetLineNumber(TSourceLoc line)
 	}
 }
 
-const TSourceLoc GetLineNumber(void)
+TSourceLoc GetLineNumber(void)
 {
     return lexlineno;
 }

@@ -6,7 +6,6 @@
 // This file contains the Linux specific functions
 //
 #include "osinclude.h"
-#include "InitializeDll.h"
 
 #if !(defined(linux))
 #error Trying to build a Linux specific file in a non-Linux build.

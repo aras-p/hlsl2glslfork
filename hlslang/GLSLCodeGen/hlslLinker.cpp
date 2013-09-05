@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <string.h>
 #include <set>
+#include <cstddef>
 
 static const char* kTargetVersionStrings[ETargetVersionCount] = {
 	"", // ES 1.00

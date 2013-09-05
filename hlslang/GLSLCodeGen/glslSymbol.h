@@ -13,6 +13,7 @@ class GlslSymbol : public GlslSymbolOrStructMemberBase
 {
 public:
 	GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, TPrecision precision, EGlslQualifier q, int as = 0 );
+	inline virtual ~GlslSymbol() {};
 
 	bool getIsParameter() const { return isParameter; }
 	void setIsParameter( bool param ) { isParameter = param; }

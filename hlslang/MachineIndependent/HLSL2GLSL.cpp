@@ -81,7 +81,7 @@ static bool InitProcess()
 }
 
 
-static bool DetachThread()
+bool DetachThread()
 {
 	if (s_ThreadInitialized == OS_INVALID_TLS_INDEX)
 		return true;
