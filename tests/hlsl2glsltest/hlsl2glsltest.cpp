@@ -4,13 +4,14 @@
 #include <vector>
 #include <time.h>
 #include <assert.h>
+#include <cstddef>
 
 #define USE_REAL_OPENGL_TO_CHECK 1
 
 static const bool kDumpShaderAST = false;
 
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <windows.h>
 #include <gl/GL.h>
 #include <cstdarg>
