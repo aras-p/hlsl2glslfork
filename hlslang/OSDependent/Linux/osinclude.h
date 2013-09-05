@@ -23,6 +23,7 @@
 #define _vsnprintf vsnprintf
 #define _stricmp strcasecmp
 
+bool DetachThread();
 void DetachThreadLinux(void *);
 
 //

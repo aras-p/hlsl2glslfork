@@ -4,6 +4,8 @@
 
 
 #include "glslStruct.h"
+#include <stdlib.h>
+#include <string.h>
 
 /// Table to convert GLSL variable types to strings
 const char typeString[EgstTypeCount][32] = 
