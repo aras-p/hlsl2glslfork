@@ -363,11 +363,10 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
     lexlineno.line = 1;
    
     if (sourceLen >= 0) {
-        int ret;
         #ifdef _WIN32
-            ret = yyparse(parseContextLocal);            
+            yyparse(parseContextLocal);
         #else
-            ret = yyparse((void*)(&parseContextLocal));
+            yyparse((void*)(&parseContextLocal));
         #endif
         if (cpp->CompileError == 1 || parseContextLocal.recoveredFromError || parseContextLocal.numErrors > 0)
              return 1;
