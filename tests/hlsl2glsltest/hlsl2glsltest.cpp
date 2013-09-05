@@ -132,15 +132,6 @@ static StringVector GetFiles (const std::string& folder, const std::string& ends
 	return res;
 }
 
-static void DeleteFile (const std::string& path)
-{
-	#ifdef _MSC_VER
-	DeleteFileA (path.c_str());
-	#else
-	unlink (path.c_str());
-	#endif
-}
-
 static bool ReadStringFromFile (const char* pathName, std::string& output)
 {
 	FILE* file = fopen( pathName, "rb" );
