@@ -1421,7 +1421,7 @@ void HlslLinker::markDuplicatedInSemantics(GlslFunction* func)
 		}
 		if (symsUsingSem.size() > 1)
 		{
-			int index_of_largest = -1;
+			size_t index_of_largest = -1;
 			int largest_array_size = 0;
 			GlslSymbolOrStructMemberBase* sym_of_largest = 0;
 			for (unsigned int ii=0; ii < symsUsingSem.size(); ii++)
@@ -1433,7 +1433,7 @@ void HlslLinker::markDuplicatedInSemantics(GlslFunction* func)
 					largest_array_size = getElements(symsUsingSem[ii]->type);
 				}
 			}
-			for (unsigned int ii=0; ii < symsUsingSem.size(); ii++)
+			for (size_t ii=0; ii < symsUsingSem.size(); ii++)
 			{
 				if (ii != index_of_largest)
 				{

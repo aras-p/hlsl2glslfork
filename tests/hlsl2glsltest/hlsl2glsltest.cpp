@@ -161,7 +161,7 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 	
 	fclose(file);
 	
-	if (readLength != length)
+	if (readLength != (size_t)length)
 	{
 		output.clear();
 		return false;

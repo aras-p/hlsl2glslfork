@@ -500,7 +500,7 @@ static int AddAtomFixed(AtomTable *atable, const char *s, int atom)
 
 int InitAtomTable(AtomTable *atable, int htsize)
 {
-    int ii;
+    size_t ii;
 
     htsize = htsize <= 0 ? INIT_HASH_TABLE_SIZE : htsize;
     if (!InitStringTable(&atable->stable))

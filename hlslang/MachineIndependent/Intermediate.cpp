@@ -825,7 +825,7 @@ TIntermTyped* ir_add_const_vector_swizzle(const TVectorFields& fields, TIntermTy
 	for (int i = 0; i < fields.num; ++i)
 	{
 		int index = fields.offsets[i];
-		assert(index >= 0 && index < constNode->getCount());
+		assert(index >= 0 && (unsigned)index < constNode->getCount());
 		res->setValue(i, constNode->getValue (index));
 	}
 	
