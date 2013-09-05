@@ -687,7 +687,7 @@ bool TParseContext::constructorErrorCheck(const TSourceLoc& line, TIntermNode* n
       return true;
    }
 
-   if (op == EOpConstructStruct && !type->isArray() && (type->getStruct()->size() != function.getParamCount() && function.getParamCount() != 1))
+   if (op == EOpConstructStruct && !type->isArray() && (type->getStruct()->size() != (size_t)function.getParamCount() && function.getParamCount() != 1))
    {
       error(line, "Number of constructor parameters does not match the number of structure fields", "constructor", "");
       return true;
@@ -1366,7 +1366,7 @@ static bool TransposeMatrixConstructorArgs (const TType* type, TNodeArray& args)
 {
 	if (!type->isMatrix())
 		return true;
-	if (args.size() != type->getObjectSize())
+	if (args.size() != (size_t)type->getObjectSize())
 		return false;
 
 	// HLSL vs. GLSL construct matrices in transposed order, so transpose the arguments for the constructor

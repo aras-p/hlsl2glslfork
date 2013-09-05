@@ -353,7 +353,7 @@ TSymbol* TSymbolTableLevel::findCompatible (const TFunction *call, bool &ambiguo
 		};
 		
 		// Iterate over each matching type (declared above)
-		for ( int nIter = 0; nIter < sizeof(eCompatType) / sizeof (TType::ECompatibility); nIter++ )
+		for ( size_t nIter = 0; nIter < sizeof(eCompatType) / sizeof (TType::ECompatibility); nIter++ )
 		{
 			bool bMatchesCompatibility = false;
 			
