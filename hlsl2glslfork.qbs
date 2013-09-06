@@ -141,7 +141,13 @@ Project {
 
     StaticLibrary {
         name: "hlsl2glsl"
-        property bool maintainerMode: true
+        /*
+        Changing maintainerMode from true to false requires
+        that you remove the old build folder, otherwise you
+        will get errors such as:
+        evaluating prepare script: TypeError: Result of expression 'config' [undefined] is not an object.'
+        */
+        property bool maintainerMode: false
         property string OSDepPath: {
             if (qbs.targetOS.contains("windows"))
                 return "Windows";
@@ -184,8 +190,13 @@ Project {
         Group {
             name: "GrammarAndParserSource"
             condition: maintainerMode
-            files: ["hlslang/MachineIndependent/hlslang.l",
-                    "hlslang/MachineIndependent/hlslang.y"]
+            files: {
+                if (maintainerMode) {
+                    return ["hlslang/MachineIndependent/hlslang.l",
+                            "hlslang/MachineIndependent/hlslang.y"];
+                }
+                return [];
+            }
         }
 
         Group {
