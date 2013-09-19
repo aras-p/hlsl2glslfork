@@ -420,7 +420,8 @@ bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStru
 
 		case EClassVarOut:
 			// If using user varyings, create a user varying name
-			if ( (bUserVaryings && sem != EAttrSemPosition && sem != EAttrSemPrimitiveID) || varOutString[sem][0] == 0 )
+			// WHY ON EARTH such funny if
+			if ( (bUserVaryings && sem != EAttrSemPosition && sem != EAttrSemPrimitiveID && sem != EAttrSemPSize) || varOutString[sem][0] == 0 )
 			{
 				outName = kUserVaryingPrefix;
 				outName += semantic;
@@ -437,8 +438,12 @@ bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStru
 				outName = varOutString[sem];
 
 				// Always pad built-in varying outputs to 4 elements
-				pad = 4 - size;
-				ctor = "vec4";
+				// exception: psize must be kept float1
+				if(sem != EAttrSemPSize)
+				{
+					pad = 4 - size;
+					ctor = "vec4";
+				}
 			}
 			break;
 
