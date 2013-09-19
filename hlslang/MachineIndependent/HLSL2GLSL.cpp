@@ -366,11 +366,16 @@ int C_DECL Hlsl2Glsl_Parse(
    }
    else if (!success)
    {
-      parseContext.infoSink.info.prefix(EPrefixError);
-      parseContext.infoSink.info << parseContext.numErrors << " compilation errors.  No code generated.\n\n";
-      success = false;
-	  if (options & ETranslateOpIntermediate)
-         ir_output_tree(parseContext.treeRoot, parseContext.infoSink);
+		// only add "X compilation errors" message if somehow there are no other errors whatsoever, yet
+		// we still failed. for some reason.
+		if (parseContext.infoSink.info.IsEmpty())
+		{
+			parseContext.infoSink.info.prefix(EPrefixError);
+			parseContext.infoSink.info << parseContext.numErrors << " compilation errors.  No code generated.\n\n";
+		}
+		success = false;
+		if (options & ETranslateOpIntermediate)
+			ir_output_tree(parseContext.treeRoot, parseContext.infoSink);
    }
 
 	ir_remove_tree(parseContext.treeRoot);

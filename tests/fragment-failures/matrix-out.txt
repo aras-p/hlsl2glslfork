@@ -1,5 +1,3 @@
-11: ERROR: 'float2x3' :  not supported in pre-GLSL1.20 
-23: ERROR: 'float2x4' :  not supported in pre-GLSL1.20 
-23: ERROR: '' :  non-square matrices not supported (2x4)
-ERROR: 3 compilation errors.  No code generated.
-
+(11): ERROR: 'float2x3' :  not supported in pre-GLSL1.20 
+(23): ERROR: 'float2x4' :  not supported in pre-GLSL1.20 
+(23): ERROR: '' :  non-square matrices not supported (2x4)

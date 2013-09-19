@@ -24,15 +24,13 @@ extern const TSourceLoc gNullSourceLoc;
 template<typename StreamType>
 StreamType& operator<<(StreamType& s, const TSourceLoc& l)
 {
+	// report location as (line) or file(line)
 	if(l.file)
 	{
 	    s << l.file;
-	
-	    // Visual Studio will jump to location if you format like this
-	    // file.hlsl(22): error string
-	    s << '(';
 	}
-    
+	
+	s << '(';
     if(l.line > 0)
     {
         s << l.line;
@@ -40,12 +38,8 @@ StreamType& operator<<(StreamType& s, const TSourceLoc& l)
     else
     {
         s << '?';
-    }
-    
-	if(l.file)
-    {
-	    s << ')';
-    }
+    }    
+    s << ')';
     
     return(s);
 } 

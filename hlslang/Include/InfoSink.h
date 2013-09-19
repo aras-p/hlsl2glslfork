@@ -136,6 +136,8 @@ public:
       append("\n");
    }
 
+   bool IsEmpty() const { return sink.empty(); }
+
 private:
    void append(const char *s); 
 
