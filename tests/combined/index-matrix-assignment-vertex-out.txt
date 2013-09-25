@@ -58,39 +58,39 @@ uniform sampler2D diffuse_map;
 uniform sampler2DShadow shadow_map;
 #line 21
 #line 41
-mat4 xlat_mutable_stupid[10];
+mat4 xlat_mutablestupid[10];
 #line 21
-PS_INPUT vs_main( in VS_INPUT xlat_var_input ) {
+PS_INPUT vs_main( in VS_INPUT xlat_varinput ) {
     PS_INPUT o;
     mat3 dummy = xll_transpose_mf3x3(mat3( vec3( 0.0), vec3( 0.0), vec3( 0.0)));
     #line 26
-    vec4 wp = (xlat_var_input.position * world);
-    xlat_mutable_stupid[2] = view;
+    vec4 wp = (xlat_varinput.position * world);
+    xlat_mutablestupid[2] = view;
     vec3 xlat_swiztemp0 = vec3(dummy[1].z, dummy[0].x, dummy[0].x);
-    xlat_mutable_stupid[2][0][3] = xlat_swiztemp0.x;
-    xlat_mutable_stupid[2][1][3] = xlat_swiztemp0.y;
-    xlat_mutable_stupid[2][2][3] = xlat_swiztemp0.z;
+    xlat_mutablestupid[2][0][3] = xlat_swiztemp0.x;
+    xlat_mutablestupid[2][1][3] = xlat_swiztemp0.y;
+    xlat_mutablestupid[2][2][3] = xlat_swiztemp0.z;
     #line 31
     dummy[0][2] = 0.0;
     vec2 xlat_swiztemp1 = vec2( 0.0, 0.0);
     dummy[0][2] = xlat_swiztemp1.x;
     dummy[2][0] = xlat_swiztemp1.y;
-    dummy[2][2] = float( xll_matrixindexdynamic_mf3x3_i (dummy, ((xlat_var_input.instance_id * 2) + xlat_var_input.vertex_id)));
+    dummy[2][2] = float( xll_matrixindexdynamic_mf3x3_i (dummy, ((xlat_varinput.instance_id * 2) + xlat_varinput.vertex_id)));
     #line 35
-    o.position = ((wp * xlat_mutable_stupid[2]) * proj);
-    o.uv = xlat_var_input.uv;
+    o.position = ((wp * xlat_mutablestupid[2]) * proj);
+    o.uv = xlat_varinput.uv;
     return o;
 }
 varying vec2 xlv_TEXCOORD0;
 void main() {
-    xlat_mutable_stupid = stupid;
+    xlat_mutablestupid = stupid;
     PS_INPUT xl_retval;
-    VS_INPUT xlt_xlat_var_input;
-    xlt_xlat_var_input.position = vec4(gl_Vertex);
-    xlt_xlat_var_input.uv = vec2(gl_MultiTexCoord0);
-    xlt_xlat_var_input.vertex_id = int(gl_VertexID);
-    xlt_xlat_var_input.instance_id = int(gl_InstanceIDARB);
-    xl_retval = vs_main( xlt_xlat_var_input);
+    VS_INPUT xlt_xlat_varinput;
+    xlt_xlat_varinput.position = vec4(gl_Vertex);
+    xlt_xlat_varinput.uv = vec2(gl_MultiTexCoord0);
+    xlt_xlat_varinput.vertex_id = int(gl_VertexID);
+    xlt_xlat_varinput.instance_id = int(gl_InstanceIDARB);
+    xl_retval = vs_main( xlt_xlat_varinput);
     gl_Position = vec4(xl_retval.position);
     xlv_TEXCOORD0 = vec2(xl_retval.uv);
 }

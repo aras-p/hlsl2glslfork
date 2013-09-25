@@ -9,17 +9,17 @@ struct VertexInput {
 };
 #line 11
 #line 11
-VertexOutput xlat_main( const VertexInput xlat_var_input ) {
-    VertexOutput xlat_var_output;
-    xlat_var_output.pos = xlat_var_input.pos;
+VertexOutput xlat_main( const VertexInput xlat_varinput ) {
+    VertexOutput xlat_varoutput;
+    xlat_varoutput.pos = xlat_varinput.pos;
     #line 15
-    return xlat_var_output;
+    return xlat_varoutput;
 }
 attribute highp vec4 xlat_attrib_POSITION;
 void main() {
     VertexOutput xl_retval;
-    VertexInput xlt_xlat_var_input;
-    xlt_xlat_var_input.pos = vec4(xlat_attrib_POSITION);
-    xl_retval = xlat_main( xlt_xlat_var_input);
+    VertexInput xlt_xlat_varinput;
+    xlt_xlat_varinput.pos = vec4(xlat_attrib_POSITION);
+    xl_retval = xlat_main( xlt_xlat_varinput);
     gl_Position = vec4(xl_retval.pos);
 }

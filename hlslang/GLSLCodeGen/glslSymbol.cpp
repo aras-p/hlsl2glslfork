@@ -209,12 +209,12 @@ GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGls
 {
 	if (IsReservedGlslKeyword(n))
 	{
-		name = "xlat_var_" + n;
+		name = "xlat_var" + n;
 	}
 	mangledName = name;
 
 	if (qual == EqtMutableUniform)
-		mutableMangledName = "xlat_mutable_" + mangledName;
+		mutableMangledName = "xlat_mutable" + mangledName;
 	else
 		mutableMangledName = mangledName;   
 }
@@ -255,7 +255,7 @@ void GlslSymbol::mangleName()
 	s << "_" << mangleCounter;
 	mangledName = name + s.str();
 	if ( qual == EqtMutableUniform) 
-		mutableMangledName = "xlat_mutable_" + mangledName;
+		mutableMangledName = "xlat_mutable" + mangledName;
 	else
 		mutableMangledName = mangledName;
 }

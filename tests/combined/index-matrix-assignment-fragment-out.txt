@@ -24,22 +24,22 @@ uniform sampler2DShadow shadow_map;
 #line 21
 #line 41
 #line 41
-vec4 ps_main( in PS_INPUT xlat_var_input, in int primitive_id ) {
+vec4 ps_main( in PS_INPUT xlat_varinput, in int primitive_id ) {
     vec4 c = vec4( 1.0, 1.0, 1.0, float(primitive_id));
-    c = texture2D( diffuse_map, xlat_var_input.uv);
+    c = texture2D( diffuse_map, xlat_varinput.uv);
     float depth = 1.0;
     #line 45
-    vec4 shadow = vec4( xlat_var_input.uv, depth, 1.0);
+    vec4 shadow = vec4( xlat_varinput.uv, depth, 1.0);
     c *= shadow2DProj( shadow_map, shadow).x;
     return c;
 }
 varying vec2 xlv_TEXCOORD0;
 void main() {
     vec4 xl_retval;
-    PS_INPUT xlt_xlat_var_input;
-    xlt_xlat_var_input.position = vec4(0.0);
-    xlt_xlat_var_input.uv = vec2(xlv_TEXCOORD0);
-    xl_retval = ps_main( xlt_xlat_var_input, int(gl_PrimitiveID));
+    PS_INPUT xlt_xlat_varinput;
+    xlt_xlat_varinput.position = vec4(0.0);
+    xlt_xlat_varinput.uv = vec2(xlv_TEXCOORD0);
+    xl_retval = ps_main( xlt_xlat_varinput, int(gl_PrimitiveID));
     gl_FragData[0] = vec4(xl_retval);
 }
 
