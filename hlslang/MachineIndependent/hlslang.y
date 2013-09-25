@@ -1550,6 +1550,9 @@ type_qualifier
     | STATIC_QUAL CONST_QUAL {
         $$.setBasic(EbtVoid, EvqConst, $1.line); // same as "const" really
     }
+    | CONST_QUAL STATIC_QUAL {
+        $$.setBasic(EbtVoid, EvqConst, $1.line); // same as "const" really
+    }
     | UNIFORM {
         if (parseContext.globalErrorCheck($1.line, parseContext.symbolTable.atGlobalLevel(), "uniform"))
             parseContext.recover();

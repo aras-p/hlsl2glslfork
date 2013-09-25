@@ -3,37 +3,38 @@ uniform highp float uni_2;
 #line 4
 highp float stat_1;
 const highp float stat_2 = 1.3;
+const highp float stat_3 = 1.5;
 const highp float const_3 = 1e-06;
-#line 8
+#line 9
 uniform highp float mutable_1;
 uniform highp float mutable_2;
-#line 12
-#line 17
+#line 13
+#line 18
 highp float xlat_mutable_mutable_1;
 highp float xlat_mutable_mutable_2;
-#line 13
+#line 14
 highp float func_const(  ) {
     return 7.0;
 }
-#line 14
+#line 15
 highp float func_const_static(  ) {
     return 7.0;
 }
-#line 12
+#line 13
 highp float func_static(  ) {
     return 7.0;
 }
-#line 15
+#line 16
 highp float func_static_const(  ) {
     return 7.0;
 }
-#line 17
+#line 18
 highp vec4 xlat_main(  ) {
     xlat_mutable_mutable_1 = 3.0;
     xlat_mutable_mutable_2 = 4.0;
-    #line 21
+    #line 22
     highp float func = (((func_static( ) + func_const( )) + func_const_static( )) + func_static_const( ));
-    return vec4( (((((((uni_1 + uni_2) + stat_1) + 1.3) + 1e-06) + xlat_mutable_mutable_1) + xlat_mutable_mutable_2) + func));
+    return vec4( ((((((((uni_1 + uni_2) + stat_1) + 1.3) + 1.5) + 1e-06) + xlat_mutable_mutable_1) + xlat_mutable_mutable_2) + func));
 }
 void main() {
     xlat_mutable_mutable_1 = mutable_1;
