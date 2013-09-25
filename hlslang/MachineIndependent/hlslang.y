@@ -1003,8 +1003,15 @@ function_header_with_parameters
 function_header
     : fully_specified_type IDENTIFIER LEFT_PAREN {
         if ($1.qualifier != EvqGlobal && $1.qualifier != EvqTemporary) {
-            parseContext.error($2.line, "no qualifiers allowed for function return", getQualifierString($1.qualifier), "");
-            parseContext.recover();
+			if ($1.qualifier == EvqConst || $1.qualifier == EvqStatic)
+			{
+				$1.qualifier = EvqTemporary;
+			}
+			else
+			{
+				parseContext.error($2.line, "no qualifiers allowed for function return", getQualifierString($1.qualifier), "");
+				parseContext.recover();
+			}
         }
         // make sure a sampler is not involved as well...
         if (parseContext.structQualifierErrorCheck($2.line, $1))
