@@ -379,9 +379,9 @@ void OutputConstant(TIntermConstant* node, TIntermTraverser* it)
    TOutputTraverser* oit = static_cast<TOutputTraverser*>(it);
    TInfoSink& out = oit->infoSink;
 
-   int size = node->getCount();
+   size_t size = node->getCount();
 
-   for (int i = 0; i < size; i++)
+   for (size_t i = 0; i < size; i++)
    {
       OutputTreeText(out, node, oit->depth);
       switch (node->getValue(i).type)

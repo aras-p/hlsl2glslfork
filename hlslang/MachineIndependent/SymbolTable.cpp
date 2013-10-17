@@ -46,7 +46,7 @@ void TType::buildMangledName(TString& mangledName) const
 			if (typeName)
 				mangledName += *typeName;
 		{// support MSVC++6.0
-			for (unsigned int i = 0; i < structure->size(); ++i)
+			for (size_t i = 0; i < structure->size(); ++i)
 			{
 				mangledName += '_';
 				(*structure)[i].type->buildMangledName(mangledName);
@@ -74,7 +74,7 @@ void TType::buildMangledName(TString& mangledName) const
 	}
 }
 
-int TType::getStructSize() const
+size_t TType::getStructSize() const
 {
 	if (!getStruct())
 	{
@@ -263,7 +263,7 @@ TVariable* TVariable::clone(TStructureMap& remapper)
 
 TFunction::TFunction(const TFunction& copyOf, TStructureMap& remapper) : TSymbol(copyOf)
 {
-	for (unsigned int i = 0; i < copyOf.parameters.size(); ++i)
+	for (size_t i = 0; i < copyOf.parameters.size(); ++i)
 	{
 		TParameter param;
 		parameters.push_back(param);
@@ -319,7 +319,7 @@ TSymbol* TSymbolTableLevel::findCompatible (const TFunction *call, bool &ambiguo
 	}
 		
 	// For each actual parameter expression, in the sequence:   
-	for ( int nParam = 0; nParam < call->getParamCount() ; nParam++ )
+	for ( size_t nParam = 0; nParam < call->getParamCount() ; nParam++ )
 	{
 		const TType* type0 = (*call)[nParam].type;      
 		
@@ -415,7 +415,7 @@ void TSymbolTable::copyTable(const TSymbolTable& copyOf)
 {
 	TStructureMap remapper;
 	uniqueId = copyOf.uniqueId;
-	for (unsigned int i = 0; i < copyOf.table.size(); ++i)
+	for (size_t i = 0; i < copyOf.table.size(); ++i)
 	{
 		table.push_back(copyOf.table[i]->clone(remapper));
 	}

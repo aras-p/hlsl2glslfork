@@ -12,7 +12,7 @@
 class GlslSymbol : public GlslSymbolOrStructMemberBase
 {
 public:
-	GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, TPrecision precision, EGlslQualifier q, int as = 0 );
+	GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, TPrecision precision, EGlslQualifier q, size_t as = 0 );
 	inline virtual ~GlslSymbol() {};
 
 	bool getIsParameter() const { return isParameter; }
@@ -49,7 +49,7 @@ public:
 
 	void addRef() { refCount++; }
 	void releaseRef() { assert (refCount >= 0 ); if ( refCount > 0 ) refCount--; }
-	int getRef() const { return refCount; }
+	size_t getRef() const { return refCount; }
 
 private:
 	std::string mangledName;
@@ -58,7 +58,7 @@ private:
 	int mangleCounter;
 	GlslStruct *structPtr;
 	bool isParameter;
-	int refCount;
+	size_t refCount;
 	bool isGlobal;
 };
 

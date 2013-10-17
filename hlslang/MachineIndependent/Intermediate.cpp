@@ -799,10 +799,10 @@ TIntermTyped* ir_add_swizzle(TVectorFields& fields, TSourceLoc line)
 	node->setLine(line);
 	TNodeArray& nodes = node->getNodes();
 
-	for (int i = 0; i < fields.num; i++)
+	for (size_t i = 0; i < fields.num; i++)
 	{
 		TIntermConstant* constant = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), line);
-		constant->setValue(fields.offsets[i]);
+		constant->setValue((int)fields.offsets[i]);
 		nodes.push_back(constant);
 	}
 
@@ -822,9 +822,9 @@ TIntermTyped* ir_add_const_vector_swizzle(const TVectorFields& fields, TIntermTy
 		return NULL;
 	
 	TIntermConstant* res = ir_add_constant(node->getType(), line);
-	for (int i = 0; i < fields.num; ++i)
+	for (size_t i = 0; i < fields.num; ++i)
 	{
-		int index = fields.offsets[i];
+		size_t index = fields.offsets[i];
 		assert(index >= 0 && (unsigned)index < constNode->getCount());
 		res->setValue(i, constNode->getValue (index));
 	}
@@ -849,7 +849,7 @@ TIntermTyped* ir_add_vector_swizzle(TVectorFields& fields, TIntermTyped* arg, TS
 	if (fields.num == 1)
 	{
 		TIntermConstant* index = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), lineIndex);
-		index->setValue(fields.offsets[0]);
+		index->setValue((int)fields.offsets[0]);
 		res = ir_add_index(EOpIndexDirect, arg, index, lineDot);
 		res->setType(TType(arg->getBasicType(), arg->getPrecision()));
 	}
@@ -1075,8 +1075,8 @@ static TOperator getMatrixConstructOp(const TIntermTyped& intermediate, TParseCo
 	// before GLSL 1.20, only square matrices
 	if (ctx.targetVersion < ETargetGLSL_120)
 	{
-		const int c = intermediate.getColsCount();
-		const int r = intermediate.getRowsCount();
+		const size_t c = intermediate.getColsCount();
+		const size_t r = intermediate.getRowsCount();
 		if (c == 2 && r == 2)
 			return EOpConstructMat2x2FromMat;
 		if (c == 3 && r == 3)
@@ -1249,8 +1249,8 @@ bool TIntermBinary::promote(TParseContext& ctx)
    bool assignment = ( op >= EOpAssign && op <= EOpRightShiftAssign) ? true : false;
 
    // find size of the resulting value
-   int cols = 0;
-   int rows = 0;
+   size_t cols = 0;
+   size_t rows = 0;
 
    if (!left->isScalar() && !right->isScalar()) // no scalars, so downcast of the larger type
    {
@@ -1543,7 +1543,7 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 	if (!condition->isVector())
 		return true;
 	
-	int size = condition->getRowsCount();
+	size_t size = condition->getRowsCount();
 	TIntermTyped* trueb = trueBlock->getAsTyped();
 	TIntermTyped* falseb = falseBlock->getAsTyped();
 	if (!trueb || !falseb)
@@ -1579,7 +1579,7 @@ bool TIntermSelection::promoteTernary(TInfoSink& infoSink)
 
 TIntermTyped* ir_promote_constant(TBasicType promoteTo, TIntermConstant* right, TInfoSink& infoSink)
 {
-	unsigned size = right->getCount();
+	size_t size = right->getCount();
 	const TType& t = right->getType();
 	TIntermConstant* left = ir_add_constant(TType(promoteTo, t.getPrecision(), t.getQualifier(), t.getColsCount(), t.getRowsCount(), t.isMatrix(), t.isArray()), right->getLine());
 	for (unsigned i = 0; i != size; ++i) {

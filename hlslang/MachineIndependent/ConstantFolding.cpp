@@ -27,15 +27,15 @@ TIntermConstant* FoldBinaryConstantExpression(TOperator op, TIntermConstant* nod
 
 #define DO_FOLD_OP(oper) \
 	if (nodeA->getBasicType() == EbtInt) \
-		for (unsigned i = 0; i < newNode->getCount(); ++i) \
+		for (size_t i = 0; i < newNode->getCount(); ++i) \
 			newNode->setValue(i, nodeA->getValue(i).asInt oper nodeB->getValue(i).asInt); \
 	else \
-		for (unsigned i = 0; i < newNode->getCount(); ++i) \
+		for (size_t i = 0; i < newNode->getCount(); ++i) \
 			newNode->setValue(i, nodeA->getValue(i).asFloat oper nodeB->getValue(i).asFloat)
 
 #define DO_FOLD_OP_INT(oper) \
 	if (nodeA->getBasicType() == EbtInt) \
-		for (unsigned i = 0; i < newNode->getCount(); ++i) \
+		for (size_t i = 0; i < newNode->getCount(); ++i) \
 		newNode->setValue(i, nodeA->getValue(i).asInt oper nodeB->getValue(i).asInt); \
 	else { \
 		delete newNode; \
@@ -44,10 +44,10 @@ TIntermConstant* FoldBinaryConstantExpression(TOperator op, TIntermConstant* nod
 
 #define DO_FOLD_OP_ZERO(oper) \
 	if (nodeA->getBasicType() == EbtInt) \
-		for (unsigned i = 0; i < newNode->getCount(); ++i) \
+		for (size_t i = 0; i < newNode->getCount(); ++i) \
 			newNode->setValue(i, nodeB->getValue(i).asInt ? nodeA->getValue(i).asInt oper nodeB->getValue(i).asInt : 0); \
 	else \
-		for (unsigned i = 0; i < newNode->getCount(); ++i) \
+		for (size_t i = 0; i < newNode->getCount(); ++i) \
 			newNode->setValue(i, nodeB->getValue(i).asInt ? nodeA->getValue(i).asFloat oper nodeB->getValue(i).asFloat : 0)
 	
 	switch (op)
@@ -59,7 +59,7 @@ TIntermConstant* FoldBinaryConstantExpression(TOperator op, TIntermConstant* nod
 		case EOpMod:
 			if (nodeA->getBasicType() == EbtInt)
 			{
-				for (unsigned i = 0; i < newNode->getCount(); ++i)
+				for (size_t i = 0; i < newNode->getCount(); ++i)
 					newNode->setValue(i, nodeB->getValue(i).asInt ? nodeA->getValue(i).asInt % nodeB->getValue(i).asInt : 0);
 			}
 			else
@@ -99,12 +99,12 @@ TIntermConstant* FoldUnaryConstantExpression(TOperator op, TIntermConstant* node
 		case EOpNegative:
 			if (node->getBasicType() == EbtInt)
 			{
-				for (unsigned i = 0; i < newNode->getCount(); ++i)
+				for (size_t i = 0; i < newNode->getCount(); ++i)
 					newNode->setValue(i, -node->getValue(i).asInt);
 			}
 			else
 			{
-				for (unsigned i = 0; i < newNode->getCount(); ++i)
+				for (size_t i = 0; i < newNode->getCount(); ++i)
 					newNode->setValue(i, -node->getValue(i).asFloat);
 			}
 			break;

@@ -152,9 +152,9 @@ TIntermTyped* TParseContext::add_binary(TOperator op, TIntermTyped* a, TIntermTy
 // Look at a '.' field selector string and change it into offsets
 // for a vector.
 //
-bool TParseContext::parseVectorFields(const TString& compString, int vecSize, TVectorFields& fields, const TSourceLoc& line)
+bool TParseContext::parseVectorFields(const TString& compString, size_t vecSize, TVectorFields& fields, const TSourceLoc& line)
 {
-	fields.num = (int) compString.size();
+	fields.num = compString.size();
 	if (fields.num > 4)
 	{
 		error(line, "illegal vector field selection", compString.c_str(), "");
@@ -168,7 +168,7 @@ bool TParseContext::parseVectorFields(const TString& compString, int vecSize, TV
 		estpq,
 	} fieldSet[4];
 	
-	for (int i = 0; i < fields.num; ++i)
+	for (size_t i = 0; i < fields.num; ++i)
 	{
 		switch (compString[i])
 		{
@@ -227,7 +227,7 @@ bool TParseContext::parseVectorFields(const TString& compString, int vecSize, TV
 		}
 	}
 	
-	for (int i = 0; i < fields.num; ++i)
+	for (size_t i = 0; i < fields.num; ++i)
 	{
 		if (fields.offsets[i] >= vecSize)
 		{
@@ -252,7 +252,7 @@ bool TParseContext::parseVectorFields(const TString& compString, int vecSize, TV
 // Look at a '.' field selector string and change it into offsets
 // for a matrix.
 //
-bool TParseContext::parseMatrixFields(const TString& compString, int matCols, int matRows, TVectorFields& fields, const TSourceLoc& line)
+bool TParseContext::parseMatrixFields(const TString& compString, size_t matCols, size_t matRows, TVectorFields& fields, const TSourceLoc& line)
 {
 	fields.num = 1;
 	fields.offsets[0] = 0;
@@ -271,7 +271,7 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matCols, in
 			error(line, "illegal matrix field selection", compString.c_str(), "");
 			return false;
 		}
-		for (int ii = 0; ii < (int)compString.size(); ii+=4)
+		for (size_t ii = 0; ii < compString.size(); ii+=4)
 		{
 			if (compString[ii] != '_' || compString[ii + 1] != 'm')
 			{
@@ -284,8 +284,8 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matCols, in
 				error(line, "illegal matrix field selection", compString.c_str(), "");
 				return false;
 			}
-			int row = compString[ii + 2] - '0';
-			int collumn = compString[ii + 3] - '0';
+			size_t row = compString[ii + 2] - '0';
+			size_t collumn = compString[ii + 3] - '0';
 			if ( row >= matRows || collumn >= matCols)
 			{
 				error(line, "matrix field selection out of range", compString.c_str(), "");
@@ -303,7 +303,7 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matCols, in
 			error(line, "illegal matrix field selection", compString.c_str(), "");
 			return false;
 		}
-		for (int ii = 0; ii < (int)compString.size(); ii += 3)
+		for (size_t ii = 0; ii < compString.size(); ii += 3)
 		{
 			if (compString[ii] != '_')
 			{
@@ -316,8 +316,8 @@ bool TParseContext::parseMatrixFields(const TString& compString, int matCols, in
 				error(line, "illegal matrix field selection", compString.c_str(), "");
 				return false;
 			}
-			int row = compString[ii + 1] - '1';
-			int collumn = compString[ii + 2] - '1';
+			size_t row = compString[ii + 1] - '1';
+			size_t collumn = compString[ii + 2] - '1';
 			if ( row >= matRows || collumn >= matCols)
 			{
 				error(line, "matrix field selection out of range", compString.c_str(), "");
@@ -644,12 +644,12 @@ bool TParseContext::constructorErrorCheck(const TSourceLoc& line, TIntermNode* n
    // again, there is an extra argument, so 'overfull' will become true.
    //
 
-   int size = 0;
+   size_t size = 0;
    bool constType = true;
    bool full = false;
    bool overFull = false;
    bool arrayArg = false;
-   for (int i = 0; i < function.getParamCount(); ++i)
+   for (size_t i = 0; i < function.getParamCount(); ++i)
    {
       size += function[i].type->getObjectSize();
 
@@ -843,7 +843,7 @@ bool TParseContext::containsSampler(TType& type)
    if (type.getBasicType() == EbtStruct)
    {
       TTypeList& structure = *type.getStruct();
-      for (unsigned int i = 0; i < structure.size(); ++i)
+      for (size_t i = 0; i < structure.size(); ++i)
       {
          if (containsSampler(*structure[i].type))
             return true;
@@ -1370,11 +1370,11 @@ static bool TransposeMatrixConstructorArgs (const TType* type, TNodeArray& args)
 		return false;
 
 	// HLSL vs. GLSL construct matrices in transposed order, so transpose the arguments for the constructor
-	const int cols = type->getColsCount();
-	const int rows = type->getRowsCount();
-	for (int r = 0; r < rows; ++r)
+	const size_t cols = type->getColsCount();
+	const size_t rows = type->getRowsCount();
+	for (size_t r = 0; r < rows; ++r)
 	{
-		for (int c = r+1; c < cols; ++c)
+		for (size_t c = r+1; c < cols; ++c)
 		{
 			size_t idx1 = r*cols+c;
 			size_t idx2 = c*rows+r;
@@ -1407,8 +1407,8 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 		element_type.clearArrayness();
 		
 		TNodeArray &params = aggregate->getNodes();
-		unsigned n_params = params.size();
-		for (unsigned i = 0; i != n_params; ++i) {
+		size_t n_params = params.size();
+		for (size_t i = 0; i != n_params; ++i) {
 			TIntermNode* p = params[i];
 			if (type->isArray())
 				p = constructBuiltIn(&element_type, op, p, node->getLine(), true);
@@ -1533,8 +1533,8 @@ TIntermTyped* TParseContext::constructBuiltInAllowUpwardVectorPromote(
         tempAgg = ir_grow_aggregate(tempAgg, tNode, line);
 
         // Determine the number of trailing 0's required
-        int nNumZerosToPad = type->getRowsCount() - tNode->getRowsCount();
-        for ( int nPad = 0; nPad < nNumZerosToPad; nPad++ )
+        size_t nNumZerosToPad = type->getRowsCount() - tNode->getRowsCount();
+        for ( size_t nPad = 0; nPad < nNumZerosToPad; nPad++ )
         {
             // Create a new constant with value 0.0
             TIntermConstant *cUnion = ir_add_constant(TType(EbtFloat, EbpUndefined, EvqConst), tNode->getLine());
@@ -1704,8 +1704,8 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
 	   
 	   if (targetVersion < ETargetGLSL_120)
 	   {
-		   const int c = type->getColsCount();
-		   const int r = type->getRowsCount();
+		   const size_t c = type->getColsCount();
+		   const size_t r = type->getRowsCount();
 		   if (c == 2 && r == 2)
 			   op = EOpConstructMat2x2FromMat;
 		   else if (c == 3 && r == 3)
@@ -1753,7 +1753,7 @@ TIntermTyped* TParseContext::constructBuiltIn(const TType* type, TOperator op, T
 //
 // Returns 0 for an error or the input node itself if the expected and the given parameter types match.
 //
-TIntermTyped* TParseContext::constructStruct(TIntermNode* node, TType* type, int paramCount, TSourceLoc line, bool subset)
+TIntermTyped* TParseContext::constructStruct(TIntermNode* node, TType* type, size_t paramCount, TSourceLoc line, bool subset)
 {
 	TIntermTyped* result = 0;
 	if (*type == node->getAsTyped()->getType())
@@ -1778,7 +1778,7 @@ TIntermTyped* TParseContext::constructStruct(TIntermNode* node, TType* type, int
 TIntermTyped* TParseContext::constructArray(TIntermAggregate* aggNode, const TType* type, TOperator op, TSourceLoc line)
 {
    TType elementType = *type;
-   int elementCount = type->getArraySize();
+   size_t elementCount = type->getArraySize();
    TIntermAggregate *newAgg = 0;
 
    elementType.clearArrayness();
@@ -1787,7 +1787,7 @@ TIntermTyped* TParseContext::constructArray(TIntermAggregate* aggNode, const TTy
    TNodeArray::iterator sit = seq.begin();
 
    // Count the total size of the initializer sequence and make sure it matches the array size
-   int nInitializerSize = 0;
+   size_t nInitializerSize = 0;
    while ( sit != seq.end() )
    {
       nInitializerSize += (*sit)->getAsTyped()->getSize();

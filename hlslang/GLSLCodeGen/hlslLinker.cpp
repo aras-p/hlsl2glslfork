@@ -859,8 +859,8 @@ void HlslLinker::buildUniformsAndLibFunctions(const FunctionSet& calledFunctions
 	for (FunctionSet::const_iterator it = calledFunctions.begin(); it != calledFunctions.end(); ++it) {
 		const std::vector<GlslSymbol*> &symbols = (*it)->getSymbols();
 		
-		unsigned n_symbols = symbols.size();
-		for (unsigned i = 0; i != n_symbols; ++i) {
+		size_t n_symbols = symbols.size();
+		for (size_t i = 0; i != n_symbols; ++i) {
 			GlslSymbol* s = symbols[i];
 			if (s->getQualifier() == EqtUniform || s->getQualifier() == EqtMutableUniform)
 				constants.push_back(s);
@@ -926,8 +926,8 @@ void HlslLinker::emitGlobals(const GlslFunction* globalFunction, const std::vect
 	globalFunction->addNeededExtensions (m_Extensions, m_Target);
 	
 	// write mutable uniform declarations
-	const unsigned n_constants = constants.size();
-	for (unsigned i = 0; i != n_constants; ++i) {
+	const size_t n_constants = constants.size();
+	for (size_t i = 0; i != n_constants; ++i) {
 		GlslSymbol* s = constants[i];
 		if (s->getIsMutable()) {
 			s->writeDecl(shader, GlslSymbol::kWriteDeclMutableDecl);
@@ -939,7 +939,7 @@ void HlslLinker::emitGlobals(const GlslFunction* globalFunction, const std::vect
 
 void HlslLinker::buildUniformReflection(const std::vector<GlslSymbol*>& constants)
 {
-	const unsigned n_constants = constants.size();
+	const size_t n_constants = constants.size();
 	for (unsigned i = 0; i != n_constants; ++i) {
 		GlslSymbol* s = constants[i];
 		
@@ -1044,8 +1044,8 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 bool HlslLinker::emitInputStruct(const GlslStruct* str, std::string parentName, EShLanguage lang, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble)
 {
 	// process struct members
-	const int elem = str->memberCount();
-	for (int jj=0; jj<elem; jj++)
+	const size_t elem = str->memberCount();
+	for (size_t jj=0; jj<elem; jj++)
 	{
 		const StructMember &current = str->getMember(jj);
 		EAttribSemantic memberSem = parseAttributeSemantic (current.semantic);
@@ -1053,7 +1053,7 @@ bool HlslLinker::emitInputStruct(const GlslStruct* str, std::string parentName, 
 		add_extension_from_semantic(memberSem, m_Target, m_Extensions);
 		
 		// if member of the struct is an array, we have to loop over all array elements
-		int arraySize = 1;
+		size_t arraySize = 1;
 		bool isArray = false;
 		if (current.arraySize > 0)
 		{
@@ -1062,10 +1062,10 @@ bool HlslLinker::emitInputStruct(const GlslStruct* str, std::string parentName, 
 		}
 		
 		std::string name, ctor;
-		for (int idx = 0; idx < arraySize; ++idx)
+		for (size_t idx = 0; idx < arraySize; ++idx)
 		{
 			int pad;
-			if (!getArgumentData2 (&current, lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, isArray?idx:-1))
+			if (!getArgumentData2 (&current, lang==EShLangVertex ? EClassAttrib : EClassVarIn, name, ctor, pad, isArray?(int)idx:-1))
 			{
 				const GlslStruct* subStruct = current.structType;
 				if (subStruct)
@@ -1146,9 +1146,9 @@ void HlslLinker::emitOutputNonStructParam(GlslSymbol* sym, EShLanguage lang, boo
         if(sym->hasSemantic() && usePrecision)
         {
             const char* str = sym->getSemantic().c_str();
-            int         len = sym->getSemantic().length();
+            size_t      len = sym->getSemantic().length();
 
-            extern bool IsPositionSemantics(const char* sem, int len);
+            extern bool IsPositionSemantics(const char* sem, size_t len);
             if(IsPositionSemantics(str, len))
                 prec = EbpHigh;
         }
@@ -1187,8 +1187,8 @@ void HlslLinker::emitOutputStructParam(GlslSymbol* sym, EShLanguage lang, bool u
 		call << tempVar;
 	}
 	
-	const int elem = Struct->memberCount();
-	for (int ii=0; ii<elem; ii++)
+	const size_t elem = Struct->memberCount();
+	for (size_t ii=0; ii<elem; ii++)
 	{
 		const StructMember &current = Struct->getMember(ii);
 		std::string name, ctor;
@@ -1219,7 +1219,7 @@ void HlslLinker::emitMainStart(const HlslCrossCompiler* compiler, const EGlslSym
 	preamble << "void main() {\n";
 	
 	// initialize mutable uniforms with the original uniform values
-	const unsigned n_constants = constants.size();
+	const size_t n_constants = constants.size();
 	for (unsigned i = 0; i != n_constants; ++i) {
 		GlslSymbol* s = constants[i];
 		if (s->getIsMutable()) {
@@ -1259,13 +1259,13 @@ void HlslLinker::emitMainStart(const HlslCrossCompiler* compiler, const EGlslSym
 // This function calls itself recursively if it finds structs in structs.
 bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble)
 {
-	const int elem = retStruct->memberCount();
-	for (int ii=0; ii<elem; ii++)
+	const size_t elem = retStruct->memberCount();
+	for (size_t ii=0; ii<elem; ii++)
 	{
 		const StructMember &current = retStruct->getMember(ii);
 		std::string name, ctor;
 		int pad;
-		int arraySize = 1;
+		size_t arraySize = 1;
 		bool isArray = false;
 
 		if (lang == EShLangVertex) // vertex shader
@@ -1278,9 +1278,9 @@ bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName,
 			}
 		}
 
-		for (int idx = 0; idx < arraySize; ++idx)
+		for (size_t idx = 0; idx < arraySize; ++idx)
 		{
-			if (!getArgumentData2( &current, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, isArray?idx:-1))
+			if (!getArgumentData2( &current, lang==EShLangVertex ? EClassVarOut : EClassRes, name, ctor, pad, isArray?(int)idx:-1))
 			{
 				GlslStruct *subStruct = current.structType;
 				if (subStruct)
@@ -1378,8 +1378,8 @@ void HlslLinker::appendDuplicatedInSemantics(GlslSymbolOrStructMemberBase* sym, 
 		list.push_back(sym);
 	else if (sym->getStruct())
 	{
-		int mc = sym->getStruct()->memberCount();
-		for (int i = 0; i < mc; ++i)
+		size_t mc = sym->getStruct()->memberCount();
+		for (size_t i = 0; i < mc; ++i)
 			appendDuplicatedInSemantics(const_cast<StructMember*>(&sym->getStruct()->getMember(i)),sem,list);
 	}
 }
@@ -1390,12 +1390,12 @@ void HlslLinker::appendDuplicatedInSemantics(GlslSymbolOrStructMemberBase* sym, 
 // output is the one found with the largest dimension.
 void HlslLinker::markDuplicatedInSemantics(GlslFunction* func)
 {
-	int pCount = func->getParameterCount();
+	size_t pCount = func->getParameterCount();
 	for (size_t asi=0; asi < sizeof(kAttributeSemantic)/sizeof(kAttributeSemantic[0]); ++asi)
 	{
 		std::vector<GlslSymbolOrStructMemberBase*> symsUsingSem;
 		AttrSemanticMapping* sem = &kAttributeSemantic[asi];
-		for (int ii=0; ii<pCount; ii++)
+		for (size_t ii=0; ii<pCount; ii++)
 		{
 			GlslSymbol *sym = func->getParameter(ii);
 			appendDuplicatedInSemantics(sym, sem->name, symsUsingSem);
@@ -1403,9 +1403,9 @@ void HlslLinker::markDuplicatedInSemantics(GlslFunction* func)
 		if (symsUsingSem.size() > 1)
 		{
 			size_t index_of_largest = -1;
-			int largest_array_size = 0;
+			size_t largest_array_size = 0;
 			GlslSymbolOrStructMemberBase* sym_of_largest = 0;
-			for (unsigned int ii=0; ii < symsUsingSem.size(); ii++)
+			for (size_t ii=0; ii < symsUsingSem.size(); ii++)
 			{
 				if (!ii || largest_array_size < getElements(symsUsingSem[ii]->type))
 				{
@@ -1490,8 +1490,8 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 	
 
 	// Entry point parameters
-	const int pCount = funcMain->getParameterCount();
-	for (int ii=0; ii<pCount; ii++)
+	const size_t pCount = funcMain->getParameterCount();
+	for (size_t ii=0; ii<pCount; ii++)
 	{
 		GlslSymbol *sym = funcMain->getParameter(ii);
 		EAttribSemantic attrSem = parseAttributeSemantic( sym->getSemantic());

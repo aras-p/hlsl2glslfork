@@ -147,7 +147,7 @@ Project {
         will get errors such as:
         evaluating prepare script: TypeError: Result of expression 'config' [undefined] is not an object.'
         */
-        property bool maintainerMode: false
+        property bool maintainerMode: true
         property string OSDepPath: {
             if (qbs.targetOS.contains("windows"))
                 return "Windows";
