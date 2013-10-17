@@ -165,9 +165,9 @@ public:
 	void setDefined() { defined = true; }
 	bool isDefined() const { return defined; }
 	
-	int getParamCount() const { return static_cast<int>(parameters.size()); }    
-	TParameter& operator [](int i)       { return parameters[i]; }
-	const TParameter& operator [](int i) const { return parameters[i]; }
+    size_t getParamCount() const { return parameters.size(); }
+	TParameter& operator [](size_t i)       { return parameters[i]; }
+	const TParameter& operator [](size_t i) const { return parameters[i]; }
     
 	virtual void dump(TInfoSink &infoSink) const;
 	TFunction(const TFunction&, TStructureMap& remapper);

@@ -69,7 +69,7 @@ class GlslStruct;
 class GlslSymbolOrStructMemberBase
 {
 public:
-   GlslSymbolOrStructMemberBase(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as, std::string const& bn = "") :
+   GlslSymbolOrStructMemberBase(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, size_t as, std::string const& bn = "") :
    name(n),
    baseName((bn=="")?bn:bn+"_"),
    semantic(s),
@@ -81,7 +81,7 @@ public:
    {
    }
    bool isArray() const { return (arraySize > 0); }
-   int getArraySize() const { return arraySize; }
+   size_t getArraySize() const { return arraySize; }
    const std::string &getSemantic() const { return semantic; }
    virtual const GlslStruct* getStruct() const { return 0; }
    virtual GlslStruct* getStruct() { return 0; }
@@ -96,7 +96,7 @@ public:
    EGlslSymbolType type;
    EGlslQualifier qual;
    TPrecision precision;
-   int arraySize;
+   size_t arraySize;
 private:
    GlslSymbolOrStructMemberBase const* suppressedBy;
 };
@@ -115,6 +115,6 @@ EGlslSymbolType translateType( const TType *type );
 EGlslQualifier translateQualifier( TQualifier qual);
 
 // Gets the number of elements in EGlslSymbolType.
-int getElements( EGlslSymbolType t );
+size_t getElements( EGlslSymbolType t );
 
 #endif //GLSL_COMMON_H

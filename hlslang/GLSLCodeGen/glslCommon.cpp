@@ -213,13 +213,13 @@ EGlslQualifier translateQualifier( TQualifier qual )
 // otherwise, if we encounter shader compiler (e.g. mali) that treats prec hints as "force precision"
 // we will have problems with outputing half4 to gl_Position, effectively breaking lots of stuf due to prec loss
 // we do it in a bit strange way because i am a bit lazy to go through all code to make sure that we have lower-case string in there
-bool IsPositionSemantics(const char* sem, int len)
+bool IsPositionSemantics(const char* sem, size_t len)
 {
    bool isPos = false;
 
    char* str = (char*)::malloc(len+1);
 
-   for(int i = 0 ; i <= len ; ++i)
+   for(size_t i = 0 ; i <= len ; ++i)
        str[i] = ::tolower(sem[i]);
 
    if(::strstr(str, "position"))
@@ -230,7 +230,7 @@ bool IsPositionSemantics(const char* sem, int len)
 }
 
 
-int getElements( EGlslSymbolType t )
+size_t getElements( EGlslSymbolType t )
 {
 	switch (t)
 	{

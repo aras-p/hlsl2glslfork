@@ -39,9 +39,9 @@ TString TType::getCompleteString() const
    if (array)
       p += sprintf(p, " array");
    if (matrix)
-      p += sprintf(p, "matrix%dX%d", matcols, matrows);
+      p += sprintf(p, "matrix%dX%d", (int)matcols, (int)matrows);
    else if (matrows > 1)
-      p += sprintf(p, "vec%d", matrows);
+      p += sprintf(p, "vec%d", (int)matrows);
 
    return TString(buf);
 }   
@@ -379,9 +379,9 @@ void OutputConstant(TIntermConstant* node, TIntermTraverser* it)
    TOutputTraverser* oit = static_cast<TOutputTraverser*>(it);
    TInfoSink& out = oit->infoSink;
 
-   int size = node->getCount();
+   size_t size = node->getCount();
 
-   for (int i = 0; i < size; i++)
+   for (size_t i = 0; i < size; i++)
    {
       OutputTreeText(out, node, oit->depth);
       switch (node->getValue(i).type)

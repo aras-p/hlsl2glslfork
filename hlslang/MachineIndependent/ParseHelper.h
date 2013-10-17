@@ -39,8 +39,8 @@ struct TParseContext
 	
 	TIntermTyped* add_binary(TOperator op, TIntermTyped* a, TIntermTyped* b, TSourceLoc line, const char* name, bool boolResult);
 	
-	bool parseVectorFields(const TString&, int vecSize, TVectorFields&, const TSourceLoc& line);
-	bool parseMatrixFields(const TString&, int matCols, int matRows, TVectorFields&, const TSourceLoc& line);
+	bool parseVectorFields(const TString&, size_t vecSize, TVectorFields&, const TSourceLoc& line);
+	bool parseMatrixFields(const TString&, size_t matCols, size_t matRows, TVectorFields&, const TSourceLoc& line);
 	void assignError(const TSourceLoc& line, const char* op, TString left, TString right);
 	void unaryOpError(const TSourceLoc& line, const char* op, TString operand);
 	void binaryOpError(const TSourceLoc& line, const char* op, TString left, TString right);
@@ -74,7 +74,7 @@ struct TParseContext
 						   TIntermTyped*& initializer, TIntermSymbol*& intermNode, TVariable* variable = 0);
 	TIntermTyped* addConstructor(TIntermNode*, const TType*, TOperator, TFunction*, TSourceLoc);
 	TIntermTyped* constructArray(TIntermAggregate*, const TType*, TOperator, TSourceLoc);
-	TIntermTyped* constructStruct(TIntermNode*, TType*, int, TSourceLoc, bool subset);
+	TIntermTyped* constructStruct(TIntermNode*, TType*, size_t, TSourceLoc, bool subset);
 	TIntermTyped* constructBuiltIn(const TType*, TOperator, TIntermNode*, TSourceLoc, bool subset);
     TIntermTyped* constructBuiltInAllowUpwardVectorPromote(const TType*, TOperator, TIntermNode*, TSourceLoc, bool subset);
 	TIntermTyped* addAssign(TOperator op, TIntermTyped* left, TIntermTyped* right, TSourceLoc);

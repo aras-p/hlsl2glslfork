@@ -317,9 +317,9 @@ public:
 	TBasicType getBasicType() const { return type.getBasicType(); }
 	TQualifier getQualifier() const { return type.getQualifier(); }
 	TPrecision getPrecision() const { return type.getPrecision(); }
-	int getColsCount() const { return type.getColsCount(); }
-	int getRowsCount() const { return type.getRowsCount(); }
-	int getSize() const { return type.getInstanceSize(); }
+	size_t getColsCount() const { return type.getColsCount(); }
+	size_t getRowsCount() const { return type.getRowsCount(); }
+	size_t getSize() const { return type.getInstanceSize(); }
 	bool isMatrix() const { return type.isMatrix(); }
 	bool isArray()  const { return type.isArray(); }
 	bool isVector() const { return type.isVector(); }
@@ -487,20 +487,20 @@ public:
 	void setValue(int val)				{ defset(0, Int); }
 	void setValue(float val)			{ defset(0, Float); }
 	void setValue(bool val)				{ defset(0, Bool); }
-	void setValue(unsigned i, int val)	{ grow(i); defset(i, Int); }
-	void setValue(unsigned i, float val){ grow(i); defset(i, Float); ;}
-	void setValue(unsigned i, bool val) { grow(i); defset(i, Bool); }
-	void setValue(unsigned i, const Value& val) { values[i] = val; }
+	void setValue(size_t i, int val)	{ grow(i); defset(i, Int); }
+	void setValue(size_t i, float val){ grow(i); defset(i, Float); ;}
+	void setValue(size_t i, bool val) { grow(i); defset(i, Bool); }
+	void setValue(size_t i, const Value& val) { values[i] = val; }
 
-	int toInt(unsigned i = 0) { return values[i].asInt; }
-	float toFloat(unsigned i = 0) { return values[i].asFloat; }
-	bool toBool(unsigned i = 0) { return values[i].asBool; }
+	int toInt(size_t i = 0) { return values[i].asInt; }
+	float toFloat(size_t i = 0) { return values[i].asFloat; }
+	bool toBool(size_t i = 0) { return values[i].asBool; }
 	#undef defset
 	
-	const Value& getValue(unsigned i = 0) const { return values[i]; }
-	Value& getValue(unsigned i = 0) { return values[i]; }
+	const Value& getValue(size_t i = 0) const { return values[i]; }
+	Value& getValue(size_t i = 0) { return values[i]; }
 	
-	unsigned getCount() {
+	size_t getCount() {
 		return values.size();
 	}
 	
@@ -508,7 +508,7 @@ public:
 
 	virtual void traverse(TIntermTraverser* );
 protected:
-	void grow(unsigned ix) {
+	void grow(size_t ix) {
 		if (values.size() <= ix)
 			values.resize(ix + 1);
 	}
