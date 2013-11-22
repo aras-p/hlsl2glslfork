@@ -1115,7 +1115,6 @@ static TOperator getMatrixConstructOp(const TIntermTyped& intermediate, TParseCo
 }
 
 
-
 //
 // Establishes the type of the resultant operation, as well as
 // makes the operator the correct one for the operands.

@@ -281,12 +281,16 @@ static inline void AddToVaryings (std::stringstream& s, EShLanguage language, ET
 		AddFragmentInput(s, targetVersion, prec, type, name);
 }
 
-// Later non-ES targets should also return false for this.
 static inline bool UsesBuiltinAttribStrings(ETargetVersion targetVersion, unsigned options)
 {
+	if (options & ETranslateOpAvoidBuiltinAttribNames)
+		return false;
+	if (options & ETranslateOpForceBuiltinAttribNames)
+		return true;
+	
+	// Later non-ES targets should also return false for this.
 	return (targetVersion == ETargetGLSL_ES_100
-		 || targetVersion == ETargetGLSL_ES_300
-		 || options & ETranslateOpAvoidBuiltinAttribNames)
+		 || targetVersion == ETargetGLSL_ES_300)
 		 ? false
 		 : true;
 }
