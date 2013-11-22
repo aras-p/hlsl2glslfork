@@ -1461,6 +1461,10 @@ bool HlslLinker::link(HlslCrossCompiler* compiler, const char* entryFunc, ETarge
 	std::vector<GlslSymbol*> constants;
 	std::set<TOperator> libFunctions;
 	buildUniformsAndLibFunctions(calledFunctions, constants, libFunctions);
+	// add built-in functions possibly used by uniform initializers
+	const std::set<TOperator>& referencedGlobalFunctions = globalFunction->getLibFunctions();
+	libFunctions.insert (referencedGlobalFunctions.begin(), referencedGlobalFunctions.end());
+	
 	buildUniformReflection (constants);
 
 
