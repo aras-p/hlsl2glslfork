@@ -218,7 +218,10 @@ static int lFloatConst(char *str, int len, int ch, yystypepp * yylvalpp)
     };
     
     yylvalpp->sc_fval = lval;
-    strcpy(yylvalpp->symbol_name,str);
+
+	if (str != yylvalpp->symbol_name)
+		strcpy(yylvalpp->symbol_name,str);
+	
     cpp->currentInput->ungetch(cpp->currentInput, ch);            
     return CPP_FLOATCONSTANT;
 } // lFloatConst
