@@ -328,12 +328,13 @@ void TGlslOutputTraverser::outputLineDirective (const TSourceLoc& line)
 
 
 
-TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, std::stringstream& deferredArrayInit, ETargetVersion version, unsigned options)
+TGlslOutputTraverser::TGlslOutputTraverser(TInfoSink& i, std::vector<GlslFunction*> &funcList, std::vector<GlslStruct*> &sList, std::stringstream& deferredArrayInit, std::stringstream& deferredMatrixInit, ETargetVersion version, unsigned options)
 : infoSink(i)
 , generatingCode(true)
 , functionList(funcList)
 , structList(sList)
 , m_DeferredArrayInit(deferredArrayInit)
+, m_DeferredMatrixInit(deferredMatrixInit)
 , swizzleAssignTempCounter(0)
 , m_TargetVersion(version)
 , m_UsePrecision(Hlsl2Glsl_VersionUsesPrecision(version))
@@ -476,7 +477,8 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 
 
 
-bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration* decl, TIntermTraverser* it) {
+bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration* decl, TIntermTraverser* it)
+{
 	TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
 	GlslFunction *current = goit->current;
 	std::stringstream& out = current->getActiveOutput();
@@ -521,6 +523,21 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 		{
 			skipInitializer = true;
 			symbol->traverse(goit);
+			
+			// If this isn't a uniform, and we couldn't just emit it's initialization,
+			// then emit initialization for later until main().
+			if (type.getQualifier() != EvqUniform)
+			{
+				std::stringstream* oldOut = &out;
+				current->pushDepth(0);
+				current->setActiveOutput(&goit->m_DeferredMatrixInit);
+
+				decl->getDeclaration()->traverse(goit);
+				goit->m_DeferredMatrixInit << ";\n";
+
+				current->setActiveOutput(oldOut);
+				current->popDepth();
+			}
 		}
 	}
 	

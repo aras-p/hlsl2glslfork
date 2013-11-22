@@ -1249,6 +1249,11 @@ void HlslLinker::emitMainStart(const HlslCrossCompiler* compiler, const EGlslSym
 		if (emit_both)
 			preamble << "\n#endif" << std::endl;
 	}
+	std::string matrixInit = compiler->m_DeferredMatrixInit.str();
+	if (!matrixInit.empty())
+	{
+		preamble << matrixInit;
+	}
 	
 	if (retType == EgstStruct)
 	{

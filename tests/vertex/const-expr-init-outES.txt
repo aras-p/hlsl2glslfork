@@ -22,6 +22,7 @@ highp vec4 xlat_main(  ) {
     return vec4( 3.0, 7.0, float(kInt3), (size2 + size8));
 }
 void main() {
+kInt3 = 11;
     highp vec4 xl_retval;
     xl_retval = xlat_main( );
     gl_Position = vec4(xl_retval);

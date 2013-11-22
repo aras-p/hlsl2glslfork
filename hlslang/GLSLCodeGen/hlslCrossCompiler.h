@@ -41,6 +41,7 @@ public:
 	std::vector<GlslFunction*> functionList;
 	std::vector<GlslStruct*> structList;
 	std::stringstream m_DeferredArrayInit;
+	std::stringstream m_DeferredMatrixInit;
 };
 
 #endif //HLSL_CROSS_COMPILER_H

@@ -16,6 +16,8 @@ highp vec4 xlat_main(  ) {
     return tempVar;
 }
 void main() {
+staticVar = uniVar;
+staticVar2 = staticVar;
     highp vec4 xl_retval;
     xl_retval = xlat_main( );
     gl_Position = vec4(xl_retval);
