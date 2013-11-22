@@ -7,27 +7,7 @@ A continued development from [ATI's HLSL2GLSL](http://sourceforge.net/projects/h
 
 For an opposite tool (GLSL ES to HLSL translator), look at [Google's ANGLE](http://code.google.com/p/angleproject/).
 
-Changes from original HLSL2GLSL 0.9
---------
-
-* Made it build with VS2010 on Windows and XCode 3.2 on Mac. Build as static library.
-* Feature to produce OpenGL ES-like precision specifiers (fixed/half/float -> lowp/mediump/highp)
-* Fixes to ternary vector selection (float4 ? float4 : float4)
-* Fixes to bool->float promotion in arithmetic ops
-* Fixes to matrix constructors & indexing (GLSL is transposed in regards to HLSL)
-* Support clip()
-* Support Cg-like samplerRECT, texRECT, texRECTproj
-* Support VPOS and VFACE semantics
-* Fix various crashes & infinite loops, mostly on shaders with errors
-* Cleaner and more deterministic generated GLSL output
-* Unit testing suite
-* Simplified interface, code cleanup, unused code removal, merge copy-n-pasted code, simplify implementation etc.
-* Added support for emission of const initializers (including struct and array initializers using GLSL 1.20 array syntax).
-* Removed all constant folding functionality as it was completely broken.
-* A myriad of smaller bug fixes.
-* Support DX10 SV_VertexID, SV_PrimitiveID and SV_InstanceID semantics.
-* Support for shadow sampler types (samplerRECTShadow/sampler2DShadow etc.) which generate appropriate shadow2DRect/shadow2D etc. calls.
-* Fixed unaligned swizzled matrix access & assignments (view._m01_m02_m33 = value)
+See badly maintained [change log](Changelog.md).
 
 
 Notes
