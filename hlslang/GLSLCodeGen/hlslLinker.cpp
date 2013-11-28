@@ -361,8 +361,13 @@ bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStru
 {
 	int size;
 	EGlslSymbolType base = EgstVoid;
-	EAttribSemantic sem = parseAttributeSemantic( symOrStructMember->semantic );
+	// Get the type before suppression because we may not want all of the elements.
+	// note, suppressedBy should *never* be smaller than the suppressed.
 	EGlslSymbolType type = symOrStructMember->type;
+	GlslSymbolOrStructMemberBase const* suppressedBy = symOrStructMember->outputSuppressedBy();
+	if (suppressedBy)
+		symOrStructMember = suppressedBy;
+	EAttribSemantic sem = parseAttributeSemantic( symOrStructMember->semantic );
 	const std::string& semantic = symOrStructMember->semantic;
 
 	// Offset the semantic for the case of an array
@@ -1384,10 +1389,10 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 }
 
 // Called recursively and appends (to list) any symbols that have semantic sem.
-void HlslLinker::appendDuplicatedInSemantics(GlslSymbolOrStructMemberBase* sym, std::string const& sem, std::vector<GlslSymbolOrStructMemberBase*>& list)
+void HlslLinker::appendDuplicatedInSemantics(GlslSymbolOrStructMemberBase* sym, EAttribSemantic sem, std::vector<GlslSymbolOrStructMemberBase*>& list)
 {
 	EGlslQualifier qual = sym->getQualifier();		// What about the recursion here? Do struct members adopt their structures' qualification?
-	if ( ( qual == EqtIn || qual == EqtInOut) && !_stricmp(sym->getSemantic().c_str(), sem.c_str()))
+	if ( ( qual == EqtIn || qual == EqtInOut) && parseAttributeSemantic(sym->getSemantic()) == sem )
 		list.push_back(sym);
 	else if (sym->getStruct())
 	{
@@ -1411,7 +1416,7 @@ void HlslLinker::markDuplicatedInSemantics(GlslFunction* func)
 		for (int ii=0; ii<pCount; ii++)
 		{
 			GlslSymbol *sym = func->getParameter(ii);
-			appendDuplicatedInSemantics(sym, sem->name, symsUsingSem);
+			appendDuplicatedInSemantics(sym, sem->sem, symsUsingSem);
 		}
 		if (symsUsingSem.size() > 1)
 		{
