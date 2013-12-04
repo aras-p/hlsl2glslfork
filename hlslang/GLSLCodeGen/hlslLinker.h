@@ -68,7 +68,7 @@ private:
 	void buildUniformsAndLibFunctions(const FunctionSet& calledFunctions, std::vector<GlslSymbol*>& constants, std::set<TOperator>& libFunctions);
 	void buildUniformReflection(const std::vector<GlslSymbol*>& constants);
 	
-	void appendDuplicatedInSemantics(GlslSymbolOrStructMemberBase* sym, std::string const& sem, std::vector<GlslSymbolOrStructMemberBase*>& list);
+	void appendDuplicatedInSemantics(GlslSymbolOrStructMemberBase* sym, EAttribSemantic sem, std::vector<GlslSymbolOrStructMemberBase*>& list);
 	void markDuplicatedInSemantics(GlslFunction* func);
 
 	void emitLibraryFunctions(const std::set<TOperator>& libFunctions, EShLanguage lang, bool usePrecision);

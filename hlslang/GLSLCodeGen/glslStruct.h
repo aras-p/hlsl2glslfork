@@ -14,6 +14,9 @@ class StructMember : public GlslSymbolOrStructMemberBase
 {
 public:
 	StructMember(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as, GlslStruct* st, const std::string &bn);
+	const GlslStruct* getStruct() const { return structType; }
+	GlslStruct* getStruct() { return structType; }
+
 	GlslStruct* structType; // NULL if type != EgstStruct
 };
 
