@@ -317,9 +317,9 @@ public:
 	TBasicType getBasicType() const { return type.getBasicType(); }
 	TQualifier getQualifier() const { return type.getQualifier(); }
 	TPrecision getPrecision() const { return type.getPrecision(); }
-	int getColsCount() const { return type.getColsCount(); }
-	int getRowsCount() const { return type.getRowsCount(); }
-	int getSize() const { return type.getInstanceSize(); }
+	size_t getColsCount() const { return type.getColsCount(); }
+	size_t getRowsCount() const { return type.getRowsCount(); }
+	size_t getSize() const { return type.getInstanceSize(); }
 	bool isMatrix() const { return type.isMatrix(); }
 	bool isArray()  const { return type.isArray(); }
 	bool isVector() const { return type.isVector(); }
@@ -395,12 +395,12 @@ public:
 	// per process globalpoolallocator, then it causes increased memory usage per compile
 	// it is essential to use "symbol = sym" to assign to symbol
 	TIntermSymbol(int i, const TString& sym, const TType& t) : 
-		TIntermTyped(t), id(i), info(0), global(false)
+		TIntermTyped(t), id(i), global(false), info(0)
 	{
 		symbol = sym;
 	} 
 	TIntermSymbol(int i, const TString& sym, const TTypeInfo *inf, const TType& t) : 
-		TIntermTyped(t), id(i), info(inf), global(false)
+		TIntermTyped(t), id(i), global(false), info(inf)
 	{
 		symbol = sym;
 	} 
@@ -487,20 +487,20 @@ public:
 	void setValue(int val)				{ defset(0, Int); }
 	void setValue(float val)			{ defset(0, Float); }
 	void setValue(bool val)				{ defset(0, Bool); }
-	void setValue(unsigned i, int val)	{ grow(i); defset(i, Int); }
-	void setValue(unsigned i, float val){ grow(i); defset(i, Float); ;}
-	void setValue(unsigned i, bool val) { grow(i); defset(i, Bool); }
-	void setValue(unsigned i, const Value& val) { values[i] = val; }
+	void setValue(size_t i, int val)	{ grow(i); defset(i, Int); }
+	void setValue(size_t i, float val){ grow(i); defset(i, Float); ;}
+	void setValue(size_t i, bool val) { grow(i); defset(i, Bool); }
+	void setValue(size_t i, const Value& val) { values[i] = val; }
 
-	int toInt(unsigned i = 0) { return values[i].asInt; }
-	float toFloat(unsigned i = 0) { return values[i].asFloat; }
-	bool toBool(unsigned i = 0) { return values[i].asBool; }
+	int toInt(size_t i = 0) { return values[i].asInt; }
+	float toFloat(size_t i = 0) { return values[i].asFloat; }
+	bool toBool(size_t i = 0) { return values[i].asBool; }
 	#undef defset
 	
-	const Value& getValue(unsigned i = 0) const { return values[i]; }
-	Value& getValue(unsigned i = 0) { return values[i]; }
+	const Value& getValue(size_t i = 0) const { return values[i]; }
+	Value& getValue(size_t i = 0) { return values[i]; }
 	
-	unsigned getCount() {
+	size_t getCount() {
 		return values.size();
 	}
 	
@@ -508,7 +508,7 @@ public:
 
 	virtual void traverse(TIntermTraverser* );
 protected:
-	void grow(unsigned ix) {
+	void grow(size_t ix) {
 		if (values.size() <= ix)
 			values.resize(ix + 1);
 	}
@@ -674,13 +674,13 @@ public:
 	POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
 
 	TIntermTraverser() : 
+		visitDeclaration(0),
 		visitSymbol(0), 
 		visitConstant(0),
 		visitBinary(0),
 		visitUnary(0),
 		visitSelection(0),
 		visitAggregate(0),
-		visitDeclaration(0),
 		visitLoop(0),
 		visitBranch(0),
 		depth(0),

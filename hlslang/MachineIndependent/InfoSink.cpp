@@ -11,7 +11,7 @@ void TInfoSinkBase::append(const char *s)
    sink.append(s); 
 }
 
-void TInfoSinkBase::append(int count, char c)       
+void TInfoSinkBase::append(size_t count, char c)
 {
    checkMem(count);         
    sink.append(count, c); 

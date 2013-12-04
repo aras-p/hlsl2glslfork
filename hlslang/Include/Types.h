@@ -41,11 +41,11 @@ public:
 	TBasicType type;
 	TQualifier qualifier;
 	TPrecision precision;
-	int matcols;
-    int matrows;
+	size_t matcols;
+	size_t matrows;
 	bool matrix;
 	bool array;
-	int arraySize;
+	size_t arraySize;
 	TType* userDef;
 	TSourceLoc line;
 
@@ -106,16 +106,16 @@ public:
    POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
 
    explicit TType() { }
-   explicit TType(TBasicType t, TPrecision p, TQualifier q = EvqTemporary, int cols = 1, int rows = 1, bool m = false, bool a = false) :
-      type(t), precision(p), qualifier(q), matcols(cols), matrows(rows), line(gNullSourceLoc), matrix(m), array(a), arraySize(0),
+   explicit TType(TBasicType t, TPrecision p, TQualifier q = EvqTemporary, size_t cols = 1, size_t rows = 1, bool m = false, bool a = false) :
+      precision(p), type(t), qualifier(q), matrows(rows), matcols(cols), matrix(m), array(a), arraySize(0), line(gNullSourceLoc),
       structure(0), structureSize(0), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), typeName(0),
       semantic(0)
    {
       checkInvariants();
    }
    explicit TType(const TPublicType &p) :
-      type(p.type), precision(p.precision), qualifier(p.qualifier), matrows(p.matrows), matcols(p.matcols), line(p.line), matrix(p.matrix),
-      array(p.array), arraySize(p.arraySize), structure(0), structureSize(0), maxArraySize(0),
+      precision(p.precision), type(p.type), qualifier(p.qualifier), matrows(p.matrows), matcols(p.matcols), matrix(p.matrix),
+      array(p.array), arraySize(p.arraySize), line(p.line), structure(0), structureSize(0), maxArraySize(0),
       arrayInformationType(0), fieldName(0), mangled(0), typeName(0), semantic(0)
    {
       if (p.userDef)
@@ -127,7 +127,7 @@ public:
       checkInvariants();
    }
    explicit TType(TTypeList* userDef, const TString& n, TPrecision p = EbpUndefined, const TSourceLoc& l = gNullSourceLoc) :
-      type(EbtStruct), precision(p), qualifier(EvqTemporary), matrows(1), matcols(1), line(l), matrix(false), array(false), arraySize(0),
+      precision(p), type(EbtStruct), qualifier(EvqTemporary), matrows(1), matcols(1), matrix(false), array(false), arraySize(0), line(l),
       structure(userDef), maxArraySize(0), arrayInformationType(0), fieldName(0), mangled(0), semantic(0)
    {
       typeName = NewPoolTString(n.c_str());
@@ -139,14 +139,14 @@ public:
    void copyType(const TType& copyOf, TStructureMap& remapper)
    {
       type = copyOf.type;
-	  precision = copyOf.precision;
+      precision = copyOf.precision;
       qualifier = copyOf.qualifier;
       matrows = copyOf.matrows;
       matcols = copyOf.matcols;
       matrix = copyOf.matrix;
       array = copyOf.array;
       arraySize = copyOf.arraySize;
-	   line = copyOf.line;
+      line = copyOf.line;
 
       TStructureMap::iterator iter;
       if (copyOf.structure)
@@ -155,7 +155,7 @@ public:
          {
             // create the new structure here
             structure = NewPoolTTypeList();
-            for (unsigned int i = 0; i < copyOf.structure->size(); ++i)
+            for (size_t i = 0; i < copyOf.structure->size(); ++i)
             {
                TTypeLine typeLine;
                typeLine.line = (*copyOf.structure)[i].line;
@@ -244,14 +244,14 @@ public:
    void setPrecision(TPrecision p) { precision = p; }
    void changeQualifier(TQualifier q) { qualifier = q; }
 
-   int getColsCount() const { return matcols; }
-   void setColsCount(int count) { matcols = count; }
+   size_t getColsCount() const { return matcols; }
+   void setColsCount(size_t count) { matcols = count; }
 
-   int getRowsCount() const { return matrows; }
-   void setRowsCount(int count) { matrows = count; }
+   size_t getRowsCount() const { return matrows; }
+   void setRowsCount(size_t count) { matrows = count; }
 
    // Full-dimensional size of single instance of type
-   int getInstanceSize() const
+   size_t getInstanceSize() const
    {
       if (matrix)
          return matrows * matcols;
@@ -271,10 +271,10 @@ public:
    void setMatrix(bool m) { matrix = m; }
    void setArray(bool is_array) { array = is_array; }
    bool isArray() const { return array ? true : false; }
-   int getArraySize() const { return arraySize; }
-   void setArraySize(int s) { array = true; arraySize = s; }
-   void setMaxArraySize (int s) { maxArraySize = s; }
-   int getMaxArraySize () const { return maxArraySize; }
+   size_t getArraySize() const { return arraySize; }
+   void setArraySize(size_t s) { array = true; arraySize = s; }
+   void setMaxArraySize (size_t s) { maxArraySize = s; }
+   size_t getMaxArraySize () const { return maxArraySize; }
    void clearArrayness() { array = false; arraySize = 0; maxArraySize = 0; }
    void setArrayInformationType(TType* t) { arrayInformationType = t; }
    TType* getArrayInformationType() { return arrayInformationType; }
@@ -302,9 +302,9 @@ public:
    TTypeList* getStruct() const { return structure; }
    void setStruct(TTypeList* s) { structure = s; }
 	
-   int getObjectSize() const
+   size_t getObjectSize() const
    {
-      int totalSize;
+      size_t totalSize;
 
       if (getBasicType() == EbtStruct)
          totalSize = getStructSize();
@@ -380,21 +380,21 @@ public:
    ECompatibility determineCompatibility ( const TType *pType ) const;
 
 private:
-   int getStructSize() const;
+   size_t getStructSize() const;
 
    TPrecision precision;
    TBasicType type      : 6;
    TQualifier qualifier : 7;
-   int matrows          : 8;
-   int matcols          : 8;
+   size_t matrows       : 8;
+   size_t matcols       : 8;
    unsigned int matrix  : 1;
    unsigned int array   : 1;
-   int arraySize;
+   size_t arraySize;
    TSourceLoc line;
 
    TTypeList* structure;      // 0 unless this is a struct
-   mutable int structureSize;
-   int maxArraySize;
+   mutable size_t structureSize;
+   size_t maxArraySize;
    TType* arrayInformationType;
    TString *fieldName;         // for structure field names
    TString *mangled;

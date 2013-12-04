@@ -13,7 +13,7 @@ class GlslStruct;
 class StructMember : public GlslSymbolOrStructMemberBase
 {
 public:
-	StructMember(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as, GlslStruct* st, const std::string &bn);
+	StructMember(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, size_t as, GlslStruct* st, const std::string &bn);
 	GlslStruct* structType; // NULL if type != EgstStruct
 };
 
@@ -26,8 +26,8 @@ public:
 	const TSourceLoc& getLine() const { return m_Line; }
 
 	void addMember(const StructMember& m) { memberList.push_back(m); }
-	const StructMember& getMember( int which ) const { return memberList[which]; }
-	int memberCount() const { return int(memberList.size()); }
+	const StructMember& getMember( size_t which ) const { return memberList[which]; }
+	size_t memberCount() const { return memberList.size(); }
 
 	std::string getDecl() const;
 

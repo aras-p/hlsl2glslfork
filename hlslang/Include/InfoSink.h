@@ -141,7 +141,7 @@ public:
 private:
    void append(const char *s); 
 
-   void append(int count, char c);
+   void append(size_t count, char c);
    void append(const std::string& t);
    void append(const TString& t);
 

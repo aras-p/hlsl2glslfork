@@ -85,7 +85,7 @@ TString buildArrayConstructorString(const TType& type) {
 
 void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPrecision prec, TIntermConstant *c, GlslStruct *structure = 0 )
 {
-	unsigned n_elems = getElements(t);
+	size_t n_elems = getElements(t);
 	bool construct = n_elems > 1 || structure != 0;
 
 	if (construct) {
@@ -95,8 +95,8 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 	
 	if (structure) {
 		// compound type
-		unsigned n_members = structure->memberCount();
-		for (unsigned i = 0; i != n_members; ++i) {
+		size_t n_members = structure->memberCount();
+		for (size_t i = 0; i != n_members; ++i) {
 			const StructMember &m = structure->getMember(i);
 			if (construct && i > 0)
 				out << ", ";
@@ -104,9 +104,9 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 		}
 	} else {
 		// simple type
-		unsigned n_constants = c->getCount();
-		for (unsigned i = 0; i != n_elems; ++i) {
-			unsigned v = Min(i, n_constants - 1);
+		size_t n_constants = c->getCount();
+		for (size_t i = 0; i != n_elems; ++i) {
+			size_t v = Min(i, n_constants - 1);
 			if (construct && i > 0)
 				out << ", ";
 			TBasicType basicType = c->getBasicType();
@@ -410,8 +410,8 @@ void TGlslOutputTraverser::traverseArrayDeclarationWithInit(TIntermDeclaration* 
 			current->setActiveOutput(out);
 		}
 		
-		unsigned n_vals = init.size();
-		for (unsigned i = 0; i != n_vals; ++i) {
+		size_t n_vals = init.size();
+		for (size_t i = 0; i != n_vals; ++i) {
 			current->beginStatement();
 			sym->traverse(this);
 			(*out) << "[" << i << "] = ";
@@ -570,7 +570,7 @@ void TGlslOutputTraverser::traverseSymbol(TIntermSymbol *node, TIntermTraverser 
 		}
 		else
 		{
-			int array = node->getTypePointer()->isArray() ? node->getTypePointer()->getArraySize() : 0;
+			size_t array = node->getTypePointer()->isArray() ? node->getTypePointer()->getArraySize() : 0;
 			const char* semantic = "";
 			if (node->getInfo())
 				semantic = node->getInfo()->getSemantic().c_str();
@@ -599,7 +599,7 @@ void TGlslOutputTraverser::traverseParameterSymbol(TIntermSymbol *node, TIntermT
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
    GlslFunction *current = goit->current;
 
-   int array = node->getTypePointer()->isArray() ? node->getTypePointer()->getArraySize() : 0;
+   size_t array = node->getTypePointer()->isArray() ? node->getTypePointer()->getArraySize() : 0;
    const char* semantic = "";
    if (node->getInfo())
       semantic = node->getInfo()->getSemantic().c_str();
@@ -607,9 +607,9 @@ void TGlslOutputTraverser::traverseParameterSymbol(TIntermSymbol *node, TIntermT
     TPrecision prec = goit->m_UsePrecision ? node->getPrecision() : EbpUndefined;
     if(semantic[0] && goit->m_UsePrecision)
     {
-        int len = ::strlen(semantic);
+        size_t len = ::strlen(semantic);
 
-        extern bool IsPositionSemantics(const char* sem, int len);
+        extern bool IsPositionSemantics(const char* sem, size_t len);
         if(IsPositionSemantics(semantic, len))
             prec = EbpHigh;
     }
@@ -862,7 +862,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          {
             node->getRight()->traverse(goit);
             assert( goit->indexList.size() == 1);
-            assert( goit->indexList[0] < s->memberCount());
+            assert( (size_t)goit->indexList[0] < s->memberCount());
             out << "." << s->getMember(goit->indexList[0]).name;
 
          }
@@ -885,7 +885,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
          assert( goit->indexList.size() <= 4);
          out << '.';
          const char fields[] = "xyzw";
-         for (int ii = 0; ii < (int)goit->indexList.size(); ii++)
+         for (size_t ii = 0; ii < goit->indexList.size(); ii++)
          {
             int val = goit->indexList[ii];
             assert( val >= 0);
@@ -1040,7 +1040,7 @@ bool TGlslOutputTraverser::traverseBinary( bool preVisit, TIntermBinary *node, T
 			   goit->indexList.clear();
 			   
 			   char temp_rval[128];
-			   unsigned n_swizzles = swizzles.size();
+			   size_t n_swizzles = swizzles.size();
 			   
 			   if (n_swizzles > 1) {
 				   snprintf(temp_rval, 128, "xlat_swiztemp%d", goit->swizzleAssignTempCounter++);
@@ -1148,7 +1148,7 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
       op = "bool";
       if (node->getTypePointer()->isVector())
       {
-         zero[0] += node->getTypePointer()->getRowsCount();
+         zero[0] += (char)node->getTypePointer()->getRowsCount();
          op = TString("bvec") + zero; 
       }
       funcStyle = true;
@@ -1160,7 +1160,7 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
       op = "float";
       if (node->getTypePointer()->isVector())
       {
-         zero[0] += node->getTypePointer()->getRowsCount();
+         zero[0] += (char)node->getTypePointer()->getRowsCount();
          op = TString("vec") + zero; 
       }
       funcStyle = true;
@@ -1172,7 +1172,7 @@ bool TGlslOutputTraverser::traverseUnary( bool preVisit, TIntermUnary *node, TIn
       op = "int";
       if (node->getTypePointer()->isVector())
       {
-         zero[0] += node->getTypePointer()->getRowsCount();
+         zero[0] += (char)node->getTypePointer()->getRowsCount();
          op = TString("ivec") + zero; 
       }
       funcStyle = true;
@@ -1348,7 +1348,7 @@ bool TGlslOutputTraverser::traverseSelection( bool preVisit, TIntermSelection *n
 		current->addLibFunction(EOpVecTernarySel);
 		// \todo [pyry] Somehow true and false blocks have invalid types and mangling fails.
 		//				I don't have energy to investigate that so mangling is done manually here.
-		int vecSize = node->getCondition()->getAsTyped()->getType().getRowsCount();
+		size_t vecSize = node->getCondition()->getAsTyped()->getType().getRowsCount();
 		out << "xll_vecTSel_vb" << vecSize << "_vf" << vecSize << "_vf" << vecSize << " (";
 //		TString op = "xll_vecTSel_";
 //		node->getCondition()->getAsTyped()->getType().buildMangledName(op);
@@ -1389,7 +1389,7 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
    TGlslOutputTraverser* goit = static_cast<TGlslOutputTraverser*>(it);
    GlslFunction *current = goit->current;
    std::stringstream& out = current->getActiveOutput();
-   int argCount = (int) node->getNodes().size();
+   size_t argCount = node->getNodes().size();
    bool usePost120TextureLookups = UsePost120TextureLookups(goit->m_TargetVersion); 
 
    if (node->getOp() == EOpNull)
@@ -1858,9 +1858,9 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
          if(it->type->hasSemantic() && m_UsePrecision)
          {
             const char* str = it->type->getSemantic().c_str();
-            int         len = it->type->getSemantic().length();
+            size_t      len = it->type->getSemantic().length();
 
-            extern bool IsPositionSemantics(const char* sem, int len);
+            extern bool IsPositionSemantics(const char* sem, size_t len);
             if(IsPositionSemantics(str, len))
                 prec = EbpHigh;
          }

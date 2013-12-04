@@ -12,8 +12,8 @@
 
 struct TVectorFields
 {
-   int offsets[4];
-   int num;
+   size_t offsets[4];
+   size_t num;
 };
 
 //

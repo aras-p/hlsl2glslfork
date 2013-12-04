@@ -33,8 +33,8 @@ public:
 	/// Returns the active scope
 	std::string getCode() const { return active->str(); }
 
-	int getParameterCount() { return (int)parameters.size();}   
-	GlslSymbol* getParameter( int i ) { return parameters[i];}
+	size_t getParameterCount() { return parameters.size();}
+	GlslSymbol* getParameter( size_t i ) { return parameters[i];}
 
 	void addCalledFunction( const std::string& func ) { calledFunctions.insert(func); }
 	const std::set<std::string>& getCalledFunctions() const  { return calledFunctions; }

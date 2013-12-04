@@ -46,7 +46,7 @@ public:
 
    const char* getShaderText() const;
       
-   int getUniformCount() const { return (int)uniforms.size(); }
+   size_t getUniformCount() const { return uniforms.size(); }
    const ShUniformInfo* getUniformInfo() const  { return (!uniforms.empty()) ? &uniforms[0] : 0; }
    
 private:

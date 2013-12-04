@@ -5,7 +5,7 @@
 
 #include "glslStruct.h"
 
-StructMember::StructMember(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, int as, GlslStruct* st, const std::string &bn) :
+StructMember::StructMember(const std::string &n, const std::string &s, EGlslSymbolType t, EGlslQualifier q, TPrecision prec, size_t as, GlslStruct* st, const std::string &bn) :
 GlslSymbolOrStructMemberBase(n, s, t, q, prec, as, bn),
 structType(st)
 {
