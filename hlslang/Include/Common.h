@@ -94,7 +94,7 @@ template <class T> T Max(const T a, const T b)
 //
 // Create a TString object from an integer.
 //
-inline const TString String(const int i, const int base = 10)
+inline TString String(const int i)
 {
    char text[16];     // 32 bit ints are at most 10 digits in base 10
 

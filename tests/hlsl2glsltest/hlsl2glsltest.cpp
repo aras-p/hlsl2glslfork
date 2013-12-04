@@ -4,13 +4,14 @@
 #include <vector>
 #include <time.h>
 #include <assert.h>
+#include <cstddef>
 
 #define USE_REAL_OPENGL_TO_CHECK 1
 
 static const bool kDumpShaderAST = false;
 
 
-#ifdef _MSC_VER
+#ifdef _WIN32
 #include <windows.h>
 #include <gl/GL.h>
 #include <cstdarg>
@@ -131,15 +132,6 @@ static StringVector GetFiles (const std::string& folder, const std::string& ends
 	return res;
 }
 
-static void DeleteFile (const std::string& path)
-{
-	#ifdef _MSC_VER
-	DeleteFileA (path.c_str());
-	#else
-	unlink (path.c_str());
-	#endif
-}
-
 static bool ReadStringFromFile (const char* pathName, std::string& output)
 {
 	FILE* file = fopen( pathName, "rb" );
@@ -160,7 +152,7 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 	
 	fclose(file);
 	
-	if (readLength != length)
+	if (readLength != (size_t)length)
 	{
 		output.clear();
 		return false;
@@ -487,7 +479,7 @@ static std::string GetCompiledShaderText(ShHandle parser)
 		for (int i = 0; i < count; ++i)
 		{
 			char buf[1000];
-			snprintf(buf,1000,"// %s:%s type %d arrsize %d\n", uni[i].name, uni[i].semantic?uni[i].semantic:"<none>", uni[i].type, uni[i].arraySize);
+			snprintf(buf,1000,"// %s:%s type %d arrsize %d\n", uni[i].name, uni[i].semantic?uni[i].semantic:"<none>", uni[i].type, (int)uni[i].arraySize);
 			txt += buf;
 		}
 	}

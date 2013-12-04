@@ -517,10 +517,10 @@ static int CPPpragma(yystypepp * yylvalpp)
 {
     char SrcStrName[2];
     char** allTokens;
-    int tokenCount = 0;
-    int maxTokenCount = 10;
+    size_t tokenCount = 0;
+    size_t maxTokenCount = 10;
     const char* SrcStr;
-    int i;
+    size_t i;
 	
     int token = cpp->currentInput->scan(cpp->currentInput, yylvalpp);
 	
@@ -733,8 +733,8 @@ static int macro_scan(MacroInputSrc *in, yystypepp * yylvalpp) {
 	{
 		int left_exp;
 		int right_exp;
-		const char* left_name;
-		const char* right_name;
+		const char* left_name = 0;
+		const char* right_name = 0;
 		char newname[MAX_SYMBOL_NAME_LEN + 1] = { 0 };
 		ReadToken(in->mac->body, &right_valpp); // dump the CPP_TOKENPASTE token
 		right_tok = ReadToken(in->mac->body, &right_valpp);

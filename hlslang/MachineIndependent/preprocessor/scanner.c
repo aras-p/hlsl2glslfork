@@ -9,9 +9,12 @@
 
 #include "slglobals.h"
 
-#define isinff(x) (((*(int *)&(x) & 0x7f800000L)==0x7f800000L) && ((*(int *)&(x) & 0x007fffffL)==0000000000L))
-
-
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+# include <float.h>
+# define isfinite(_d) _finite(_d)
+#else
+# include <math.h>
+#endif
 
 typedef struct StringInputSrc {
     InputSrc base;
@@ -29,7 +32,7 @@ static int eof_scan2(InputSrc *is, yystypepp * yylvalpp)
 
 static void noop(InputSrc *in, int ch) {}
 
-static InputSrc eof_inputsrc = { 0, &eof_scan2, &eof_scan1, &noop };
+static InputSrc eof_inputsrc = { 0, &eof_scan2, &eof_scan1, &noop, 0 };
 
 static int byte_scan(InputSrc *, yystypepp * yylvalpp);
 
@@ -113,7 +116,6 @@ static float lBuildFloatValue(const char *str, int len, int exp)
 {
     double val, expval, ten;
     int ii, absexp;
-    float rv;
 
     val = 0.0;
     for (ii = 0; ii < len; ii++)
@@ -134,11 +136,10 @@ static float lBuildFloatValue(const char *str, int len, int exp)
             val /= expval;
         }
     }
-    rv = (float)val;
-    if (isinff(rv)) {
+    if (!isfinite(val)) {
 		CPPErrorToInfoLog(" ERROR___FP_CONST_OVERFLOW");
     }
-    return rv;
+    return (float)val;
 } // lBuildFloatValue
 
 

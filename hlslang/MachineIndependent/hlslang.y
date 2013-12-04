@@ -257,20 +257,20 @@ postfix_expression
             parseContext.recover();
         }
 		if ($3->getQualifier() == EvqConst) {
-			if (($1->isVector() || $1->isMatrix()) && $1->getType().getRowsCount() <= $3->getAsConstant()->toInt() && !$1->isArray() ) {
+			if (($1->isVector() || $1->isMatrix()) && $1->getType().getRowsCount() <= (size_t)$3->getAsConstant()->toInt() && !$1->isArray() ) {
 				parseContext.error($2.line, "", "[", "field selection out of range '%d'", $3->getAsConstant()->toInt());
 				parseContext.recover();
 			} else {
 				if ($1->isArray()) {
 					if ($1->getType().getArraySize() == 0) {
-						if ($1->getType().getMaxArraySize() <= $3->getAsConstant()->toInt()) {
+						if ($1->getType().getMaxArraySize() <= (size_t)$3->getAsConstant()->toInt()) {
 							if (parseContext.arraySetMaxSize($1->getAsSymbolNode(), $1->getTypePointer(), $3->getAsConstant()->toInt(), true, $2.line))
 								parseContext.recover(); 
 						} else {
 							if (parseContext.arraySetMaxSize($1->getAsSymbolNode(), $1->getTypePointer(), 0, false, $2.line))
 								parseContext.recover(); 
 						}
-					} else if ( $3->getAsConstant()->toInt() >= $1->getType().getArraySize()) {
+					} else if ( (size_t)$3->getAsConstant()->toInt() >= $1->getType().getArraySize()) {
 						parseContext.error($2.line, "", "[", "array index out of range '%d'", $3->getAsConstant()->toInt());
 						parseContext.recover();
 					}
@@ -446,7 +446,7 @@ function_call
             }
 
 			TIntermConstant* constant = ir_add_constant(TType(EbtInt, EbpUndefined, EvqConst), $1.line);
-			constant->setValue($1.intermNode->getAsTyped()->getType().getArraySize());
+			constant->setValue((int)$1.intermNode->getAsTyped()->getType().getArraySize());
             $$ = constant;
         } else if (op != EOpNull) {
             //
@@ -525,7 +525,7 @@ function_call
                     $$->getAsAggregate()->setPlainName(fnCandidate->getName());
 
                     TQualifier qual;
-                    for (int i = 0; i < fnCandidate->getParamCount(); ++i) {
+                    for (size_t i = 0; i < fnCandidate->getParamCount(); ++i) {
                         qual = (*fnCandidate)[i].type->getQualifier();
                         if (qual == EvqOut || qual == EvqInOut) {
                             if (parseContext.lValueErrorCheck($$->getLine(), "assign", $$->getAsAggregate()->getNodes()[i]->getAsTyped())) {
@@ -907,7 +907,7 @@ function_prototype
                 parseContext.error($2.line, "overloaded functions must have the same return type", $1->getReturnType().getBasicString(), "");
                 parseContext.recover();
             }
-            for (int i = 0; i < prevDec->getParamCount(); ++i) {
+            for (size_t i = 0; i < prevDec->getParamCount(); ++i) {
                 if ((*prevDec)[i].type->getQualifier() != (*$1)[i].type->getQualifier()) {
                     parseContext.error($2.line, "overloaded functions must have the same parameter qualifiers", (*$1)[i].type->getQualifierString(), "");
                     parseContext.recover();
@@ -940,7 +940,7 @@ function_prototype
                 parseContext.error($2.line, "overloaded functions must have the same return type", $1->getReturnType().getBasicString(), "");
                 parseContext.recover();
             }
-            for (int i = 0; i < prevDec->getParamCount(); ++i) {
+            for (size_t i = 0; i < prevDec->getParamCount(); ++i) {
                 if ((*prevDec)[i].type->getQualifier() != (*$1)[i].type->getQualifier()) {
                     parseContext.error($2.line, "overloaded functions must have the same parameter qualifiers", (*$1)[i].type->getQualifierString(), "");
                     parseContext.recover();
@@ -1267,7 +1267,7 @@ init_declarator_list
 		
         {
             TIntermSymbol* symbol;
-            type.setArray(true, $8->getType().getArraySize());
+            type.setArray(true, (int)$8->getType().getArraySize());
             if (!parseContext.executeInitializer($3.line, *$3.string, $6, type, $8, symbol, variable)) {
                 if (!variable)
 					$$ = $1;
@@ -1425,7 +1425,7 @@ single_declaration
 		if (parseContext.arrayTypeErrorCheck($3.line, $1) || parseContext.arrayQualifierErrorCheck($3.line, $1))
 			parseContext.recover();
 		else {
-			$1.setArray(true, $7->getType().getArraySize());
+			$1.setArray(true, (int)$7->getType().getArraySize());
 			if (parseContext.arrayErrorCheck($3.line, *$2.string, $5, $1, variable))
 				parseContext.recover();
 		}
@@ -2263,7 +2263,7 @@ function_definition
         // knows where to find parameters.
         //
         TIntermAggregate* paramNodes = new TIntermAggregate;
-        for (int i = 0; i < function.getParamCount(); i++) {
+        for (size_t i = 0; i < function.getParamCount(); i++) {
             TParameter& param = function[i];
             if (param.name != 0) {
                 TVariable *variable = new TVariable(param.name, param.info, *param.type);

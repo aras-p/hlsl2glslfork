@@ -39,8 +39,8 @@
 class TSymbol {    
 public:
 	POOL_ALLOCATOR_NEW_DELETE(GlobalPoolAllocator)
-	TSymbol(const TString *n) :  name(n), info(0), global(false) { }
-	TSymbol(const TString *n, const TTypeInfo *i) :  name(n), info(i), global(false) { }
+	TSymbol(const TString *n) : global(false), name(n), info(0) { }
+	TSymbol(const TString *n, const TTypeInfo *i) :  global(false), name(n), info(i) { }
 	virtual ~TSymbol() { /* don't delete name, it's from the pool */ }
 	const TString& getName() const { return *name; }
 	const TTypeInfo* getInfo() const { return info; }
@@ -75,12 +75,12 @@ protected:
 //
 class TVariable : public TSymbol {
 public:
-	TVariable(const TString *name, const TType& t, bool uT = false ) : TSymbol(name), type(t), userType(uT), arrayInformationType(0), constValue(0)
+	TVariable(const TString *name, const TType& t, bool uT = false ) : TSymbol(name), constValue(0), type(t), userType(uT), arrayInformationType(0)
 	{
 		changeQualifier(type.getQualifier());
 	}
 	
-	TVariable(const TString *name, const TTypeInfo* info, const TType& t, bool uT = false ) : TSymbol(name, info), type(t), userType(uT), arrayInformationType(0), constValue(0)
+	TVariable(const TString *name, const TTypeInfo* info, const TType& t, bool uT = false ) : TSymbol(name, info), constValue(0), type(t), userType(uT), arrayInformationType(0)
 	{
 		changeQualifier(type.getQualifier());
 	}
@@ -165,9 +165,9 @@ public:
 	void setDefined() { defined = true; }
 	bool isDefined() const { return defined; }
 	
-	int getParamCount() const { return static_cast<int>(parameters.size()); }    
-	TParameter& operator [](int i)       { return parameters[i]; }
-	const TParameter& operator [](int i) const { return parameters[i]; }
+    size_t getParamCount() const { return parameters.size(); }
+	TParameter& operator [](size_t i)       { return parameters[i]; }
+	const TParameter& operator [](size_t i) const { return parameters[i]; }
     
 	virtual void dump(TInfoSink &infoSink) const;
 	TFunction(const TFunction&, TStructureMap& remapper);
