@@ -15,7 +15,6 @@ set(HEADER_FILES
   hlslang/Include/PoolAlloc.h
   hlslang/Include/Types.h
   hlslang/MachineIndependent/SymbolTable.h
-  #hlslang/MachineIndependent/unistd.h
 )
 source_group("Header Files" FILES ${HEADER_FILES})
 
@@ -69,7 +68,6 @@ set(MACHINE_INDEPENDENT_FILES
   hlslang/MachineIndependent/RemoveTree.h
   hlslang/MachineIndependent/SymbolTable.cpp
   hlslang/MachineIndependent/SymbolTable.h
-  #hlslang/MachineIndependent/unistd.h
   hlslang/MachineIndependent/ConstantFolding.cpp
 )
 

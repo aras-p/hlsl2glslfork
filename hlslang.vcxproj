@@ -356,7 +356,6 @@ rename %(RootDir)%(Directory)%(Filename)_tab.c Gen_%(Filename)_tab.cpp
     <ClInclude Include="hlslang\Include\PoolAlloc.h" />
     <ClInclude Include="hlslang\MachineIndependent\SymbolTable.h" />
     <ClInclude Include="hlslang\Include\Types.h" />
-    <ClInclude Include="hlslang\MachineIndependent\unistd.h" />
     <ClInclude Include="include\hlsl2glsl.h" />
     <ClInclude Include="hlslang\GLSLCodeGen\glslCommon.h" />
     <ClInclude Include="hlslang\GLSLCodeGen\glslFunction.h" />
