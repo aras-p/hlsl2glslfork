@@ -317,6 +317,7 @@ HlslLinker::~HlslLinker()
 	{
 		delete [] it->name;
 		delete [] it->semantic;
+		delete [] it->registerSpec;
 		delete [] it->init;
 	}
 }
@@ -967,6 +968,13 @@ void HlslLinker::buildUniformReflection(const std::vector<GlslSymbol*>& constant
 		}
 		else
 			info.semantic = 0;
+		
+		if (s->getRegister() != "") {
+			info.registerSpec = new char[s->getRegister().size()+1];
+			strcpy(info.registerSpec, s->getRegister().c_str());
+		}
+		else
+			info.registerSpec = 0;
 		
 		info.type = (EShType)s->getType();
 		info.arraySize = s->getArraySize();

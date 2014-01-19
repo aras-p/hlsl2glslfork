@@ -174,6 +174,7 @@ Jutta Degener, 1995
 %type <interm.ann> annotation annotation_list
 %type <interm.typeInfo> type_info
 %type <lex> annotation_item semantic
+%type <lex> register_specifier
 
 %start translation_unit 
 %%
@@ -1058,14 +1059,14 @@ parameter_declarator
         //TODO: add initializer support
     }
     | type_specifier IDENTIFIER register_specifier {
-        // register is being ignored
+        // Parameter with register
         if ($1.type == EbtVoid) {
             parseContext.error($2.line, "illegal use of type 'void'", $2.string->c_str(), "");
             parseContext.recover();
         }
         if (parseContext.reservedErrorCheck($2.line, *$2.string))
             parseContext.recover();
-        TParameter param = {$2.string, 0, new TType($1)};
+        TParameter param = {$2.string, new TTypeInfo("", *$3.string, 0), new TType($1)};
         $$.line = $2.line;
         $$.param = param; 
     }
@@ -2428,7 +2429,7 @@ ann_literal_init_list
 
 register_specifier
     : COLON REGISTER LEFT_PAREN IDENTIFIER RIGHT_PAREN {
-        // This is being thrown away
+        $$ = $4;
     }
     ;
 
@@ -2439,12 +2440,12 @@ semantic
 type_info
 	: { $$ = 0;}
 	| semantic { $$ = new TTypeInfo( *$1.string, 0); }
-	| register_specifier { $$ = 0; }
+	| register_specifier { $$ = new TTypeInfo( "", *$1.string, 0); }
 	| annotation { $$ = new TTypeInfo( "", $1); }
 	| semantic annotation { $$ = new TTypeInfo( *$1.string, $2); }
-	| semantic register_specifier { $$ = new TTypeInfo( *$1.string, 0); }
-	| register_specifier annotation { $$ = new TTypeInfo( "", $2); }
-	| semantic register_specifier annotation { $$ = new TTypeInfo( *$1.string, $3); }
+	| semantic register_specifier { $$ = new TTypeInfo( *$1.string, *$2.string, 0); }
+	| register_specifier annotation { $$ = new TTypeInfo( "", *$1.string, $2); }
+	| semantic register_specifier annotation { $$ = new TTypeInfo( *$1.string, *$2.string, $3); }
 	;
 
 sampler_initializer

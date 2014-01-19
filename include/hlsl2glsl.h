@@ -144,6 +144,7 @@ typedef struct
 {
 	char *name;
 	char *semantic;
+	char *registerSpec;
 	EShType type;
 	int arraySize;
 	float *init;
