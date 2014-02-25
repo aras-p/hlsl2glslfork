@@ -1114,6 +1114,25 @@ static TOperator getMatrixConstructOp(const TIntermTyped& intermediate, TParseCo
     return EOpNull;
 }
 
+static TOperator getMatrixConstructOpWithRHS(const TIntermTyped& intermediate, const TType& rhsType, TParseContext& ctx)
+{
+	// If RHS is scalar and we're targeting old GLSL version, then
+	// no need to treat operator as "create small matrix from a 4x4 one";
+	// we can create it from scalar directly.
+	if (rhsType.isScalar() && ctx.targetVersion < ETargetGLSL_120)
+	{
+		const int c = intermediate.getColsCount();
+		const int r = intermediate.getRowsCount();
+		if (c == 2 && r == 2)
+			return EOpConstructMat2x2;
+		if (c == 3 && r == 3)
+			return EOpConstructMat3x3;
+		if (c == 4 && r == 4)
+			return EOpConstructMat4x4;
+	}
+	return getMatrixConstructOp(intermediate, ctx);
+}
+
 
 //
 // Establishes the type of the resultant operation, as well as
@@ -1439,7 +1458,7 @@ bool TIntermBinary::promote(TParseContext& ctx)
 
          if (left->isMatrix() )
          {
-             convert = getMatrixConstructOp(*left, ctx);
+             convert = getMatrixConstructOpWithRHS(*left, *right->getTypePointer(), ctx);
 			 if (convert == EOpNull)
 				 return false;
          }

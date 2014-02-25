@@ -1,6 +1,13 @@
 hlsl2glsl Change Log
 =========================
 
+2014 02
+-------
+
+Fixes:
+
+* Fixed wrong translation of 2x2 and 3x3 matrix initializers from a scalar (e.g. float3x3 m = 0.0).
+
 2013 11
 -------
 
