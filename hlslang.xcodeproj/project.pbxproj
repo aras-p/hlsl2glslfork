@@ -81,7 +81,6 @@
 		3AC10E190AF106C40045E29C /* ParseHelper.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ParseHelper.h; path = hlslang/MachineIndependent/ParseHelper.h; sourceTree = "<group>"; };
 		3AC10E1B0AF106C40045E29C /* RemoveTree.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RemoveTree.h; path = hlslang/MachineIndependent/RemoveTree.h; sourceTree = "<group>"; };
 		3AC10E1C0AF106C40045E29C /* SymbolTable.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = SymbolTable.h; path = hlslang/MachineIndependent/SymbolTable.h; sourceTree = "<group>"; };
-		3AC10E1D0AF106C40045E29C /* unistd.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = unistd.h; path = hlslang/MachineIndependent/unistd.h; sourceTree = "<group>"; };
 		3AC10E260AF106F40045E29C /* HLSL2GLSL.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = HLSL2GLSL.cpp; path = hlslang/MachineIndependent/HLSL2GLSL.cpp; sourceTree = "<group>"; };
 		3AC10E270AF106F40045E29C /* InfoSink.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = InfoSink.cpp; path = hlslang/MachineIndependent/InfoSink.cpp; sourceTree = "<group>"; };
 		3AC10E280AF106F40045E29C /* Initialize.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Initialize.cpp; path = hlslang/MachineIndependent/Initialize.cpp; sourceTree = "<group>"; };
@@ -246,7 +245,6 @@
 				3AC10E190AF106C40045E29C /* ParseHelper.h */,
 				3AC10E1B0AF106C40045E29C /* RemoveTree.h */,
 				3AC10E1C0AF106C40045E29C /* SymbolTable.h */,
-				3AC10E1D0AF106C40045E29C /* unistd.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";

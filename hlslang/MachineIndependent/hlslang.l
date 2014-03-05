@@ -31,6 +31,8 @@ I           [uUlL]
 
 %option nounput 
 %{
+#define YY_NO_UNISTD_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "ParseHelper.h"

@@ -210,9 +210,6 @@
     <ClInclude Include="hlslang\Include\Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\unistd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\hlsl2glsl.h">
       <Filter>include</Filter>
     </ClInclude>
