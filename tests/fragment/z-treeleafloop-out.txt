@@ -1,6 +1,15 @@
 void xll_clip_f(float x) {
   if ( x<0.0 ) discard;
 }
+void xll_clip_vf2(vec2 x) {
+  if (any(lessThan(x,vec2(0.0)))) discard;
+}
+void xll_clip_vf3(vec3 x) {
+  if (any(lessThan(x,vec3(0.0)))) discard;
+}
+void xll_clip_vf4(vec4 x) {
+  if (any(lessThan(x,vec4(0.0)))) discard;
+}
 #line 11
 struct v2f {
     vec4 pos;

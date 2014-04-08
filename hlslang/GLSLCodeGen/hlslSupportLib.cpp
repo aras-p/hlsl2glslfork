@@ -645,8 +645,17 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
    hlslSupportLib->insert( CodeMap::value_type( EOpFclip,
 	   "void xll_clip_f(float x) {\n"
 	   "  if ( x<0.0 ) discard;\n"
-	   "}\n")
-	   );
+	   "}\n"
+	   "void xll_clip_vf2(vec2 x) {\n"
+	   "  if (any(lessThan(x,vec2(0.0)))) discard;\n"
+	   "}\n"
+	   "void xll_clip_vf3(vec3 x) {\n"
+	   "  if (any(lessThan(x,vec3(0.0)))) discard;\n"
+	   "}\n"
+	   "void xll_clip_vf4(vec4 x) {\n"
+	   "  if (any(lessThan(x,vec4(0.0)))) discard;\n"
+	   "}\n"
+	));
 
    hlslSupportLib->insert( CodeMap::value_type( EOpPow,
       "mat2 xll_pow_mf2x2_mf2x2(mat2 m, mat2 y) {\n"

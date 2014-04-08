@@ -24,6 +24,15 @@ vec4 xll_lit_f_f_f( float n_dot_l, float n_dot_h, float m ) {
 void xll_clip_f(float x) {
   if ( x<0.0 ) discard;
 }
+void xll_clip_vf2(vec2 x) {
+  if (any(lessThan(x,vec2(0.0)))) discard;
+}
+void xll_clip_vf3(vec3 x) {
+  if (any(lessThan(x,vec3(0.0)))) discard;
+}
+void xll_clip_vf4(vec4 x) {
+  if (any(lessThan(x,vec4(0.0)))) discard;
+}
 float xll_modf_f_i( float x, out int ip) {
   ip = int (x);
   return x-float(ip);
@@ -98,9 +107,9 @@ vec4 xlat_main( in vec4 uv ) {
     c.xyzw += xll_modf_vf4_vf4( uv.xyzw, d.xyzw);
     xll_clip_f((c.x - 0.5));
     #line 19
-    xll_clip_f(float( (c.xy - 0.5)));
-    xll_clip_f(float( (c.xyz - 0.5)));
-    xll_clip_f(float( (c.xyzw - 0.5)));
+    xll_clip_vf2((c.xy - 0.5));
+    xll_clip_vf3((c.xyz - 0.5));
+    xll_clip_vf4((c.xyzw - 0.5));
     #line 24
     ivec2 ii = ivec2( 1, 2);
     ivec2 jj = ivec2( 3, 4);

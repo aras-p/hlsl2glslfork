@@ -1,6 +1,13 @@
 hlsl2glsl Change Log
 =========================
 
+2014 04
+-------
+
+Fixes:
+
+* Fixed wrong translation of clip() with vector arguments.
+
 2014 02
 -------
 

@@ -558,7 +558,10 @@ void TBuiltIns::initialize()
       // Special HLSL functions
       //
       s.append(TString("int4 D3DCOLORtoUBYTE4(float4 x);"));
-	  s.append(TString("void clip(float x);"));
+		s.append(TString("void clip(float x);"));
+		s.append(TString("void clip(float2 x);"));
+		s.append(TString("void clip(float3 x);"));
+		s.append(TString("void clip(float4 x);"));
 
       s.append(TString("\n"));
    }
