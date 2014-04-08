@@ -15,6 +15,12 @@ half4 main (float4 uv:TEXCOORD0) : COLOR0 {
 	c.xyz += modf (uv.xyz, d.xyz);
 	c.xyzw += modf (uv.xyzw, d.xyzw);
 
+	// clip()
+	clip (c.x - 0.5);
+	clip (c.xy - 0.5);
+	clip (c.xyz - 0.5);
+	clip (c.xyzw - 0.5);
+
 	// operator % on integers
 	int2 ii = int2(1,2);
 	int2 jj = int2(3,4);

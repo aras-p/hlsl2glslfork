@@ -21,6 +21,9 @@ vec4 xll_mod_vf4_vf4( vec4 x, vec4 y ) {
 vec4 xll_lit_f_f_f( float n_dot_l, float n_dot_h, float m ) {
    return vec4(1, max(0.0, n_dot_l), pow(max(0.0, n_dot_h) * step(0.0, n_dot_l), m), 1.0);
 }
+void xll_clip_f(float x) {
+  if ( x<0.0 ) discard;
+}
 float xll_modf_f_i( float x, out int ip) {
   ip = int (x);
   return x-float(ip);
@@ -93,23 +96,28 @@ mediump vec4 xlat_main( in highp vec4 uv ) {
     c.xyz += xll_modf_vf3_vf3( uv.xyz, d.xyz);
     #line 15
     c.xyzw += xll_modf_vf4_vf4( uv.xyzw, d.xyzw);
-    highp ivec2 ii = ivec2( 1, 2);
+    xll_clip_f((c.x - 0.5));
     #line 19
+    xll_clip_f(float( (c.xy - 0.5)));
+    xll_clip_f(float( (c.xyz - 0.5)));
+    xll_clip_f(float( (c.xyzw - 0.5)));
+    #line 24
+    highp ivec2 ii = ivec2( 1, 2);
     highp ivec2 jj = ivec2( 3, 4);
     c.x += mod(float(ii.x), float(jj.x));
     c.xy += mod(vec2(ii.xy), vec2(jj.xy));
+    #line 28
     highp int kk = int(mod(float(ii.x), float(ii.y)));
-    #line 23
     c.z += float(kk);
-    c.x += mod(uv.x, uv.y);
-    #line 27
-    c.xy += mod(uv.xy, uv.zw);
-    c += xll_lit_f_f_f( c.x, 0.2, 0.3);
     #line 32
+    c.x += mod(uv.x, uv.y);
+    c.xy += mod(uv.xy, uv.zw);
+    #line 36
+    c += xll_lit_f_f_f( c.x, 0.2, 0.3);
     c.x += xll_round_f(2.5);
     c.xy += xll_round_vf2(vec2( 2.5, 3.5));
+    #line 41
     c.x += xll_trunc_f(2.5);
-    #line 36
     c.xy += xll_trunc_vf2(vec2( 2.5, 3.5));
     return c;
 }
