@@ -224,4 +224,3 @@ include_directories(
 add_executable(hlsl2glsltest tests/hlsl2glsltest/hlsl2glsltest.cpp)
 
 target_link_libraries(hlsl2glsltest hlsl2glsl ${TEST_LIBS})
-
