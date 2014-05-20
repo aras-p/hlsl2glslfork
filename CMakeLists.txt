@@ -96,7 +96,9 @@ set(MACHINE_INDEPENDENT_CPP_FILES
 source_group("Machine Independent\\CPP" FILES ${MACHINE_INDEPENDENT_CPP_FILES})
 
 
-EXEC_PROGRAM(${CMAKE_COMMAND} ARGS "-E write_regv \"${hkey}\" \"${dir}\"")
+if (WIN32)
+  EXEC_PROGRAM(${CMAKE_COMMAND} ARGS "-E write_regv \"${hkey}\" \"${dir}\"")
+endif ()
 
 
 set(MACHINE_INDEPENDENT_GENERATED_SOURCE_FILES
