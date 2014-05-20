@@ -121,9 +121,6 @@
     <ClCompile Include="hlslang\GLSLCodeGen\typeSamplers.cpp">
       <Filter>GLSL Code Gen</Filter>
     </ClCompile>
-    <ClCompile Include="hlslang\OSDependent\Windows\main.cpp">
-      <Filter>OSDependent\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="hlslang\OSDependent\Windows\ossource.cpp">
       <Filter>OSDependent\Windows</Filter>
     </ClCompile>
