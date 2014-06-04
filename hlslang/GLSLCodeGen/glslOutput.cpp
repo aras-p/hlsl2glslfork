@@ -511,10 +511,10 @@ bool TGlslOutputTraverser::traverseDeclaration(bool preVisit, TIntermDeclaration
 
 	out << " ";
 
-	// Pre-GLSL1.20, global variables can't have initializers.
+	// Pre-GLSL1.20 & GLSL ES, global variables can't have initializers.
 	// So just print the symbol node itself.
 	bool skipInitializer = false;
-	const bool can_have_global_init = (goit->m_TargetVersion >= ETargetGLSL_120);
+	const bool can_have_global_init = (goit->m_TargetVersion >= ETargetGLSL_120 && goit->m_TargetVersion != ETargetGLSL_ES_300); //TODO: GLSL 3.1 won't support global initializers either
 	if (!can_have_global_init && decl->hasInitialization() && type.getQualifier() != EvqConst)
 	{
 		TIntermBinary* initNode = decl->getDeclaration()->getAsBinaryNode();
