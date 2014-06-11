@@ -748,20 +748,35 @@ static int macro_scan(MacroInputSrc *in, yystypepp * yylvalpp) {
 		if (right_exp <= 0)
 			right_exp = right_tok;
 
-		// FIXME: need more cases?
+		char left_buf[2];
+		char right_buf[2];
 		if (left_exp == CPP_IDENTIFIER)
 			left_name  = GetStringOfAtom(atable, yylvalpp->sc_ident);
 		else if (left_exp == CPP_INTCONSTANT)
 			left_name = yylvalpp->symbol_name;
 		else
-			assert(0);
+		{
+			// token pasting like in "a.##b" or so - HLSL allows it even if non-idenfifiers
+			// are on one side. Just append the token and treat as identifier.
+			left_buf[0] = left_exp;
+			left_buf[1] = 0;
+			left_name = left_buf;
+			left_exp = CPP_IDENTIFIER;
+		}
 
 		if (right_exp == CPP_IDENTIFIER)
 			right_name = GetStringOfAtom(atable, right_valpp.sc_ident);
 		else if (right_exp == CPP_INTCONSTANT)
 			right_name = right_valpp.symbol_name;
 		else
-			assert(0);
+		{
+			// token pasting like in "a.##b" or so - HLSL allows it even if non-idenfifiers
+			// are on one side. Just append the token and treat as identifier.
+			right_buf[0] = right_exp;
+			right_buf[1] = 0;
+			right_name = right_buf;
+			right_exp = CPP_IDENTIFIER;
+		}
 
 		strncat(newname, left_name, MAX_SYMBOL_NAME_LEN);
 		strncat(newname, right_name, MAX_SYMBOL_NAME_LEN - strlen(newname));

@@ -1,6 +1,13 @@
 hlsl2glsl Change Log
 =========================
 
+2014 06
+-------
+
+Fixes:
+
+* Fixed preprocessor token pasting with non-identifiers on one side (like `a.##b` - legal HLSL).
+
 2014 04
 -------
 
