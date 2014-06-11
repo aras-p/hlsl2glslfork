@@ -33,7 +33,7 @@ mat3 xll_saturate_mf3x3(mat3 m) {
 mat4 xll_saturate_mf4x4(mat4 m) {
   return mat4( clamp(m[0], 0.0, 1.0), clamp(m[1], 0.0, 1.0), clamp(m[2], 0.0, 1.0), clamp(m[3], 0.0, 1.0));
 }
-highp mat3 unity_DirBasis = xll_transpose_mf3x3(mat3( vec3( 0.816497, 0.0, 0.57735), vec3( -0.408248, 0.707107, 0.57735), vec3( -0.408248, -0.707107, 0.57735)));
+highp mat3 unity_DirBasis;
 #line 8
 uniform sampler2D mytex;
 #line 17
@@ -52,6 +52,7 @@ lowp vec4 xlat_main( in mediump vec2 uv, in lowp vec3 normal ) {
 in mediump vec2 xlv_TEXCOORD0;
 in lowp vec3 xlv_TEXCOORD1;
 void main() {
+unity_DirBasis = xll_transpose_mf3x3(mat3( vec3( 0.816497, 0.0, 0.57735), vec3( -0.408248, 0.707107, 0.57735), vec3( -0.408248, -0.707107, 0.57735)));
     lowp vec4 xl_retval;
     xl_retval = xlat_main( vec2(xlv_TEXCOORD0), vec3(xlv_TEXCOORD1));
     gl_FragData[0] = vec4(xl_retval);
