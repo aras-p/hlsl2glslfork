@@ -1,0 +1,23 @@
+#line 1 "pp-tokenpaste-in.txt" 
+
+struct v2f
+{
+	half4 pos 	: POSITION;
+	half2 uv 	: TEXCOORD0;
+};
+
+// Regular thing
+#define TAKE1( x, sampler, i ) x + tex2D (sampler, i.uv)
+// Token pasting in several weird ways that works in HLSL & Cg
+#define TAKE2( x, sampler, i ) x + tex2D (sampler, i##.uv)
+#define TAKE3( x, sampler, i ) x + tex2D (sampler, i.##uv)
+
+sampler2D _MainTex;
+fixed4 main( v2f indata ) : COLOR
+{
+	fixed4 col = tex2D (_MainTex, indata.uv);
+	col = TAKE1 (col, _MainTex, indata);
+	col = TAKE2 (col, _MainTex, indata);
+	col = TAKE3 (col, _MainTex, indata);
+	return col;
+}				
