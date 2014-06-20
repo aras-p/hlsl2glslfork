@@ -222,6 +222,7 @@ int ReadToken(TokenStream *pTok, yystypepp * yylvalpp)
     int ltoken, len;
     char ch;
 
+	yylvalpp->sc_ident = -1;
     ltoken = lReadByte(pTok);
     if (ltoken >= 0) {
         if (ltoken > 127)

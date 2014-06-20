@@ -241,6 +241,7 @@ static int byte_scan(InputSrc *in, yystypepp * yylvalpp)
 
     for (;;) {
         yylvalpp->sc_int = 0;
+		yylvalpp->sc_ident = -1;
         ch = cpp->currentInput->getch(cpp->currentInput);
 		
         while (ch == ' ' || ch == '\t' || ch == '\r') {
