@@ -735,6 +735,8 @@ static int macro_scan(MacroInputSrc *in, yystypepp * yylvalpp) {
 		int right_exp;
 		const char* left_name;
 		const char* right_name;
+		char left_buf[2];
+		char right_buf[2];
 		char newname[MAX_SYMBOL_NAME_LEN + 1] = { 0 };
 		ReadToken(in->mac->body, &right_valpp); // dump the CPP_TOKENPASTE token
 		right_tok = ReadToken(in->mac->body, &right_valpp);
@@ -748,8 +750,6 @@ static int macro_scan(MacroInputSrc *in, yystypepp * yylvalpp) {
 		if (right_exp <= 0)
 			right_exp = right_tok;
 
-		char left_buf[2];
-		char right_buf[2];
 		if (left_exp == CPP_IDENTIFIER)
 			left_name  = GetStringOfAtom(atable, yylvalpp->sc_ident);
 		else if (left_exp == CPP_INTCONSTANT)
