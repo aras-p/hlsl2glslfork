@@ -733,8 +733,9 @@ int main (int argc, const char** argv)
 		for (size_t i = 0; i < n; ++i)
 		{
 			std::string inname = inputFiles[i];
-			//if (inname != "non-matching-type-init-in.txt")
+			//if (inname != "pp-tokenpaste-in.txt")
 			//	continue;
+			const bool preprocessorTest = (inname.find("pp-") == 0);
 			bool ok = true;
 			
 			printf ("test %s\n", inname.c_str());
@@ -744,10 +745,13 @@ int main (int argc, const char** argv)
 					ok = TestCombinedFile(testFolder + "/" + inname, version2, hasOpenGL);
 			} else {
 				ok = TestFile(TestRun(type), testFolder + "/" + inname, version1, 0, hasOpenGL);
-				if (ok && version2 != ETargetVersionCount)
-					ok = TestFile(TestRun(type), testFolder + "/" + inname, version2, ETranslateOpEmitGLSL120ArrayInitWorkaround, hasOpenGL);
-				if (ok && version3 != ETargetVersionCount)
-					ok = TestFile(TestRun(type), testFolder + "/" + inname, version3, 0, hasOpenGL);
+				if (!preprocessorTest)
+				{
+					if (ok && version2 != ETargetVersionCount)
+						ok = TestFile(TestRun(type), testFolder + "/" + inname, version2, ETranslateOpEmitGLSL120ArrayInitWorkaround, hasOpenGL);
+					if (ok && version3 != ETargetVersionCount)
+						ok = TestFile(TestRun(type), testFolder + "/" + inname, version3, 0, hasOpenGL);
+				}
 			}
 			
 			if (!ok)

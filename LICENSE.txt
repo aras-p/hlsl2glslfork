@@ -2,7 +2,7 @@
 Source Copyright
 ----------------
 
-Copyright (C) 2010-2012  Unity Technologies Inc.
+Copyright (C) 2010-2014  Unity Technologies Inc.
 Copyright (C) 2012       BitSquid AB
 Copyright (C) 2005-2006  ATI Research Inc. Ltd.
 Copyright (C) 2002-2005  3Dlabs Inc. Ltd.
@@ -37,6 +37,11 @@ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
 ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
+
+----------------
+Some files under tests/ are derived from MojoShader test suite.
+https://icculus.org/mojoshader/
+Copyright (c) 2008-2011 Ryan C. Gordon.
 
 
 ----------------
