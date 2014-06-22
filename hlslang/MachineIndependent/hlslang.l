@@ -312,34 +312,37 @@ BEGIN(INITIAL);
 #include "preprocessor/mojoshader_internal.h"
 
 static Preprocessor* g_cpp;
+static TParseContext* g_parseContext;
 
 const TSourceLoc gNullSourceLoc = { NULL, 0 };
 
-static int cpp_get_token (char* buf, int maxSize)
+static int cpp_get_token (Preprocessor* pp, char* buf, int maxSize)
 {
 	const char *tokstr = NULL;
 	unsigned int len = 0;
 	Token token = TOKEN_UNKNOWN;
-	tokstr = preprocessor_nexttoken (g_cpp, &len, &token);
+	tokstr = preprocessor_nexttoken (pp, &len, &token);
 	if (tokstr == NULL)
 		return 0;
+		
+	if (preprocessor_outofmemory(pp))
+	{
+		g_parseContext->error (gNullSourceLoc, "out of memory", "", "");
+		GlobalParseContext->recover();
+		return 0;
+	}	
 	
 	unsigned int line = 0;
-	const char* fname = preprocessor_sourcepos (g_cpp, &line);
+	const char* fname = preprocessor_sourcepos (pp, &line);
 	TSourceLoc loc;
 	loc.file = fname;
 	loc.line = line;
 	SetLineNumber (loc, lexlineno);
 	
-	
-	//if (preprocessor_outofmemory(pp))
-	//	goto preprocess_out_of_mem;
-	
 	if (token == TOKEN_PREPROCESSING_ERROR)
 	{
-		//unsigned int pos = 0;
-		//const char *fname = preprocessor_sourcepos(pp, &pos);
-		//errorlist_add(errors, fname, (int) pos, tokstr);
+		g_parseContext->error (lexlineno, tokstr, "", "");
+		GlobalParseContext->recover();
 	}
 	else
 	{
@@ -367,7 +370,7 @@ int yy_input(char* buf, int max_size)
 {
 	int len;
 
-    if ((len = cpp_get_token(buf, max_size)) == 0)
+    if ((len = cpp_get_token(g_cpp, buf, max_size)) == 0)
         return 0;
     if (len >= max_size)
         YY_FATAL_ERROR( "input buffer overflow, can't enlarge buffer because scanner uses REJECT" );
@@ -409,6 +412,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
 		MOJOSHADER_internal_free,
 		NULL);
 	g_cpp = pp;
+	g_parseContext = &parseContextLocal;
 	
     yyrestart(0);
     (&parseContextLocal)->AfterEOF = false;
@@ -438,6 +442,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
 	
 	preprocessor_end (pp);
 	g_cpp = NULL;
+	g_parseContext = NULL;
 	
 	return result;
 }

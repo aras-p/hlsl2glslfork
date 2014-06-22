@@ -939,6 +939,38 @@ static void handle_pp_error(Context *ctx)
 } // handle_pp_error
 
 
+static void handle_pp_pragma(Context *ctx)
+{
+    IncludeState *state = ctx->include_stack;
+    int done = 0;
+
+    state->report_whitespace = 1;
+    while ((!done) && (!ctx->out_of_memory))
+    {
+        const Token token = lexer(state);
+        switch (token)
+        {
+            case ((Token) '\n'):
+                done = 1;
+                break;
+
+            case TOKEN_INCOMPLETE_COMMENT:
+            case TOKEN_EOI:
+                pushback(state);  // move back so we catch this later.
+                done = 1;
+                break;
+
+            default:
+                // just strip #pragma from source
+                break;
+        } // switch
+    } // while
+
+    state->report_whitespace = 0;
+
+} // handle_pp_pragma
+
+
 static void handle_pp_define(Context *ctx)
 {
     IncludeState *state = ctx->include_stack;
@@ -2137,7 +2169,9 @@ static inline const char *_preprocessor_nexttoken(Preprocessor *_ctx,
 
         else if (token == TOKEN_PP_PRAGMA)
         {
-            ctx->parsing_pragma = 1;
+            //ctx->parsing_pragma = 1;
+			handle_pp_pragma(ctx);
+			continue; // will return at top of loop.
         } // else if
 
         if (token == TOKEN_IDENTIFIER)
