@@ -25,15 +25,9 @@ extern "C" {
 #define DEBUG_TOKENIZER \
     (DEBUG_PREPROCESSOR || DEBUG_LEXER)
 
-#if (defined(__APPLE__) && defined(__MACH__))
-#define PLATFORM_MACOSX 1
-#endif
-
 
 // Get basic wankery out of the way here...
 
-
-typedef unsigned int uint;  // this is a printf() helper. don't use for code.
 
 #ifdef _MSC_VER
 #include <malloc.h>
@@ -88,62 +82,28 @@ static inline int Min(const int a, const int b)
 } // Min
 
 
-// Hashtables...
-
-typedef struct HashTable HashTable;
-typedef uint32 (*HashTable_HashFn)(const void *key, void *data);
-typedef int (*HashTable_KeyMatchFn)(const void *a, const void *b, void *data);
-typedef void (*HashTable_NukeFn)(const void *key, const void *value, void *data);
-
-HashTable *hash_create(void *data, const HashTable_HashFn hashfn,
-                       const HashTable_KeyMatchFn keymatchfn,
-                       const HashTable_NukeFn nukefn,
-                       const int stackable,
-                       MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d);
-void hash_destroy(HashTable *table);
-int hash_insert(HashTable *table, const void *key, const void *value);
-int hash_remove(HashTable *table, const void *key);
-int hash_find(const HashTable *table, const void *key, const void **_value);
-
-
 
 // String caching...
 
-typedef struct StringCache StringCache;
-StringCache *stringcache_create(MOJOSHADER_hlslang_malloc m,MOJOSHADER_hlslang_free f,void *d);
-const char *stringcache(StringCache *cache, const char *str);
-const char *stringcache_len(StringCache *cache, const char *str,
+typedef struct hlmojo_StringCache hlmojo_StringCache;
+hlmojo_StringCache *hlmojo_stringcache_create(MOJOSHADER_hlslang_malloc m,MOJOSHADER_hlslang_free f,void *d);
+const char *hlmojo_stringcache(hlmojo_StringCache *cache, const char *str);
+const char *hlmojo_stringcache_len(hlmojo_StringCache *cache, const char *str,
                             const unsigned int len);
-void stringcache_destroy(StringCache *cache);
-
-
-// Error lists...
-
-typedef struct ErrorList ErrorList;
-ErrorList *errorlist_create(MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d);
-int errorlist_add(ErrorList *list, const char *fname,
-                      const int errpos, const char *str);
-int errorlist_add_fmt(ErrorList *list, const char *fname,
-                      const int errpos, const char *fmt, ...) ISPRINTF(4,5);
-int errorlist_add_va(ErrorList *list, const char *_fname,
-                     const int errpos, const char *fmt, va_list va);
-int errorlist_count(ErrorList *list);
-MOJOSHADER_hlslang_error *errorlist_flatten(ErrorList *list); // resets the list!
-void errorlist_destroy(ErrorList *list);
-
+void hlmojo_stringcache_destroy(hlmojo_StringCache *cache);
 
 
 // Dynamic buffers...
 
-typedef struct Buffer Buffer;
-Buffer *buffer_create(size_t blksz,MOJOSHADER_hlslang_malloc m,MOJOSHADER_hlslang_free f,void *d);
-int buffer_append(Buffer *buffer, const void *_data, size_t len);
-int buffer_append_fmt(Buffer *buffer, const char *fmt, ...) ISPRINTF(2,3);
-int buffer_append_va(Buffer *buffer, const char *fmt, va_list va);
-size_t buffer_size(Buffer *buffer);
-void buffer_empty(Buffer *buffer);
-char *buffer_flatten(Buffer *buffer);
-void buffer_destroy(Buffer *buffer);
+typedef struct hlmojo_Buffer hlmojo_Buffer;
+hlmojo_Buffer *hlmojo_buffer_create(size_t blksz,MOJOSHADER_hlslang_malloc m,MOJOSHADER_hlslang_free f,void *d);
+int hlmojo_buffer_append(hlmojo_Buffer *buffer, const void *_data, size_t len);
+int hlmojo_buffer_append_fmt(hlmojo_Buffer *buffer, const char *fmt, ...) ISPRINTF(2,3);
+int hlmojo_buffer_append_va(hlmojo_Buffer *buffer, const char *fmt, va_list va);
+size_t hlmojo_buffer_size(hlmojo_Buffer *buffer);
+void hlmojo_buffer_empty(hlmojo_Buffer *buffer);
+char *hlmojo_buffer_flatten(hlmojo_Buffer *buffer);
+void hlmojo_buffer_destroy(hlmojo_Buffer *buffer);
 
 
 
@@ -222,7 +182,7 @@ typedef enum
     TOKEN_BAD_CHARS,
 
     // This is returned if there's an error condition (the error is returned
-    //  as a NULL-terminated string from preprocessor_nexttoken(), instead
+    //  as a NULL-terminated string from hlmojo_preprocessor_nexttoken(), instead
     //  of actual token data). You can continue getting tokens after this
     //  is reported. It happens for things like missing #includes, etc.
     TOKEN_PREPROCESSING_ERROR,
@@ -249,29 +209,29 @@ typedef enum
 
 
 // This is opaque.
-struct Preprocessor;
-typedef struct Preprocessor Preprocessor;
+struct hlmojo_Preprocessor;
+typedef struct hlmojo_Preprocessor hlmojo_Preprocessor;
 
-typedef struct Conditional
+typedef struct hlmojo_Conditional
 {
     Token type;
     int linenum;
     int skipping;
     int chosen;
-    struct Conditional *next;
-} Conditional;
+    struct hlmojo_Conditional *next;
+} hlmojo_Conditional;
 
-typedef struct Define
+typedef struct hlmojo_Define
 {
     const char *identifier;
     const char *definition;
     const char *original;
     const char **parameters;
     int paramcount;
-    struct Define *next;
-} Define;
+    struct hlmojo_Define *next;
+} hlmojo_Define;
 
-typedef struct IncludeState
+typedef struct hlmojo_IncludeState
 {
     const char *filename;
     const char *source_base;
@@ -285,16 +245,16 @@ typedef struct IncludeState
     unsigned int orig_length;
     unsigned int bytes_left;
     unsigned int line;
-    Conditional *conditional_stack;
+    hlmojo_Conditional *conditional_stack;
     MOJOSHADER_hlslang_includeClose close_callback;
-    struct IncludeState *next;
-} IncludeState;
+    struct hlmojo_IncludeState *next;
+} hlmojo_IncludeState;
 
-Token preprocessor_lexer(IncludeState *s);
+Token hlmojo_preprocessor_lexer(hlmojo_IncludeState *s);
 
 // This will only fail if the allocator fails, so it doesn't return any
 //  error code...NULL on failure.
-Preprocessor *preprocessor_start(const char *fname, const char *source,
+hlmojo_Preprocessor *hlmojo_preprocessor_start(const char *fname, const char *source,
                             unsigned int sourcelen,
                             MOJOSHADER_hlslang_includeOpen open_callback,
                             MOJOSHADER_hlslang_includeClose close_callback,
@@ -302,11 +262,11 @@ Preprocessor *preprocessor_start(const char *fname, const char *source,
                             unsigned int define_count,
                             MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d);
 
-void preprocessor_end(Preprocessor *pp);
-int preprocessor_outofmemory(Preprocessor *pp);
-const char *preprocessor_nexttoken(Preprocessor *_ctx,
+void hlmojo_preprocessor_end(hlmojo_Preprocessor *pp);
+int hlmojo_preprocessor_outofmemory(hlmojo_Preprocessor *pp);
+const char *hlmojo_preprocessor_nexttoken(hlmojo_Preprocessor *_ctx,
                                    unsigned int *_len, Token *_token);
-const char *preprocessor_sourcepos(Preprocessor *pp, unsigned int *pos);
+const char *hlmojo_preprocessor_sourcepos(hlmojo_Preprocessor *pp, unsigned int *pos);
 
 
 void MOJOSHADER_hlslang_print_debug_token(const char *subsystem, const char *token,

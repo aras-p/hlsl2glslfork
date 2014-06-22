@@ -35,7 +35,7 @@ typedef unsigned char uchar;
 
 static uchar sentinel[YYMAXFILL];
 
-static Token update_state(IncludeState *s, int eoi, const uchar *cur,
+static Token update_state(hlmojo_IncludeState *s, int eoi, const uchar *cur,
                           const uchar *tok, const Token val)
 {
     if (eoi)
@@ -58,7 +58,7 @@ static Token update_state(IncludeState *s, int eoi, const uchar *cur,
     return val;
 } // update_state
 
-Token preprocessor_lexer(IncludeState *s)
+Token hlmojo_preprocessor_lexer(hlmojo_IncludeState *s)
 {
     const uchar *cursor = (const uchar *) s->source;
     const uchar *token = cursor;
@@ -1537,7 +1537,7 @@ yy284:
 
     assert(0 && "Shouldn't hit this code");
     RET(TOKEN_UNKNOWN);
-} // preprocessor_lexer
+} // hlmojo_preprocessor_lexer
 
 // end of mojoshader_lexer_preprocessor.re (or .c) ...
 

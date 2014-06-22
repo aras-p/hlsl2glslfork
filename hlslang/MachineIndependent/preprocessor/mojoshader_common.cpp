@@ -4,167 +4,6 @@
 // Stripped down code from Mojoshader, originally under zlib license.
 
 
-typedef struct HashItem
-{
-    const void *key;
-    const void *value;
-    struct HashItem *next;
-} HashItem;
-
-struct HashTable
-{
-    HashItem **table;
-    uint32 table_len;
-    int stackable;
-    void *data;
-    HashTable_HashFn hash;
-    HashTable_KeyMatchFn keymatch;
-    HashTable_NukeFn nuke;
-    MOJOSHADER_hlslang_malloc m;
-    MOJOSHADER_hlslang_free f;
-    void *d;
-};
-
-static inline uint32 calc_hash(const HashTable *table, const void *key)
-{
-    return table->hash(key, table->data) & (table->table_len-1);
-} // calc_hash
-
-int hash_find(const HashTable *table, const void *key, const void **_value)
-{
-    HashItem *i;
-    void *data = table->data;
-    const uint32 hash = calc_hash(table, key);
-    HashItem *prev = NULL;
-    for (i = table->table[hash]; i != NULL; i = i->next)
-    {
-        if (table->keymatch(key, i->key, data))
-        {
-            if (_value != NULL)
-                *_value = i->value;
-
-            // Matched! Move to the front of list for faster lookup next time.
-            //  (stackable tables have to remain in the same order, though!)
-            if ((!table->stackable) && (prev != NULL))
-            {
-                assert(prev->next == i);
-                prev->next = i->next;
-                i->next = table->table[hash];
-                table->table[hash] = i;
-            } // if
-
-            return 1;
-        } // if
-
-        prev = i;
-    } // for
-
-    return 0;
-} // hash_find
-
-
-int hash_insert(HashTable *table, const void *key, const void *value)
-{
-    HashItem *item = NULL;
-    const uint32 hash = calc_hash(table, key);
-    if ( (!table->stackable) && (hash_find(table, key, NULL)) )
-        return 0;
-
-    // !!! FIXME: grow and rehash table if it gets too saturated.
-    item = (HashItem *) table->m(sizeof (HashItem), table->d);
-    if (item == NULL)
-        return -1;
-
-    item->key = key;
-    item->value = value;
-    item->next = table->table[hash];
-    table->table[hash] = item;
-
-    return 1;
-} // hash_insert
-
-HashTable *hash_create(void *data, const HashTable_HashFn hashfn,
-              const HashTable_KeyMatchFn keymatchfn,
-              const HashTable_NukeFn nukefn,
-              const int stackable,
-              MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
-{
-    const uint32 initial_table_size = 256;
-    const uint32 alloc_len = sizeof (HashItem *) * initial_table_size;
-    HashTable *table = (HashTable *) m(sizeof (HashTable), d);
-    if (table == NULL)
-        return NULL;
-    memset(table, '\0', sizeof (HashTable));
-
-    table->table = (HashItem **) m(alloc_len, d);
-    if (table->table == NULL)
-    {
-        f(table, d);
-        return NULL;
-    } // if
-
-    memset(table->table, '\0', alloc_len);
-    table->table_len = initial_table_size;
-    table->stackable = stackable;
-    table->data = data;
-    table->hash = hashfn;
-    table->keymatch = keymatchfn;
-    table->nuke = nukefn;
-    table->m = m;
-    table->f = f;
-    table->d = d;
-    return table;
-} // hash_create
-
-void hash_destroy(HashTable *table)
-{
-    uint32 i;
-    void *data = table->data;
-    MOJOSHADER_hlslang_free f = table->f;
-    void *d = table->d;
-    for (i = 0; i < table->table_len; i++)
-    {
-        HashItem *item = table->table[i];
-        while (item != NULL)
-        {
-            HashItem *next = item->next;
-            table->nuke(item->key, item->value, data);
-            f(item, d);
-            item = next;
-        } // while
-    } // for
-
-    f(table->table, d);
-    f(table, d);
-} // hash_destroy
-
-int hash_remove(HashTable *table, const void *key)
-{
-    HashItem *item = NULL;
-    HashItem *prev = NULL;
-    void *data = table->data;
-    const uint32 hash = calc_hash(table, key);
-    for (item = table->table[hash]; item != NULL; item = item->next)
-    {
-        if (table->keymatch(key, item->key, data))
-        {
-            if (prev != NULL)
-                prev->next = item->next;
-            else
-                table->table[hash] = item->next;
-
-            table->nuke(item->key, item->value, data);
-            table->f(item, table->d);
-            return 1;
-        } // if
-
-        prev = item;
-    } // for
-
-    return 0;
-} // hash_remove
-
-
 // this is djb's xor hashing function.
 static inline uint32 hash_string_djbxor(const char *str, size_t len)
 {
@@ -174,24 +13,24 @@ static inline uint32 hash_string_djbxor(const char *str, size_t len)
     return hash;
 } // hash_string_djbxor
 
-static inline uint32 hash_string(const char *str, size_t len)
+static inline uint32 hlmojo_hash_string(const char *str, size_t len)
 {
     return hash_string_djbxor(str, len);
-} // hash_string
+} // hlmojo_hash_string
 
 
 
 // The string cache...   !!! FIXME: use StringMap internally for this.
 
-typedef struct StringBucket
+typedef struct hlmojo_StringBucket
 {
     char *string;
-    struct StringBucket *next;
-} StringBucket;
+    struct hlmojo_StringBucket *next;
+} hlmojo_StringBucket;
 
-struct StringCache
+struct hlmojo_StringCache
 {
-    StringBucket **hashtable;
+    hlmojo_StringBucket **hashtable;
     uint32 table_size;
     MOJOSHADER_hlslang_malloc m;
     MOJOSHADER_hlslang_free f;
@@ -199,19 +38,19 @@ struct StringCache
 };
 
 
-const char *stringcache(StringCache *cache, const char *str)
+const char *hlmojo_stringcache(hlmojo_StringCache *cache, const char *str)
 {
-    return stringcache_len(cache, str, strlen(str));
-} // stringcache
+    return hlmojo_stringcache_len(cache, str, strlen(str));
+} // hlmojo_stringcache
 
-static const char *stringcache_len_internal(StringCache *cache,
+static const char *hlmojo_stringcache_len_internal(hlmojo_StringCache *cache,
                                             const char *str,
                                             const unsigned int len,
                                             const int addmissing)
 {
-    const uint8 hash = hash_string(str, len) & (cache->table_size-1);
-    StringBucket *bucket = cache->hashtable[hash];
-    StringBucket *prev = NULL;
+    const uint8 hash = hlmojo_hash_string(str, len) & (cache->table_size-1);
+    hlmojo_StringBucket *bucket = cache->hashtable[hash];
+    hlmojo_StringBucket *prev = NULL;
     while (bucket)
     {
         const char *bstr = bucket->string;
@@ -236,7 +75,7 @@ static const char *stringcache_len_internal(StringCache *cache,
         return NULL;
 
     // add to the table.
-    bucket = (StringBucket *) cache->m(sizeof (StringBucket), cache->d);
+    bucket = (hlmojo_StringBucket *) cache->m(sizeof (hlmojo_StringBucket), cache->d);
     if (bucket == NULL)
         return NULL;
     bucket->string = (char *) cache->m(len + 1, cache->d);
@@ -250,25 +89,25 @@ static const char *stringcache_len_internal(StringCache *cache,
     bucket->next = cache->hashtable[hash];
     cache->hashtable[hash] = bucket;
     return bucket->string;
-} // stringcache_len_internal
+} // hlmojo_stringcache_len_internal
 
-const char *stringcache_len(StringCache *cache, const char *str,
+const char *hlmojo_stringcache_len(hlmojo_StringCache *cache, const char *str,
                             const unsigned int len)
 {
-    return stringcache_len_internal(cache, str, len, 1);
-} // stringcache_len
+    return hlmojo_stringcache_len_internal(cache, str, len, 1);
+} // hlmojo_stringcache_len
 
 
-StringCache *stringcache_create(MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
+hlmojo_StringCache *hlmojo_stringcache_create(MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
 {
     const uint32 initial_table_size = 256;
-    const size_t tablelen = sizeof (StringBucket *) * initial_table_size;
-    StringCache *cache = (StringCache *) m(sizeof (StringCache), d);
+    const size_t tablelen = sizeof (hlmojo_StringBucket *) * initial_table_size;
+    hlmojo_StringCache *cache = (hlmojo_StringCache *) m(sizeof (hlmojo_StringCache), d);
     if (!cache)
         return NULL;
-    memset(cache, '\0', sizeof (StringCache));
+    memset(cache, '\0', sizeof (hlmojo_StringCache));
 
-    cache->hashtable = (StringBucket **) m(tablelen, d);
+    cache->hashtable = (hlmojo_StringBucket **) m(tablelen, d);
     if (!cache->hashtable)
     {
         f(cache, d);
@@ -281,9 +120,9 @@ StringCache *stringcache_create(MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_
     cache->f = f;
     cache->d = d;
     return cache;
-} // stringcache_create
+} // hlmojo_stringcache_create
 
-void stringcache_destroy(StringCache *cache)
+void hlmojo_stringcache_destroy(hlmojo_StringCache *cache)
 {
     if (cache == NULL)
         return;
@@ -294,11 +133,11 @@ void stringcache_destroy(StringCache *cache)
 
     for (i = 0; i < cache->table_size; i++)
     {
-        StringBucket *bucket = cache->hashtable[i];
+        hlmojo_StringBucket *bucket = cache->hashtable[i];
         cache->hashtable[i] = NULL;
         while (bucket)
         {
-            StringBucket *next = bucket->next;
+            hlmojo_StringBucket *next = bucket->next;
             f(bucket->string, d);
             f(bucket, d);
             bucket = next;
@@ -307,210 +146,45 @@ void stringcache_destroy(StringCache *cache)
 
     f(cache->hashtable, d);
     f(cache, d);
-} // stringcache_destroy
+} // hlmojo_stringcache_destroy
 
 
-// We chain errors as a linked list with a head/tail for easy appending.
-//  These get flattened before passing to the application.
-typedef struct ErrorItem
-{
-    MOJOSHADER_hlslang_error error;
-    struct ErrorItem *next;
-} ErrorItem;
 
-struct ErrorList
-{
-    ErrorItem head;
-    ErrorItem *tail;
-    int count;
-    MOJOSHADER_hlslang_malloc m;
-    MOJOSHADER_hlslang_free f;
-    void *d;
-};
-
-ErrorList *errorlist_create(MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
-{
-    ErrorList *retval = (ErrorList *) m(sizeof (ErrorList), d);
-    if (retval != NULL)
-    {
-        memset(retval, '\0', sizeof (ErrorList));
-        retval->tail = &retval->head;
-        retval->m = m;
-        retval->f = f;
-        retval->d = d;
-    } // if
-
-    return retval;
-} // errorlist_create
-
-
-int errorlist_add(ErrorList *list, const char *fname,
-                  const int errpos, const char *str)
-{
-    return errorlist_add_fmt(list, fname, errpos, "%s", str);
-} // errorlist_add
-
-
-int errorlist_add_fmt(ErrorList *list, const char *fname,
-                      const int errpos, const char *fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    const int retval = errorlist_add_va(list, fname, errpos, fmt, ap);
-    va_end(ap);
-    return retval;
-} // errorlist_add_fmt
-
-
-int errorlist_add_va(ErrorList *list, const char *_fname,
-                     const int errpos, const char *fmt, va_list va)
-{
-    ErrorItem *error = (ErrorItem *) list->m(sizeof (ErrorItem), list->d);
-    if (error == NULL)
-        return 0;
-
-    char *fname = NULL;
-    if (_fname != NULL)
-    {
-        fname = (char *) list->m(strlen(_fname) + 1, list->d);
-        if (fname == NULL)
-        {
-            list->f(error, list->d);
-            return 0;
-        } // if
-        strcpy(fname, _fname);
-    } // if
-
-    char scratch[128];
-    va_list ap;
-    va_copy(ap, va);
-    const int len = vsnprintf(scratch, sizeof (scratch), fmt, ap);
-    va_end(ap);
-
-    char *failstr = (char *) list->m(len + 1, list->d);
-    if (failstr == NULL)
-    {
-        list->f(error, list->d);
-        list->f(fname, list->d);
-        return 0;
-    } // if
-
-    // If we overflowed our scratch buffer, that's okay. We were going to
-    //  allocate anyhow...the scratch buffer just lets us avoid a second
-    //  run of vsnprintf().
-    if (len < sizeof (scratch))
-        strcpy(failstr, scratch);  // copy it over.
-    else
-    {
-        va_copy(ap, va);
-        vsnprintf(failstr, len + 1, fmt, ap);  // rebuild it.
-        va_end(ap);
-    } // else
-
-    error->error.error = failstr;
-    error->error.filename = fname;
-    error->error.error_position = errpos;
-    error->next = NULL;
-
-    list->tail->next = error;
-    list->tail = error;
-
-    list->count++;
-    return 1;
-} // errorlist_add_va
-
-
-int errorlist_count(ErrorList *list)
-{
-    return list->count;
-} // errorlist_count
-
-
-MOJOSHADER_hlslang_error *errorlist_flatten(ErrorList *list)
-{
-    if (list->count == 0)
-        return NULL;
-
-    int total = 0;
-    MOJOSHADER_hlslang_error *retval = (MOJOSHADER_hlslang_error *)
-            list->m(sizeof (MOJOSHADER_hlslang_error) * list->count, list->d);
-    if (retval == NULL)
-        return NULL;
-
-    ErrorItem *item = list->head.next;
-    while (item != NULL)
-    {
-        ErrorItem *next = item->next;
-        // reuse the string allocations
-        memcpy(&retval[total], &item->error, sizeof (MOJOSHADER_hlslang_error));
-        list->f(item, list->d);
-        item = next;
-        total++;
-    } // while
-
-    assert(total == list->count);
-    list->count = 0;
-    list->head.next = NULL;
-    list->tail = &list->head;
-    return retval;
-} // errorlist_flatten
-
-
-void errorlist_destroy(ErrorList *list)
-{
-    if (list == NULL)
-        return;
-
-    MOJOSHADER_hlslang_free f = list->f;
-    void *d = list->d;
-    ErrorItem *item = list->head.next;
-    while (item != NULL)
-    {
-        ErrorItem *next = item->next;
-        f((void *) item->error.error, d);
-        f((void *) item->error.filename, d);
-        f(item, d);
-        item = next;
-    } // while
-    f(list, d);
-} // errorlist_destroy
-
-
-typedef struct BufferBlock
+typedef struct hlmojo_BufferBlock
 {
     uint8 *data;
     size_t bytes;
-    struct BufferBlock *next;
-} BufferBlock;
+    struct hlmojo_BufferBlock *next;
+} hlmojo_BufferBlock;
 
-struct Buffer
+struct hlmojo_Buffer
 {
     size_t total_bytes;
-    BufferBlock *head;
-    BufferBlock *tail;
+    hlmojo_BufferBlock *head;
+    hlmojo_BufferBlock *tail;
     size_t block_size;
     MOJOSHADER_hlslang_malloc m;
     MOJOSHADER_hlslang_free f;
     void *d;
 };
 
-Buffer *buffer_create(size_t blksz, MOJOSHADER_hlslang_malloc m,
+hlmojo_Buffer *hlmojo_buffer_create(size_t blksz, MOJOSHADER_hlslang_malloc m,
                       MOJOSHADER_hlslang_free f, void *d)
 {
-    Buffer *buffer = (Buffer *) m(sizeof (Buffer), d);
+    hlmojo_Buffer *buffer = (hlmojo_Buffer *) m(sizeof (hlmojo_Buffer), d);
     if (buffer != NULL)
     {
-        memset(buffer, '\0', sizeof (Buffer));
+        memset(buffer, '\0', sizeof (hlmojo_Buffer));
         buffer->block_size = blksz;
         buffer->m = m;
         buffer->f = f;
         buffer->d = d;
     } // if
     return buffer;
-} // buffer_create
+} // hlmojo_buffer_create
 
 
-int buffer_append(Buffer *buffer, const void *_data, size_t len)
+int hlmojo_buffer_append(hlmojo_Buffer *buffer, const void *_data, size_t len)
 {
     const uint8 *data = (const uint8 *) _data;
 
@@ -541,12 +215,12 @@ int buffer_append(Buffer *buffer, const void *_data, size_t len)
     {
         assert((!buffer->tail) || (buffer->tail->bytes >= blocksize));
         const size_t bytecount = len > blocksize ? len : blocksize;
-        const size_t malloc_len = sizeof (BufferBlock) + bytecount;
-        BufferBlock *item = (BufferBlock *) buffer->m(malloc_len, buffer->d);
+        const size_t malloc_len = sizeof (hlmojo_BufferBlock) + bytecount;
+        hlmojo_BufferBlock *item = (hlmojo_BufferBlock *) buffer->m(malloc_len, buffer->d);
         if (item == NULL)
             return 0;
 
-        item->data = ((uint8 *) item) + sizeof (BufferBlock);
+        item->data = ((uint8 *) item) + sizeof (hlmojo_BufferBlock);
         item->bytes = len;
         item->next = NULL;
         if (buffer->tail != NULL)
@@ -560,18 +234,18 @@ int buffer_append(Buffer *buffer, const void *_data, size_t len)
     } // if
 
     return 1;
-} // buffer_append
+} // hlmojo_buffer_append
 
-int buffer_append_fmt(Buffer *buffer, const char *fmt, ...)
+int hlmojo_buffer_append_fmt(hlmojo_Buffer *buffer, const char *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    const int retval = buffer_append_va(buffer, fmt, ap);
+    const int retval = hlmojo_buffer_append_va(buffer, fmt, ap);
     va_end(ap);
     return retval;
-} // buffer_append_fmt
+} // hlmojo_buffer_append_fmt
 
-int buffer_append_va(Buffer *buffer, const char *fmt, va_list va)
+int hlmojo_buffer_append_va(hlmojo_Buffer *buffer, const char *fmt, va_list va)
 {
     char scratch[256];
 
@@ -585,7 +259,7 @@ int buffer_append_va(Buffer *buffer, const char *fmt, va_list va)
     if (len == 0)
         return 1;  // nothing to do.
     else if (len < sizeof (scratch))
-        return buffer_append(buffer, scratch, len);
+        return hlmojo_buffer_append(buffer, scratch, len);
 
     char *buf = (char *) buffer->m(len + 1, buffer->d);
     if (buf == NULL)
@@ -593,39 +267,39 @@ int buffer_append_va(Buffer *buffer, const char *fmt, va_list va)
     va_copy(ap, va);
     vsnprintf(buf, len + 1, fmt, ap);  // rebuild it.
     va_end(ap);
-    const int retval = buffer_append(buffer, scratch, len);
+    const int retval = hlmojo_buffer_append(buffer, scratch, len);
     buffer->f(buf, buffer->d);
     return retval;
-} // buffer_append_va
+} // hlmojo_buffer_append_va
 
-size_t buffer_size(Buffer *buffer)
+size_t hlmojo_buffer_size(hlmojo_Buffer *buffer)
 {
     return buffer->total_bytes;
-} // buffer_size
+} // hlmojo_buffer_size
 
-void buffer_empty(Buffer *buffer)
+void hlmojo_buffer_empty(hlmojo_Buffer *buffer)
 {
-    BufferBlock *item = buffer->head;
+    hlmojo_BufferBlock *item = buffer->head;
     while (item != NULL)
     {
-        BufferBlock *next = item->next;
+        hlmojo_BufferBlock *next = item->next;
         buffer->f(item, buffer->d);
         item = next;
     } // while
     buffer->head = buffer->tail = NULL;
     buffer->total_bytes = 0;
-} // buffer_empty
+} // hlmojo_buffer_empty
 
-char *buffer_flatten(Buffer *buffer)
+char *hlmojo_buffer_flatten(hlmojo_Buffer *buffer)
 {
     char *retval = (char *) buffer->m(buffer->total_bytes + 1, buffer->d);
     if (retval == NULL)
         return NULL;
-    BufferBlock *item = buffer->head;
+    hlmojo_BufferBlock *item = buffer->head;
     char *ptr = retval;
     while (item != NULL)
     {
-        BufferBlock *next = item->next;
+        hlmojo_BufferBlock *next = item->next;
         memcpy(ptr, item->data, item->bytes);
         ptr += item->bytes;
         buffer->f(item, buffer->d);
@@ -639,18 +313,18 @@ char *buffer_flatten(Buffer *buffer)
     buffer->total_bytes = 0;
 
     return retval;
-} // buffer_flatten
+} // hlmojo_buffer_flatten
 
-void buffer_destroy(Buffer *buffer)
+void hlmojo_buffer_destroy(hlmojo_Buffer *buffer)
 {
     if (buffer != NULL)
     {
         MOJOSHADER_hlslang_free f = buffer->f;
         void *d = buffer->d;
-        buffer_empty(buffer);
+        hlmojo_buffer_empty(buffer);
         f(buffer, d);
     } // if
-} // buffer_destroy
+} // hlmojo_buffer_destroy
 
 
 // end of mojoshader_common.c ...

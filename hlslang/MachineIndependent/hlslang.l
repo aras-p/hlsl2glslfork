@@ -311,21 +311,21 @@ BEGIN(INITIAL);
 #define __MOJOSHADER_INTERNAL__ 1
 #include "preprocessor/mojoshader_internal.h"
 
-static Preprocessor* g_cpp;
+static hlmojo_Preprocessor* g_cpp;
 static TParseContext* g_parseContext;
 
 const TSourceLoc gNullSourceLoc = { NULL, 0 };
 
-static int cpp_get_token (Preprocessor* pp, char* buf, int maxSize)
+static int cpp_get_token (hlmojo_Preprocessor* pp, char* buf, int maxSize)
 {
 	const char *tokstr = NULL;
 	unsigned int len = 0;
 	Token token = TOKEN_UNKNOWN;
-	tokstr = preprocessor_nexttoken (pp, &len, &token);
+	tokstr = hlmojo_preprocessor_nexttoken (pp, &len, &token);
 	if (tokstr == NULL)
 		return 0;
 		
-	if (preprocessor_outofmemory(pp))
+	if (hlmojo_preprocessor_outofmemory(pp))
 	{
 		g_parseContext->error (gNullSourceLoc, "out of memory", "", "");
 		GlobalParseContext->recover();
@@ -334,7 +334,7 @@ static int cpp_get_token (Preprocessor* pp, char* buf, int maxSize)
 	}	
 	
 	unsigned int line = 0;
-	const char* fname = preprocessor_sourcepos (pp, &line);
+	const char* fname = hlmojo_preprocessor_sourcepos (pp, &line);
 	TSourceLoc loc;
 	loc.file = fname;
 	loc.line = line;
@@ -404,7 +404,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
 	
 	sourceLen = (int) strlen(source);
 	
-	Preprocessor* pp = preprocessor_start("", source, sourceLen,
+	hlmojo_Preprocessor* pp = hlmojo_preprocessor_start("", source, sourceLen,
 		NULL, // open callback
 		NULL, // close callback
 		NULL, // defines
@@ -440,7 +440,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
         result = 0;
 	}
 	
-	preprocessor_end (pp);
+	hlmojo_preprocessor_end (pp);
 	g_cpp = NULL;
 	g_parseContext = NULL;
 	

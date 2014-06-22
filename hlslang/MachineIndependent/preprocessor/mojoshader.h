@@ -67,7 +67,7 @@ typedef struct MOJOSHADER_hlslang_error
 
 
 
-/* Preprocessor interface... */
+/* hlmojo_Preprocessor interface... */
 
 /*
  * Structure used to pass predefined macros. Maps to D3DXMACRO.
