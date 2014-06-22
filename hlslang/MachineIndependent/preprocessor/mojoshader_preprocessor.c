@@ -2099,20 +2099,22 @@ static inline const char *_preprocessor_nexttoken(Preprocessor *_ctx,
             continue;  // get the next thing.
         } // else if
 
-        // NOTE: Conditionals must be above (skipping) test.
+		else if (token == TOKEN_PP_LINE)
+		{
+			handle_pp_line(ctx);
+			continue;  // get the next thing.
+		} // else if
+		
+        // NOTE: Conditionals and #line must be above (skipping) test.
         else if (skipping)
+		{
             continue;  // just keep dumping tokens until we get end of block.
+		}
 
         else if (token == TOKEN_PP_INCLUDE)
         {
             handle_pp_include(ctx);
             continue;  // will return error or use new top of include_stack.
-        } // else if
-
-        else if (token == TOKEN_PP_LINE)
-        {
-            handle_pp_line(ctx);
-            continue;  // get the next thing.
         } // else if
 
         else if (token == TOKEN_PP_ERROR)
