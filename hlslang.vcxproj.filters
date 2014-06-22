@@ -70,27 +70,6 @@
     <ClCompile Include="hlslang\MachineIndependent\Gen_hlslang_tab.cpp">
       <Filter>Machine Independent\Generated Source</Filter>
     </ClCompile>
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\atom.c">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClCompile>
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\cpp.c">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClCompile>
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\cppstruct.c">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClCompile>
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\memory.c">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClCompile>
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\scanner.c">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClCompile>
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\symbols.c">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClCompile>
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\tokens.c">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClCompile>
     <ClCompile Include="hlslang\GLSLCodeGen\glslCommon.cpp">
       <Filter>GLSL Code Gen</Filter>
     </ClCompile>
@@ -121,14 +100,26 @@
     <ClCompile Include="hlslang\GLSLCodeGen\typeSamplers.cpp">
       <Filter>GLSL Code Gen</Filter>
     </ClCompile>
-    <ClCompile Include="hlslang\OSDependent\Windows\main.cpp">
-      <Filter>OSDependent\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="hlslang\OSDependent\Windows\ossource.cpp">
       <Filter>OSDependent\Windows</Filter>
     </ClCompile>
     <ClCompile Include="hlslang\OSDependent\Linux\ossource.cpp">
       <Filter>OSDependent\Linux</Filter>
+    </ClCompile>
+    <ClCompile Include="hlslang\MachineIndependent\preprocessor\sourceloc.cpp">
+      <Filter>Machine Independent\CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="hlslang\MachineIndependent\preprocessor\mojoshader.cpp">
+      <Filter>Machine Independent\CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="hlslang\MachineIndependent\preprocessor\mojoshader_common.cpp">
+      <Filter>Machine Independent\CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="hlslang\MachineIndependent\preprocessor\mojoshader_lexer.cpp">
+      <Filter>Machine Independent\CPP</Filter>
+    </ClCompile>
+    <ClCompile Include="hlslang\MachineIndependent\preprocessor\mojoshader_preprocessor.cpp">
+      <Filter>Machine Independent\CPP</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -147,37 +138,7 @@
     <ClInclude Include="hlslang\MachineIndependent\hlslang_tab.h">
       <Filter>Machine Independent\Generated Source</Filter>
     </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\atom.h">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\compile.h">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\cpp.h">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\memory.h">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\parser.h">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\preprocess.h">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\scanner.h">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\slglobals.h">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClInclude>
     <ClInclude Include="hlslang\MachineIndependent\preprocessor\sourceloc.h">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\symbols.h">
-      <Filter>Machine Independent\CPP</Filter>
-    </ClInclude>
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\tokens.h">
       <Filter>Machine Independent\CPP</Filter>
     </ClInclude>
     <ClInclude Include="hlslang\Include\BaseTypes.h">
@@ -249,6 +210,12 @@
     <ClInclude Include="hlslang\OSDependent\Linux\osinclude.h">
       <Filter>OSDependent\Linux</Filter>
     </ClInclude>
+    <ClInclude Include="hlslang\MachineIndependent\preprocessor\mojoshader.h">
+      <Filter>Machine Independent\CPP</Filter>
+    </ClInclude>
+    <ClInclude Include="hlslang\MachineIndependent\preprocessor\mojoshader_internal.h">
+      <Filter>Machine Independent\CPP</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="hlslang\MachineIndependent\hlslang.l">
@@ -257,5 +224,10 @@
     <CustomBuild Include="hlslang\MachineIndependent\hlslang.y">
       <Filter>Machine Independent</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="hlslang\MachineIndependent\preprocessor\mojoshader_lexer.re">
+      <Filter>Machine Independent\CPP</Filter>
+    </None>
   </ItemGroup>
 </Project>

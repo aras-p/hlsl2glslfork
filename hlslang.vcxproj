@@ -222,17 +222,15 @@
     <ClCompile Include="hlslang\MachineIndependent\IntermTraverse.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\ParseHelper.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\PoolAlloc.cpp" />
+    <ClCompile Include="hlslang\MachineIndependent\preprocessor\mojoshader.cpp" />
+    <ClCompile Include="hlslang\MachineIndependent\preprocessor\mojoshader_common.cpp" />
+    <ClCompile Include="hlslang\MachineIndependent\preprocessor\mojoshader_lexer.cpp" />
+    <ClCompile Include="hlslang\MachineIndependent\preprocessor\mojoshader_preprocessor.cpp" />
+    <ClCompile Include="hlslang\MachineIndependent\preprocessor\sourceloc.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\RemoveTree.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\SymbolTable.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\Gen_hlslang.cpp" />
     <ClCompile Include="hlslang\MachineIndependent\Gen_hlslang_tab.cpp" />
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\atom.c" />
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\cpp.c" />
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\cppstruct.c" />
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\memory.c" />
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\scanner.c" />
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\symbols.c" />
-    <ClCompile Include="hlslang\MachineIndependent\preprocessor\tokens.c" />
     <ClCompile Include="hlslang\GLSLCodeGen\glslCommon.cpp" />
     <ClCompile Include="hlslang\GLSLCodeGen\glslFunction.cpp" />
     <ClCompile Include="hlslang\GLSLCodeGen\glslOutput.cpp" />
@@ -333,19 +331,11 @@ rename %(RootDir)%(Directory)%(Filename)_tab.c Gen_%(Filename)_tab.cpp
     <ClInclude Include="hlslang\MachineIndependent\Initialize.h" />
     <ClInclude Include="hlslang\MachineIndependent\localintermediate.h" />
     <ClInclude Include="hlslang\MachineIndependent\ParseHelper.h" />
+    <ClInclude Include="hlslang\MachineIndependent\preprocessor\mojoshader.h" />
+    <ClInclude Include="hlslang\MachineIndependent\preprocessor\mojoshader_internal.h" />
     <ClInclude Include="hlslang\MachineIndependent\RemoveTree.h" />
     <ClInclude Include="hlslang\MachineIndependent\hlslang_tab.h" />
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\atom.h" />
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\compile.h" />
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\cpp.h" />
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\memory.h" />
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\parser.h" />
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\preprocess.h" />
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\scanner.h" />
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\slglobals.h" />
     <ClInclude Include="hlslang\MachineIndependent\preprocessor\sourceloc.h" />
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\symbols.h" />
-    <ClInclude Include="hlslang\MachineIndependent\preprocessor\tokens.h" />
     <ClInclude Include="hlslang\Include\BaseTypes.h" />
     <ClInclude Include="hlslang\Include\Common.h" />
     <ClInclude Include="hlslang\Include\ConstantUnion.h" />
@@ -369,6 +359,9 @@ rename %(RootDir)%(Directory)%(Filename)_tab.c Gen_%(Filename)_tab.cpp
     <ClInclude Include="hlslang\GLSLCodeGen\typeSamplers.h" />
     <ClInclude Include="hlslang\OSDependent\Windows\osinclude.h" />
     <ClInclude Include="hlslang\OSDependent\Linux\osinclude.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="hlslang\MachineIndependent\preprocessor\mojoshader_lexer.re" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
