@@ -407,7 +407,6 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
 		NULL, // close callback
 		NULL, // defines
 		0, // define count
-		0, // not asm comments
 		MOJOSHADER_internal_malloc,
 		MOJOSHADER_internal_free,
 		NULL);

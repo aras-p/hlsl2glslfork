@@ -45,8 +45,6 @@ typedef struct Context
     int out_of_memory;
     char failstr[256];
     int recursion_count;
-    int asm_comments;
-    int parsing_pragma;
     Conditional *conditional_pool;
     IncludeState *include_stack;
     IncludeState *include_pool;
@@ -61,12 +59,6 @@ typedef struct Context
     MOJOSHADER_free free;
     void *malloc_data;
 } Context;
-
-// Microsoft's preprocessor has some quirks. In some ways, it doesn't work
-//  like you'd expect a C preprocessor to function.
-#ifndef MATCH_MICROSOFT_PREPROCESSOR
-#define MATCH_MICROSOFT_PREPROCESSOR 1
-#endif
 
 
 // Convenience functions for allocators...
@@ -182,8 +174,6 @@ void MOJOSHADER_print_debug_token(const char *subsystem, const char *token,
         TOKENCASE(TOKEN_PP_PRAGMA);
         TOKENCASE(TOKEN_INCOMPLETE_COMMENT);
         TOKENCASE(TOKEN_BAD_CHARS);
-        TOKENCASE(TOKEN_SINGLE_COMMENT);
-        TOKENCASE(TOKEN_MULTI_COMMENT);
         TOKENCASE(TOKEN_EOI);
         TOKENCASE(TOKEN_PREPROCESSING_ERROR);
         #undef TOKENCASE
@@ -564,7 +554,6 @@ static int push_source(Context *ctx, const char *fname, const char *source,
     state->bytes_left = srclen;
     state->line = linenum;
     state->next = ctx->include_stack;
-    state->asm_comments = ctx->asm_comments;
 
     print_debug_lexing_position(state);
 
@@ -617,7 +606,7 @@ Preprocessor *preprocessor_start(const char *fname, const char *source,
                             MOJOSHADER_includeOpen open_callback,
                             MOJOSHADER_includeClose close_callback,
                             const MOJOSHADER_preprocessorDefine *defines,
-                            unsigned int define_count, int asm_comments,
+                            unsigned int define_count,
                             MOJOSHADER_malloc m, MOJOSHADER_free f, void *d)
 {
     int okay = 1;
@@ -637,7 +626,6 @@ Preprocessor *preprocessor_start(const char *fname, const char *source,
     ctx->malloc_data = d;
     ctx->open_callback = open_callback;
     ctx->close_callback = close_callback;
-    ctx->asm_comments = asm_comments;
 
     ctx->filename_cache = stringcache_create(MallocBridge, FreeBridge, ctx);
     okay = ((okay) && (ctx->filename_cache != NULL));
@@ -2061,17 +2049,7 @@ static inline const char *_preprocessor_nexttoken(Preprocessor *_ctx,
         const Conditional *cond = state->conditional_stack;
         const int skipping = ((cond != NULL) && (cond->skipping));
 
-        #if !MATCH_MICROSOFT_PREPROCESSOR
-        state->report_whitespace = 1;
-        state->report_comments = 1;
-        #endif
-
         const Token token = lexer(state);
-
-        #if !MATCH_MICROSOFT_PREPROCESSOR
-        state->report_whitespace = 0;
-        state->report_comments = 0;
-        #endif
 
         if (token != TOKEN_IDENTIFIER)
             ctx->recursion_count = 0;
@@ -2169,7 +2147,6 @@ static inline const char *_preprocessor_nexttoken(Preprocessor *_ctx,
 
         else if (token == TOKEN_PP_PRAGMA)
         {
-            //ctx->parsing_pragma = 1;
 			handle_pp_pragma(ctx);
 			continue; // will return at top of loop.
         } // else if
@@ -2180,24 +2157,11 @@ static inline const char *_preprocessor_nexttoken(Preprocessor *_ctx,
                 continue;  // pushed the include_stack.
         } // else if
 
-        // you don't ever see these unless you enable state->report_comments.
-        else if ((token == TOKEN_SINGLE_COMMENT) || (token == TOKEN_MULTI_COMMENT))
-        {
-            print_debug_lexing_position(state);
-        } // else if
-
         else if (token == ((Token) '\n'))
         {
             print_debug_lexing_position(state);
-            if (ctx->parsing_pragma)  // let this one through.
-                ctx->parsing_pragma = 0;
-            else
-            {
-                #if MATCH_MICROSOFT_PREPROCESSOR
-                // preprocessor is line-oriented, nothing else gets newlines.
-                continue;  // get the next thing.
-                #endif
-            } // else
+            // preprocessor is line-oriented, nothing else gets newlines.
+            continue;  // get the next thing.
         } // else if
 
         assert(!skipping);

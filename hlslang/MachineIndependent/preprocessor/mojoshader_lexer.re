@@ -155,7 +155,7 @@ scanner_loop:
     "="             { RET('='); }
     "?"             { RET('?'); }
 
-    ";"             { if (s->asm_comments) goto singlelinecomment; RET(';'); }
+    ";"             { RET(';'); }
 
     "\000"          { if (eoi) { RET(TOKEN_EOI); } goto bad_chars; }
 
@@ -170,9 +170,7 @@ multilinecomment:
 // The "*\/" is just to avoid screwing up text editor syntax highlighting.
 /*!re2c
     "*\/"           {
-                        if (s->report_comments)
-                            RET(TOKEN_MULTI_COMMENT);
-                        else if (s->report_whitespace)
+                        if (s->report_whitespace)
                             RET(' ');
                         goto scanner_loop;
                     }
@@ -194,21 +192,13 @@ singlelinecomment:
 /*!re2c
     NEWLINE         {
                         s->line++;
-                        if (s->report_comments)
-                        {
-                            cursor = matchptr;  // so we RET('\n') next.
-                            RET(TOKEN_SINGLE_COMMENT);
-                        }
                         token = matchptr;
                         RET('\n');
                     }
     "\000"          {
                         if (eoi)
                         {
-                            if (s->report_comments)
-                                RET(TOKEN_SINGLE_COMMENT);
-                            else
-                                RET(TOKEN_EOI);
+                            RET(TOKEN_EOI);
                         }
                         goto singlelinecomment;
                     }

@@ -343,7 +343,7 @@ yy57:
 	{ RET('?'); }
 yy59:
 	++YYCURSOR;
-	{ if (s->asm_comments) goto singlelinecomment; RET(';'); }
+	{ RET(';'); }
 yy61:
 	++YYCURSOR;
 	{ if (eoi) { RET(TOKEN_EOI); } goto bad_chars; }
@@ -1194,9 +1194,7 @@ yy191:
 yy192:
 	++YYCURSOR;
 	{
-                        if (s->report_comments)
-                            RET(TOKEN_MULTI_COMMENT);
-                        else if (s->report_whitespace)
+                        if (s->report_whitespace)
                             RET(' ');
                         goto scanner_loop;
                     }
@@ -1222,11 +1220,6 @@ singlelinecomment:
 yy197:
 	{
                         s->line++;
-                        if (s->report_comments)
-                        {
-                            cursor = matchptr;  // so we RET('\n') next.
-                            RET(TOKEN_SINGLE_COMMENT);
-                        }
                         token = matchptr;
                         RET('\n');
                     }
@@ -1239,10 +1232,7 @@ yy199:
 	{
                         if (eoi)
                         {
-                            if (s->report_comments)
-                                RET(TOKEN_SINGLE_COMMENT);
-                            else
-                                RET(TOKEN_EOI);
+                            RET(TOKEN_EOI);
                         }
                         goto singlelinecomment;
                     }
