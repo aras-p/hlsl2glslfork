@@ -3,7 +3,9 @@ HLSL to GLSL shader language translator
 
 DX9 style HLSL in, GLSL / GLSL ES out.
 
-A continued development from [ATI's HLSL2GLSL](http://sourceforge.net/projects/hlsl2glsl). I'm changing it to make it work for [Unity's](http://unity3d.com) use cases; might totally not work for yours!
+A continued development from [ATI's HLSL2GLSL](http://sourceforge.net/projects/hlsl2glsl), with preprocessor code based on
+[mojoshader](http://icculus.org/mojoshader/). I'm changing it to make it work for [Unity's](http://unity3d.com) use cases;
+might totally not work for yours!
 
 For an opposite tool (GLSL ES to HLSL translator), look at [Google's ANGLE](http://code.google.com/p/angleproject/).
 
@@ -14,7 +16,10 @@ Notes
 --------
 
 * Only Direct3D 9 style HLSL is supported. No Direct3D 10/11 "template like" syntax, no geometry/tesselation/compute shaders, no abstract interfaces.
-* I bumped into some issues of HLSL2GLSL's preprocessor that I am not fixing. Most issues were with token pasting operator. So I preprocess source using [mojoshader's](http://icculus.org/mojoshader/) preprocessor. Grab latest from [mojoshader hg](http://hg.icculus.org/icculus/mojoshader/), it's awesome!
+* Platform support:
+** Windows via Visual Studio 2010 (`hlslang.sln`).
+** Mac via Xcode 5 (`hlslang.xcodeproj`).
+** Other platforms may or might not work. Some people have contributed CMake build scripts, but I am not maintaining them.
 * On Windows, the library is built with `_HAS_ITERATOR_DEBUGGING=0,_SECURE_SCL=0` defines, which affect MSVC's STL behavior. If this does not match defines in your application, _totally strange_ things can start to happen!
 * The library is not currently thread-safe.
 

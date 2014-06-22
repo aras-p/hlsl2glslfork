@@ -4,9 +4,12 @@ hlsl2glsl Change Log
 2014 06
 -------
 
-Fixes:
+Fixes/Changes:
 
-* Fixed preprocessor token pasting with non-identifiers on one side (like `a.##b` - legal HLSL).
+* Replaced old preprocessor with a Mojoshader-based one.
+** Fixes a bunch of token pasting cases (e.g. `a.##b` or `a##b##c` was not working).
+** Fixes a bunch of macro argument cases (e.g. passing `a.b` as argument was turned into just `a`).
+** Properly reports errors when undefining or redefining `__FILE__` / `__LINE__`.
 
 2014 04
 -------
