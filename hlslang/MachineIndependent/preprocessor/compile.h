@@ -19,14 +19,7 @@ struct CPPStruct_Rec {
 	int ifdepth;                //current #if-#else-#endif nesting in the cpp.c file (pre-processor)    
     int elsedepth[64];          //Keep a track of #if depth..Max allowed is 64.   
     int elsetracker;            //#if-#else and #endif constructs...Counter.
-    const char *ErrMsg;
     int CompileError;           //Indicate compile error when #error, #else,#elif mismatch.
-
-    //
-    // Globals used to communicate between PaParseStrings() and yy_input()and 
-    // also across the files.(gen_glslang.cpp and scanner.c)
-    //
-    unsigned int tokensBeforeEOF : 1;
 };
 
 #endif // !defined(__COMPILE_H)

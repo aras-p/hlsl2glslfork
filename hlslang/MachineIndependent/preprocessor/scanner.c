@@ -675,11 +675,9 @@ int yylex_CPP(char* buf, int maxSize)
 
         if (tokenString) {
             if ((signed)strlen(tokenString) >= maxSize) {
-                cpp->tokensBeforeEOF = 1;
-                return maxSize;               
+                return maxSize;
             } else  if (strlen(tokenString) > 0) {
 			    strcpy(buf, tokenString);
-                cpp->tokensBeforeEOF = 1;
                 return (int)strlen(tokenString);
             }  
 

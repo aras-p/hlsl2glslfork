@@ -27,7 +27,6 @@ static void InitCPPStruct(void)
     for(cpp->elsetracker=0; cpp->elsetracker<64; cpp->elsetracker++)
 		cpp->elsedepth[cpp->elsetracker]=0; 
 	cpp->elsetracker=0;
-    cpp->tokensBeforeEOF = 0;
 } // InitCPPStruct
 
 

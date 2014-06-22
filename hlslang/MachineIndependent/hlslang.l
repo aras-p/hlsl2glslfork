@@ -337,7 +337,7 @@ int yy_input(char* buf, int max_size)
 
 
 //
-// Parse an array of strings using yyparse.  We set up globals used by
+// Parse a string using yyparse.  We set up globals used by
 // yywrap.
 //
 // Returns 0 for success, as per yyparse().
@@ -382,15 +382,8 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
 
 void yyerror(const char *s)
 {
-    if (((TParseContext *)cpp->pC)->AfterEOF) {
-        if (cpp->tokensBeforeEOF == 1) {
-            GlobalParseContext->error(lexlineno, "syntax error", "pre-mature EOF", s, "");
-            GlobalParseContext->recover();
-        }
-    } else {
-        GlobalParseContext->error(lexlineno, "syntax error", yytext, s, "");
-        GlobalParseContext->recover();
-    }            
+	GlobalParseContext->error(lexlineno, "syntax error", yytext, s, "");
+	GlobalParseContext->recover();
 }
 
 void PaReservedWord()
@@ -515,8 +508,7 @@ void StoreStr(char *string)
 
 const char* GetStrfromTStr(void)
 {
-    cpp->ErrMsg = (((TParseContext *)cpp->pC)->HashErrMsg).c_str();
-    return cpp->ErrMsg;
+    return (((TParseContext *)cpp->pC)->HashErrMsg).c_str();
 }
 
 void ResetTString(void)
