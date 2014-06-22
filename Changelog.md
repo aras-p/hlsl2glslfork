@@ -7,9 +7,9 @@ hlsl2glsl Change Log
 Fixes/Changes:
 
 * Replaced old preprocessor with a Mojoshader-based one.
-** Fixes a bunch of token pasting cases (e.g. `a.##b` or `a##b##c` was not working).
-** Fixes a bunch of macro argument cases (e.g. passing `a.b` as argument was turned into just `a`).
-** Properly reports errors when undefining or redefining `__FILE__` / `__LINE__`.
+	* Fixes a bunch of token pasting cases (e.g. `a.##b` or `a##b##c` was not working).
+	* Fixes a bunch of macro argument cases (e.g. passing `a.b` as argument was turned into just `a`).
+	* Properly reports errors when undefining or redefining `__FILE__` / `__LINE__`.
 
 2014 04
 -------
