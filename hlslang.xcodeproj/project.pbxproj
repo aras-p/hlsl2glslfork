@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2B5867EF1955EE460092978D /* mojoshader_preprocessor.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B5867ED1955EE460092978D /* mojoshader_preprocessor.c */; };
-		2B5867F11956D8390092978D /* mojoshader_common.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B5867F01956D8390092978D /* mojoshader_common.c */; };
-		2B5867F41956D8970092978D /* mojoshader_lexer.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B5867F21956D8970092978D /* mojoshader_lexer.c */; };
-		2B5867F61956D8B50092978D /* mojoshader.c in Sources */ = {isa = PBXBuildFile; fileRef = 2B5867F51956D8B50092978D /* mojoshader.c */; };
+		2B1D3C7319571AE600912D42 /* mojoshader_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B1D3C6F19571AE600912D42 /* mojoshader_common.cpp */; };
+		2B1D3C7419571AE600912D42 /* mojoshader_lexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B1D3C7019571AE600912D42 /* mojoshader_lexer.cpp */; };
+		2B1D3C7519571AE600912D42 /* mojoshader_preprocessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B1D3C7119571AE600912D42 /* mojoshader_preprocessor.cpp */; };
+		2B1D3C7619571AE600912D42 /* mojoshader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B1D3C7219571AE600912D42 /* mojoshader.cpp */; };
 		2B5867F81956E82F0092978D /* sourceloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B5867F71956E82F0092978D /* sourceloc.cpp */; };
 		2B6C96AF1639C18100CB13EE /* ConstantFolding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B6C96AE1639C18100CB13EE /* ConstantFolding.cpp */; };
 		2B951CA11135197300DBAF46 /* Gen_hlslang.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3AC10E5B0AF107780045E29C /* Gen_hlslang.cpp */; };
@@ -40,13 +40,13 @@
 
 /* Begin PBXFileReference section */
 		08FB77AAFE841565C02AAC07 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		2B1D3C6F19571AE600912D42 /* mojoshader_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mojoshader_common.cpp; path = hlslang/MachineIndependent/preprocessor/mojoshader_common.cpp; sourceTree = "<group>"; };
+		2B1D3C7019571AE600912D42 /* mojoshader_lexer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mojoshader_lexer.cpp; path = hlslang/MachineIndependent/preprocessor/mojoshader_lexer.cpp; sourceTree = "<group>"; };
+		2B1D3C7119571AE600912D42 /* mojoshader_preprocessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mojoshader_preprocessor.cpp; path = hlslang/MachineIndependent/preprocessor/mojoshader_preprocessor.cpp; sourceTree = "<group>"; };
+		2B1D3C7219571AE600912D42 /* mojoshader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = mojoshader.cpp; path = hlslang/MachineIndependent/preprocessor/mojoshader.cpp; sourceTree = "<group>"; };
 		2B5867EC1955EE460092978D /* mojoshader_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mojoshader_internal.h; path = hlslang/MachineIndependent/preprocessor/mojoshader_internal.h; sourceTree = "<group>"; };
-		2B5867ED1955EE460092978D /* mojoshader_preprocessor.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mojoshader_preprocessor.c; path = hlslang/MachineIndependent/preprocessor/mojoshader_preprocessor.c; sourceTree = "<group>"; };
 		2B5867EE1955EE460092978D /* mojoshader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mojoshader.h; path = hlslang/MachineIndependent/preprocessor/mojoshader.h; sourceTree = "<group>"; };
-		2B5867F01956D8390092978D /* mojoshader_common.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mojoshader_common.c; path = hlslang/MachineIndependent/preprocessor/mojoshader_common.c; sourceTree = "<group>"; };
-		2B5867F21956D8970092978D /* mojoshader_lexer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mojoshader_lexer.c; path = hlslang/MachineIndependent/preprocessor/mojoshader_lexer.c; sourceTree = "<group>"; };
 		2B5867F31956D8970092978D /* mojoshader_lexer.re */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = mojoshader_lexer.re; path = hlslang/MachineIndependent/preprocessor/mojoshader_lexer.re; sourceTree = "<group>"; };
-		2B5867F51956D8B50092978D /* mojoshader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mojoshader.c; path = hlslang/MachineIndependent/preprocessor/mojoshader.c; sourceTree = "<group>"; };
 		2B5867F71956E82F0092978D /* sourceloc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sourceloc.cpp; path = hlslang/MachineIndependent/preprocessor/sourceloc.cpp; sourceTree = "<group>"; };
 		2B67D1C615DFFC4D0073924D /* sourceloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sourceloc.h; path = hlslang/MachineIndependent/preprocessor/sourceloc.h; sourceTree = SOURCE_ROOT; };
 		2B6C96AE1639C18100CB13EE /* ConstantFolding.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConstantFolding.cpp; path = hlslang/MachineIndependent/ConstantFolding.cpp; sourceTree = SOURCE_ROOT; };
@@ -268,12 +268,12 @@
 			children = (
 				2B5867F71956E82F0092978D /* sourceloc.cpp */,
 				2B67D1C615DFFC4D0073924D /* sourceloc.h */,
-				2B5867F51956D8B50092978D /* mojoshader.c */,
-				2B5867F21956D8970092978D /* mojoshader_lexer.c */,
+				2B1D3C7219571AE600912D42 /* mojoshader.cpp */,
+				2B1D3C6F19571AE600912D42 /* mojoshader_common.cpp */,
+				2B1D3C7019571AE600912D42 /* mojoshader_lexer.cpp */,
 				2B5867F31956D8970092978D /* mojoshader_lexer.re */,
-				2B5867F01956D8390092978D /* mojoshader_common.c */,
 				2B5867EC1955EE460092978D /* mojoshader_internal.h */,
-				2B5867ED1955EE460092978D /* mojoshader_preprocessor.c */,
+				2B1D3C7119571AE600912D42 /* mojoshader_preprocessor.cpp */,
 				2B5867EE1955EE460092978D /* mojoshader.h */,
 			);
 			name = PreProcessor;
@@ -356,7 +356,6 @@
 				2B951CA11135197300DBAF46 /* Gen_hlslang.cpp in Sources */,
 				2B951CA21135197300DBAF46 /* glslCommon.cpp in Sources */,
 				2B951CA31135197300DBAF46 /* glslFunction.cpp in Sources */,
-				2B5867F41956D8970092978D /* mojoshader_lexer.c in Sources */,
 				2B951CA41135197300DBAF46 /* glslOutput.cpp in Sources */,
 				2B951CA51135197300DBAF46 /* glslStruct.cpp in Sources */,
 				2B951CA61135197300DBAF46 /* glslSymbol.cpp in Sources */,
@@ -365,23 +364,24 @@
 				2B951CA91135197300DBAF46 /* hlslCrossCompiler.cpp in Sources */,
 				2B951CAA1135197300DBAF46 /* hlslLinker.cpp in Sources */,
 				2B951CAB1135197300DBAF46 /* hlslSupportLib.cpp in Sources */,
-				2B5867F11956D8390092978D /* mojoshader_common.c in Sources */,
 				2B951CAC1135197300DBAF46 /* InfoSink.cpp in Sources */,
 				2B951CAD1135197300DBAF46 /* Initialize.cpp in Sources */,
+				2B1D3C7419571AE600912D42 /* mojoshader_lexer.cpp in Sources */,
 				2B951CAF1135197300DBAF46 /* Intermediate.cpp in Sources */,
 				2B951CB01135197300DBAF46 /* intermOut.cpp in Sources */,
 				2B951CB11135197300DBAF46 /* IntermTraverse.cpp in Sources */,
 				2B951CB41135197300DBAF46 /* ossource.cpp in Sources */,
+				2B1D3C7519571AE600912D42 /* mojoshader_preprocessor.cpp in Sources */,
 				2B5867F81956E82F0092978D /* sourceloc.cpp in Sources */,
+				2B1D3C7319571AE600912D42 /* mojoshader_common.cpp in Sources */,
 				2B951CB61135197300DBAF46 /* ParseHelper.cpp in Sources */,
 				2B951CB71135197300DBAF46 /* PoolAlloc.cpp in Sources */,
 				2B951CB81135197300DBAF46 /* propagateMutable.cpp in Sources */,
 				2B951CBA1135197300DBAF46 /* RemoveTree.cpp in Sources */,
-				2B5867F61956D8B50092978D /* mojoshader.c in Sources */,
 				2B951CBD1135197300DBAF46 /* SymbolTable.cpp in Sources */,
-				2B5867EF1955EE460092978D /* mojoshader_preprocessor.c in Sources */,
 				2B951CBF1135197300DBAF46 /* typeSamplers.cpp in Sources */,
 				2B6C96AF1639C18100CB13EE /* ConstantFolding.cpp in Sources */,
+				2B1D3C7619571AE600912D42 /* mojoshader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
