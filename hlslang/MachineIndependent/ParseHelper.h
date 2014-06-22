@@ -99,7 +99,6 @@ public:
 	bool inTypeParen;            // true if in parentheses, looking only for an identifier
 	const TType* currentFunctionType;  // the return type of the function that's currently being parsed
 	bool functionReturnsValue;   // true if a non-void function has a return
-	TString HashErrMsg; 
 	bool AfterEOF;
 };
 

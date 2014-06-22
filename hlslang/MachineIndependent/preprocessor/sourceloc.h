@@ -7,6 +7,7 @@ typedef struct
     int line;
 } TSourceLoc;
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,6 +20,8 @@ extern const TSourceLoc gNullSourceLoc;
 
 #ifdef __cplusplus
 #include <sstream>
+
+void SetLineNumber(TSourceLoc line, TSourceLoc& outLine);
 
 
 template<typename StreamType>

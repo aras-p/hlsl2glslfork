@@ -162,14 +162,6 @@ static bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage 
 
    symbolTable->push();
 
-   //Initialize the Preprocessor
-   int ret = InitPreprocessor();
-   if (ret)
-   {
-      infoSink.info.message(EPrefixInternalError,  "Unable to intialize the Preprocessor");
-      return false;
-   }
-
    for (TBuiltInStrings::iterator i  = BuiltInStrings[parseContext.language].begin();
        i != BuiltInStrings[parseContext.language].end();
        ++i)
@@ -187,8 +179,6 @@ static bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage 
    {
       IdentifyBuiltIns(parseContext.language, *symbolTable);
    }
-
-   FinalizePreprocessor();
 
    return true;
 }
@@ -335,7 +325,6 @@ int C_DECL Hlsl2Glsl_Parse(
 
    setInitialState();
 
-   InitPreprocessor();    
    //
    // Parse the application's shaders.  All the following symbol table
    // work will be throw-away, so push a new allocation scope that can
@@ -387,7 +376,6 @@ int C_DECL Hlsl2Glsl_Parse(
    while (! symbolTable.atSharedBuiltInLevel())
       symbolTable.pop();
 
-   FinalizePreprocessor();
    //
    // Throw away all the temporary memory used by the compilation process.
    //

@@ -28,8 +28,6 @@ private:
 };
 
 void IdentifyBuiltIns(EShLanguage, TSymbolTable&);
-extern "C" int InitPreprocessor(void);
-extern "C" int FinalizePreprocessor(void);
 
 #endif // _INITIALIZE_INCLUDED_
 

@@ -307,11 +307,56 @@ BEGIN(INITIAL);
 %%
 
 
+#include "preprocessor/mojoshader.h"
+#define __MOJOSHADER_INTERNAL__ 1
+#include "preprocessor/mojoshader_internal.h"
 
-//Including Pre-processor.
-extern "C" {
-  #include "./preprocessor/preprocess.h"
-} 
+static Preprocessor* g_cpp;
+
+const TSourceLoc gNullSourceLoc = { NULL, 0 };
+
+static int cpp_get_token (char* buf, int maxSize)
+{
+	const char *tokstr = NULL;
+	unsigned int len = 0;
+	Token token = TOKEN_UNKNOWN;
+	tokstr = preprocessor_nexttoken (g_cpp, &len, &token);
+	if (tokstr == NULL)
+		return 0;
+	
+	unsigned int line = 0;
+	const char* fname = preprocessor_sourcepos (g_cpp, &line);
+	TSourceLoc loc;
+	loc.file = fname;
+	loc.line = line;
+	SetLineNumber (loc, lexlineno);
+	
+	
+	//if (preprocessor_outofmemory(pp))
+	//	goto preprocess_out_of_mem;
+	
+	if (token == TOKEN_PREPROCESSING_ERROR)
+	{
+		//unsigned int pos = 0;
+		//const char *fname = preprocessor_sourcepos(pp, &pos);
+		//errorlist_add(errors, fname, (int) pos, tokstr);
+	}
+	else
+	{
+		if (len >= maxSize)
+		{
+			return maxSize;
+		}
+		else if (len > 0)
+		{
+			memcpy (buf, tokstr, len+1);
+			return len;
+		}
+		return 0;
+	}
+	return 0;
+} // cpp_get_token
+
 
 //
 // The YY_INPUT macro just calls this.  Maybe this could be just put into
@@ -322,9 +367,9 @@ int yy_input(char* buf, int max_size)
 {
 	int len;
 
-    if ((len = yylex_CPP(buf, max_size)) == 0)
+    if ((len = cpp_get_token(buf, max_size)) == 0)
         return 0;
-    if (len >= max_size) 
+    if (len >= max_size)
         YY_FATAL_ERROR( "input buffer overflow, can't enlarge buffer because scanner uses REJECT" );
 
     //debug code to dump the token stream to stdout
@@ -344,40 +389,57 @@ int yy_input(char* buf, int max_size)
 //
 int PaParseString(char* source, TParseContext& parseContextLocal)
 {
-    int sourceLen;
-    
-    ScanFromString(source);
-    
-    //Storing the Current Compiler Parse context into the cpp structure.
-	cpp->pC = (void*)&parseContextLocal;
+	int sourceLen;
+
+	if (!source) {
+		parseContextLocal.error(gNullSourceLoc, "Null shader source string", "", "");
+		parseContextLocal.recover();
+		return 1;
+	}
 	
-    if (!source) {
-        parseContextLocal.error(gNullSourceLoc, "Null shader source string", "", "");
-        parseContextLocal.recover();
-        return 1;
-    }
-    
-    sourceLen = (int) strlen(source);
-    
+	sourceLen = (int) strlen(source);
+	
+	Preprocessor* pp = preprocessor_start("", source, sourceLen,
+		NULL, // open callback
+		NULL, // close callback
+		NULL, // defines
+		0, // define count
+		0, // not asm comments
+		MOJOSHADER_internal_malloc,
+		MOJOSHADER_internal_free,
+		NULL);
+	g_cpp = pp;
+	
     yyrestart(0);
     (&parseContextLocal)->AfterEOF = false;
 	lexlineno.file = NULL;
     lexlineno.line = 1;
+	
+	int result = 0;
    
-    if (sourceLen >= 0) {
+    if (sourceLen >= 0)
+	{
         int ret;
         #ifdef _WIN32
             ret = yyparse(parseContextLocal);            
         #else
             ret = yyparse((void*)(&parseContextLocal));
         #endif
-        if (cpp->CompileError == 1 || parseContextLocal.recoveredFromError || parseContextLocal.numErrors > 0)
-             return 1;
+		//@TODO
+        if (/*cpp->CompileError == 1 ||*/ parseContextLocal.recoveredFromError || parseContextLocal.numErrors > 0)
+             result = 1;
         else
-             return 0;
+             result = 0;
     }
     else
-        return 0;
+	{
+        result = 0;
+	}
+	
+	preprocessor_end (pp);
+	g_cpp = NULL;
+	
+	return result;
 }
 
 void yyerror(const char *s)
@@ -440,80 +502,19 @@ extern "C" {
 
 void CPPWarningToInfoLog(const char *msg)
 {
-    ((TParseContext *)cpp->pC)->infoSink.info.message(EPrefixWarning, msg, lexlineno); 
+    //((TParseContext *)cpp->pC)->infoSink.info.message(EPrefixWarning, msg, lexlineno);
 }
 
 void CPPShInfoLogMsg(const char *msg)
 {
-    ((TParseContext *)cpp->pC)->error(lexlineno,"", "",msg,"");
+    //((TParseContext *)cpp->pC)->error(lexlineno,"", "",msg,"");
     GlobalParseContext->recover();
 }
 
 void CPPErrorToInfoLog(char *msg)
 {
-    ((TParseContext *)cpp->pC)->error(lexlineno,"syntax error", "",msg,"");
+    //((TParseContext *)cpp->pC)->error(lexlineno,"syntax error", "",msg,"");
     GlobalParseContext->recover();
-}
-
-void SetLineNumber(TSourceLoc line)
-{
-    lexlineno.file = NULL;
-    lexlineno.line = line.line;
-    
-    if(line.file && line.file[0])
-    {
-	    // GLSL does not permit quoted strings in #line directives
-    
-	    if(line.file[0] == '"')
-	    {
-	        TString stripped(line.file + 1);
-	        size_t len = stripped.size();
-	        if(stripped[len - 1] == '"')
-	        {
-	            stripped.resize(len - 1);
-	        }
-	        
-	        lexlineno.file = NewPoolTString(stripped.c_str())->c_str();
-	    }
-	    else
-	    {
-	        lexlineno.file = NewPoolTString(line.file)->c_str();
-	    }
-	}
-}
-
-const TSourceLoc GetLineNumber(void)
-{
-    return lexlineno;
-}
-
-void IncLineNumber(void)
-{
-    ++lexlineno.line;
-}
-
-void DecLineNumber(void)
-{
-    if (lexlineno.line > 0)
-        --lexlineno.line;
-}
-
-void StoreStr(char *string)
-{
-    TString strSrc;
-    strSrc = TString(string);
-
-    ((TParseContext *)cpp->pC)->HashErrMsg = ((TParseContext *)cpp->pC)->HashErrMsg + " " + strSrc;
-}
-
-const char* GetStrfromTStr(void)
-{
-    return (((TParseContext *)cpp->pC)->HashErrMsg).c_str();
-}
-
-void ResetTString(void)
-{
-    ((TParseContext *)cpp->pC)->HashErrMsg = "";
 }
 
 }  // extern "C"
