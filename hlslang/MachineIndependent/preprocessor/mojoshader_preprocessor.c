@@ -870,6 +870,8 @@ static void handle_pp_line(Context *ctx)
         filename = (char *) alloca(state->tokenlen);
         memcpy(filename, state->token, state->tokenlen-1);
         filename[state->tokenlen-1] = '\0';
+		if (state->tokenlen>=2 && filename[state->tokenlen-2] == '"')
+			filename[state->tokenlen-2] = '\0';
         bogus = !require_newline(state);
     } // if
 

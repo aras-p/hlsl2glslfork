@@ -103,7 +103,7 @@ scanner_loop:
     (['] (ESC|ANY\[\r\n\\'])* ['])
                     { RET(TOKEN_INT_LITERAL); }
     
-    (D+ E FS?) | (D* "." D+ E? FS?) | (D+ "." D* E? FS?)
+    (D+ E FS?) | (D* "." D+ E? FS?) | (D+ "." D* E? FS?) | (D+ FS)
                     { RET(TOKEN_FLOAT_LITERAL); }
     
     (["] (ESC|ANY\[\r\n\\"])* ["])
