@@ -24,19 +24,19 @@ extern "C" {
  *  callbacks, in case you need instance-specific data...it is passed through
  *  to your allocator unmolested, and can be NULL if you like.
  */
-typedef void *(*MOJOSHADER_malloc)(int bytes, void *data);
-typedef void (*MOJOSHADER_free)(void *ptr, void *data);
+typedef void *(*MOJOSHADER_hlslang_malloc)(int bytes, void *data);
+typedef void (*MOJOSHADER_hlslang_free)(void *ptr, void *data);
 
 
 
 /*
- * These are used with MOJOSHADER_error as special case positions.
+ * These are used with MOJOSHADER_hlslang_error as special case positions.
  */
-#define MOJOSHADER_POSITION_NONE (-3)
-#define MOJOSHADER_POSITION_BEFORE (-2)
-#define MOJOSHADER_POSITION_AFTER (-1)
+#define MOJOSHADER_hlslang_POSITION_NONE (-3)
+#define MOJOSHADER_hlslang_POSITION_BEFORE (-2)
+#define MOJOSHADER_hlslang_POSITION_AFTER (-1)
 
-typedef struct MOJOSHADER_error
+typedef struct MOJOSHADER_hlslang_error
 {
     /*
      * Human-readable error, if there is one. Will be NULL if there was no
@@ -52,17 +52,17 @@ typedef struct MOJOSHADER_error
     const char *filename;
 
     /*
-     * Position of error, if there is one. Will be MOJOSHADER_POSITION_NONE if
-     *  there was no error, MOJOSHADER_POSITION_BEFORE if there was an error
-     *  before processing started, and MOJOSHADER_POSITION_AFTER if there was
-     *  an error during final processing. If >= 0, MOJOSHADER_parse() sets
+     * Position of error, if there is one. Will be MOJOSHADER_hlslang_POSITION_NONE if
+     *  there was no error, MOJOSHADER_hlslang_POSITION_BEFORE if there was an error
+     *  before processing started, and MOJOSHADER_hlslang_POSITION_AFTER if there was
+     *  an error during final processing. If >= 0, MOJOSHADER_hlslang_parse() sets
      *  this to the byte offset (starting at zero) into the bytecode you
-     *  supplied, and MOJOSHADER_assemble(), MOJOSHADER_parseAst(), and
-     *  MOJOSHADER_compile() sets this to a a line number in the source code
+     *  supplied, and MOJOSHADER_hlslang_assemble(), MOJOSHADER_hlslang_parseAst(), and
+     *  MOJOSHADER_hlslang_compile() sets this to a a line number in the source code
      *  you supplied (starting at one).
      */
     int error_position;
-} MOJOSHADER_error;
+} MOJOSHADER_hlslang_error;
 
 
 
@@ -73,20 +73,20 @@ typedef struct MOJOSHADER_error
  * Structure used to pass predefined macros. Maps to D3DXMACRO.
  *  You can have macro arguments: set identifier to "a(b, c)" or whatever.
  */
-typedef struct MOJOSHADER_preprocessorDefine
+typedef struct MOJOSHADER_hlslang_preprocessorDefine
 {
     const char *identifier;
     const char *definition;
-} MOJOSHADER_preprocessorDefine;
+} MOJOSHADER_hlslang_preprocessorDefine;
 
 /*
- * Used with the MOJOSHADER_includeOpen callback. Maps to D3DXINCLUDE_TYPE.
+ * Used with the MOJOSHADER_hlslang_includeOpen callback. Maps to D3DXINCLUDE_TYPE.
  */
 typedef enum
 {
-    MOJOSHADER_INCLUDETYPE_LOCAL,   /* local header: #include "blah.h" */
-    MOJOSHADER_INCLUDETYPE_SYSTEM   /* system header: #include <blah.h> */
-} MOJOSHADER_includeType;
+    MOJOSHADER_hlslang_INCLUDETYPE_LOCAL,   /* local header: #include "blah.h" */
+    MOJOSHADER_hlslang_INCLUDETYPE_SYSTEM   /* system header: #include <blah.h> */
+} MOJOSHADER_hlslang_includeType;
 
 
 
@@ -122,10 +122,10 @@ typedef enum
  *
  * If you supply an includeOpen callback, you must supply includeClose, too.
  */
-typedef int (*MOJOSHADER_includeOpen)(MOJOSHADER_includeType inctype,
+typedef int (*MOJOSHADER_hlslang_includeOpen)(MOJOSHADER_hlslang_includeType inctype,
                             const char *fname, const char *parent,
                             const char **outdata, unsigned int *outbytes,
-                            MOJOSHADER_malloc m, MOJOSHADER_free f, void *d);
+                            MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d);
 
 /*
  * This callback allows an app to clean up the results of a previous
@@ -140,8 +140,8 @@ typedef int (*MOJOSHADER_includeOpen)(MOJOSHADER_includeType inctype,
  *
  * If you supply an includeClose callback, you must supply includeOpen, too.
  */
-typedef void (*MOJOSHADER_includeClose)(const char *data,
-                            MOJOSHADER_malloc m, MOJOSHADER_free f, void *d);
+typedef void (*MOJOSHADER_hlslang_includeClose)(const char *data,
+                            MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d);
 
 
 

@@ -409,8 +409,8 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
 		NULL, // close callback
 		NULL, // defines
 		0, // define count
-		MOJOSHADER_internal_malloc,
-		MOJOSHADER_internal_free,
+		MOJOSHADER_hlslang_internal_malloc,
+		MOJOSHADER_hlslang_internal_free,
 		NULL);
 	g_cpp = pp;
 	g_parseContext = &parseContextLocal;

@@ -14,7 +14,7 @@
 
 #if DEBUG_PREPROCESSOR
     #define print_debug_token(token, len, val) \
-        MOJOSHADER_print_debug_token("PREPROCESSOR", token, len, val)
+        MOJOSHADER_hlslang_print_debug_token("PREPROCESSOR", token, len, val)
 #else
     #define print_debug_token(token, len, val)
 #endif
@@ -23,7 +23,7 @@
 static Token debug_preprocessor_lexer(IncludeState *s)
 {
     const Token retval = preprocessor_lexer(s);
-    MOJOSHADER_print_debug_token("LEXER", s->token, s->tokenlen, retval);
+    MOJOSHADER_hlslang_print_debug_token("LEXER", s->token, s->tokenlen, retval);
     return retval;
 } // debug_preprocessor_lexer
 #define preprocessor_lexer(s) debug_preprocessor_lexer(s)
@@ -53,10 +53,10 @@ typedef struct Context
     Define *file_macro;
     Define *line_macro;
     StringCache *filename_cache;
-    MOJOSHADER_includeOpen open_callback;
-    MOJOSHADER_includeClose close_callback;
-    MOJOSHADER_malloc malloc;
-    MOJOSHADER_free free;
+    MOJOSHADER_hlslang_includeOpen open_callback;
+    MOJOSHADER_hlslang_includeClose close_callback;
+    MOJOSHADER_hlslang_malloc malloc;
+    MOJOSHADER_hlslang_free free;
     void *malloc_data;
 } Context;
 
@@ -116,7 +116,7 @@ static inline void fail(Context *ctx, const char *reason)
 
 
 #if DEBUG_TOKENIZER
-void MOJOSHADER_print_debug_token(const char *subsystem, const char *token,
+void MOJOSHADER_hlslang_print_debug_token(const char *subsystem, const char *token,
                                   const unsigned int tokenlen,
                                   const Token tokenval)
 {
@@ -192,12 +192,12 @@ void MOJOSHADER_print_debug_token(const char *subsystem, const char *token,
             break;
     } // switch
     printf(")\n");
-} // MOJOSHADER_print_debug_token
+} // MOJOSHADER_hlslang_print_debug_token
 #endif
 
 
 
-#if !MOJOSHADER_FORCE_INCLUDE_CALLBACKS
+#if !MOJOSHADER_hlslang_FORCE_INCLUDE_CALLBACKS
 
 // !!! FIXME: most of these _MSC_VER should probably be _WINDOWS?
 #ifdef _MSC_VER
@@ -209,11 +209,11 @@ void MOJOSHADER_print_debug_token(const char *subsystem, const char *token,
 #include <unistd.h>
 #endif
 
-int MOJOSHADER_internal_include_open(MOJOSHADER_includeType inctype,
+int MOJOSHADER_hlslang_internal_include_open(MOJOSHADER_hlslang_includeType inctype,
                                      const char *fname, const char *parent,
                                      const char **outdata,
                                      unsigned int *outbytes,
-                                     MOJOSHADER_malloc m, MOJOSHADER_free f,
+                                     MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f,
                                      void *d)
 {
 #ifdef _MSC_VER
@@ -283,15 +283,15 @@ int MOJOSHADER_internal_include_open(MOJOSHADER_includeType inctype,
     *outbytes = (unsigned int) statbuf.st_size;
     return 1;
 #endif
-} // MOJOSHADER_internal_include_open
+} // MOJOSHADER_hlslang_internal_include_open
 
 
-void MOJOSHADER_internal_include_close(const char *data, MOJOSHADER_malloc m,
-                                       MOJOSHADER_free f, void *d)
+void MOJOSHADER_hlslang_internal_include_close(const char *data, MOJOSHADER_hlslang_malloc m,
+                                       MOJOSHADER_hlslang_free f, void *d)
 {
     f((void *) data, d);
-} // MOJOSHADER_internal_include_close
-#endif  // !MOJOSHADER_FORCE_INCLUDE_CALLBACKS
+} // MOJOSHADER_hlslang_internal_include_close
+#endif  // !MOJOSHADER_hlslang_FORCE_INCLUDE_CALLBACKS
 
 
 // !!! FIXME: maybe use these pool magic elsewhere?
@@ -529,7 +529,7 @@ static void put_all_defines(Context *ctx)
 
 static int push_source(Context *ctx, const char *fname, const char *source,
                        unsigned int srclen, unsigned int linenum,
-                       MOJOSHADER_includeClose close_callback)
+                       MOJOSHADER_hlslang_includeClose close_callback)
 {
     IncludeState *state = get_include(ctx);
     if (state == NULL)
@@ -594,8 +594,8 @@ static void pop_source(Context *ctx)
 } // pop_source
 
 
-static void close_define_include(const char *data, MOJOSHADER_malloc m,
-                                 MOJOSHADER_free f, void *d)
+static void close_define_include(const char *data, MOJOSHADER_hlslang_malloc m,
+                                 MOJOSHADER_hlslang_free f, void *d)
 {
     f((void *) data, d);
 } // close_define_include
@@ -603,11 +603,11 @@ static void close_define_include(const char *data, MOJOSHADER_malloc m,
 
 Preprocessor *preprocessor_start(const char *fname, const char *source,
                             unsigned int sourcelen,
-                            MOJOSHADER_includeOpen open_callback,
-                            MOJOSHADER_includeClose close_callback,
-                            const MOJOSHADER_preprocessorDefine *defines,
+                            MOJOSHADER_hlslang_includeOpen open_callback,
+                            MOJOSHADER_hlslang_includeClose close_callback,
+                            const MOJOSHADER_hlslang_preprocessorDefine *defines,
                             unsigned int define_count,
-                            MOJOSHADER_malloc m, MOJOSHADER_free f, void *d)
+                            MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
 {
     int okay = 1;
     unsigned int i = 0;
@@ -756,15 +756,15 @@ static void handle_pp_include(Context *ctx)
 {
     IncludeState *state = ctx->include_stack;
     Token token = lexer(state);
-    MOJOSHADER_includeType incltype;
+    MOJOSHADER_hlslang_includeType incltype;
     char *filename = NULL;
     int bogus = 0;
 
     if (token == TOKEN_STRING_LITERAL)
-        incltype = MOJOSHADER_INCLUDETYPE_LOCAL;
+        incltype = MOJOSHADER_hlslang_INCLUDETYPE_LOCAL;
     else if (token == ((Token) '<'))
     {
-        incltype = MOJOSHADER_INCLUDETYPE_SYSTEM;
+        incltype = MOJOSHADER_hlslang_INCLUDETYPE_SYSTEM;
         // can't use lexer, since every byte between the < > pair is
         //  considered part of the filename.  :/
         while (!bogus)
@@ -820,7 +820,7 @@ static void handle_pp_include(Context *ctx)
         return;
     } // if
 
-    MOJOSHADER_includeClose callback = ctx->close_callback;
+    MOJOSHADER_hlslang_includeClose callback = ctx->close_callback;
     if (!push_source(ctx, filename, newdata, newbytes, 1, callback))
     {
         assert(ctx->out_of_memory);

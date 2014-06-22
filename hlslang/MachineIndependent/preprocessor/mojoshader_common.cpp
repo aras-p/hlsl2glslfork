@@ -20,8 +20,8 @@ struct HashTable
     HashTable_HashFn hash;
     HashTable_KeyMatchFn keymatch;
     HashTable_NukeFn nuke;
-    MOJOSHADER_malloc m;
-    MOJOSHADER_free f;
+    MOJOSHADER_hlslang_malloc m;
+    MOJOSHADER_hlslang_free f;
     void *d;
 };
 
@@ -87,7 +87,7 @@ HashTable *hash_create(void *data, const HashTable_HashFn hashfn,
               const HashTable_KeyMatchFn keymatchfn,
               const HashTable_NukeFn nukefn,
               const int stackable,
-              MOJOSHADER_malloc m, MOJOSHADER_free f, void *d)
+              MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
 {
     const uint32 initial_table_size = 256;
     const uint32 alloc_len = sizeof (HashItem *) * initial_table_size;
@@ -120,7 +120,7 @@ void hash_destroy(HashTable *table)
 {
     uint32 i;
     void *data = table->data;
-    MOJOSHADER_free f = table->f;
+    MOJOSHADER_hlslang_free f = table->f;
     void *d = table->d;
     for (i = 0; i < table->table_len; i++)
     {
@@ -193,8 +193,8 @@ struct StringCache
 {
     StringBucket **hashtable;
     uint32 table_size;
-    MOJOSHADER_malloc m;
-    MOJOSHADER_free f;
+    MOJOSHADER_hlslang_malloc m;
+    MOJOSHADER_hlslang_free f;
     void *d;
 };
 
@@ -259,7 +259,7 @@ const char *stringcache_len(StringCache *cache, const char *str,
 } // stringcache_len
 
 
-StringCache *stringcache_create(MOJOSHADER_malloc m, MOJOSHADER_free f, void *d)
+StringCache *stringcache_create(MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
 {
     const uint32 initial_table_size = 256;
     const size_t tablelen = sizeof (StringBucket *) * initial_table_size;
@@ -288,7 +288,7 @@ void stringcache_destroy(StringCache *cache)
     if (cache == NULL)
         return;
 
-    MOJOSHADER_free f = cache->f;
+    MOJOSHADER_hlslang_free f = cache->f;
     void *d = cache->d;
     size_t i;
 
@@ -314,7 +314,7 @@ void stringcache_destroy(StringCache *cache)
 //  These get flattened before passing to the application.
 typedef struct ErrorItem
 {
-    MOJOSHADER_error error;
+    MOJOSHADER_hlslang_error error;
     struct ErrorItem *next;
 } ErrorItem;
 
@@ -323,12 +323,12 @@ struct ErrorList
     ErrorItem head;
     ErrorItem *tail;
     int count;
-    MOJOSHADER_malloc m;
-    MOJOSHADER_free f;
+    MOJOSHADER_hlslang_malloc m;
+    MOJOSHADER_hlslang_free f;
     void *d;
 };
 
-ErrorList *errorlist_create(MOJOSHADER_malloc m, MOJOSHADER_free f, void *d)
+ErrorList *errorlist_create(MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
 {
     ErrorList *retval = (ErrorList *) m(sizeof (ErrorList), d);
     if (retval != NULL)
@@ -426,14 +426,14 @@ int errorlist_count(ErrorList *list)
 } // errorlist_count
 
 
-MOJOSHADER_error *errorlist_flatten(ErrorList *list)
+MOJOSHADER_hlslang_error *errorlist_flatten(ErrorList *list)
 {
     if (list->count == 0)
         return NULL;
 
     int total = 0;
-    MOJOSHADER_error *retval = (MOJOSHADER_error *)
-            list->m(sizeof (MOJOSHADER_error) * list->count, list->d);
+    MOJOSHADER_hlslang_error *retval = (MOJOSHADER_hlslang_error *)
+            list->m(sizeof (MOJOSHADER_hlslang_error) * list->count, list->d);
     if (retval == NULL)
         return NULL;
 
@@ -442,7 +442,7 @@ MOJOSHADER_error *errorlist_flatten(ErrorList *list)
     {
         ErrorItem *next = item->next;
         // reuse the string allocations
-        memcpy(&retval[total], &item->error, sizeof (MOJOSHADER_error));
+        memcpy(&retval[total], &item->error, sizeof (MOJOSHADER_hlslang_error));
         list->f(item, list->d);
         item = next;
         total++;
@@ -461,7 +461,7 @@ void errorlist_destroy(ErrorList *list)
     if (list == NULL)
         return;
 
-    MOJOSHADER_free f = list->f;
+    MOJOSHADER_hlslang_free f = list->f;
     void *d = list->d;
     ErrorItem *item = list->head.next;
     while (item != NULL)
@@ -489,13 +489,13 @@ struct Buffer
     BufferBlock *head;
     BufferBlock *tail;
     size_t block_size;
-    MOJOSHADER_malloc m;
-    MOJOSHADER_free f;
+    MOJOSHADER_hlslang_malloc m;
+    MOJOSHADER_hlslang_free f;
     void *d;
 };
 
-Buffer *buffer_create(size_t blksz, MOJOSHADER_malloc m,
-                      MOJOSHADER_free f, void *d)
+Buffer *buffer_create(size_t blksz, MOJOSHADER_hlslang_malloc m,
+                      MOJOSHADER_hlslang_free f, void *d)
 {
     Buffer *buffer = (Buffer *) m(sizeof (Buffer), d);
     if (buffer != NULL)
@@ -645,7 +645,7 @@ void buffer_destroy(Buffer *buffer)
 {
     if (buffer != NULL)
     {
-        MOJOSHADER_free f = buffer->f;
+        MOJOSHADER_hlslang_free f = buffer->f;
         void *d = buffer->d;
         buffer_empty(buffer);
         f(buffer, d);

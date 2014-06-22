@@ -99,7 +99,7 @@ HashTable *hash_create(void *data, const HashTable_HashFn hashfn,
                        const HashTable_KeyMatchFn keymatchfn,
                        const HashTable_NukeFn nukefn,
                        const int stackable,
-                       MOJOSHADER_malloc m, MOJOSHADER_free f, void *d);
+                       MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d);
 void hash_destroy(HashTable *table);
 int hash_insert(HashTable *table, const void *key, const void *value);
 int hash_remove(HashTable *table, const void *key);
@@ -110,7 +110,7 @@ int hash_find(const HashTable *table, const void *key, const void **_value);
 // String caching...
 
 typedef struct StringCache StringCache;
-StringCache *stringcache_create(MOJOSHADER_malloc m,MOJOSHADER_free f,void *d);
+StringCache *stringcache_create(MOJOSHADER_hlslang_malloc m,MOJOSHADER_hlslang_free f,void *d);
 const char *stringcache(StringCache *cache, const char *str);
 const char *stringcache_len(StringCache *cache, const char *str,
                             const unsigned int len);
@@ -120,7 +120,7 @@ void stringcache_destroy(StringCache *cache);
 // Error lists...
 
 typedef struct ErrorList ErrorList;
-ErrorList *errorlist_create(MOJOSHADER_malloc m, MOJOSHADER_free f, void *d);
+ErrorList *errorlist_create(MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d);
 int errorlist_add(ErrorList *list, const char *fname,
                       const int errpos, const char *str);
 int errorlist_add_fmt(ErrorList *list, const char *fname,
@@ -128,7 +128,7 @@ int errorlist_add_fmt(ErrorList *list, const char *fname,
 int errorlist_add_va(ErrorList *list, const char *_fname,
                      const int errpos, const char *fmt, va_list va);
 int errorlist_count(ErrorList *list);
-MOJOSHADER_error *errorlist_flatten(ErrorList *list); // resets the list!
+MOJOSHADER_hlslang_error *errorlist_flatten(ErrorList *list); // resets the list!
 void errorlist_destroy(ErrorList *list);
 
 
@@ -136,7 +136,7 @@ void errorlist_destroy(ErrorList *list);
 // Dynamic buffers...
 
 typedef struct Buffer Buffer;
-Buffer *buffer_create(size_t blksz,MOJOSHADER_malloc m,MOJOSHADER_free f,void *d);
+Buffer *buffer_create(size_t blksz,MOJOSHADER_hlslang_malloc m,MOJOSHADER_hlslang_free f,void *d);
 int buffer_append(Buffer *buffer, const void *_data, size_t len);
 int buffer_append_fmt(Buffer *buffer, const char *fmt, ...) ISPRINTF(2,3);
 int buffer_append_va(Buffer *buffer, const char *fmt, va_list va);
@@ -149,32 +149,32 @@ void buffer_destroy(Buffer *buffer);
 
 // #define this to force app to supply an allocator, so there's no reference
 //  to the C runtime's malloc() and free()...
-#if MOJOSHADER_FORCE_ALLOCATOR
-#define MOJOSHADER_internal_malloc NULL
-#define MOJOSHADER_internal_free NULL
+#if MOJOSHADER_hlslang_FORCE_ALLOCATOR
+#define MOJOSHADER_hlslang_internal_malloc NULL
+#define MOJOSHADER_hlslang_internal_free NULL
 #else
-void *MOJOSHADER_internal_malloc(int bytes, void *d);
-void MOJOSHADER_internal_free(void *ptr, void *d);
+void *MOJOSHADER_hlslang_internal_malloc(int bytes, void *d);
+void MOJOSHADER_hlslang_internal_free(void *ptr, void *d);
 #endif
 
-#if MOJOSHADER_FORCE_INCLUDE_CALLBACKS
-#define MOJOSHADER_internal_include_open NULL
-#define MOJOSHADER_internal_include_close NULL
+#if MOJOSHADER_hlslang_FORCE_INCLUDE_CALLBACKS
+#define MOJOSHADER_hlslang_internal_include_open NULL
+#define MOJOSHADER_hlslang_internal_include_close NULL
 #else
-int MOJOSHADER_internal_include_open(MOJOSHADER_includeType inctype,
+int MOJOSHADER_hlslang_internal_include_open(MOJOSHADER_hlslang_includeType inctype,
                                      const char *fname, const char *parent,
                                      const char **outdata,
                                      unsigned int *outbytes,
-                                     MOJOSHADER_malloc m, MOJOSHADER_free f,
+                                     MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f,
                                      void *d);
 
-void MOJOSHADER_internal_include_close(const char *data, MOJOSHADER_malloc m,
-                                       MOJOSHADER_free f, void *d);
+void MOJOSHADER_hlslang_internal_include_close(const char *data, MOJOSHADER_hlslang_malloc m,
+                                       MOJOSHADER_hlslang_free f, void *d);
 #endif
 
 
 
-extern MOJOSHADER_error MOJOSHADER_out_of_mem_error;
+extern MOJOSHADER_hlslang_error MOJOSHADER_hlslang_out_of_mem_error;
 
 
 // preprocessor stuff.
@@ -286,7 +286,7 @@ typedef struct IncludeState
     unsigned int bytes_left;
     unsigned int line;
     Conditional *conditional_stack;
-    MOJOSHADER_includeClose close_callback;
+    MOJOSHADER_hlslang_includeClose close_callback;
     struct IncludeState *next;
 } IncludeState;
 
@@ -296,11 +296,11 @@ Token preprocessor_lexer(IncludeState *s);
 //  error code...NULL on failure.
 Preprocessor *preprocessor_start(const char *fname, const char *source,
                             unsigned int sourcelen,
-                            MOJOSHADER_includeOpen open_callback,
-                            MOJOSHADER_includeClose close_callback,
-                            const MOJOSHADER_preprocessorDefine *defines,
+                            MOJOSHADER_hlslang_includeOpen open_callback,
+                            MOJOSHADER_hlslang_includeClose close_callback,
+                            const MOJOSHADER_hlslang_preprocessorDefine *defines,
                             unsigned int define_count,
-                            MOJOSHADER_malloc m, MOJOSHADER_free f, void *d);
+                            MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d);
 
 void preprocessor_end(Preprocessor *pp);
 int preprocessor_outofmemory(Preprocessor *pp);
@@ -309,7 +309,7 @@ const char *preprocessor_nexttoken(Preprocessor *_ctx,
 const char *preprocessor_sourcepos(Preprocessor *pp, unsigned int *pos);
 
 
-void MOJOSHADER_print_debug_token(const char *subsystem, const char *token,
+void MOJOSHADER_hlslang_print_debug_token(const char *subsystem, const char *token,
                                   const unsigned int tokenlen,
                                   const Token tokenval);
 	
