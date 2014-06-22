@@ -430,8 +430,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
         #else
             ret = yyparse((void*)(&parseContextLocal));
         #endif
-		//@TODO
-        if (/*cpp->CompileError == 1 ||*/ parseContextLocal.recoveredFromError || parseContextLocal.numErrors > 0)
+        if (parseContextLocal.recoveredFromError || parseContextLocal.numErrors > 0)
              result = 1;
         else
              result = 0;
@@ -505,26 +504,6 @@ int PaParseComment(TSourceLoc &lineno, TParseContext& parseContextLocal)
     return 1;
 }
 
-extern "C" {
-
-void CPPWarningToInfoLog(const char *msg)
-{
-    //((TParseContext *)cpp->pC)->infoSink.info.message(EPrefixWarning, msg, lexlineno);
-}
-
-void CPPShInfoLogMsg(const char *msg)
-{
-    //((TParseContext *)cpp->pC)->error(lexlineno,"", "",msg,"");
-    GlobalParseContext->recover();
-}
-
-void CPPErrorToInfoLog(char *msg)
-{
-    //((TParseContext *)cpp->pC)->error(lexlineno,"syntax error", "",msg,"");
-    GlobalParseContext->recover();
-}
-
-}  // extern "C"
 
 void setInitialState()
 {
