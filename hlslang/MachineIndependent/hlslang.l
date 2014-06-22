@@ -329,6 +329,7 @@ static int cpp_get_token (Preprocessor* pp, char* buf, int maxSize)
 	{
 		g_parseContext->error (gNullSourceLoc, "out of memory", "", "");
 		GlobalParseContext->recover();
+		buf[0] = 0;
 		return 0;
 	}	
 	
@@ -343,6 +344,7 @@ static int cpp_get_token (Preprocessor* pp, char* buf, int maxSize)
 	{
 		g_parseContext->error (lexlineno, tokstr, "", "");
 		GlobalParseContext->recover();
+		buf[0] = 0;
 	}
 	else
 	{
@@ -448,7 +450,8 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
 
 void yyerror(const char *s)
 {
-	GlobalParseContext->error(lexlineno, "syntax error", yytext, s, "");
+
+	GlobalParseContext->error(lexlineno, "syntax error", GlobalParseContext->AfterEOF ? "" : yytext, s, "");
 	GlobalParseContext->recover();
 }
 
