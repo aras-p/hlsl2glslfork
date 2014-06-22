@@ -1012,6 +1012,9 @@ static void handle_pp_define(Context *ctx)
     int params = 0;
     char **idents = NULL;
     static const char space = ' ';
+	int hashhash_error = 0;
+	Buffer *buffer = NULL;
+	size_t buflen = 0;
 
     if (state->tokenval == ((Token) ' '))
         lexer(state);  // skip it.
@@ -1082,7 +1085,7 @@ static void handle_pp_define(Context *ctx)
 
     pushback(state);
 
-    Buffer *buffer = buffer_create(128, MallocBridge, FreeBridge, ctx);
+    buffer = buffer_create(128, MallocBridge, FreeBridge, ctx);
 
     state->report_whitespace = 1;
     while ((!done) && (!ctx->out_of_memory))
@@ -1112,7 +1115,7 @@ static void handle_pp_define(Context *ctx)
     } // while
     state->report_whitespace = 0;
 
-    size_t buflen = buffer_size(buffer) + 1;
+    buflen = buffer_size(buffer) + 1;
     if (!ctx->out_of_memory)
         definition = buffer_flatten(buffer);
 
@@ -1121,7 +1124,7 @@ static void handle_pp_define(Context *ctx)
     if (ctx->out_of_memory)
         goto handle_pp_define_failed;
 
-    int hashhash_error = 0;
+    hashhash_error = 0;
     if ((buflen > 2) && (definition[0] == '#') && (definition[1] == '#'))
     {
         hashhash_error = 1;
@@ -1388,6 +1391,8 @@ static int handle_macro_args(Context *ctx, const char *sym, const Define *def)
     const int expected = (def->paramcount < 0) ? 0 : def->paramcount;
     int saw_params = 0;
     IncludeState saved;  // can't pushback, we need the original token.
+	int void_call = 0;
+	int paren = 1;
     memcpy(&saved, state, sizeof (IncludeState));
     if (lexer(state) != ((Token) '('))
     {
@@ -1397,8 +1402,6 @@ static int handle_macro_args(Context *ctx, const char *sym, const Define *def)
 
     state->report_whitespace = 1;
 
-    int void_call = 0;
-    int paren = 1;
     while (paren > 0)
     {
         Buffer *buffer = buffer_create(128, MallocBridge, FreeBridge, ctx);
