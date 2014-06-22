@@ -7,7 +7,6 @@ set(CMAKE_SUPPRESS_REGENERATION TRUE)
 set(HEADER_FILES
   hlslang/Include/BaseTypes.h
   hlslang/Include/Common.h
-  #hlslang/Include/ConstantUnion.h
   hlslang/Include/InfoSink.h
   hlslang/Include/InitializeGlobals.h
   hlslang/Include/InitializeParseContext.h
@@ -74,23 +73,14 @@ set(MACHINE_INDEPENDENT_FILES
 source_group("Machine Independent" FILES ${MACHINE_INDEPENDENT_FILES})
 
 set(MACHINE_INDEPENDENT_CPP_FILES
-  hlslang/MachineIndependent/preprocessor/atom.c
-  hlslang/MachineIndependent/preprocessor/atom.h
-  hlslang/MachineIndependent/preprocessor/compile.h
-  hlslang/MachineIndependent/preprocessor/cpp.c
-  hlslang/MachineIndependent/preprocessor/cpp.h
-  hlslang/MachineIndependent/preprocessor/cppstruct.c
-  hlslang/MachineIndependent/preprocessor/memory.c
-  hlslang/MachineIndependent/preprocessor/memory.h
-  hlslang/MachineIndependent/preprocessor/parser.h
-  hlslang/MachineIndependent/preprocessor/preprocess.h
-  hlslang/MachineIndependent/preprocessor/scanner.c
-  hlslang/MachineIndependent/preprocessor/scanner.h
-  hlslang/MachineIndependent/preprocessor/slglobals.h
-  hlslang/MachineIndependent/preprocessor/symbols.c
-  hlslang/MachineIndependent/preprocessor/symbols.h
-  hlslang/MachineIndependent/preprocessor/tokens.c
-  hlslang/MachineIndependent/preprocessor/tokens.h
+  hlslang/MachineIndependent/preprocessor/mojoshader_common.cpp
+  hlslang/MachineIndependent/preprocessor/mojoshader_internal.h
+  hlslang/MachineIndependent/preprocessor/mojoshader_lexer.cpp
+  hlslang/MachineIndependent/preprocessor/mojoshader_preprocessor.cpp
+  hlslang/MachineIndependent/preprocessor/mojoshader.cpp
+  hlslang/MachineIndependent/preprocessor/mojoshader.h
+  hlslang/MachineIndependent/preprocessor/sourceloc.cpp
+  hlslang/MachineIndependent/preprocessor/sourceloc.h
 )
 
 source_group("Machine Independent\\CPP" FILES ${MACHINE_INDEPENDENT_CPP_FILES})
