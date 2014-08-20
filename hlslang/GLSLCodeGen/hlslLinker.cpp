@@ -356,6 +356,16 @@ void HlslLinker::getAttributeName( GlslSymbolOrStructMemberBase const* symOrStru
 	}
 }
 
+
+static bool IsArgumentForFramebufferFetch(const GlslSymbolOrStructMemberBase* sym, EAttribSemantic semantic, ETargetVersion target)
+{
+	return
+		((sym->getQualifier() == EqtInOut) &&
+		 (semantic >= EAttrSemColor0 && semantic <= EAttrSemColor3) &&
+		 (target == ETargetGLSL_ES_100 || target == ETargetGLSL_ES_300));
+}
+
+
 bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStructMember,
 								 EClassifier c, std::string &outName, std::string &ctor, int &pad, int semanticOffset)
 {
@@ -457,8 +467,18 @@ bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStru
 			break;
 
 		case EClassVarIn:
+			// inout COLORn variables translate to framebuffer fetch for GLES
+			if (IsArgumentForFramebufferFetch(symOrStructMember, sem, m_Target))
+			{
+				int index = sem - EAttrSemColor0;
+				outName = (m_Target == ETargetGLSL_ES_100 ? "gl_LastFragData" : "gl_FragData");
+				outName += '[';
+				outName += char('0'+index);
+				outName += ']';
+				m_Extensions.insert("GL_EXT_shader_framebuffer_fetch");
+			}
 			// If using user varyings, create a user varying name
-			if ( (bUserVaryings && sem != EAttrSemVPos && sem != EAttrSemVFace && sem != EAttrSemPrimitiveID) || varInString[sem][0] == 0 )
+			else if ( (bUserVaryings && sem != EAttrSemVPos && sem != EAttrSemVFace && sem != EAttrSemPrimitiveID) || varInString[sem][0] == 0 )
 			{
 				outName = kUserVaryingPrefix;
 				outName += stripSemanticModifier (semantic, false);

@@ -1,6 +1,15 @@
 hlsl2glsl Change Log
 =========================
 
+2014 08
+-------
+
+Goodies:
+
+* Support for GL_EXT_shader_framebuffer_fetch. Use COLORn pixel shader semantic, and "inout"
+  modifier. This will be translated to framebuffer fetch extension on GLES 2 & 3.
+
+
 2014 06
 -------
 
