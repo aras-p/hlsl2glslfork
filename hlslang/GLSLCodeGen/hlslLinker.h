@@ -42,8 +42,6 @@ public:
 
    bool setUserAttribName (EAttribSemantic eSemantic, const char *pName);
 
-   void setUseUserVaryings (bool v) { bUserVaryings = v; }
-
    const char* getShaderText() const;
       
    int getUniformCount() const { return (int)uniforms.size(); }
@@ -102,9 +100,6 @@ private:
 	
 	// Table holding the list of user attribute names per semantic
 	char userAttribString[EAttrSemCount][MAX_ATTRIB_NAME];
-	
-	// For varyings, determines whether the linker attempts to use user or built-in varyings
-	bool bUserVaryings;
 	
 	ExtensionSet m_Extensions;
 	ETargetVersion m_Target;

@@ -369,6 +369,8 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 			newSrc += "#define textureCubeLodEXT textureCubeLod\n";
 			newSrc += "#define textureCubeGradEXT textureCubeGradARB\n";
 			newSrc += "#define gl_FragDepthEXT gl_FragDepth\n";
+			newSrc += "#define gl_LastFragData _glesLastFragData\n";
+			newSrc += "varying lowp vec4 _glesLastFragData[4];\n";
 			newSrc += "float shadow2DEXT (sampler2DShadow s, vec3 p) { return shadow2D(s,p).r; }\n";
 			newSrc += "float shadow2DProjEXT (sampler2DShadow s, vec4 p) { return shadow2DProj(s,p).r; }\n";
 		}
@@ -377,6 +379,7 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 		replace_string (newSrc, "#extension GL_OES_standard_derivatives : require", "", 0);
 		replace_string (newSrc, "#extension GL_EXT_shadow_samplers : require", "", 0);
 		replace_string (newSrc, "#extension GL_EXT_frag_depth : require", "", 0);
+		replace_string (newSrc, "#extension GL_EXT_shader_framebuffer_fetch : require", "", 0);
 					   
 		sourcePtr = newSrc.c_str();
 	}
@@ -540,7 +543,6 @@ static bool TestFile (TestRun type,
 			"TANGENT",
 		};
 		Hlsl2Glsl_SetUserAttributeNames (parser, kAttribSemantic, kAttribString, 1);
-		Hlsl2Glsl_UseUserVaryings (parser, true);
 		
 		int translateOk = Hlsl2Glsl_Translate (parser, entryPoint, version, options);
 		const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );

@@ -478,16 +478,6 @@ int C_DECL Hlsl2Glsl_SetUserAttributeNames ( ShHandle handle,
 }
 
 
-int C_DECL Hlsl2Glsl_UseUserVaryings ( ShHandle handle, bool bUseUserVaryings )
-{
-	if (!handle)
-		return 0;
-	HlslLinker* linker = handle->GetLinker();
-   linker->setUseUserVaryings ( bUseUserVaryings );
-   return 1;
-}
-
-
 static bool kVersionUsesPrecision[ETargetVersionCount] = {
 	true,	// ES 1.00
 	false,	// 1.10

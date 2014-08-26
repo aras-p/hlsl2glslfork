@@ -305,9 +305,6 @@ HlslLinker::HlslLinker(TInfoSink& infoSink_)
 	{
 		userAttribString[i][0] = 0;
 	}
-
-	// By default, use GL build-in varyings
-	bUserVaryings = false;
 }
 
 
@@ -438,9 +435,8 @@ bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStru
 			break;
 
 		case EClassVarOut:
-			// If using user varyings, create a user varying name
-			// WHY ON EARTH such funny if
-			if ( (bUserVaryings && sem != EAttrSemPosition && sem != EAttrSemPrimitiveID && sem != EAttrSemPSize) || varOutString[sem][0] == 0 )
+			// Create varying name
+			if ( (sem != EAttrSemPosition && sem != EAttrSemPrimitiveID && sem != EAttrSemPSize) || varOutString[sem][0] == 0 )
 			{
 				outName = kUserVaryingPrefix;
 				outName += semantic;
@@ -477,8 +473,8 @@ bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStru
 				outName += ']';
 				m_Extensions.insert("GL_EXT_shader_framebuffer_fetch");
 			}
-			// If using user varyings, create a user varying name
-			else if ( (bUserVaryings && sem != EAttrSemVPos && sem != EAttrSemVFace && sem != EAttrSemPrimitiveID) || varInString[sem][0] == 0 )
+			// Create user varying name
+			else if ( (sem != EAttrSemVPos && sem != EAttrSemVFace && sem != EAttrSemPrimitiveID) || varInString[sem][0] == 0 )
 			{
 				outName = kUserVaryingPrefix;
 				outName += stripSemanticModifier (semantic, false);

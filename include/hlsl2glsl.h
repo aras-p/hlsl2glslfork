@@ -287,19 +287,6 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_SetUserAttributeNames ( ShHandle handle,
                                                               int nNumSemantics );
 
 
-/// Instead of using OpenGL fixed-function varyings (such as gl_TexCoord[x]), use user named varyings 
-/// instead.
-/// 
-/// \param handle
-///      Handle to the compiler.  This should be called BEFORE calling Hlsl2Glsl_Translate
-/// \param bUseUserVarying 
-///      If true, all user varyings will be used.  If false, the translator will attempt to use
-///      GL fixed-function varyings
-/// \return
-///      1 on success, 0 on failure
-SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_UseUserVaryings ( ShHandle handle, 
-                                                        bool bUseUserVaryings );
-
 
 SH_IMPORT_EXPORT bool C_DECL Hlsl2Glsl_VersionUsesPrecision (ETargetVersion version);
 
