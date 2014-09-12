@@ -142,7 +142,16 @@ static void DeleteFile (const std::string& path)
 
 static bool ReadStringFromFile (const char* pathName, std::string& output)
 {
-	FILE* file = fopen( pathName, "rb" );
+#	ifdef _MSC_VER
+	wchar_t widePath[MAX_PATH];
+	int res = ::MultiByteToWideChar (CP_UTF8, 0, pathName, -1, widePath, MAX_PATH);
+	if (res == 0)
+		widePath[0] = 0;
+	FILE* file = _wfopen(widePath, L"rb");
+#	else // ifdef _MSC_VER
+	FILE* file = fopen(pathName, "rb");
+#	endif // !ifdef _MSC_VER
+
 	if (file == NULL)
 		return false;
 	
@@ -499,6 +508,22 @@ static std::string GetCompiledShaderText(ShHandle parser)
 }
 
 
+struct IncludeContext
+{
+	std::string currentFolder;
+};
+
+
+static bool IncludeOpenCallback(bool isSystem, const char* fname, std::string& output, void* d)
+{
+	const IncludeContext* data = reinterpret_cast<IncludeContext*>(d);
+	
+	std::string pathName = data->currentFolder + "/" + fname;
+	
+	return ReadStringFromFile(pathName.c_str(), output);
+}
+
+
 static bool TestFile (TestRun type,
 					  const std::string& inputPath,
 					  const std::string& outputPath,
@@ -524,8 +549,14 @@ static bool TestFile (TestRun type,
 
 	if (kDumpShaderAST)
 		options |= ETranslateOpIntermediate;
+	
+	IncludeContext includeCtx;
+	includeCtx.currentFolder = inputPath.substr(0, inputPath.rfind('/'));
+	Hlsl2Glsl_ParseCallbacks includeCB;
+	includeCB.includeOpenCallback = IncludeOpenCallback;
+	includeCB.data = &includeCtx;
 		
-	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, NULL, options);
+	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, &includeCB, options);
 	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 	if (kDumpShaderAST)
 	{

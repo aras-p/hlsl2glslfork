@@ -233,6 +233,7 @@ SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage 
 SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle );
 
 
+/// File read callback for #include processing.
 struct Hlsl2Glsl_ParseCallbacks
 {
 	bool (*includeOpenCallback)(bool isSystem, const char* fname, std::string& output, void* data);
@@ -240,6 +241,10 @@ struct Hlsl2Glsl_ParseCallbacks
 };
 
 /// Parse HLSL shader to prepare it for final translation.
+/// \param callbacks
+///		File read callback for #include processing. If NULL is passed, then #include directives will result in error.
+/// \param options
+///		Flags of TTranslateOptions
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse(
 	const ShHandle handle,
 	const char* shaderString,
