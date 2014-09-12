@@ -1,6 +1,20 @@
 hlsl2glsl Change Log
 =========================
 
+2014 09
+-------
+
+Goodies:
+
+* Support for #include processing; pass in a non-NULL Hlsl2Glsl_ParseCallbacks to Hlsl2Glsl_Parse to get it.
+  You need to provide a function that finds & reads a file given a name. Which folders to search etc. are all
+  your responsibility.
+
+Changes:
+
+* Hlsl2Glsl_Parse got a new argument for #include callbacks; pass NULL for old behavior (no #includes).
+
+
 2014 08
 -------
 
