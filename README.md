@@ -27,8 +27,8 @@ Notes
 Status
 --------
 
-Used in Unity and bitsquid engine, and seems to work quite ok.
+Used in Unity and bitsquid engines, and some other studios -- seems to work quite ok.
 
-Support for DX11 features will probably not be added due to the bad condition the original code is in (very obscure and inefficient), instead maybe a new cross-compiler will be made.
+Support for DX11 features might or might not get added due to the bad condition the original code is in (very obscure and inefficient), instead maybe a new cross-compiler will be made. Someday. Maybe.
 
 No optimizations are performed on the generated GLSL, so it is expected that your platform will have a decent GLSL compiler. Or, use [GLSL Optimizer](http://github.com/aras-p/glsl-optimizer), at Unity we use it to optimize shaders produced by HLSL2GLSL; gives a substantial performance boost on mobile platforms.
