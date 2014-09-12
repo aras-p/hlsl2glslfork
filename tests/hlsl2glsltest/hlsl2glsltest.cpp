@@ -525,7 +525,7 @@ static bool TestFile (TestRun type,
 	if (kDumpShaderAST)
 		options |= ETranslateOpIntermediate;
 		
-	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, options);
+	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, NULL, options);
 	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 	if (kDumpShaderAST)
 	{
@@ -617,7 +617,7 @@ static bool TestFileFailure (TestRun type,
 	unsigned options = 0;
 	if (kDumpShaderAST)
 		options |= ETranslateOpIntermediate;
-	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, options);
+	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, NULL, options);
 	
 	if (parseOk)
 	{

@@ -310,6 +310,7 @@ BEGIN(INITIAL);
 #include "preprocessor/mojoshader.h"
 #define __MOJOSHADER_INTERNAL__ 1
 #include "preprocessor/mojoshader_internal.h"
+#include <cstring>
 
 static hlmojo_Preprocessor* g_cpp;
 static TParseContext* g_parseContext;
@@ -385,6 +386,31 @@ int yy_input(char* buf, int max_size)
 	return len+1;
 }
 
+int IncludeOpenCallback(MOJOSHADER_hlslang_includeType inctype,
+                        const char *fname, const char *parent,
+                        const char **outdataPtr, unsigned int *outbytesPtr,
+                        MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
+{
+	Hlsl2Glsl_ParseCallbacks* callbacks = reinterpret_cast<Hlsl2Glsl_ParseCallbacks*>(d);
+	std::string out;
+	if (!callbacks->includeOpenCallback(inctype == MOJOSHADER_hlslang_INCLUDETYPE_SYSTEM,
+										fname, out, callbacks->data))
+	{
+		return 0;
+	}
+
+	char* outdata = (char*) m(out.size() + 1, NULL);
+	std::memcpy(outdata, out.data(), out.size());
+	*outdataPtr = outdata;
+	*outbytesPtr = out.size();
+	return 1;
+}
+
+void IncludeCloseCallback(const char *data,
+                          MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
+{
+	f(const_cast<char*>(data), NULL);
+}
 
 //
 // Parse a string using yyparse.  We set up globals used by
@@ -392,7 +418,7 @@ int yy_input(char* buf, int max_size)
 //
 // Returns 0 for success, as per yyparse().
 //
-int PaParseString(char* source, TParseContext& parseContextLocal)
+int PaParseString(char* source, TParseContext& parseContextLocal, Hlsl2Glsl_ParseCallbacks* callbacks)
 {
 	int sourceLen;
 
@@ -404,14 +430,24 @@ int PaParseString(char* source, TParseContext& parseContextLocal)
 	
 	sourceLen = (int) strlen(source);
 	
+	MOJOSHADER_hlslang_includeOpen openCallback = NULL;
+    MOJOSHADER_hlslang_includeClose closeCallback = NULL;
+	void* data = NULL;
+	if (callbacks)
+	{
+		openCallback = IncludeOpenCallback;
+		closeCallback = IncludeCloseCallback;
+		data = callbacks;
+	}
+
 	hlmojo_Preprocessor* pp = hlmojo_preprocessor_start("", source, sourceLen,
-		NULL, // open callback
-		NULL, // close callback
+		openCallback,
+		closeCallback,
 		NULL, // defines
 		0, // define count
 		MOJOSHADER_hlslang_internal_malloc,
 		MOJOSHADER_hlslang_internal_free,
-		NULL);
+		data);
 	g_cpp = pp;
 	g_parseContext = &parseContextLocal;
 	

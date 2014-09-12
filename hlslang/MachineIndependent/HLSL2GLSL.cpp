@@ -168,7 +168,7 @@ static bool InitializeSymbolTable( TBuiltInStrings* BuiltInStrings, EShLanguage 
    {
       const char* builtInShaders = (*i).c_str();
 
-      if (PaParseString(const_cast<char*>(builtInShaders), parseContext) != 0)
+      if (PaParseString(const_cast<char*>(builtInShaders), parseContext, NULL) != 0)
       {
          infoSink.info.message(EPrefixInternalError, "Unable to parse built-ins");
          return false;
@@ -293,11 +293,11 @@ void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle )
    delete handle;
 }
 
-
 int C_DECL Hlsl2Glsl_Parse(
 	const ShHandle handle,
 	const char* shaderString,
 	ETargetVersion targetVersion,
+	Hlsl2Glsl_ParseCallbacks* callbacks,
 	unsigned options)
 {
    if (!InitThread())
@@ -337,7 +337,7 @@ int C_DECL Hlsl2Glsl_Parse(
       parseContext.infoSink.info.message(EPrefixInternalError, "Wrong symbol table level");
 
 
-   int ret = PaParseString(const_cast<char*>(shaderString), parseContext);
+   int ret = PaParseString(const_cast<char*>(shaderString), parseContext, callbacks);
    if (ret)
       success = false;
 

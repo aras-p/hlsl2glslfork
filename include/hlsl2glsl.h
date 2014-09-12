@@ -14,10 +14,9 @@
    #define C_DECL
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <string>
 
+extern "C" {
 
 /// Types of languages the HLSL2GLSL translator can consume.
 typedef enum
@@ -234,12 +233,18 @@ SH_IMPORT_EXPORT ShHandle C_DECL Hlsl2Glsl_ConstructCompiler( const EShLanguage 
 SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle );
 
 
+struct Hlsl2Glsl_ParseCallbacks
+{
+	bool (*includeOpenCallback)(bool isSystem, const char* fname, std::string& output, void* data);
+	void* data;
+};
 
 /// Parse HLSL shader to prepare it for final translation.
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse(
 	const ShHandle handle,
 	const char* shaderString,
 	ETargetVersion targetVersion,
+	Hlsl2Glsl_ParseCallbacks* callbacks,
 	unsigned options);
 
 
@@ -290,8 +295,6 @@ SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_SetUserAttributeNames ( ShHandle handle,
 
 SH_IMPORT_EXPORT bool C_DECL Hlsl2Glsl_VersionUsesPrecision (ETargetVersion version);
 
-#ifdef __cplusplus
-}
-#endif
+} // extern "C"
 
 #endif // _HLSL2GLSL_INTERFACE_INCLUDED_
