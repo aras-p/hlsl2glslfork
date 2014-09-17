@@ -14,6 +14,10 @@ Changes:
 
 * Hlsl2Glsl_Parse got a new argument for #include callbacks; pass NULL for old behavior (no #includes).
 
+Fixes:
+
+* VFACE now translates to +1 or -1, i.e. (gl_FrontFacing?1.0:-1.0).
+
 
 2014 08
 -------

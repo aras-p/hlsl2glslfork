@@ -142,7 +142,7 @@ static const char* varInString[EAttrSemCount] = {
 	"",
 	"",
 	"gl_FragCoord",
-	"gl_FrontFacing",
+	"(gl_FrontFacing ? 1.0 : -1.0)",
 	"",
 	"",
 	"",
