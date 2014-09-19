@@ -90,7 +90,7 @@ vec4 xll_trunc_vf4 (vec4 v) { return vec4(
   v.w < 0.0 ? -floor(-v.w) : floor(v.w)
 ); }
 #line 1
-vec4 xlat_main( in vec4 uv ) {
+vec4 xlat_main( in vec4 uv, in vec4 huv ) {
     #line 2
     vec4 c = vec4( 0.0);
     c.x += xll_mod_f_f( uv.x, 2.0);
@@ -98,41 +98,49 @@ vec4 xlat_main( in vec4 uv ) {
     c.xy += xll_mod_vf2_vf2( uv.xy, vec2( 2.0));
     c.xyz += xll_mod_vf3_vf3( uv.xyz, vec3( 2.0));
     c.xyzw += xll_mod_vf4_vf4( uv.xyzw, vec4( 2.0));
-    #line 11
+    c.xyzw += xll_mod_vf4_vf4( huv.xyzw, vec4( 2.0));
+    #line 12
     vec4 d;
     c.x += xll_modf_f_f( uv.x, d.x);
     c.xy += xll_modf_vf2_vf2( uv.xy, d.xy);
     c.xyz += xll_modf_vf3_vf3( uv.xyz, d.xyz);
-    #line 15
+    #line 16
     c.xyzw += xll_modf_vf4_vf4( uv.xyzw, d.xyzw);
     xll_clip_f((c.x - 0.5));
-    #line 19
+    #line 20
     xll_clip_vf2((c.xy - 0.5));
     xll_clip_vf3((c.xyz - 0.5));
     xll_clip_vf4((c.xyzw - 0.5));
-    #line 24
+    #line 25
     ivec2 ii = ivec2( 1, 2);
     ivec2 jj = ivec2( 3, 4);
     c.x += mod(float(ii.x), float(jj.x));
     c.xy += mod(vec2(ii.xy), vec2(jj.xy));
-    #line 28
+    #line 29
     int kk = int(mod(float(ii.x), float(ii.y)));
     c.z += float(kk);
-    #line 32
+    #line 33
     c.x += mod(uv.x, uv.y);
     c.xy += mod(uv.xy, uv.zw);
-    #line 36
+    #line 37
     c += xll_lit_f_f_f( c.x, 0.2, 0.3);
     c.x += xll_round_f(2.5);
     c.xy += xll_round_vf2(vec2( 2.5, 3.5));
-    #line 41
+    #line 42
     c.x += xll_trunc_f(2.5);
     c.xy += xll_trunc_vf2(vec2( 2.5, 3.5));
+    c.xy += reflect( uv.xy, uv.zw);
+    #line 46
+    c.xy += reflect( huv.xy, huv.zw);
+    c.xyz += faceforward( uv.xyz, uv.xyw, uv.yzw);
+    c.xyz += faceforward( huv.xyz, huv.xyw, huv.yzw);
+    #line 51
     return c;
 }
 varying vec4 xlv_TEXCOORD0;
+varying vec4 xlv_TEXCOORD1;
 void main() {
     vec4 xl_retval;
-    xl_retval = xlat_main( vec4(xlv_TEXCOORD0));
+    xl_retval = xlat_main( vec4(xlv_TEXCOORD0), vec4(xlv_TEXCOORD1));
     gl_FragData[0] = vec4(xl_retval);
 }

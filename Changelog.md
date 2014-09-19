@@ -17,6 +17,7 @@ Changes:
 Fixes:
 
 * VFACE now translates to +1 or -1, i.e. (gl_FrontFacing?1.0:-1.0).
+* Fixed faceforward().
 
 
 2014 08
