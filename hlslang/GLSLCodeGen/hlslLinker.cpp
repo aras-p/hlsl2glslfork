@@ -509,6 +509,11 @@ bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStru
 			{
 				pad = 4 - size;
 				ctor = "vec4";
+				if (sem >= EAttrSemColor1 && sem <= EAttrSemColor3)
+				{
+					if (m_Target == ETargetGLSL_ES_100)
+						m_Extensions.insert("GL_EXT_draw_buffers");
+				}
 			}
 			break;
 

@@ -9,6 +9,7 @@ Goodies:
 * Support for #include processing; pass in a non-NULL Hlsl2Glsl_ParseCallbacks to Hlsl2Glsl_Parse to get it.
   You need to provide a function that finds & reads a file given a name. Which folders to search etc. are all
   your responsibility.
+* Support for MRT (output of COLOR1..COLOR3 from pixel shader) on GLES2.0 via GL_EXT_draw_buffers.
 
 Changes:
 

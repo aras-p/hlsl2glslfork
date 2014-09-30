@@ -1,3 +1,4 @@
+#extension GL_EXT_draw_buffers : require
 
 #line 1
 mediump vec4 xlat_main( out mediump vec4 c1, out highp vec4 c2, out mediump vec4 c3 ) {
