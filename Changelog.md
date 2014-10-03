@@ -1,6 +1,14 @@
 hlsl2glsl Change Log
 =========================
 
+2014 10
+-------
+
+Fixes:
+
+* Preprocessor now accepts block comments followed by preprocessor directive on the same line (valid in HLSL).
+
+
 2014 09
 -------
 
