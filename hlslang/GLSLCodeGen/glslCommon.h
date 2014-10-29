@@ -103,7 +103,7 @@ private:
 
 
 /// Outputs the type of the symbol to the output buffer
-void writeType(std::stringstream &out, EGlslSymbolType type, GlslStruct *s, TPrecision precision);
+void writeType(std::stringstream &out, EGlslSymbolType type, const GlslStruct *s, TPrecision precision);
 
 const char *getTypeString( const EGlslSymbolType t );
 const char *getGLSLPrecisiontring (TPrecision prec);

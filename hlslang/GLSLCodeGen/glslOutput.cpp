@@ -83,7 +83,7 @@ TString buildArrayConstructorString(const TType& type) {
 }
 
 
-void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPrecision prec, TIntermConstant *c, GlslStruct *structure = 0 )
+static void writeConstantConstructor (std::stringstream& out, EGlslSymbolType t, TPrecision prec, TIntermConstant *c, const GlslStruct *structure = 0)
 {
 	unsigned n_elems = getElements(t);
 	bool construct = n_elems > 1 || structure != 0;
@@ -100,7 +100,7 @@ void writeConstantConstructor( std::stringstream& out, EGlslSymbolType t, TPreci
 			const StructMember &m = structure->getMember(i);
 			if (construct && i > 0)
 				out << ", ";
-			writeConstantConstructor (out, m.type, m.precision, c);
+			writeConstantConstructor (out, m.type, m.precision, c, m.getStruct());
 		}
 	} else {
 		// simple type
