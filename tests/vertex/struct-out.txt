@@ -37,7 +37,9 @@ vec4 xlat_main(  ) {
     #line 40
     Inner2 test3 = Inner2(vec3(0.0, 0.0, 0.0), 0.0);
     OuterWithFirstSimpleMember test4 = OuterWithFirstSimpleMember(0.0, Inner(0.0, ivec3(0.0, 0.0, 0.0)), Inner(0.0, ivec3(0.0, 0.0, 0.0)));
-    #line 46
+    #line 44
+    Outer test5 = Outer(Inner(0.0, ivec3(0.0, 0.0, 0.0)), Inner(0.0, ivec3(0.0, 0.0, 0.0)), 0.0);
+    test5 = Outer(Inner(0.0, ivec3(0.0, 0.0, 0.0)), Inner(0.0, ivec3(0.0, 0.0, 0.0)), 0.0);
     return StructTakingFunc( test, test2);
 }
 void main() {

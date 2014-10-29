@@ -7,6 +7,7 @@ hlsl2glsl Change Log
 Fixes:
 
 * Preprocessor now accepts block comments followed by preprocessor directive on the same line (valid in HLSL).
+* Zero-initialization of structs with nested structs now works.
 
 
 2014 09

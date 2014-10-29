@@ -42,7 +42,8 @@ float4 main() : POSITION
 
     OuterWithFirstSimpleMember test4 = (OuterWithFirstSimpleMember)0;
 
-    //Outer test4 = (Outer)0;
-    //test4 = (Outer)0;
+    Outer test5 = (Outer)0;
+    test5 = (Outer)0;
+
     return (float4)StructTakingFunc(test, test2);
 }

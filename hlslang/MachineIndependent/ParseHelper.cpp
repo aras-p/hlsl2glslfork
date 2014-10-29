@@ -1432,7 +1432,14 @@ TIntermTyped* TParseContext::addConstructor(TIntermNode* node, const TType* type
 	if (type->isArray())
 		return constructBuiltIn(type, op, node, node->getLine(), true);
 	else if (op == EOpConstructStruct)
-		return constructStruct(node, struct_members[0].type, 1, node->getLine(), false);
+	{
+		TType* firstPrimitiveType = struct_members[0].type;
+		while (firstPrimitiveType->getBasicType() == EbtStruct)
+		{
+			firstPrimitiveType = (*firstPrimitiveType->getStruct())[0].type;
+		}
+		return constructStruct(node, firstPrimitiveType, 1, node->getLine(), false);
+	}
 	else
 		return constructBuiltIn(type, op, node, node->getLine(), false);
 }
