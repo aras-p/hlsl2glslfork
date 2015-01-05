@@ -127,7 +127,7 @@ v2f xlat_main( in appdata_full v ) {
     highp float time = (_Time.y + (_BlinkingTimeOffsScale * v.color.z));
     highp float fracTime = xll_mod_f_f( time, (_TimeOnDuration + _TimeOffDuration));
     highp float wave = (smoothstep( 0.0, (_TimeOnDuration * 0.25), fracTime) * (1.0 - smoothstep( (_TimeOnDuration * 0.75), _TimeOnDuration, fracTime)));
-    highp float noiseTime = (time * (6.28319 / _TimeOnDuration));
+    highp float noiseTime = (time * (6.283185 / _TimeOnDuration));
     #line 88
     highp float noise = (sin(noiseTime) * ((0.5 * cos(((noiseTime * 0.6366) + 56.7272))) + 0.5));
     highp float noiseWave = ((_NoiseAmount * noise) + (1.0 - _NoiseAmount));

@@ -30,7 +30,7 @@ highp vec4 FxaaPixelShader( in highp vec2 pos, in highp vec4 fxaaConsolePosPos, 
     highp float lumaM = rgbyM.y;
     highp float lumaMaxNwSw = max( lumaNw, lumaSw);
     #line 919
-    lumaNe += 0.00260417;
+    lumaNe += 0.002604167;
     highp float lumaMinNwSw = min( lumaNw, lumaSw);
     highp float lumaMaxNeSe = max( lumaNe, lumaSe);
     #line 923

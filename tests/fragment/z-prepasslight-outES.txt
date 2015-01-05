@@ -64,7 +64,7 @@ uniform highp mat4 unity_World2Shadow;
 #line 8
 highp float DecodeFloatRGBA( in highp vec4 enc ) {
     #line 10
-    highp vec4 kDecodeDot = vec4( 1.0, 0.00392157, 1.53787e-05, 6.22737e-09);
+    highp vec4 kDecodeDot = vec4( 1.0, 0.003921569, 1.53787e-05, 6.227372e-09);
     return dot( enc, kDecodeDot);
 }
 #line 39

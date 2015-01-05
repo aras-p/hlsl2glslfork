@@ -38,7 +38,7 @@ mat4 xll_saturate_mf4x4(mat4 m) {
 uniform sampler2D mytex;
 #line 9
 vec4 DirLM( in vec3 scale, in vec3 normal ) {
-    mat3 unity_DirBasis = xll_transpose_mf3x3(mat3( vec3( 0.816497, 0.0, 0.57735), vec3( -0.408248, 0.707107, 0.57735), vec3( -0.408248, -0.707107, 0.57735)));
+    mat3 unity_DirBasis = xll_transpose_mf3x3(mat3( vec3( 0.8164966, 0.0, 0.5773503), vec3( -0.4082483, 0.7071068, 0.5773503), vec3( -0.4082483, -0.7071068, 0.5773503)));
     vec3 normalInDirBasis = xll_saturate_vf3((unity_DirBasis * normal));
     #line 13
     float f = dot( normalInDirBasis, scale);

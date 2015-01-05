@@ -23,7 +23,7 @@ vec3 FxaaLerp3( in vec3 a, in vec3 b, in float amountOfA ) {
 }
 #line 281
 float FxaaLuma( in vec3 rgb ) {
-    return ((rgb.y * 1.96321) + rgb.x);
+    return ((rgb.y * 1.963211) + rgb.x);
 }
 #line 90
 vec4 FxaaTexLod0( in sampler2D tex, in vec2 pos ) {
@@ -54,7 +54,7 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     float rangeMax = max( lumaM, max( max( lumaN, lumaW), max( lumaS, lumaE)));
     float range = (rangeMax - rangeMin);
     #line 329
-    if ((range < max( 0.0416667, (rangeMax * 0.125)))){
+    if ((range < max( 0.04166667, (rangeMax * 0.125)))){
         return FxaaFilterReturn( rgbM);
     }
     #line 336
@@ -63,7 +63,7 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     float lumaL = ((((lumaN + lumaW) + lumaE) + lumaS) * 0.25);
     float rangeL = abs((lumaL - lumaM));
     #line 346
-    float blendL = (max( 0.0, ((rangeL / range) - 0.25)) * 1.33333);
+    float blendL = (max( 0.0, ((rangeL / range) - 0.25)) * 1.333333);
     blendL = min( 0.75, blendL);
     #line 355
     vec3 rgbNW = FxaaTexOff( tex, pos.xy, vec2( -1.0, -1.0), rcpFrame).xyz;
@@ -72,7 +72,7 @@ vec3 FxaaPixelShader( in vec2 pos, in sampler2D tex, in vec2 rcpFrame ) {
     vec3 rgbSE = FxaaTexOff( tex, pos.xy, vec2( 1.0, 1.0), rcpFrame).xyz;
     #line 360
     rgbL += (((rgbNW + rgbNE) + rgbSW) + rgbSE);
-    rgbL *= vec3( 0.111111, 0.111111, 0.111111);
+    rgbL *= vec3( 0.1111111, 0.1111111, 0.1111111);
     float lumaNW = FxaaLuma( rgbNW);
     #line 364
     float lumaNE = FxaaLuma( rgbNE);

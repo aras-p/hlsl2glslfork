@@ -114,7 +114,7 @@ highp vec4 FxaaPixelShader( in highp vec2 pos, in highp vec4 fxaaConsolePosPos, 
     if (horzSpan){
         lengthSign = fxaaQualityRcpFrame.y;
     }
-    highp float subpixB = ((subpixA * 0.0833333) - rgbyM.w);
+    highp float subpixB = ((subpixA * 0.08333334) - rgbyM.w);
     #line 612
     highp float gradientN = (lumaN - rgbyM.w);
     highp float gradientS = (lumaS - rgbyM.w);

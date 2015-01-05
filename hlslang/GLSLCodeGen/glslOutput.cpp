@@ -30,7 +30,7 @@ void print_float (std::stringstream& out, float f)
 	// * GLSL (early version at least) require floats to have ".0" or
 	//   exponential notation.
 	char tmp[64];
-	sprintf(tmp, "%.6g", f);
+	sprintf(tmp, "%.7g", f);
 
 	char* posE = NULL;
 	posE = strchr(tmp, 'e');

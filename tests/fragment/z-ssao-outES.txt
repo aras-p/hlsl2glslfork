@@ -36,7 +36,7 @@ uniform highp vec4 _ProjectionParams;
 #line 25
 highp float DecodeFloatRG( in highp vec2 enc ) {
     #line 27
-    highp vec2 kDecodeDot = vec2( 1.0, 0.00392157);
+    highp vec2 kDecodeDot = vec2( 1.0, 0.003921569);
     return dot( enc, kDecodeDot);
 }
 #line 15
@@ -101,14 +101,14 @@ mediump float frag_ao( in v2f_ao i, in highp int sampleCount, in highp vec3 samp
 #line 83
 mediump vec4 xlat_main( in v2f_ao i ) {
     highp vec3 RAND_SAMPLES[8];
-    RAND_SAMPLES[0] = vec3( 0.0130572, 0.587232, -0.119337);
-    RAND_SAMPLES[1] = vec3( 0.323078, 0.0220727, -0.418873);
-    RAND_SAMPLES[2] = vec3( -0.310725, -0.191367, 0.0561369);
-    RAND_SAMPLES[3] = vec3( -0.479646, 0.0939877, -0.580265);
-    RAND_SAMPLES[4] = vec3( 0.139999, -0.33577, 0.559679);
-    RAND_SAMPLES[5] = vec3( -0.248458, 0.255532, 0.348944);
-    RAND_SAMPLES[6] = vec3( 0.18719, -0.702764, -0.231748);
-    RAND_SAMPLES[7] = vec3( 0.884915, 0.284208, 0.368524);
+    RAND_SAMPLES[0] = vec3( 0.01305719, 0.5872321, -0.119337);
+    RAND_SAMPLES[1] = vec3( 0.3230782, 0.02207272, -0.4188725);
+    RAND_SAMPLES[2] = vec3( -0.310725, -0.191367, 0.05613686);
+    RAND_SAMPLES[3] = vec3( -0.4796457, 0.09398766, -0.5802653);
+    RAND_SAMPLES[4] = vec3( 0.1399992, -0.3357702, 0.5596789);
+    RAND_SAMPLES[5] = vec3( -0.2484578, 0.2555322, 0.3489439);
+    RAND_SAMPLES[6] = vec3( 0.1871898, -0.702764, -0.2317479);
+    RAND_SAMPLES[7] = vec3( 0.8849149, 0.2842076, 0.368524);
     #line 95
     return vec4( frag_ao( i, 8, RAND_SAMPLES));
 }

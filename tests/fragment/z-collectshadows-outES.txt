@@ -26,7 +26,7 @@ uniform highp vec4 _ZBufferParams;
 highp vec2 EncodeFloatRG( in highp float v ) {
     #line 29
     highp vec2 kEncodeMul = vec2( 1.0, 255.0);
-    highp float kEncodeBit = 0.00392157;
+    highp float kEncodeBit = 0.003921569;
     highp vec2 enc = (kEncodeMul * v);
     enc = fract(enc);
     #line 33

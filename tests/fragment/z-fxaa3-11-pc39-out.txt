@@ -114,7 +114,7 @@ vec4 FxaaPixelShader( in vec2 pos, in vec4 fxaaConsolePosPos, in sampler2D tex, 
     if (horzSpan){
         lengthSign = fxaaQualityRcpFrame.y;
     }
-    float subpixB = ((subpixA * 0.0833333) - rgbyM.w);
+    float subpixB = ((subpixA * 0.08333334) - rgbyM.w);
     #line 612
     float gradientN = (lumaN - rgbyM.w);
     float gradientS = (lumaS - rgbyM.w);
