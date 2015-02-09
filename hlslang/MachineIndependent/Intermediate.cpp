@@ -1072,45 +1072,49 @@ TOperator ir_get_constructor_op(const TPublicType& type, TParseContext& ctx, boo
 static TOperator getMatrixConstructOp(const TIntermTyped& intermediate, TParseContext& ctx)
 {
 	// before GLSL 1.20, only square matrices
+	const int c = intermediate.getColsCount();
+	const int r = intermediate.getRowsCount();
 	if (ctx.targetVersion < ETargetGLSL_120)
 	{
-		const int c = intermediate.getColsCount();
-		const int r = intermediate.getRowsCount();
 		if (c == 2 && r == 2)
 			return EOpConstructMat2x2FromMat;
 		if (c == 3 && r == 3)
 			return EOpConstructMat3x3FromMat;
 		if (c == 4 && r == 4)
 			return EOpConstructMat4x4;
-		ctx.error(intermediate.getLine(), " non-square matrices not supported", "", "(%ix%i)", r, c);
+		// We can get here if we got confused by earlier errors; don't print error message in that case
+		if (ctx.numErrors == 0)
+			ctx.error(intermediate.getLine(), " non-square matrices not supported", "", "(%ix%i)", r, c);
 		return EOpNull;
 	}
 	
-    switch (intermediate.getColsCount())
+    switch (c)
     {
     case 2:
-        switch (intermediate.getRowsCount())
+        switch (r)
         {
         case 2: return EOpConstructMat2x2;
         case 3: return EOpConstructMat2x3;
         case 4: return EOpConstructMat2x4;
         } break;
     case 3:
-        switch (intermediate.getRowsCount())
+        switch (r)
         {
         case 2: return EOpConstructMat3x2;
         case 3: return EOpConstructMat3x3;
         case 4: return EOpConstructMat3x4;
         } break;
     case 4:
-        switch (intermediate.getRowsCount())
+        switch (r)
         {
         case 2: return EOpConstructMat4x2;
         case 3: return EOpConstructMat4x3;
         case 4: return EOpConstructMat4x4;
         } break;
     }
-    assert(false);
+	// We can get here if we got confused by earlier errors; don't print error message in that case
+	if (ctx.numErrors == 0)
+		ctx.error(intermediate.getLine(), " unsupported matrix constructor requested", "", "(%ix%i)", r, c);
     return EOpNull;
 }
 
