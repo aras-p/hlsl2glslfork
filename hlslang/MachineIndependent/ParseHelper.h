@@ -102,7 +102,7 @@ public:
 	bool AfterEOF;
 };
 
-int PaParseString(char* source, TParseContext&, Hlsl2Glsl_ParseCallbacks* = NULL);
+int PaParseString(char* source, TParseContext&, Hlsl2Glsl_PreprocessorData* = NULL);
 void PaReservedWord();
 int PaIdentOrType(TString& id, TParseContext&, TSymbol*&);
 int PaParseComment(TSourceLoc &lineno, TParseContext&);

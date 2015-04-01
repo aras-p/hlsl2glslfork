@@ -297,7 +297,7 @@ int C_DECL Hlsl2Glsl_Parse(
 	const ShHandle handle,
 	const char* shaderString,
 	ETargetVersion targetVersion,
-	Hlsl2Glsl_ParseCallbacks* callbacks,
+	Hlsl2Glsl_PreprocessorData* preprocessorData,
 	unsigned options)
 {
    if (!InitThread())
@@ -337,7 +337,7 @@ int C_DECL Hlsl2Glsl_Parse(
       parseContext.infoSink.info.message(EPrefixInternalError, "Wrong symbol table level");
 
 
-   int ret = PaParseString(const_cast<char*>(shaderString), parseContext, callbacks);
+   int ret = PaParseString(const_cast<char*>(shaderString), parseContext, preprocessorData );
    if (ret)
       success = false;
 

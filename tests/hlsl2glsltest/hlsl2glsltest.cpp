@@ -140,7 +140,7 @@ static void DeleteFile (const std::string& path)
 	#endif
 }
 
-static bool ReadStringFromFile (const char* pathName, std::string& output)
+static bool ReadStringFromFile (const char* pathName, std::string& output )
 {
 #	ifdef _MSC_VER
 	wchar_t widePath[MAX_PATH];
@@ -177,6 +177,24 @@ static bool ReadStringFromFile (const char* pathName, std::string& output)
 
 	replace_string(output, "\r\n", "\n", 0);
 	
+	return true;
+}
+
+
+static bool ReadStringFromFile (const char* pathName, const char** outdata, unsigned int* outBytes )
+{
+	*outdata = NULL;
+	*outBytes = 0;
+
+	std::string output;
+	if( !ReadStringFromFile( pathName, output ) )
+		return false;
+
+	*outdata = new char[ output.length() + 1 ];
+	memset( ( void* )*outdata, output.length() + 1, 0 );
+	memcpy( ( void* )*outdata, output.c_str(), output.length() );
+	*outBytes =  output.length();
+
 	return true;
 }
 
@@ -515,13 +533,19 @@ struct IncludeContext
 };
 
 
-static bool C_DECL IncludeOpenCallback(bool isSystem, const char* fname, std::string& output, void* d)
+static bool C_DECL IncludeOpenCallback( bool isSystem, const char* fname, const char** outdata, unsigned int* outbytes, void* d )
 {
 	const IncludeContext* data = reinterpret_cast<IncludeContext*>(d);
 	
 	std::string pathName = data->currentFolder + "/" + fname;
 	
-	return ReadStringFromFile(pathName.c_str(), output);
+	return ReadStringFromFile(pathName.c_str(), outdata, outbytes );
+}
+
+
+static void C_DECL IncludeCloseCallback( const char* data )
+{
+	delete[] data;
 }
 
 
@@ -553,11 +577,16 @@ static bool TestFile (TestRun type,
 	
 	IncludeContext includeCtx;
 	includeCtx.currentFolder = inputPath.substr(0, inputPath.rfind('/'));
-	Hlsl2Glsl_ParseCallbacks includeCB;
-	includeCB.includeOpenCallback = IncludeOpenCallback;
-	includeCB.data = &includeCtx;
+	Hlsl2Glsl_PreprocessorData preprocessorData;
+	preprocessorData.includeOpenCallback = IncludeOpenCallback;
+	preprocessorData.includeCloseCallback = IncludeCloseCallback;
+	preprocessorData.malloc = NULL;
+	preprocessorData.free = NULL;
+	preprocessorData.defines = NULL;
+	preprocessorData.defineCount = 0;
+	preprocessorData.callbackData = &includeCtx;
 		
-	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, &includeCB, options);
+	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, &preprocessorData, options);
 	const char* infoLog = Hlsl2Glsl_GetInfoLog( parser );
 	if (kDumpShaderAST)
 	{

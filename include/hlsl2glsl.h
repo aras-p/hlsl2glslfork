@@ -234,23 +234,36 @@ SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle );
 
 
 /// File read callback for #include processing.
-typedef bool (C_DECL *Hlsl2Glsl_IncludeOpenFunc)(bool isSystem, const char* fname, std::string& output, void* data);
-struct Hlsl2Glsl_ParseCallbacks
+typedef bool  ( C_DECL *Hlsl2Glsl_IncludeOpenFunc )( bool isSystem, const char* fname, const char** outdata, unsigned int* outbytes, void* data );
+typedef void  ( C_DECL *Hlsl2Glsl_IncludeCloseFunc )( const char* data );
+typedef void* ( C_DECL *Hlsl2Glsl_PreprocessorMalloc )( int bytes, void *data );
+typedef void  ( C_DECL *Hlsl2Glsl_PreprocessorFree )( void *ptr, void *data );
+struct Hlsl2Glsl_PreprocessorDefine
 {
-	Hlsl2Glsl_IncludeOpenFunc includeOpenCallback;
-	void* data;
+	const char* identifier;
+	const char* definition;
+};
+struct Hlsl2Glsl_PreprocessorData
+{
+	Hlsl2Glsl_IncludeOpenFunc			includeOpenCallback;
+	Hlsl2Glsl_IncludeCloseFunc			includeCloseCallback;
+	Hlsl2Glsl_PreprocessorMalloc		malloc;
+	Hlsl2Glsl_PreprocessorFree			free;
+	const Hlsl2Glsl_PreprocessorDefine*	defines;
+	unsigned int						defineCount;
+	void*								callbackData;
 };
 
 /// Parse HLSL shader to prepare it for final translation.
-/// \param callbacks
-///		File read callback for #include processing. If NULL is passed, then #include directives will result in error.
+/// \param preprocessor
+///		Hlsl2Glsl_PreprocessorData for macros processing. If NULL is passed, then some macros will result in error.
 /// \param options
 ///		Flags of TTranslateOptions
 SH_IMPORT_EXPORT int C_DECL Hlsl2Glsl_Parse(
 	const ShHandle handle,
 	const char* shaderString,
 	ETargetVersion targetVersion,
-	Hlsl2Glsl_ParseCallbacks* callbacks,
+	Hlsl2Glsl_PreprocessorData* preprocessorData,
 	unsigned options);
 
 
