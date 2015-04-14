@@ -390,6 +390,8 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 		replace_string (newSrc, "#extension GL_EXT_frag_depth : require", "", 0);
 		replace_string (newSrc, "#extension GL_EXT_shader_framebuffer_fetch : require", "", 0);
 		replace_string (newSrc, "#extension GL_EXT_draw_buffers : require", "", 0);
+		replace_string (newSrc, "GL_EXT_draw_instanced", "GL_ARB_draw_instanced", 0);
+		replace_string (newSrc, "gl_InstanceIDEXT", "gl_InstanceID", 0);
 					   
 		sourcePtr = newSrc.c_str();
 	}

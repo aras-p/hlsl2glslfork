@@ -318,9 +318,32 @@ HlslLinker::~HlslLinker()
 	}
 }
 
+static const char* get_builtin_variable_from_semantic(EAttribSemantic sem, ETargetVersion targetVersion)
+{
+	if (sem == EAttrSemInstanceID)
+	{
+		if (targetVersion == ETargetGLSL_ES_100)
+			return "gl_InstanceIDEXT";
+		return "gl_InstanceID";
+	}
+	if (sem == EAttrSemVertexID)
+	{
+		if (targetVersion != ETargetGLSL_ES_100)
+			return "gl_VertexID";
+	}
+	return NULL;
+}
+
 
 void HlslLinker::getAttributeName( GlslSymbolOrStructMemberBase const* symOrStructMember, std::string &outName, EAttribSemantic sem, int semanticOffset )
 {
+	const char* builtinName = get_builtin_variable_from_semantic(sem, m_Target);
+	if (builtinName && semanticOffset == -1)
+	{
+		outName = builtinName;
+		return;
+	}
+	
 	if (m_Options & ETranslateOpPropogateOriginalAttribNames && !UsesBuiltinAttribStrings(m_Target, m_Options))
 	{
 		GlslSymbolOrStructMemberBase const* dominant =	 (symOrStructMember->outputSuppressedBy())
@@ -748,7 +771,9 @@ static void add_extension_from_semantic(EAttribSemantic sem, ETargetVersion targ
 		if (sem == EAttrSemPrimitiveID || sem == EAttrSemVertexID)
 			extensions.insert("GL_EXT_gpu_shader4");
 		if (sem == EAttrSemInstanceID)
-			extensions.insert("GL_ARB_draw_instanced");
+		{
+			extensions.insert(targetVersion == ETargetGLSL_ES_100 ? "GL_EXT_draw_instanced" : "GL_ARB_draw_instanced");
+		}
 	}
 }
 
