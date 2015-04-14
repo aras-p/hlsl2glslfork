@@ -89,7 +89,7 @@ void main() {
     xlt_xlat_varinput.position = vec4(gl_Vertex);
     xlt_xlat_varinput.uv = vec2(gl_MultiTexCoord0);
     xlt_xlat_varinput.vertex_id = int(gl_VertexID);
-    xlt_xlat_varinput.instance_id = int(gl_InstanceID);
+    xlt_xlat_varinput.instance_id = int(gl_InstanceIDARB);
     xl_retval = vs_main( xlt_xlat_varinput);
     gl_Position = vec4(xl_retval.position);
     xlv_TEXCOORD0 = vec2(xl_retval.uv);

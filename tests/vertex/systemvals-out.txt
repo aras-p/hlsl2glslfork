@@ -31,7 +31,7 @@ void main() {
     appdata xlt_v;
     xlt_v.pos = vec4(gl_Vertex);
     xlt_v.vertexID = int(gl_VertexID);
-    xl_retval = xlat_main( xlt_v, int(gl_InstanceID));
+    xl_retval = xlat_main( xlt_v, int(gl_InstanceIDARB));
     gl_Position = vec4(xl_retval.pos);
     xlv_COLOR = vec4(xl_retval.color);
 }
