@@ -49,5 +49,8 @@ half4 main (float4 uv : TEXCOORD0, half4 huv : TEXCOORD1) : COLOR0 {
 	c.xyz += faceforward(uv.xyz, uv.xyw, uv.yzw);
 	c.xyz += faceforward(huv.xyz, huv.xyw, huv.yzw);
 
+	c.x += log10(uv.x);
+	c.xyz += log10(uv.xyz);
+
 	return c;
 }
