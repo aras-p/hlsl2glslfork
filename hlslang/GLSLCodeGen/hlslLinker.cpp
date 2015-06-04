@@ -616,6 +616,7 @@ static AttrSemanticMapping kAttributeSemantic[] = {
 	{ "position1", EAttrSemPosition1 },
 	{ "position2", EAttrSemPosition2 },
 	{ "position3", EAttrSemPosition3 },
+	{ "sv_position", EAttrSemPosition },
 	{ "vpos", EAttrSemVPos },
 	{ "vface", EAttrSemVFace },
 	{ "normal", EAttrSemNormal },

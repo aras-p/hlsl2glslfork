@@ -77,7 +77,6 @@ vec4 xlat_main( in v2f_surf IN ) {
     c.xyz += (o.Albedo * IN.vlight);
     return c;
 }
-varying vec4 xlv_SV_POSITION;
 varying vec2 xlv_TEXCOORD0;
 varying vec3 xlv_TEXCOORD1;
 varying vec3 xlv_TEXCOORD2;
@@ -85,7 +84,7 @@ void main() {
     xlat_mutableololo = ololo;
     vec4 xl_retval;
     v2f_surf xlt_IN;
-    xlt_IN.pos = vec4(xlv_SV_POSITION);
+    xlt_IN.pos = vec4(0.0);
     xlt_IN.pack0 = vec2(xlv_TEXCOORD0);
     xlt_IN.normal = vec3(xlv_TEXCOORD1);
     xlt_IN.vlight = vec3(xlv_TEXCOORD2);

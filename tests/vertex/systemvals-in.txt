@@ -6,7 +6,7 @@ float4x4 matrix_vp;
 half4 colors[64];
 
 struct v2f {
-	float4 pos : POSITION;
+	float4 pos : SV_Position;
 	float4 color : COLOR;
 };
 

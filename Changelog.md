@@ -1,6 +1,13 @@
 hlsl2glsl Change Log
 =========================
 
+2015 06
+-------
+
+Fixes:
+
+* Fixed SV_Position semantic to be recognized just like POSITION.
+
 2015 04
 -------
 
