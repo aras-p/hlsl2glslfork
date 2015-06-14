@@ -390,6 +390,8 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 		replace_string (newSrc, "#extension GL_EXT_frag_depth : require", "", 0);
 		replace_string (newSrc, "#extension GL_EXT_shader_framebuffer_fetch : require", "", 0);
 		replace_string (newSrc, "#extension GL_EXT_draw_buffers : require", "", 0);
+		replace_string (newSrc, "GL_EXT_draw_instanced", "GL_ARB_draw_instanced", 0);
+		replace_string (newSrc, "gl_InstanceIDEXT", "gl_InstanceIDARB", 0);
 					   
 		sourcePtr = newSrc.c_str();
 	}
@@ -767,7 +769,7 @@ int main (int argc, const char** argv)
 		for (size_t i = 0; i < n; ++i)
 		{
 			std::string inname = inputFiles[i];
-			//if (inname != "pp-tokenpaste-in.txt")
+			//if (inname != "_zzz-in.txt")
 			//	continue;
 			const bool preprocessorTest = (inname.find("pp-") == 0);
 			bool ok = true;

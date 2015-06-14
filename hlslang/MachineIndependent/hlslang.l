@@ -89,6 +89,8 @@ static TSourceLoc lexlineno = { 0, 0 };
 "float1"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(FLOAT_TYPE); }
 "int"          {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(INT_TYPE); }
 "int1"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(INT_TYPE); }
+"uint"          {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(INT_TYPE); /* @TODO proper unsigned int? */ }
+"uint1"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(INT_TYPE); }
 "void"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(VOID_TYPE); }
 "bool"         {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(BOOL_TYPE); }
 "bool1"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return(BOOL_TYPE); }
@@ -153,6 +155,9 @@ static TSourceLoc lexlineno = { 0, 0 };
 "int2"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (IVEC2); }
 "int3"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (IVEC3); }
 "int4"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (IVEC4); }
+"uint2"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (IVEC2); /* @TODO proper unsigned type? */ }
+"uint3"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (IVEC3); }
+"uint4"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (IVEC4); }
 "bool2"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (BVEC2); }
 "bool3"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (BVEC3); }
 "bool4"        {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return (BVEC4); }

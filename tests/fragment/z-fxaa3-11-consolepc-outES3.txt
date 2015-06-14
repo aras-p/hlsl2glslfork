@@ -29,7 +29,7 @@ highp vec4 FxaaPixelShader( in highp vec2 pos, in highp vec4 fxaaConsolePosPos, 
     highp float lumaM = rgbyM.y;
     highp float lumaMaxNwSw = max( lumaNw, lumaSw);
     #line 919
-    lumaNe += 0.00260417;
+    lumaNe += 0.002604167;
     highp float lumaMinNwSw = min( lumaNw, lumaSw);
     highp float lumaMaxNeSe = max( lumaNe, lumaSe);
     #line 923
@@ -78,13 +78,12 @@ highp vec4 xlat_main( in v2f i ) {
     #line 982
     return FxaaPixelShader( i.uv, i.uvPosPos, _MainTex, _MainTex, _MainTex, _MainTex_TexelSize.xy, (_MainTex_TexelSize.xyxy * vec4( (-fxaaN), (-fxaaN), fxaaN, fxaaN)), (_MainTex_TexelSize.xyxy * vec4( -2.0, -2.0, 2.0, 2.0)), (_MainTex_TexelSize.xyxy * vec4( 8.0, 8.0, -4.0, -4.0)), 0.75, 0.166, 0.0833, 8.0, 0.125, 0.05, vec4( 1.0, -1.0, 0.25, -0.25));
 }
-in highp vec4 xlv_SV_POSITION;
 in highp vec2 xlv_TEXCOORD0;
 in highp vec4 xlv_TEXCOORD1;
 void main() {
     highp vec4 xl_retval;
     v2f xlt_i;
-    xlt_i.pos = vec4(xlv_SV_POSITION);
+    xlt_i.pos = vec4(0.0);
     xlt_i.uv = vec2(xlv_TEXCOORD0);
     xlt_i.uvPosPos = vec4(xlv_TEXCOORD1);
     xl_retval = xlat_main( xlt_i);

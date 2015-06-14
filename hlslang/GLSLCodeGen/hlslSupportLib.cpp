@@ -981,13 +981,13 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
         "  return log2 ( x ) / vec4 ( 3.32192809 ); \n"
         "}\n\n"
         "mat2 xll_log10_mf2x2(mat2 m) {\n"
-        "  return mat2( xll_log10(m[0]), xll_log10(m[1]));\n"
+        "  return mat2( xll_log10_vf2(m[0]), xll_log10_vf2(m[1]));\n"
         "}\n\n"
         "mat3 xll_log10_mf3x3(mat3 m) {\n"
-        "  return mat3( xll_log10(m[0]), xll_log10(m[1]), xll_log10(m[2]));\n"
+        "  return mat3( xll_log10_vf3(m[0]), xll_log10_vf3(m[1]), xll_log10_vf3(m[2]));\n"
         "}\n\n"
         "mat4 xll_log10_mf4x4(mat4 m) {\n"
-        "  return mat4( xll_log10(m[0]), xll_log10(m[1]), xll_log10(m[2]), xll_log10(m[3]));\n"
+        "  return mat4( xll_log10_vf4(m[0]), xll_log10_vf4(m[1]), xll_log10_vf4(m[2]), xll_log10_vf4(m[3]));\n"
         "}\n\n")
         );
 

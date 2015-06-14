@@ -9,19 +9,23 @@ mediump vec4 xlat_main(  ) {
     #line 6
     foo += 1e-06;
     foo += 1e-06;
+    foo += 1111111.0;
+    foo += 1111110.0;
+    #line 10
+    foo += 1.234568;
     foo += 2.0;
     foo += 3.0;
-    #line 11
+    #line 14
     highp vec3 f3;
     mediump vec4 v;
     highp float boo;
     v = vec4( f3.zyx, 1.0);
-    #line 15
+    #line 18
     v = vec4( vec3( foo), 1.0);
     v = vec4( vec3( boo), 1.0);
     v = vec4( foo);
     v = vec4( 2.0);
-    #line 21
+    #line 24
     const highp float fcf = 1.9;
     v = vec4( 1.9);
     return vec4( foo);

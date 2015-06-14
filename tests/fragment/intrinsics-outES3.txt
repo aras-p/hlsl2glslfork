@@ -18,6 +18,27 @@ vec4 xll_mod_vf4_vf4( vec4 x, vec4 y ) {
   vec4 f = fract (abs(d)) * y;
   return vec4 (d.x >= 0.0 ? f.x : -f.x, d.y >= 0.0 ? f.y : -f.y, d.z >= 0.0 ? f.z : -f.z, d.w >= 0.0 ? f.w : -f.w);
 }
+float xll_log10_f( float x ) {
+  return log2 ( x ) / 3.32192809; 
+}
+vec2 xll_log10_vf2( vec2 x ) {
+  return log2 ( x ) / vec2 ( 3.32192809 ); 
+}
+vec3 xll_log10_vf3( vec3 x ) {
+  return log2 ( x ) / vec3 ( 3.32192809 ); 
+}
+vec4 xll_log10_vf4( vec4 x ) {
+  return log2 ( x ) / vec4 ( 3.32192809 ); 
+}
+mat2 xll_log10_mf2x2(mat2 m) {
+  return mat2( xll_log10_vf2(m[0]), xll_log10_vf2(m[1]));
+}
+mat3 xll_log10_mf3x3(mat3 m) {
+  return mat3( xll_log10_vf3(m[0]), xll_log10_vf3(m[1]), xll_log10_vf3(m[2]));
+}
+mat4 xll_log10_mf4x4(mat4 m) {
+  return mat4( xll_log10_vf4(m[0]), xll_log10_vf4(m[1]), xll_log10_vf4(m[2]), xll_log10_vf4(m[3]));
+}
 vec4 xll_lit_f_f_f( float n_dot_l, float n_dot_h, float m ) {
    return vec4(1, max(0.0, n_dot_l), pow(max(0.0, n_dot_h) * step(0.0, n_dot_l), m), 1.0);
 }
@@ -135,6 +156,8 @@ mediump vec4 xlat_main( in highp vec4 uv, in mediump vec4 huv ) {
     c.xyz += faceforward( uv.xyz, uv.xyw, uv.yzw);
     c.xyz += faceforward( huv.xyz, huv.xyw, huv.yzw);
     #line 51
+    c.x += xll_log10_f(uv.x);
+    c.xyz += xll_log10_vf3(uv.xyz);
     return c;
 }
 in highp vec4 xlv_TEXCOORD0;

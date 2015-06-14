@@ -1,6 +1,34 @@
 hlsl2glsl Change Log
 =========================
 
+2015 06
+-------
+
+Fixes:
+
+* Fixed SV_Position semantic to be recognized just like POSITION.
+
+2015 04
+-------
+
+Goodies:
+
+* uint .. uint4 types can be parsed (they are turned into signed integers in GLSL though).
+* SV_InstanceID translates properly to GLES2.0 (EXT_draw_instanced) and GLES3.0.
+
+Fixes:
+
+* Fixed HLSL log10.
+
+
+2015 01
+-------
+
+Fixes:
+
+* Float literals are printed with 7 significant digits now.
+
+
 2014 10
 -------
 

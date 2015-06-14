@@ -127,7 +127,7 @@ v2f xlat_main( in appdata_full v ) {
     float time = (_Time.y + (_BlinkingTimeOffsScale * v.color.z));
     float fracTime = xll_mod_f_f( time, (_TimeOnDuration + _TimeOffDuration));
     float wave = (smoothstep( 0.0, (_TimeOnDuration * 0.25), fracTime) * (1.0 - smoothstep( (_TimeOnDuration * 0.75), _TimeOnDuration, fracTime)));
-    float noiseTime = (time * (6.28319 / _TimeOnDuration));
+    float noiseTime = (time * (6.283185 / _TimeOnDuration));
     #line 88
     float noise = (sin(noiseTime) * ((0.5 * cos(((noiseTime * 0.6366) + 56.7272))) + 0.5));
     float noiseWave = ((_NoiseAmount * noise) + (1.0 - _NoiseAmount));
@@ -141,7 +141,6 @@ v2f xlat_main( in appdata_full v ) {
     return o;
 }
 attribute vec4 TANGENT;
-varying vec4 xlv_SV_POSITION;
 varying vec2 xlv_TEXCOORD0;
 varying vec4 xlv_TEXCOORD1;
 void main() {
@@ -154,7 +153,7 @@ void main() {
     xlt_v.texcoord1 = vec4(gl_MultiTexCoord1);
     xlt_v.color = vec4(gl_Color);
     xl_retval = xlat_main( xlt_v);
-    xlv_SV_POSITION = vec4(xl_retval.pos);
+    gl_Position = vec4(xl_retval.pos);
     xlv_TEXCOORD0 = vec2(xl_retval.uv);
     xlv_TEXCOORD1 = vec4(xl_retval.color);
 }
