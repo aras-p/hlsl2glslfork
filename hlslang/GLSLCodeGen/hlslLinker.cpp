@@ -1420,11 +1420,13 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 		if (!getArgumentData2(&fakedMainSym, lang==EShLangVertex ? EClassVarOut : EClassRes,
 								name, ctor, pad, -1))
 		{
-			infoSink.info <<
-				"Unsupported " <<
-				(lang==EShLangVertex ? "type for shader return value" : "return type for shader entry function") <<
-				" (" << getTypeString(retType) << ")" <<
-				" or wrong semantic (" << funcMain->getSemantic() << ")\n";
+			TSourceLoc loc = { 0, 1 };
+			std::string msg =
+				std::string("Unsupported ") +
+				(lang==EShLangVertex ? "type for shader return value" : "return type for shader entry function") +
+				" (" + getTypeString(retType) + ")" +
+				" or wrong semantic (" + funcMain->getSemantic() + ")";
+			infoSink.info.message(EPrefixError, msg.c_str(), loc);
 			return false;
 		}
 		
