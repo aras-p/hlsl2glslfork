@@ -7,6 +7,8 @@ hlsl2glsl Change Log
 Fixes:
 
 * Fixed SV_Position semantic to be recognized just like POSITION.
+* Fixed SV_Target[n] semantic to be recognized just like COLOR[n].
+* Fixed unknown/wrong pixel shader output semantics to not generate bogus GLSL, but to give proper errors instead.
 
 2015 04
 -------
