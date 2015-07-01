@@ -1,2 +1,2 @@
 (1): ERROR: '' : Invalid #ifdef directive 
-(1): ERROR: '' : syntax error syntax error
+(1): ERROR: '' : syntax error parse error
