@@ -19,9 +19,9 @@ void vec_upcast( in vec4 f ) {
 }
 #line 16
 vec4 xlat_main(  ) {
-    vec_upcast( vec4( 0.0));
+    vec_upcast( vec4( vec2( 0.0), 0.0, 0.0));
     #line 19
-    vec_downcast( vec2( 1.0));
+    vec_downcast( vec2( vec4( 1.0)));
     mat4 m = mat4( val);
     mat4x2 m2 = mat4x2( m);
     #line 23
