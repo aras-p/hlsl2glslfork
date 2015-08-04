@@ -25,20 +25,7 @@ Jutta Degener, 1995
 #include "ParseHelper.h"
 #include "../../include/hlsl2glsl.h"
 
-#ifdef _WIN32
-    #define YYPARSE_PARAM parseContext
-    #define YYPARSE_PARAM_DECL TParseContext&
-    #define YY_DECL int yylex(YYSTYPE* pyylval, TParseContext& parseContext)
-    #define YYLEX_PARAM parseContext
-	void yyerror(const char*);
-#else
-    #define YYPARSE_PARAM parseContextLocal
-    #define parseContext (*((TParseContext*)(parseContextLocal)))
-    #define YY_DECL int yylex(YYSTYPE* pyylval, void* parseContextLocal)
-    #define YYLEX_PARAM (void*)(parseContextLocal)
-    extern void yyerror(const char*);
-#endif
-
+extern void yyerror(TParseContext&, const char*);
 
 #define FRAG_ONLY(S, L) {                                                       \
     if (parseContext.language != EShLangFragment) {                             \
@@ -102,11 +89,13 @@ Jutta Degener, 1995
 
 %{
 #ifndef _WIN32
-    extern int yylex(YYSTYPE*, void*);
+    extern int yylex(YYSTYPE*, TParseContext&);
 #endif
 %}
 
-%pure_parser /* Just in case is called from multiple threads */
+%parse-param { TParseContext& parseContext}
+%lex-param { TParseContext& parseContext }
+%define api.pure full
 %expect 1 /* One shift reduce conflict because of if | else */
 %token <lex> CONST_QUAL STATIC_QUAL BOOL_TYPE FLOAT_TYPE INT_TYPE STRING_TYPE FIXED_TYPE HALF_TYPE
 %token <lex> BREAK CONTINUE DO ELSE FOR IF DISCARD RETURN
