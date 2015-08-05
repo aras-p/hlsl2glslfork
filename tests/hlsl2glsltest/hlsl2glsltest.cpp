@@ -75,7 +75,7 @@ static void logf(const char* format, ...)
 #include <dirent.h>
 #include <string.h>
 #include <GL/glew.h>
-#include <GL/glut.h>
+#include <GL/freeglut.h>
 
 #endif
 #include "../../include/hlsl2glsl.h"
@@ -259,9 +259,25 @@ static bool InitializeOpenGL ()
 #else
         int argc = 0;
         char** argv = NULL;
+
         glutInit(&argc, argv);
-        glutCreateWindow("hlsl2glsltest");
+        int tmp_window = glutCreateWindow("hlsl2glsltest");
+
         glewInit();
+
+        if (GLEW_VERSION_3_2) { /* GLSL 1.5 */
+        	glutInitContextVersion(3, 2);
+        } else if (GLEW_VERSION_3_1) { /* GLSL 1.4 */
+        	glutInitContextVersion(3, 1);
+        } else if (GLEW_VERSION_2_1) { /* GLSL 1.2 */
+        	glutInitContextVersion(2, 1);
+        }
+
+        glutInitContextProfile(GLUT_CORE_PROFILE);
+
+        glutDestroyWindow(tmp_window);
+        glutCreateWindow("hlsl2glsltest");
+
 #endif
 	
 	// check if we have GLSL
