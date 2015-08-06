@@ -95,7 +95,11 @@ extern void yyerror(TParseContext&, const char*);
 
 %parse-param { TParseContext& parseContext}
 %lex-param { TParseContext& parseContext }
-%define api.pure full
+
+// Note: modern bison (from 2.7 would use %define api.pure full, but we still need to support Bison 2.3
+// for Mac 10.9). So use the legacy syntax.
+%pure-parser
+
 %expect 1 /* One shift reduce conflict because of if | else */
 %token <lex> CONST_QUAL STATIC_QUAL BOOL_TYPE FLOAT_TYPE INT_TYPE STRING_TYPE FIXED_TYPE HALF_TYPE
 %token <lex> BREAK CONTINUE DO ELSE FOR IF DISCARD RETURN

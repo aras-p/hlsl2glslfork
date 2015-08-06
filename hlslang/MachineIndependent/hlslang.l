@@ -460,7 +460,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal, Hlsl2Glsl_Pars
    
     if (sourceLen >= 0)
 	{
-        int ret = yyparse(parseContextLocal);    
+        yyparse(parseContextLocal);    
 
         if (parseContextLocal.recoveredFromError || parseContextLocal.numErrors > 0)
              result = 1;

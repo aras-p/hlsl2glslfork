@@ -11,6 +11,7 @@ Goodies:
 Fixes:
 
 * Fixed a case where code such as functionCall(tex2D(tex,uv)) would fail to compile.
+* Fixed parser/lexer compilation on modern Bison/Flex versions.
 
 2015 06
 -------
