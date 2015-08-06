@@ -290,12 +290,13 @@ move gen_hlslang.cpp %(RootDir)%(Directory)gen_hlslang.cpp
     </CustomBuild>
     <CustomBuild Include="hlslang\MachineIndependent\hlslang.y">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Executing Bison on %(FullPath)</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">SET BISON_SIMPLE=%(RootDir)%(Directory)..\..\tools\bison.simple
-SET BISON_HAIRY=%(RootDir)%(Directory)..\..\tools\bison.simple
-cd %(RootDir)%(Directory)
-%(RootDir)%(Directory)..\..\tools\bison.exe -d -t -v %(Filename).y
-if EXIST %(RootDir)%(Directory)Gen_%(Filename)_tab.cpp del %(RootDir)%(Directory)Gen_%(Filename)_tab.cpp
-rename %(RootDir)%(Directory)%(Filename)_tab.c Gen_%(Filename)_tab.cpp
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd %(RootDir)%(Directory)
+set PATH=%PATH%;"%(RootDir)%(Directory)..\..\tools\bin\"
+%(RootDir)%(Directory)..\..\tools\bin\bison.exe -d -t -v %(Filename).y
+del /s /q %(RootDir)%(Directory)Gen_%(Filename)_tab.cpp
+del /s /q %(RootDir)%(Directory)%(Filename)_tab.h
+rename %(RootDir)%(Directory)%(Filename).tab.c Gen_%(Filename)_tab.cpp
+rename %(RootDir)%(Directory)%(Filename).tab.h %(Filename)_tab.h
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)Gen_%(Filename)_tab.cpp;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Executing Bison on %(FullPath)</Message>
@@ -308,12 +309,13 @@ rename %(RootDir)%(Directory)%(Filename)_tab.c Gen_%(Filename)_tab.cpp
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(RootDir)%(Directory)Gen_%(Filename)_tab.cpp;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Executing Bison on %(FullPath)</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">SET BISON_SIMPLE=%(RootDir)%(Directory)..\..\tools\bison.simple
-SET BISON_HAIRY=%(RootDir)%(Directory)..\..\tools\bison.simple
-cd %(RootDir)%(Directory)
-%(RootDir)%(Directory)..\..\tools\bison.exe -d -t -v %(Filename).y
-if EXIST %(RootDir)%(Directory)Gen_%(Filename)_tab.cpp del %(RootDir)%(Directory)Gen_%(Filename)_tab.cpp
-rename %(RootDir)%(Directory)%(Filename)_tab.c Gen_%(Filename)_tab.cpp
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cd %(RootDir)%(Directory)
+set PATH=%PATH%;"%(RootDir)%(Directory)..\..\tools\bin\"
+%(RootDir)%(Directory)..\..\tools\bin\bison.exe -d -t -v %(Filename).y
+del /s /q %(RootDir)%(Directory)Gen_%(Filename)_tab.cpp
+del /s /q %(RootDir)%(Directory)%(Filename)_tab.h
+rename %(RootDir)%(Directory)%(Filename).tab.c Gen_%(Filename)_tab.cpp
+rename %(RootDir)%(Directory)%(Filename).tab.h %(Filename)_tab.h
 </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)Gen_%(Filename)_tab.cpp;%(Outputs)</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Executing Bison on %(FullPath)</Message>

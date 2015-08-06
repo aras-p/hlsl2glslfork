@@ -88,9 +88,7 @@ extern void yyerror(TParseContext&, const char*);
 }
 
 %{
-#ifndef _WIN32
     extern int yylex(YYSTYPE*, TParseContext&);
-#endif
 %}
 
 %parse-param { TParseContext& parseContext}
