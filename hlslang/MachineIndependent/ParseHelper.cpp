@@ -1570,7 +1570,11 @@ TIntermNode* TParseContext::promoteFunctionArguments( TIntermNode *node, const T
    TIntermTyped *tNode = 0;
    TIntermNode *ret = 0;
 
-   if (aggNode)
+   // if the node is an aggregate list of parameters to a function call, promote
+   // each individual subnode. Note the Op could be EOpNull too while processing,
+   // the important distinction is we should not include other aggregates like
+   // EOpTex2DLod
+   if (aggNode && aggNode->getOp() <= EOpParameters)
    {
       //This is a function call with multiple arguments
       TNodeArray &seq = aggNode->getNodes();

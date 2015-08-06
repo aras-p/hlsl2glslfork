@@ -1,6 +1,13 @@
 hlsl2glsl Change Log
 =========================
 
+2015 07
+-------
+
+Fixes:
+
+* Fixed a case where code such as functionCall( tex2D(tex, uv) ) would fail to compile.
+
 2015 06
 -------
 
