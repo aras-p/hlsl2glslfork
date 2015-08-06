@@ -145,7 +145,8 @@ elseif (APPLE)
     add_custom_command(OUTPUT hlslang/MachineIndependent/Gen_hlslang_tab.cpp hlslang/MachineIndependent/hlslang_tab.h 
                          COMMAND set ARGS "BISON_SIMPLE=../../tools/bison.simple"
                          COMMAND set ARGS "BISON_HAIRY=../../tools/bison.simple"
-                         COMMAND bison ARGS -o Gen_hlslang_tab.cpp -d -t -v hlslang.y
+                         COMMAND bison ARGS -o hlslang_tab.cpp -d -t -v hlslang.y
+                         COMMAND mv hlslang_tab.hpp hlslang_tab.h
                          MAIN_DEPENDENCY hlslang/MachineIndependent/hlslang.y
                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent
                          COMMENT "Executing Bison on hlslang.y"
@@ -158,6 +159,9 @@ elseif (APPLE)
                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent
                          COMMENT "Executing flex on hlslang.l"
                       )
+    FIND_LIBRARY(OPENGL_LIBRARY OpenGL)
+	FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+    SET(TEST_LIBS ${OPENGL_LIBRARY} ${COCOA_LIBRARY})
 elseif (UNIX)
     set(OSDEPENDENT_FILES
       hlslang/OSDependent/Linux/osinclude.h
