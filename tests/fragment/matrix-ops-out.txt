@@ -1,0 +1,22 @@
+uniform float _Speed;
+uniform vec4 _Time;
+#line 3
+#line 3
+vec4 xlat_main( in vec2 uv ) {
+    float s = sin((_Speed * _Time.x));
+    float c = cos((_Speed * _Time.x));
+    #line 7
+    mat2 rotationMatrix = mat2( c, s, (-s), c);
+    rotationMatrix = ((rotationMatrix * 2.0) - 1.0);
+    return vec4( (rotationMatrix * uv), 0.0, 0.0);
+}
+varying vec2 xlv_TEXCOORD0;
+void main() {
+    vec4 xl_retval;
+    xl_retval = xlat_main( vec2(xlv_TEXCOORD0));
+    gl_FragData[0] = vec4(xl_retval);
+}
+
+// uniforms:
+// _Speed:<none> type 9 arrsize 0
+// _Time:<none> type 12 arrsize 0
