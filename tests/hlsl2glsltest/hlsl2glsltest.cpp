@@ -502,8 +502,16 @@ static std::string GetCompiledShaderText(ShHandle parser)
 		for (int i = 0; i < count; ++i)
 		{
 			char buf[1000];
-			snprintf(buf,1000,"// %s:%s type %d arrsize %d\n", uni[i].name, uni[i].semantic?uni[i].semantic:"<none>", uni[i].type, uni[i].arraySize);
+			snprintf(buf,1000,"// %s:%s type %d arrsize %d", uni[i].name, uni[i].semantic?uni[i].semantic:"<none>", uni[i].type, uni[i].arraySize);
 			txt += buf;
+
+			if (uni[i].registerSpec)
+			{
+				txt += " register ";
+				txt += uni[i].registerSpec;
+			}
+
+			txt += "\n";
 		}
 	}
 	

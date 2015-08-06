@@ -68,4 +68,4 @@ samples[9] = 0.08;
 // uniforms:
 // sampleDist:<none> type 9 arrsize 0
 // sampleStrength:<none> type 9 arrsize 0
-// tex:<none> type 25 arrsize 0
+// tex:<none> type 25 arrsize 0 register s0
