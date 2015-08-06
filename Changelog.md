@@ -1,12 +1,16 @@
 hlsl2glsl Change Log
 =========================
 
-2015 07
+2015 08
 -------
+
+Goodies:
+
+* register specifiers for samplers are supported, and can be queried in ShUniformInfo::registerSpec.
 
 Fixes:
 
-* Fixed a case where code such as functionCall( tex2D(tex, uv) ) would fail to compile.
+* Fixed a case where code such as functionCall(tex2D(tex,uv)) would fail to compile.
 
 2015 06
 -------
