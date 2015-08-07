@@ -391,25 +391,16 @@ int IncludeOpenCallback(MOJOSHADER_hlslang_includeType inctype,
                         const char **outdataPtr, unsigned int *outbytesPtr,
                         MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
 {
-	Hlsl2Glsl_ParseCallbacks* callbacks = reinterpret_cast<Hlsl2Glsl_ParseCallbacks*>(d);
-	std::string out;
-	if (!callbacks->includeOpenCallback(inctype == MOJOSHADER_hlslang_INCLUDETYPE_SYSTEM,
-										fname, out, callbacks->data))
-	{
-		return 0;
-	}
-
-	char* outdata = (char*) m(out.size() + 1, NULL);
-	std::memcpy(outdata, out.data(), out.size());
-	*outdataPtr = outdata;
-	*outbytesPtr = out.size();
-	return 1;
+	Hlsl2Glsl_PreprocessorData* preprocessorData = reinterpret_cast<Hlsl2Glsl_PreprocessorData*>(d);
+	return preprocessorData->includeOpenCallback(inctype == MOJOSHADER_hlslang_INCLUDETYPE_SYSTEM,
+										fname, outdataPtr, outbytesPtr, preprocessorData->callbackData) ? 1 : 0;
 }
 
 void IncludeCloseCallback(const char *data,
                           MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
 {
-	f(const_cast<char*>(data), NULL);
+	Hlsl2Glsl_PreprocessorData* preprocessorData = reinterpret_cast<Hlsl2Glsl_PreprocessorData*>(d);
+	preprocessorData->includeCloseCallback( data );
 }
 
 //
@@ -418,7 +409,7 @@ void IncludeCloseCallback(const char *data,
 //
 // Returns 0 for success, as per yyparse().
 //
-int PaParseString(char* source, TParseContext& parseContextLocal, Hlsl2Glsl_ParseCallbacks* callbacks)
+int PaParseString(char* source, TParseContext& parseContextLocal, Hlsl2Glsl_PreprocessorData* preprocessorData )
 {
 	int sourceLen;
 
@@ -432,21 +423,34 @@ int PaParseString(char* source, TParseContext& parseContextLocal, Hlsl2Glsl_Pars
 	
 	MOJOSHADER_hlslang_includeOpen openCallback = NULL;
     MOJOSHADER_hlslang_includeClose closeCallback = NULL;
+	const MOJOSHADER_hlslang_preprocessorDefine* defines = NULL;
+	MOJOSHADER_hlslang_malloc mojoMalloc = MOJOSHADER_hlslang_internal_malloc;
+	MOJOSHADER_hlslang_free mojoFree = MOJOSHADER_hlslang_internal_free;
+	unsigned int definesCount = 0;
 	void* data = NULL;
-	if (callbacks)
+	if (preprocessorData)
 	{
 		openCallback = IncludeOpenCallback;
 		closeCallback = IncludeCloseCallback;
-		data = callbacks;
+
+		if( preprocessorData->malloc )
+			mojoMalloc = ( MOJOSHADER_hlslang_malloc )preprocessorData->malloc;
+		if( preprocessorData->free )
+			mojoFree = ( MOJOSHADER_hlslang_free )preprocessorData->free;
+
+		defines = ( const MOJOSHADER_hlslang_preprocessorDefine* )preprocessorData->defines;
+		definesCount = preprocessorData->defineCount;
+
+		data = preprocessorData;
 	}
 
 	hlmojo_Preprocessor* pp = hlmojo_preprocessor_start("", source, sourceLen,
 		openCallback,
 		closeCallback,
-		NULL, // defines
-		0, // define count
-		MOJOSHADER_hlslang_internal_malloc,
-		MOJOSHADER_hlslang_internal_free,
+		defines, 
+		definesCount,
+		mojoMalloc,
+		mojoFree,
 		data);
 	g_cpp = pp;
 	g_parseContext = &parseContextLocal;
