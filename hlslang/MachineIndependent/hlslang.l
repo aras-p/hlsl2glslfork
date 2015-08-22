@@ -46,14 +46,9 @@ I           [uUlL]
 int yy_input(char* buf, int max_size);
 static TSourceLoc lexlineno = { 0, 0 };
 
-#ifdef _WIN32
-    extern int yyparse(TParseContext&);
-    #define YY_DECL int yylex(YYSTYPE* pyylval, TParseContext& parseContext)    
-#else
-    extern int yyparse(void*);
-    #define YY_DECL int yylex(YYSTYPE* pyylval, void* parseContextLocal)
-    #define parseContext (*((TParseContext*)(parseContextLocal)))		
-#endif
+extern int yyparse(TParseContext&);
+#define YY_DECL int yylex(YYSTYPE* pyylval, TParseContext& parseContext)    
+
  
 #define YY_INPUT(buf,result,max_size) (result = yy_input(buf, max_size))
 
@@ -465,12 +460,8 @@ int PaParseString(char* source, TParseContext& parseContextLocal, Hlsl2Glsl_Pars
    
     if (sourceLen >= 0)
 	{
-        int ret;
-        #ifdef _WIN32
-            ret = yyparse(parseContextLocal);            
-        #else
-            ret = yyparse((void*)(&parseContextLocal));
-        #endif
+        yyparse(parseContextLocal);    
+
         if (parseContextLocal.recoveredFromError || parseContextLocal.numErrors > 0)
              result = 1;
         else
@@ -488,7 +479,7 @@ int PaParseString(char* source, TParseContext& parseContextLocal, Hlsl2Glsl_Pars
 	return result;
 }
 
-void yyerror(const char *s)
+void yyerror(TParseContext& parseContext, const char *s)
 {
 
 	GlobalParseContext->error(lexlineno, "syntax error", GlobalParseContext->AfterEOF ? "" : yytext, s, "");

@@ -4,14 +4,14 @@ project(hlsl2glsl)
 
 # derived from msvs2010 project
 
-set(CMAKE_PROGRAM_PATH ${CMAKE_CURRENT_SOURCE_DIR}/tools)
+set(CMAKE_PROGRAM_PATH ${CMAKE_CURRENT_SOURCE_DIR}/tools ${CMAKE_CURRENT_SOURCE_DIR}/tools/bin)
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
 set(ENV{BISON_SIMPLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/bison.simple)
 set(ENV{BISON_HAIRY} ${CMAKE_CURRENT_SOURCE_DIR}/tools/bison.simple)
 execute_process(COMMAND ${BISON_EXECUTABLE} -d -t -v -o ${PROJECT_BINARY_DIR}/gen_hlslang_tab.cpp hlslang.y WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent)
 execute_process(COMMAND ${FLEX_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/hlslang.l WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
-file(WRITE ${PROJECT_BINARY_DIR}/hlslang_tab.h "#include <gen_hlslang_tab.cpp.h>")
+file(WRITE ${PROJECT_BINARY_DIR}/hlslang_tab.h "#include <gen_hlslang_tab.hpp>")
 
 set(HLSL2GLSL_HEADER
 	hlslang/MachineIndependent/Initialize.h
@@ -20,7 +20,7 @@ set(HLSL2GLSL_HEADER
 	hlslang/MachineIndependent/preprocessor/mojoshader.h
 	hlslang/MachineIndependent/preprocessor/mojoshader_internal.h
 	hlslang/MachineIndependent/RemoveTree.h
-	${PROJECT_BINARY_DIR}/gen_hlslang_tab.cpp.h
+	${PROJECT_BINARY_DIR}/gen_hlslang_tab.hpp
 	hlslang/MachineIndependent/preprocessor/sourceloc.h
 	hlslang/Include/BaseTypes.h
 	hlslang/Include/Common.h

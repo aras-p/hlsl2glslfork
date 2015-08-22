@@ -314,6 +314,7 @@ HlslLinker::~HlslLinker()
 	{
 		delete [] it->name;
 		delete [] it->semantic;
+		delete [] it->registerSpec;
 		delete [] it->init;
 	}
 }
@@ -540,6 +541,8 @@ bool HlslLinker::getArgumentData2( GlslSymbolOrStructMemberBase const* symOrStru
 						m_Extensions.insert("GL_EXT_draw_buffers");
 				}
 			}
+			if (outName.empty())
+				return false;
 			break;
 
 		case EClassUniform:
@@ -654,6 +657,11 @@ static AttrSemanticMapping kAttributeSemantic[] = {
 	{ "color1", EAttrSemColor1 },
 	{ "color2", EAttrSemColor2 },
 	{ "color3", EAttrSemColor3 },
+	{ "sv_target", EAttrSemColor0 },
+	{ "sv_target0", EAttrSemColor0 },
+	{ "sv_target1", EAttrSemColor1 },
+	{ "sv_target2", EAttrSemColor2 },
+	{ "sv_target3", EAttrSemColor3 },
 	{ "texcoord", EAttrSemTex0 },
 	{ "texcoord0", EAttrSemTex0 },
 	{ "texcoord1", EAttrSemTex1 },
@@ -1016,6 +1024,13 @@ void HlslLinker::buildUniformReflection(const std::vector<GlslSymbol*>& constant
 		}
 		else
 			info.semantic = 0;
+		
+		if (s->getRegister() != "") {
+			info.registerSpec = new char[s->getRegister().size()+1];
+			strcpy(info.registerSpec, s->getRegister().c_str());
+		}
+		else
+			info.registerSpec = 0;
 		
 		info.type = (EShType)s->getType();
 		info.arraySize = s->getArraySize();
@@ -1413,10 +1428,14 @@ bool HlslLinker::emitReturnValue(const EGlslSymbolType retType, GlslFunction* fu
 		if (!getArgumentData2(&fakedMainSym, lang==EShLangVertex ? EClassVarOut : EClassRes,
 								name, ctor, pad, -1))
 		{
-			assert(0);
-			infoSink.info << (lang==EShLangVertex ? "Unsupported type for shader return value (" : "Unsupported return type for shader entry function (");
-			infoSink.info << getTypeString(retType) << ")\n";
-			return true; //@TODO: real error and return false?
+			TSourceLoc loc = { 0, 1 };
+			std::string msg =
+				std::string("Unsupported ") +
+				(lang==EShLangVertex ? "type for shader return value" : "return type for shader entry function") +
+				" (" + getTypeString(retType) + ")" +
+				" or wrong semantic (" + funcMain->getSemantic() + ")";
+			infoSink.info.message(EPrefixError, msg.c_str(), loc);
+			return false;
 		}
 		
 		postamble << "    ";

@@ -426,9 +426,13 @@ public:
 	TTypeInfo( const TString &s, TAnnotation *ann) : semantic(s), annotation(ann)
 	{
 	}
+	TTypeInfo( const TString &s, const TString &r, TAnnotation *ann) : semantic(s), registerSpec(r), annotation(ann)
+	{
+	}
 	~TTypeInfo() { } // deallocation should be handled by the pool
 
 	const TString& getSemantic() const { return semantic; }
+	const TString& getRegister() const { return registerSpec; }
 	const TAnnotation* getAnnotation() const { return annotation; }
 
 private:
@@ -437,6 +441,7 @@ private:
 	TTypeInfo(const TTypeInfo &);
 
 	TString semantic;
+	TString registerSpec;
 	TAnnotation *annotation;
 };
 

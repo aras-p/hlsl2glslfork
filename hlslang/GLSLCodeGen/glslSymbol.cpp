@@ -200,7 +200,9 @@ static bool IsReservedGlslKeyword (const std::string& name)
 }
 
 
-GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, int id, EGlslSymbolType t, TPrecision prec, EGlslQualifier q, int as ) : GlslSymbolOrStructMemberBase(n, s, t, q, prec, as),
+GlslSymbol::GlslSymbol( const std::string &n, const std::string &s, const std::string &r, int id, EGlslSymbolType t, TPrecision prec, EGlslQualifier q, int as )
+ : GlslSymbolOrStructMemberBase(n, s, t, q, prec, as),
+   registerSpec(r),
    identifier(id),
    mangleCounter(0),
    structPtr(0),

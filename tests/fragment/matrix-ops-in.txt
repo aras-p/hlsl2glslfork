@@ -1,0 +1,10 @@
+float _Speed;
+float4 _Time;
+float4 main(float2 uv : TEXCOORD0) : SV_Target
+{
+	float s = sin(_Speed * _Time.x);
+	float c = cos(_Speed * _Time.x);
+	float2x2 rotationMatrix = float2x2(c, -s, s, c);
+	rotationMatrix = rotationMatrix * 2 - 1;
+	return float4(mul(rotationMatrix, uv), 0, 0);
+}

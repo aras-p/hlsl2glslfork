@@ -1,12 +1,26 @@
 hlsl2glsl Change Log
 =========================
 
+2015 08
+-------
+
+Goodies:
+
+* register specifiers for samplers are supported, and can be queried in ShUniformInfo::registerSpec.
+
+Fixes:
+
+* Fixed a case where code such as functionCall(tex2D(tex,uv)) would fail to compile.
+* Fixed parser/lexer compilation on modern Bison/Flex versions.
+
 2015 06
 -------
 
 Fixes:
 
 * Fixed SV_Position semantic to be recognized just like POSITION.
+* Fixed SV_Target[n] semantic to be recognized just like COLOR[n].
+* Fixed unknown/wrong pixel shader output semantics to not generate bogus GLSL, but to give proper errors instead.
 
 2015 04
 -------

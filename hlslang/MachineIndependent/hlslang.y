@@ -25,20 +25,7 @@ Jutta Degener, 1995
 #include "ParseHelper.h"
 #include "../../include/hlsl2glsl.h"
 
-#ifdef _WIN32
-    #define YYPARSE_PARAM parseContext
-    #define YYPARSE_PARAM_DECL TParseContext&
-    #define YY_DECL int yylex(YYSTYPE* pyylval, TParseContext& parseContext)
-    #define YYLEX_PARAM parseContext
-	void yyerror(const char*);
-#else
-    #define YYPARSE_PARAM parseContextLocal
-    #define parseContext (*((TParseContext*)(parseContextLocal)))
-    #define YY_DECL int yylex(YYSTYPE* pyylval, void* parseContextLocal)
-    #define YYLEX_PARAM (void*)(parseContextLocal)
-    extern void yyerror(const char*);
-#endif
-
+extern void yyerror(TParseContext&, const char*);
 
 #define FRAG_ONLY(S, L) {                                                       \
     if (parseContext.language != EShLangFragment) {                             \
@@ -101,12 +88,16 @@ Jutta Degener, 1995
 }
 
 %{
-#ifndef _WIN32
-    extern int yylex(YYSTYPE*, void*);
-#endif
+    extern int yylex(YYSTYPE*, TParseContext&);
 %}
 
-%pure_parser /* Just in case is called from multiple threads */
+%parse-param { TParseContext& parseContext}
+%lex-param { TParseContext& parseContext }
+
+// Note: modern bison (from 2.7 would use %define api.pure full, but we still need to support Bison 2.3
+// for Mac 10.9). So use the legacy syntax.
+%pure-parser
+
 %expect 1 /* One shift reduce conflict because of if | else */
 %token <lex> CONST_QUAL STATIC_QUAL BOOL_TYPE FLOAT_TYPE INT_TYPE STRING_TYPE FIXED_TYPE HALF_TYPE
 %token <lex> BREAK CONTINUE DO ELSE FOR IF DISCARD RETURN
@@ -174,6 +165,7 @@ Jutta Degener, 1995
 %type <interm.ann> annotation annotation_list
 %type <interm.typeInfo> type_info
 %type <lex> annotation_item semantic
+%type <lex> register_specifier
 
 %start translation_unit 
 %%
@@ -1058,14 +1050,14 @@ parameter_declarator
         //TODO: add initializer support
     }
     | type_specifier IDENTIFIER register_specifier {
-        // register is being ignored
+        // Parameter with register
         if ($1.type == EbtVoid) {
             parseContext.error($2.line, "illegal use of type 'void'", $2.string->c_str(), "");
             parseContext.recover();
         }
         if (parseContext.reservedErrorCheck($2.line, *$2.string))
             parseContext.recover();
-        TParameter param = {$2.string, 0, new TType($1)};
+        TParameter param = {$2.string, new TTypeInfo("", *$3.string, 0), new TType($1)};
         $$.line = $2.line;
         $$.param = param; 
     }
@@ -2428,7 +2420,7 @@ ann_literal_init_list
 
 register_specifier
     : COLON REGISTER LEFT_PAREN IDENTIFIER RIGHT_PAREN {
-        // This is being thrown away
+        $$ = $4;
     }
     ;
 
@@ -2439,12 +2431,12 @@ semantic
 type_info
 	: { $$ = 0;}
 	| semantic { $$ = new TTypeInfo( *$1.string, 0); }
-	| register_specifier { $$ = 0; }
+	| register_specifier { $$ = new TTypeInfo( "", *$1.string, 0); }
 	| annotation { $$ = new TTypeInfo( "", $1); }
 	| semantic annotation { $$ = new TTypeInfo( *$1.string, $2); }
-	| semantic register_specifier { $$ = new TTypeInfo( *$1.string, 0); }
-	| register_specifier annotation { $$ = new TTypeInfo( "", $2); }
-	| semantic register_specifier annotation { $$ = new TTypeInfo( *$1.string, $3); }
+	| semantic register_specifier { $$ = new TTypeInfo( *$1.string, *$2.string, 0); }
+	| register_specifier annotation { $$ = new TTypeInfo( "", *$1.string, $2); }
+	| semantic register_specifier annotation { $$ = new TTypeInfo( *$1.string, *$2.string, $3); }
 	;
 
 sampler_initializer
