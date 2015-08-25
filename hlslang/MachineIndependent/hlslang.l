@@ -387,14 +387,14 @@ int yy_input(char* buf, int max_size)
 }
 
 int IncludeOpenCallback(MOJOSHADER_hlslang_includeType inctype,
-                        const char *fname, const char *parent,
+                        const char *fname, const char *parentfname, const char *parent,
                         const char **outdataPtr, unsigned int *outbytesPtr,
                         MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
 {
 	Hlsl2Glsl_ParseCallbacks* callbacks = reinterpret_cast<Hlsl2Glsl_ParseCallbacks*>(d);
 	std::string out;
 	if (!callbacks->includeOpenCallback(inctype == MOJOSHADER_hlslang_INCLUDETYPE_SYSTEM,
-										fname, out, callbacks->data))
+										fname, parentfname, out, callbacks->data))
 	{
 		return 0;
 	}

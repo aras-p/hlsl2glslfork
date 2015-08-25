@@ -103,6 +103,7 @@ typedef enum
  *
  * (inctype) specifies the type of header we wish to include.
  * (fname) specifies the name of the file specified on the #include line.
+ * (parentfname) specifies the path of the file containing the include.
  * (parent) is a string of the entire source file containing the include, in
  *  its original, not-yet-preprocessed state. Note that this is just the
  *  contents of the specific file, not all source code that the preprocessor
@@ -123,7 +124,7 @@ typedef enum
  * If you supply an includeOpen callback, you must supply includeClose, too.
  */
 typedef int (*MOJOSHADER_hlslang_includeOpen)(MOJOSHADER_hlslang_includeType inctype,
-                            const char *fname, const char *parent,
+                            const char *fname, const char *parentfname, const char *parent,
                             const char **outdata, unsigned int *outbytes,
                             MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d);
 

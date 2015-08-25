@@ -210,7 +210,7 @@ void MOJOSHADER_hlslang_print_debug_token(const char *subsystem, const char *tok
 #endif
 
 int MOJOSHADER_hlslang_internal_include_open(MOJOSHADER_hlslang_includeType inctype,
-                                     const char *fname, const char *parent,
+                                     const char *fname, const char *parentfname, const char *parent,
                                      const char **outdata,
                                      unsigned int *outbytes,
                                      MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f,
@@ -812,7 +812,7 @@ static void handle_pp_include(Context *ctx)
         return;
     } // if
 
-    if (!ctx->open_callback(incltype, filename, state->source_base,
+    if (!ctx->open_callback(incltype, filename, state->filename, state->source_base,
                             &newdata, &newbytes, ctx->malloc,
                             ctx->free, ctx->malloc_data))
     {
