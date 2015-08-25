@@ -1827,7 +1827,7 @@ type_specifier_nonarray
 		SET_BASIC_TYPE($$,$1,EbtSampler2D,EbpHigh);
 	}
     | SAMPLER3D {
-        SET_BASIC_TYPE($$,$1,EbtSampler3D,EbpUndefined);
+        SET_BASIC_TYPE($$,$1,EbtSampler3D,EbpLow);
     } 
     | SAMPLERCUBE {
         SET_BASIC_TYPE($$,$1,EbtSamplerCube,EbpUndefined);

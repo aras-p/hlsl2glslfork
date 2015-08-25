@@ -1643,7 +1643,13 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 
    case EOpTex3D:
       if (argCount == 2)
-         writeTex( "texture3D", node, goit);
+      {
+         if (usePost120TextureLookups) {
+            writeTex( "texture", node, goit);
+         } else {
+            writeTex( "texture3D", node, goit);
+         }
+      }
       else
       {
          current->addLibFunction(EOpTex3DGrad);
