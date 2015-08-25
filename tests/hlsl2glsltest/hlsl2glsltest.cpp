@@ -525,7 +525,7 @@ struct IncludeContext
 };
 
 
-static bool C_DECL IncludeOpenCallback(bool isSystem, const char* fname, std::string& output, void* d)
+static bool C_DECL IncludeOpenCallback(bool isSystem, const char* fname, const char* parentfname, std::string& output, void* d)
 {
 	const IncludeContext* data = reinterpret_cast<IncludeContext*>(d);
 	
