@@ -7,6 +7,8 @@ hlsl2glsl Change Log
 Goodies:
 
 * register specifiers for samplers are supported, and can be queried in ShUniformInfo::registerSpec.
+* Texture 2D array support: use `sampler2DArray` variables and `tex2DArray(sampler2DArray,float3)`,
+  `tex2DArraybias(sampler2DArray,float4)`, `tex2DArraylod(sampler2DArray,float4)` functions to sample.
 
 Fixes:
 

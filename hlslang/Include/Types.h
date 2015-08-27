@@ -293,6 +293,7 @@ public:
       case EbtSamplerCube:       return "samplerCube";       break;
       case EbtSampler1DShadow:   return "sampler1DShadow";   break;
       case EbtSampler2DShadow:   return "sampler2DShadow";   break;
+      case EbtSampler2DArray:    return "sampler2DArray";   break;
       case EbtSamplerRect:       return "samplerRect";       break; // ARB_texture_rectangle
       case EbtSamplerRectShadow: return "samplerRectShadow"; break; // ARB_texture_rectangle
       case EbtStruct:            return "structure";         break;

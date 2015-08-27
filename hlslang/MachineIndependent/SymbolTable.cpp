@@ -39,6 +39,7 @@ void TType::buildMangledName(TString& mangledName) const
 		case EbtSamplerCube:        mangledName += "sC";     break;
 		case EbtSampler1DShadow:    mangledName += "sS1";    break;
 		case EbtSampler2DShadow:    mangledName += "sS2";    break;
+		case EbtSampler2DArray:     mangledName += "sA2";    break;
 		case EbtSamplerRect:        mangledName += "sR2";    break;  // ARB_texture_rectangle
 		case EbtSamplerRectShadow:  mangledName += "sSR2";   break;  // ARB_texture_rectangle
 		case EbtStruct:

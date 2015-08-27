@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 /// Table to convert GLSL variable types to strings
-const char typeString[EgstTypeCount][32] = 
+const char kGLSLTypeNames[EgstTypeCount][32] =
 {
    "void",
    "bool",
@@ -42,6 +42,7 @@ const char typeString[EgstTypeCount][32] =
    "samplerCube",
    "sampler2DRect",
    "sampler2DRectShadow",
+   "sampler2DArray",
    "struct"
 };
 
@@ -101,7 +102,8 @@ void writeType (std::stringstream &out, EGlslSymbolType type, const GlslStruct *
    case EgstSamplerCube:
    case EgstSamplerRect:
    case EgstSamplerRectShadow:
-      out << typeString[type];
+   case EgstSampler2DArray:
+      out << kGLSLTypeNames[type];
       break;
    case EgstStruct:
       if (s)
@@ -118,7 +120,7 @@ void writeType (std::stringstream &out, EGlslSymbolType type, const GlslStruct *
 const char* getTypeString( const EGlslSymbolType t )
 {
    assert (t >= EgstVoid && t < EgstTypeCount);
-   return typeString[t];
+   return kGLSLTypeNames[t];
 }
 
 
@@ -181,6 +183,8 @@ EGlslSymbolType translateType( const TType *type )
 		  return EgstSamplerRect;
 	  case EbtSamplerRectShadow:
 		  return EgstSamplerRectShadow;
+	  case EbtSampler2DArray:
+		  return EgstSampler2DArray;
       case EbtStruct:
          return EgstStruct;
       default:

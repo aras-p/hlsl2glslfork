@@ -167,6 +167,9 @@ enum TOperator
 	EOpTexRectProj,
 	EOpShadow2D,
 	EOpShadow2DProj,
+	EOpTex2DArray,
+	EOpTex2DArrayLod,
+	EOpTex2DArrayBias,
 
 	EOpTranspose,
 	EOpDeterminant,

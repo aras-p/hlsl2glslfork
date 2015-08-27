@@ -165,6 +165,7 @@ extern int yyparse(TParseContext&);
 "sampler1DShadow" {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER1DSHADOW; }
 "sampler2D"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2D; }
 "sampler2DShadow" {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2DSHADOW; }
+"sampler2DArray"  {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2DARRAY; }
 "sampler2D_half"  {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2D_HALF; }
 "sampler2D_float" {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER2D_FLOAT; }
 "sampler3D"       {  pyylval->lex.line = lexlineno; parseContext.lexAfterType = true; return SAMPLER3D; }

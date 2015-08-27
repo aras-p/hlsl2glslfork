@@ -261,6 +261,26 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
 				assert(0);
 			}
 		}
+		case EOpTex2DArray:
+		case EOpTex2DArrayLod:
+		case EOpTex2DArrayBias:
+		{
+			TNodeArray& nodes = node->getNodes();
+			assert(nodes.size());
+			TIntermTyped *sampArg = nodes[0]->getAsTyped();
+			if (sampArg)
+			{
+				if (sampArg->getBasicType() == EbtSamplerGeneric)
+					sit->typeSampler(sampArg, EbtSampler2DArray);
+				else if (sampArg->getBasicType() != EbtSampler2DArray)
+					infoSink.info << "Error: " << node->getLine() << ": Sampler type mismatch, likely using a generic sampler as two types\n";
+			}
+			else
+			{
+				assert(0);
+			}
+		  }
+		
 		// We need to continue the traverse here, because the calls could be nested 
 		break;
 			  

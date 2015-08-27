@@ -448,6 +448,7 @@ TIntermTyped* ir_add_conversion(TOperator op, const TType& type, TIntermTyped* n
    case EbtSamplerCube:
    case EbtSampler1DShadow:
    case EbtSampler2DShadow:
+   case EbtSampler2DArray:
    case EbtSamplerRect:        // ARB_texture_rectangle
    case EbtSamplerRectShadow:  // ARB_texture_rectangle
       return 0;

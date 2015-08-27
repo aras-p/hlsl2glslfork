@@ -1715,11 +1715,22 @@ bool TGlslOutputTraverser::traverseAggregate( bool preVisit, TIntermAggregate *n
 		current->addLibFunction(EOpShadow2D);
 		writeTex("xll_shadow2D", node, goit);
 		return false;
-	   
    case EOpShadow2DProj:
 	   current->addLibFunction(EOpShadow2DProj);
 	   writeTex("xll_shadow2Dproj", node, goit);
 	   return false;
+	case EOpTex2DArray:
+		current->addLibFunction(EOpTex2DArray);
+		writeTex("xll_tex2DArray", node, goit);
+		return false;
+	case EOpTex2DArrayLod:
+		current->addLibFunction(EOpTex2DArrayLod);
+		writeTex("xll_tex2DArrayLod", node, goit);
+		return false;
+	case EOpTex2DArrayBias:
+		current->addLibFunction(EOpTex2DArrayBias);
+		writeTex("xll_tex2DArrayBias", node, goit);
+		return false;
 		   
    case EOpModf:
       current->addLibFunction(EOpModf);

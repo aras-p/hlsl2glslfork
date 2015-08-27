@@ -325,6 +325,9 @@ bool OutputAggregate(bool, /* preVisit */ TIntermAggregate* node, TIntermTravers
    case EOpTexRectProj:	out.debug << "texRECTproj"; break;
    case EOpShadow2D:	out.debug << "shadow2D"; break;
    case EOpShadow2DProj:out.debug << "shadow2Dproj"; break;
+   case EOpTex2DArray:		out.debug << "tex2DArray"; break;
+   case EOpTex2DArrayLod:	out.debug << "tex2DArrayLod"; break;
+   case EOpTex2DArrayBias:	out.debug << "tex2DArrayBias"; break;
  
    default: out.debug.message(EPrefixError, "Bad aggregation op");
    }

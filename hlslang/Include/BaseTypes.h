@@ -38,6 +38,7 @@ enum TBasicType
    EbtSampler2DShadow,
    EbtSamplerRect,        // ARB_texture_rectangle
    EbtSamplerRectShadow,  // ARB_texture_rectangle
+   EbtSampler2DArray,
    EbtGuardSamplerEnd,    // non type:  see implementation of IsSampler()
    EbtTexture,            // HLSL Texture variable (presently just a dummy) 
    EbtStruct,

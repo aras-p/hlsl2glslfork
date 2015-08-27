@@ -382,6 +382,9 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 			newSrc += "varying lowp vec4 _glesLastFragData[4];\n";
 			newSrc += "float shadow2DEXT (sampler2DShadow s, vec3 p) { return shadow2D(s,p).r; }\n";
 			newSrc += "float shadow2DProjEXT (sampler2DShadow s, vec4 p) { return shadow2DProj(s,p).r; }\n";
+			newSrc += "#define sampler2DArrayNV sampler2DArray\n";
+			newSrc += "#define texture2DArrayNV texture2DArray\n";
+			newSrc += "#define texture2DArrayLodNV texture2DArrayLod\n";
 		}
 		newSrc += source;
 		replace_string (newSrc, "GL_EXT_shader_texture_lod", "GL_ARB_shader_texture_lod", 0);
@@ -391,8 +394,9 @@ static bool CheckGLSL (bool vertex, ETargetVersion version, const std::string& s
 		replace_string (newSrc, "#extension GL_EXT_shader_framebuffer_fetch : require", "", 0);
 		replace_string (newSrc, "#extension GL_EXT_draw_buffers : require", "", 0);
 		replace_string (newSrc, "GL_EXT_draw_instanced", "GL_ARB_draw_instanced", 0);
+		replace_string (newSrc, "GL_NV_texture_array", "GL_EXT_texture_array", 0);
 		replace_string (newSrc, "gl_InstanceIDEXT", "gl_InstanceIDARB", 0);
-					   
+		
 		sourcePtr = newSrc.c_str();
 	}
 	

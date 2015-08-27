@@ -498,6 +498,7 @@ bool TParseContext::lValueErrorCheck(const TSourceLoc& line, const char* op, TIn
 				case EbtSamplerCube:
 				case EbtSampler1DShadow:
 				case EbtSampler2DShadow:
+				case EbtSampler2DArray:
 				case EbtSamplerRect:       // ARB_texture_rectangle
 				case EbtSamplerRectShadow: // ARB_texture_rectangle
 					message = "can't modify a sampler";
