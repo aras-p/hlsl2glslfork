@@ -121,5 +121,12 @@ void GlslFunction::addNeededExtensions (ExtensionSet& extensions, ETargetVersion
 		{
 			extensions.insert("GL_EXT_shadow_samplers");
 		}
+		if (s->getType() == EgstSampler2DArray)
+		{
+			if (version == ETargetGLSL_ES_100)
+				extensions.insert("GL_NV_texture_array");
+			else if (version < ETargetGLSL_ES_300)
+				extensions.insert("GL_EXT_texture_array");
+		}
 	}
 }
