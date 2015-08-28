@@ -17,15 +17,15 @@ vec3 xll_matrixindex_mf3x3_i (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i];
 vec4 xll_matrixindex_mf4x4_i (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }
 #if defined(SHADER_API_GLES) && defined(SHADER_API_DESKTOP)
 vec2 xll_matrixindexdynamic_mf2x2_i (mat2 m, int i) {
-	mat2 m2 = xll_transpose(m);
+	mat2 m2 = xll_transpose_mf2x2(m);
 	return i==0?m2[0]:m2[1];
 }
 vec3 xll_matrixindexdynamic_mf3x3_i (mat3 m, int i) {
-	mat3 m2 = xll_transpose(m);
+	mat3 m2 = xll_transpose_mf3x3(m);
 	return i < 2?(i==0?m2[0]:m2[1]):(m2[2]);
 }
 vec4 xll_matrixindexdynamic_mf4x4_i (mat4 m, int i) {
-	mat4 m2 = xll_transpose(m);
+	mat4 m2 = xll_transpose_mf4x4(m);
 	return i < 2?(i==0?m2[0]:m2[1]):(i==3?m2[3]:m2[2]);
 }
 #else
