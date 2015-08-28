@@ -261,6 +261,9 @@ bool TSamplerTraverser::traverseAggregate( bool preVisit, TIntermAggregate *node
 				assert(0);
 			}
 		}
+		// We need to continue the traverse here, because the calls could be nested
+		break;
+
 		case EOpTex2DArray:
 		case EOpTex2DArrayLod:
 		case EOpTex2DArrayBias:
