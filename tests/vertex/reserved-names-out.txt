@@ -1,9 +1,12 @@
 uniform vec4 xlat_varattribute;
 uniform vec4 xlat_varvarying;
-#line 4
-#line 4
+#line 3
+uniform vec4 xlat_varmix;
+uniform vec4 xlat_varatan;
+#line 6
 vec4 xlat_main(  ) {
-    return (xlat_varattribute + xlat_varvarying);
+    #line 8
+    return (((xlat_varattribute + xlat_varvarying) + xlat_varmix) + xlat_varatan);
 }
 void main() {
     vec4 xl_retval;
@@ -12,5 +15,7 @@ void main() {
 }
 
 // uniforms:
+// xlat_varatan:<none> type 12 arrsize 0
 // xlat_varattribute:<none> type 12 arrsize 0
+// xlat_varmix:<none> type 12 arrsize 0
 // xlat_varvarying:<none> type 12 arrsize 0
