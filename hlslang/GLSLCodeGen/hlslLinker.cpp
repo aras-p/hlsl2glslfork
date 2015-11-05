@@ -1117,8 +1117,26 @@ void HlslLinker::emitInputNonStructParam(GlslSymbol* sym, EShLanguage lang, bool
 }
 
 
+static std::string GetFixedNestedVaryingSemantic(const std::string& parentStructSemantic, int ii)
+{
+	int baseIdx = 0;
+	std::stringstream var;
+	const size_t i = parentStructSemantic.find_first_of("0123456789");
+	if (i != std::string::npos)
+	{
+		std::stringstream(&parentStructSemantic[i]) >> baseIdx;
+		var << parentStructSemantic.substr(0, i);
+	}
+	else
+		var << parentStructSemantic;
+
+	var << (baseIdx + ii);
+
+	return var.str();
+}
+
 // This function calls itself recursively if it finds structs in structs.
-bool HlslLinker::emitInputStruct(const GlslStruct* str, std::string parentName, EShLanguage lang, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble)
+bool HlslLinker::emitInputStruct(const GlslStruct* str, std::string parentName, EShLanguage lang, std::stringstream& attrib, std::stringstream& varying, std::stringstream& preamble, const std::string& parentStructSemantic)
 {
 	// process struct members
 	const int elem = str->memberCount();
@@ -1148,7 +1166,7 @@ bool HlslLinker::emitInputStruct(const GlslStruct* str, std::string parentName, 
 				if (subStruct)
 				{
 					//should deal with fall through cases here
-					emitInputStruct(subStruct, parentName+current.name+std::string("."), lang, attrib, varying, preamble);
+					emitInputStruct(subStruct, parentName+current.name+std::string("."), lang, attrib, varying, preamble, current.getSemantic());
 					continue;
 				}
 				else
@@ -1158,6 +1176,10 @@ bool HlslLinker::emitInputStruct(const GlslStruct* str, std::string parentName, 
 					return false;
 				}
 			}
+
+			// nested struct with a semantic, but no semantics on it's members - inherit from parent
+			if (!parentStructSemantic.empty() && current.semantic.empty())
+				name += GetFixedNestedVaryingSemantic(parentStructSemantic, jj); // "xlv_" += new_semantic
 
 			preamble << "    ";
 			preamble << parentName << current.name;
@@ -1339,7 +1361,7 @@ void HlslLinker::emitMainStart(const HlslCrossCompiler* compiler, const EGlslSym
 }
 
 // This function calls itself recursively if it finds structs in structs.
-bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble)
+bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName, EShLanguage lang, std::stringstream& varying, std::stringstream& postamble, const std::string& parentStructSemantic)
 {
 	const int elem = retStruct->memberCount();
 	for (int ii=0; ii<elem; ii++)
@@ -1367,7 +1389,7 @@ bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName,
 				GlslStruct *subStruct = current.structType;
 				if (subStruct)
 				{
-					if (!emitReturnStruct(current.structType, parentName+current.name+std::string("."), lang, varying, postamble))
+					if (!emitReturnStruct(current.structType, parentName+current.name+std::string("."), lang, varying, postamble, current.getSemantic()))
 					{
 						return false;
 					}
@@ -1381,6 +1403,9 @@ bool HlslLinker::emitReturnStruct(GlslStruct *retStruct, std::string parentName,
 			}
 			else
 			{
+				if (!parentStructSemantic.empty() && current.semantic.empty())
+					name += GetFixedNestedVaryingSemantic(parentStructSemantic, ii);
+
 				postamble << "    ";
 				postamble << name;
 				postamble << " = " << ctor;

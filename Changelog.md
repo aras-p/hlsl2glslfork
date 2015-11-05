@@ -1,6 +1,13 @@
 hlsl2glsl Change Log
 =========================
 
+2015 11
+-------
+
+Fixes:
+
+* Fixed translation of shaders where HLSL semantic is added to whole struct of input/output data.
+
 2015 08
 -------
 
