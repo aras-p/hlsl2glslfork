@@ -12,6 +12,7 @@
 #include "ParseHelper.h"
 #include <float.h>
 #include <limits.h>
+#include <algorithm>
 
 static TPrecision GetHigherPrecision (TPrecision left, TPrecision right) {
 	return left > right ? left : right;
