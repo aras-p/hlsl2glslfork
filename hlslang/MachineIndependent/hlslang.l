@@ -401,7 +401,7 @@ int IncludeOpenCallback(MOJOSHADER_hlslang_includeType inctype,
 	}
 
 	char* outdata = (char*) m(out.size() + 1, NULL);
-	std::memcpy(outdata, out.data(), out.size());
+	std::memcpy(outdata, out.data(), out.size()+1);
 	*outdataPtr = outdata;
 	*outbytesPtr = out.size();
 	return 1;
