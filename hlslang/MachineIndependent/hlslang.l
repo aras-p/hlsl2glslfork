@@ -394,8 +394,9 @@ int IncludeOpenCallback(MOJOSHADER_hlslang_includeType inctype,
 {
 	Hlsl2Glsl_ParseCallbacks* callbacks = reinterpret_cast<Hlsl2Glsl_ParseCallbacks*>(d);
 	std::string out;
-	if (!callbacks->includeOpenCallback(inctype == MOJOSHADER_hlslang_INCLUDETYPE_SYSTEM,
-										fname, parentfname, out, callbacks->data))
+	if (callbacks->includeOpenCallback &&
+		!callbacks->includeOpenCallback(inctype == MOJOSHADER_hlslang_INCLUDETYPE_SYSTEM,
+										fname, parentfname, parent, out, callbacks->data))
 	{
 		return 0;
 	}
@@ -410,6 +411,9 @@ int IncludeOpenCallback(MOJOSHADER_hlslang_includeType inctype,
 void IncludeCloseCallback(const char *data,
                           MOJOSHADER_hlslang_malloc m, MOJOSHADER_hlslang_free f, void *d)
 {
+	Hlsl2Glsl_ParseCallbacks* callbacks = reinterpret_cast<Hlsl2Glsl_ParseCallbacks*>(d);
+	if (callbacks->includeCloseCallback)
+		callbacks->includeCloseCallback(data, callbacks->data);
 	f(const_cast<char*>(data), NULL);
 }
 
