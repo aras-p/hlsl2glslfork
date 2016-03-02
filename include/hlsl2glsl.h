@@ -236,10 +236,12 @@ SH_IMPORT_EXPORT void C_DECL Hlsl2Glsl_DestructCompiler( ShHandle handle );
 
 
 /// File read callback for #include processing.
-typedef bool (C_DECL *Hlsl2Glsl_IncludeOpenFunc)(bool isSystem, const char* fname, const char* parentfname, std::string& output, void* data);
+typedef bool (C_DECL *Hlsl2Glsl_IncludeOpenFunc)(bool isSystem, const char* fname, const char* parentfname, const char* parent, std::string& output, void* data);
+typedef void (C_DECL *Hlsl2Glsl_IncludeCloseFunc)(const char* file, void* data);
 struct Hlsl2Glsl_ParseCallbacks
 {
 	Hlsl2Glsl_IncludeOpenFunc includeOpenCallback;
+	Hlsl2Glsl_IncludeCloseFunc includeCloseCallback;
 	void* data;
 };
 
