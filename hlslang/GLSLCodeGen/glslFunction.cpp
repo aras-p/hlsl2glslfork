@@ -125,7 +125,7 @@ void GlslFunction::addNeededExtensions (ExtensionSet& extensions, ETargetVersion
 		{
 			if (version == ETargetGLSL_ES_100)
 				extensions.insert("GL_NV_texture_array");
-			else if (version < ETargetGLSL_ES_300)
+			else if (version < ETargetGLSL_140)
 				extensions.insert("GL_EXT_texture_array");
 		}
 	}
