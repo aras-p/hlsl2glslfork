@@ -1125,11 +1125,27 @@ parameter_declaration
         if (parseContext.paramErrorCheck($3.line, $1.qualifier, $2, $$.param.type))
             parseContext.recover();
     }
+    | parameter_qualifier type_qualifier parameter_declarator
+    {
+        $$ = $3;
+        if (parseContext.paramErrorCheck($3.line, $2.qualifier, $1, $$.param.type))
+            parseContext.recover();
+    }
+    | type_qualifier parameter_declarator {
+        $$ = $2;
+        if (parseContext.paramErrorCheck($2.line, $1.qualifier, EvqIn, $$.param.type))
+            parseContext.recover();
+    }
     | parameter_qualifier parameter_declarator {
         $$ = $2;
         if (parseContext.parameterSamplerErrorCheck($2.line, $1, *$2.param.type))
             parseContext.recover();
         if (parseContext.paramErrorCheck($2.line, EvqTemporary, $1, $$.param.type))
+            parseContext.recover();
+    }
+    | parameter_declarator {
+        $$ = $1;
+        if (parseContext.paramErrorCheck($1.line, EvqTemporary, EvqIn, $$.param.type))
             parseContext.recover();
     }
     //
@@ -1140,6 +1156,16 @@ parameter_declaration
         if (parseContext.paramErrorCheck($3.line, $1.qualifier, $2, $$.param.type))
             parseContext.recover();
     }
+    | parameter_qualifier type_qualifier parameter_type_specifier {
+        $$ = $3;
+        if (parseContext.paramErrorCheck($3.line, $2.qualifier, $1, $$.param.type))
+            parseContext.recover();
+    }
+    | type_qualifier parameter_type_specifier {
+        $$ = $2;
+        if (parseContext.paramErrorCheck($2.line, $1.qualifier, EvqIn, $$.param.type))
+            parseContext.recover();
+    }
     | parameter_qualifier parameter_type_specifier {
         $$ = $2;
         if (parseContext.parameterSamplerErrorCheck($2.line, $1, *$2.param.type))
@@ -1147,13 +1173,15 @@ parameter_declaration
         if (parseContext.paramErrorCheck($2.line, EvqTemporary, $1, $$.param.type))
             parseContext.recover();
     }
+    | parameter_type_specifier {
+        $$ = $1;
+        if (parseContext.paramErrorCheck($1.line, EvqTemporary, EvqIn, $$.param.type))
+            parseContext.recover();
+    }
     ;
 
 parameter_qualifier
-    : /* empty */ {
-        $$ = EvqIn;
-    }
-    | IN_QUAL {
+    : IN_QUAL {
         $$ = EvqIn;
     }
     | OUT_QUAL {
