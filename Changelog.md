@@ -1,6 +1,17 @@
 hlsl2glsl Change Log
 =========================
 
+2016 06
+-------
+
+Fixes:
+
+* Fixed overload resolution rules to match HLSL, not Cg. E.g. before a,
+`max(0, someFloat2)` was effectively doing a `max(0, someFloat2.x)` since it followed
+Cg's "in case of ambiguity, use first argument type" rule. HLSL uses wider argument,
+so we do that now.
+
+
 2015 11
 -------
 
