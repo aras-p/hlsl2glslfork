@@ -112,7 +112,7 @@ void ExpandBillboard( in mat4 mat, inout vec4 pos, inout vec3 normal, inout vec4
 vec4 Squash( in vec4 pos ) {
     #line 47
     vec3 planeNormal = _SquashPlaneNormal.xyz;
-    vec3 projectedVertex = (pos.xyz - ((dot( planeNormal, vec3( pos)) + _SquashPlaneNormal.w) * planeNormal));
+    vec3 projectedVertex = (pos.xyz - ((dot( vec4( planeNormal, 0.0), pos) + _SquashPlaneNormal.w) * planeNormal));
     pos = vec4( mix( projectedVertex, pos.xyz, vec3( _SquashAmount)), 1.0);
     return pos;
 }

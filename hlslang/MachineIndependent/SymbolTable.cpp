@@ -297,6 +297,17 @@ TSymbolTableLevel* TSymbolTableLevel::clone(TStructureMap& remapper)
 	return symTableLevel;
 }
 
+// This is the sort function for parameter matching in findCompatible method below
+bool parameterSizeSortFunction(TParameter left, TParameter right) {
+	// non-numeric types come first
+	if (!IsNumeric(left.type->getBasicType()))
+		return true;
+	else if (IsNumeric(left.type->getBasicType()) && !IsNumeric(right.type->getBasicType()))
+		return false;
+	// then sort according to numeric type's dimension in descending order
+	else return (left.type->getColsCount() >= right.type->getColsCount() && left.type->getRowsCount() >= right.type->getRowsCount());
+}
+
 // This function uses the matching rules as described in the Cg language doc (the closest
 // thing we have to HLSL function matching description) to find a matching compatible function.  
 TSymbol* TSymbolTableLevel::findCompatible (const TFunction *call, bool &ambiguous) const
@@ -319,10 +330,20 @@ TSymbol* TSymbolTableLevel::findCompatible (const TFunction *call, bool &ambiguo
 		++it;
 	}
 		
-	// For each actual parameter expression, in the sequence:   
+	// HLSL follows different matching rules than Cg, e.g. step(float, float2) is matched as step(float2, float) by HLSL
+	// while Cg matches step(float, float). Sort parameters by dimensions in descending order instead of left-to-right
+	// to keep parameters promoting up.
+	TVector<TParameter> sortedParameters;
 	for ( int nParam = 0; nParam < call->getParamCount() ; nParam++ )
 	{
-		const TType* type0 = (*call)[nParam].type;      
+		sortedParameters.push_back((*call)[nParam]);
+	}
+	std::sort(sortedParameters.begin(), sortedParameters.end(), parameterSizeSortFunction);
+	
+	// For each actual parameter expression, in the sequence:
+	for ( int nParam = 0; nParam < sortedParameters.size() ; nParam++ )
+	{
+		const TType* type0 = sortedParameters[nParam].type;
 		
 		// From the Cg function matching rules, perform the following matching on each parameter
 		//

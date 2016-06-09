@@ -5,9 +5,9 @@ uniform float uniFactor;
 #line 5
 vec4 xlat_main(  ) {
     #line 7
-    vec3 col = vec3( mix( 0.5, float( uniColor2), uniFactor));
+    vec3 col = mix( vec3( 0.5), uniColor2, vec3( uniFactor));
     vec4 outcol = vec4( col, 1.0);
-    return vec4( mix( 0.5, float( vec3( 1.0)), float( outcol)));
+    return mix( vec4( 0.5), vec4( vec3( 1.0), 0.0), outcol);
 }
 void main() {
     vec4 xl_retval;
