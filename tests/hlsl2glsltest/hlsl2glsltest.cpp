@@ -569,6 +569,7 @@ static bool TestFile (TestRun type,
 	includeCtx.currentFolder = inputPath.substr(0, inputPath.rfind('/'));
 	Hlsl2Glsl_ParseCallbacks includeCB;
 	includeCB.includeOpenCallback = IncludeOpenCallback;
+	includeCB.includeCloseCallback = NULL;
 	includeCB.data = &includeCtx;
 		
 	int parseOk = Hlsl2Glsl_Parse (parser, sourceStr, version, &includeCB, options);
