@@ -29,6 +29,10 @@ Status
 
 Used in Unity and bitsquid engines, and some other studios -- seems to work quite ok.
 
+> **Note**: As of mid-2016, the project is unlikely to have any significant developments. At Unity we are largely moving to a different
+> shader compilation pipeline, with hlsl2glslfork mostly not used. So from my side there won't be significant work done on it.
+> You might want to look into [HLSLParser](https://github.com/Thekla/hlslparser) instead maybe?
+
 Support for DX11 features might or might not get added due to the bad condition the original code is in (very obscure and inefficient), instead maybe a new cross-compiler will be made. Someday. Maybe.
 
 No optimizations are performed on the generated GLSL, so it is expected that your platform will have a decent GLSL compiler. Or, use [GLSL Optimizer](http://github.com/aras-p/glsl-optimizer), at Unity we use it to optimize shaders produced by HLSL2GLSL; gives a substantial performance boost on mobile platforms.
