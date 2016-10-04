@@ -1849,7 +1849,6 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
 {
    GlslStruct *s = 0;
    std::string structName = type->getTypeName().c_str();
-   EGlslQualifier structQual = translateQualifier(type->getQualifier());
 
    //check for anonymous structures
    if (structName.size() == 0)
@@ -1893,7 +1892,7 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
          StructMember* m = new StructMember( it->type->getFieldName().c_str(),
                                             (it->type->hasSemantic()) ? it->type->getSemantic().c_str() : "",
                                              translateType(it->type),
-                                             structQual,
+                                             EqtNone,
                                              prec,
                                              it->type->isArray() ? it->type->getArraySize() : 0,
                                             (it->type->getBasicType() == EbtStruct) ? createStructFromType(it->type) : NULL,

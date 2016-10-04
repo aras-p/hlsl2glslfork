@@ -1,6 +1,16 @@
 hlsl2glsl Change Log
 =========================
 
+
+2016 10
+-------
+
+Fixes:
+
+* Fixed a bug where an inout struct argument with COLOR semantic member, in some unrelated place,
+  would wrongly translate to framebuffer fetch extension in the GLES2/GLES3 fragment shader.
+
+
 2016 06
 -------
 
