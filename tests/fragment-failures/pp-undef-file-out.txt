@@ -1,2 +1,2 @@
 (2): ERROR: '' : undefining "__FILE__" 
-(2): ERROR: '' : syntax error syntax error
+(2): ERROR: '' : syntax error parse error
