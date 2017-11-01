@@ -29,6 +29,7 @@
 #include <string>
 #include <stdio.h>
 #include <sstream>
+#include <new>
 
 #include <assert.h>
 

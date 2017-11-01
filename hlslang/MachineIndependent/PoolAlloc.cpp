@@ -218,9 +218,14 @@ void* TPoolAllocator::allocate(size_t numBytes)
       // The OS is efficient and allocating and free-ing multiple pages.
       //
       size_t numBytesToAlloc = allocationSize + headerSkip;
-      AllocHeader* memory = reinterpret_cast<AllocHeader*>(::new char[numBytesToAlloc]);
-      if (memory == 0)
-         return 0;
+	  AllocHeader* memory;
+
+	  try {
+		  memory = reinterpret_cast<AllocHeader*>(::new char[numBytesToAlloc]);
+	  }
+	  catch (std::bad_alloc& ba) {
+		  return 0;
+	  }
 
       // Use placement-new to initialize header
       new(memory) AllocHeader(inUseList, (numBytesToAlloc + pageSize - 1) / pageSize);
@@ -242,9 +247,12 @@ void* TPoolAllocator::allocate(size_t numBytes)
    }
    else
    {
-      memory = reinterpret_cast<AllocHeader*>(::new char[pageSize]);
-      if (memory == 0)
-         return 0;
+	   try {
+		   memory = reinterpret_cast<AllocHeader*>(::new char[pageSize]);
+	   }
+	   catch (std::bad_alloc& ba) {
+		   return 0;
+	   }
    }
 
    // Use placement-new to initialize header

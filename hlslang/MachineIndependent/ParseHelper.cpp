@@ -7,7 +7,7 @@
 #include "../Include/InitializeParseContext.h"
 #include "osinclude.h"
 #include <stdarg.h>
-
+#include <new>
 
 // ------------------------------------------------------------------
 
@@ -1914,11 +1914,13 @@ bool InitializeGlobalParseContext()
       return false;
    }
 
-   TThreadParseContext *lpThreadData = new TThreadParseContext();
-   if (lpThreadData == 0)
-   {
-      assert(0 && "InitializeGlobalParseContext(): Unable to create thread parse context");
-      return false;
+   TThreadParseContext *lpThreadData;
+   try {
+	   lpThreadData = new TThreadParseContext();
+   }
+   catch (std::bad_alloc& ba) {
+	   assert(0 && "InitializeGlobalParseContext(): Unable to create thread parse context");
+	   return false;
    }
 
    lpThreadData->lpGlobalParseContext = 0;
