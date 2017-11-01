@@ -262,8 +262,10 @@ TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* righ
 
    node->setLeft(left);
    node->setRight(child);
-   if (! node->promote(ctx))
-      return 0;
+   if (!node->promote(ctx)) {
+	   delete node;
+	   return 0;
+   }
 
    return node;
 }
