@@ -216,8 +216,10 @@ TIntermTyped* ir_add_binary_math(TOperator op, TIntermTyped* left, TIntermTyped*
 	
 	node->setLeft(left);
 	node->setRight(right);
-	if (! node->promote(ctx))
+	if (!node->promote(ctx)) {
+		delete node;
 		return 0;
+	}
 	
 	//
 	// See if we can fold constants
@@ -253,8 +255,10 @@ TIntermTyped* ir_add_assign(TOperator op, TIntermTyped* left, TIntermTyped* righ
    node->setLine(line);
 
    TIntermTyped* child = ir_add_conversion(op, left->getType(), right, ctx.infoSink);
-   if (child == 0)
-      return 0;
+   if (child == 0) {
+	   delete node;
+	   return 0;
+   }
 
    node->setLeft(left);
    node->setRight(child);
@@ -361,8 +365,10 @@ TIntermTyped* ir_add_unary_math(TOperator op, TIntermNode* childNode, TSourceLoc
    node->setLine(line);
    node->setOperand(child);
 
-   if (! node->promote(ctx))
-      return 0;
+   if (!node->promote(ctx)) {
+	   delete node;
+	   return 0;
+   }
 	
 	
 	//
@@ -775,9 +781,10 @@ TIntermTyped* ir_add_selection(TIntermTyped* cond, TIntermTyped* trueBlock, TInt
    TIntermSelection* node = new TIntermSelection(cond, trueBlock, falseBlock, trueBlock->getType());
    node->setLine(line);
 
-    if (!node->promoteTernary(infoSink))
-        return 0;
-
+   if (!node->promoteTernary(infoSink)) {
+	   delete node;
+	   return 0;
+   }
 
    return node;
 }
