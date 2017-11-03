@@ -286,7 +286,7 @@ static bool InitializeOpenGL ()
 	}
 #endif
 	
-
+	ReleaseDC(wnd, dc);
 	return hasGLSL;
 }
 

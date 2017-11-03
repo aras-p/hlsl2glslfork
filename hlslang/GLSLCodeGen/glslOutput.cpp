@@ -1898,6 +1898,7 @@ GlslStruct *TGlslOutputTraverser::createStructFromType (TType *type)
                                             (it->type->getBasicType() == EbtStruct) ? createStructFromType(it->type) : NULL,
                                              structName);
          s->addMember(*m);
+		 delete m;
       }
 
       //add it to the list
