@@ -10,6 +10,7 @@
 #include "localintermediate.h"
 #include "RemoveTree.h"
 #include "ParseHelper.h"
+#include <algorithm>
 #include <float.h>
 #include <limits.h>
 
