@@ -306,7 +306,7 @@ cd %(RootDir)%(Directory)
 set PATH=%PATH%;"%(RootDir)%(Directory)..\..\tools\bin\"
 %(RootDir)%(Directory)..\..\tools\bin\bison.exe -d -t -v %(Filename).y
 if EXIST %(RootDir)%(Directory)Gen_%(Filename)_tab.cpp del %(RootDir)%(Directory)Gen_%(Filename)_tab.cpp
-if EXIST %(RootDir)%(Directory)%(Filename)_tab.h del %(RootDir)%(Directory)Gen_%(Filename)_tab.h
+if EXIST %(RootDir)%(Directory)%(Filename)_tab.h del %(RootDir)%(Directory)%(Filename)_tab.h
 rename %(RootDir)%(Directory)%(Filename).tab.c Gen_%(Filename)_tab.cpp
 rename %(RootDir)%(Directory)%(Filename).tab.h %(Filename)_tab.h
 </Command>
@@ -328,7 +328,7 @@ cd %(RootDir)%(Directory)
 set PATH=%PATH%;"%(RootDir)%(Directory)..\..\tools\bin\"
 %(RootDir)%(Directory)..\..\tools\bin\bison.exe -d -t -v %(Filename).y
 if EXIST %(RootDir)%(Directory)Gen_%(Filename)_tab.cpp del %(RootDir)%(Directory)Gen_%(Filename)_tab.cpp
-if EXIST %(RootDir)%(Directory)Gen_%(Filename)_tab.h del %(RootDir)%(Directory)Gen_%(Filename)_tab.h
+if EXIST %(RootDir)%(Directory)%(Filename)_tab.h del %(RootDir)%(Directory)%(Filename)_tab.h
 rename %(RootDir)%(Directory)%(Filename).tab.c Gen_%(Filename)_tab.cpp
 rename %(RootDir)%(Directory)%(Filename).tab.h %(Filename)_tab.h
 </Command>
