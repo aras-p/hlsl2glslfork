@@ -1,6 +1,12 @@
 HLSL to GLSL shader language translator
 ========
 
+> :warning: As of mid-2016, the project is unlikely to have any significant developments. At Unity we are moving to a different
+> shader compilation pipeline. So from my side there won't be significant work done on it.
+> You might want to look into [HLSLParser](https://github.com/Thekla/hlslparser), [HLSLcc](https://github.com/strandborg/HLSLcc)
+> or [glslang](https://github.com/KhronosGroup/glslang) instead. :warning:
+
+
 DX9 style HLSL in, GLSL / GLSL ES out.
 
 A continued development from [ATI's HLSL2GLSL](http://sourceforge.net/projects/hlsl2glsl), with preprocessor code based on
@@ -28,11 +34,6 @@ Status
 --------
 
 Used in Unity and bitsquid engines, and some other studios -- seems to work quite ok.
-
-> **Note**: As of mid-2016, the project is unlikely to have any significant developments. At Unity we are largely moving to a different
-> shader compilation pipeline, with hlsl2glslfork mostly not used. So from my side there won't be significant work done on it.
-> You might want to look into [HLSLParser](https://github.com/Thekla/hlslparser) or [HLSLcc](https://github.com/strandborg/HLSLcc)
-> or [glslang](https://github.com/KhronosGroup/glslang) instead.
 
 Support for DX11 features might or might not get added due to the bad condition the original code is in (very obscure and inefficient), instead maybe a new cross-compiler will be made. Someday. Maybe.
 
