@@ -90,12 +90,17 @@ if (WIN32)
   EXEC_PROGRAM(${CMAKE_COMMAND} ARGS "-E write_regv \"${hkey}\" \"${dir}\"")
 endif ()
 
-
-set(MACHINE_INDEPENDENT_GENERATED_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/Gen_hlslang.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/hlslang_tab.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/hlslang_tab.h
-)
+if (WIN32 OR APPLE)
+	set(MACHINE_INDEPENDENT_GENERATED_SOURCE_FILES
+	  ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/Gen_hlslang.cpp
+	  ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/hlslang_tab.h
+	)
+else()
+	set(MACHINE_INDEPENDENT_GENERATED_SOURCE_FILES
+	  ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/hlslang_tab.cpp
+	  ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent/hlslang_tab.h
+	)
+endif()
 
 SET_SOURCE_FILES_PROPERTIES(${MACHINE_INDEPENDENT_GENERATED_SOURCE_FILES} PROPERTIES
   GENERATED 1
@@ -107,19 +112,22 @@ source_group("Machine Independent\\Generated Source" FILES ${MACHINE_INDEPENDENT
 # Add system specific settings
 if (WIN32)
     set(OSDEPENDENT_FILES
-      hlslang/OSDependent/Windows/main.cpp
+      hlslang/OSDependent/Windows/unistd.h
       hlslang/OSDependent/Windows/osinclude.h
       hlslang/OSDependent/Windows/ossource.cpp
     )
     source_group("OSDependent\\Windows" FILES ${OSDEPENDENT_FILES})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/hlslang/OSDependent/Windows)
     
-    add_custom_command(OUTPUT hlslang/MachineIndependent/Gen_hlslang_tab.cpp hlslang/MachineIndependent/hlslang_tab.h 
-                         COMMAND set ARGS "BISON_SIMPLE=../../tools/bison.simple"
-                         COMMAND set ARGS "BISON_HAIRY=../../tools/bison.simple"
-                         COMMAND ../../tools/bison.exe ARGS  -d -t -v hlslang.y
-                         COMMAND copy ARGS /y hlslang_tab.c Gen_hlslang_tab.cpp
-                         COMMAND del ARGS hlslang_tab.c
+    add_custom_command(OUTPUT hlslang/MachineIndependent/Gen_hlslang_tab.cpp hlslang/MachineIndependent/hlslang.tab.h 
+                         COMMAND set ARGS "PATH=%PATH%;${CMAKE_CURRENT_SOURCE_DIR}/tools/bin/"
+                         COMMAND set ARGS "BISON_SIMPLE=${CMAKE_CURRENT_SOURCE_DIR}/tools/bin/bison.simple"
+                         COMMAND set ARGS "BISON_HAIRY=${CMAKE_CURRENT_SOURCE_DIR}/tools/bin/bison.simple"
+                         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/bin/bison.exe ARGS  -d -t -v hlslang.y
+                         COMMAND copy ARGS /y hlslang.tab.c Gen_hlslang_tab.cpp
+                         COMMAND del ARGS hlslang.tab.c
+                         COMMAND copy ARGS /y hlslang.tab.h hlslang_tab.h
+                         COMMAND del ARGS hlslang.tab.h
                          COMMAND del ARGS hlslang.output
                          MAIN_DEPENDENCY hlslang/MachineIndependent/hlslang.y
                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent
@@ -127,7 +135,7 @@ if (WIN32)
                       )
                    
     add_custom_command(OUTPUT hlslang/MachineIndependent/Gen_hlslang.cpp
-                         COMMAND ../../tools/flex.exe ARGS hlslang.l
+                         COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/tools/flex.exe ARGS hlslang.l
                          MAIN_DEPENDENCY hlslang/MachineIndependent/hlslang.l
                          DEPENDS hlslang/MachineIndependent/hlslang_tab.h
                          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/hlslang/MachineIndependent
