@@ -738,16 +738,33 @@ void initializeHLSLSupportLibrary(ETargetVersion targetVersion)
         "               m[0][1], m[1][1], m[2][1], m[3][1],\n"
         "               m[0][2], m[1][2], m[2][2], m[3][2],\n"
         "               m[0][3], m[1][3], m[2][3], m[3][3]);\n"
-        "}\n")
-        );
+        "}\n"
+
+        "mat4x3 xll_transpose_mf3x4(mat3x4 m) {\n"
+        "  return mat4x3( m[0][0], m[1][0], m[2][0],\n"
+        "                 m[0][1], m[1][1], m[2][1],\n"
+        "                 m[0][2], m[1][2], m[2][2],\n"
+        "                 m[0][3], m[1][3], m[2][3]);\n"
+        "}\n\n"
+        "mat3x4 xll_transpose_mf4x3(mat4x3 m) {\n"
+        "  return mat3x4( m[0][0], m[1][0], m[2][0], m[3][0],\n"
+        "                 m[0][1], m[1][1], m[2][1], m[3][1],\n"
+        "                 m[0][2], m[1][2], m[2][2], m[3][2]);\n"
+        "}\n\n"
+        )
+   );
 
 	// Note: constructing temporary vector and assigning individual components; seems to avoid
 	// some GLSL bugs on AMD (Win7, Radeon HD 58xx, Catalyst 10.5).
 	hlslSupportLib->insert( CodeMap::value_type( EOpMatrixIndex,
 		"vec2 xll_matrixindex_mf2x2_i (mat2 m, int i) { vec2 v; v.x=m[0][i]; v.y=m[1][i]; return v; }\n"
 		"vec3 xll_matrixindex_mf3x3_i (mat3 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }\n"
-		"vec4 xll_matrixindex_mf4x4_i (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }\n")
-		);
+		"vec4 xll_matrixindex_mf4x4_i (mat4 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }\n"
+
+        "vec3 xll_matrixindex_mf3x4_i (mat3x4 m, int i) { vec3 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; return v; }\n"
+		"vec4 xll_matrixindex_mf4x3_i (mat4x3 m, int i) { vec4 v; v.x=m[0][i]; v.y=m[1][i]; v.z=m[2][i]; v.w=m[3][i]; return v; }\n"
+        )
+	);
 
 	// The GLSL ES implementation on NaCl does not support dynamic indexing
 	// (except when the operand is a uniform in vertex shaders). The GLSL specification

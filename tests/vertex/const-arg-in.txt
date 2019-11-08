@@ -25,13 +25,24 @@ float4 fake_to_float(const in fake4 fake)
     real.y = fake.fy;
     real.z = fake.fz;
     real.w = fake.fw;
-   
+
+    return(real);
+}
+
+float4 fake_to_float_2(in const fake4 fake)
+{
+    float4 real;
+    real.x = fake.fx;
+    real.y = fake.fy;
+    real.z = fake.fz;
+    real.w = fake.fw;
+
     return(real);
 }
 
 float4 splat(const float f)
 {
-    return(fake_to_float(fake_splat(f)));
+    return(fake_to_float(fake_splat(f)) + fake_to_float_2(fake_splat(f)));
 }
 
 float4 main() : POSITION
