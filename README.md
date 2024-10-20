@@ -26,7 +26,7 @@ Notes
 * Only Direct3D 9 style HLSL is supported. No Direct3D 10/11 "template like" syntax, no geometry/tesselation/compute shaders, no abstract interfaces.
 * Platform support:
 	* Windows via Visual Studio 2022 (`hlslang.sln`).
-	* Mac via Xcode 5 (`hlslang.xcodeproj`).
+	* Mac via Xcode 15 (`hlslang.xcodeproj`).
 	* Other platforms may or might not work. Some people have contributed CMake build scripts, but I am not maintaining them.
 * On Windows, the library is built with `_HAS_ITERATOR_DEBUGGING=0,_SECURE_SCL=0` defines, which affect MSVC's STL behavior. If this does not match defines in your application, _totally strange_ things can start to happen!
 * The library is not currently thread-safe.
