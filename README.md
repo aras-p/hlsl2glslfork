@@ -1,19 +1,21 @@
 HLSL to GLSL shader language translator
 ========
 
-> :warning: As of mid-2016, the project is unlikely to have any significant developments. At Unity we are moving to a different
+> :warning: As of mid-2016, the project will not get any significant developments. Unity has moved to a different
 > shader compilation pipeline. So from my side there won't be significant work done on it.
-> You might want to look into [HLSLParser](https://github.com/Thekla/hlslparser), [HLSLcc](https://github.com/strandborg/HLSLcc)
-> or [glslang](https://github.com/KhronosGroup/glslang) instead. :warning:
-
+> You might want to look into [glslang](https://github.com/KhronosGroup/glslang),
+> [DirectXShaderCompiler](https://github.com/microsoft/DirectXShaderCompiler) + [SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross),
+> [HLSLParser](https://github.com/Thekla/hlslparser) or
+> [HLSLcc](https://github.com/strandborg/HLSLcc
+> instead. :warning:
 
 DX9 style HLSL in, GLSL / GLSL ES out.
 
-A continued development from [ATI's HLSL2GLSL](http://sourceforge.net/projects/hlsl2glsl), with preprocessor code based on
-[mojoshader](http://icculus.org/mojoshader/). I'm changing it to make it work for [Unity's](http://unity3d.com) use cases;
+A continued development from [ATI's HLSL2GLSL](https://sourceforge.net/projects/hlsl2glsl/), with preprocessor code based on
+[mojoshader](https://icculus.org/mojoshader/). I'm changing it to make it work for [Unity's](https://unity.com/) use cases;
 might totally not work for yours!
 
-For an opposite tool (GLSL ES to HLSL translator), look at [Google's ANGLE](http://code.google.com/p/angleproject/).
+For an opposite tool (GLSL ES to HLSL translator), look at [Google's ANGLE](https://github.com/google/angle).
 
 See badly maintained [change log](Changelog.md).
 
@@ -35,6 +37,9 @@ Status
 
 Used in Unity and bitsquid engines, and some other studios -- seems to work quite ok.
 
-Support for DX11 features might or might not get added due to the bad condition the original code is in (very obscure and inefficient), instead maybe a new cross-compiler will be made. Someday. Maybe.
+Support for DX11 features might or might not get added due to the bad condition the original code is in (very obscure and inefficient),
+instead maybe a new cross-compiler will be made. Someday. Maybe.
 
-No optimizations are performed on the generated GLSL, so it is expected that your platform will have a decent GLSL compiler. Or, use [GLSL Optimizer](http://github.com/aras-p/glsl-optimizer), at Unity we use it to optimize shaders produced by HLSL2GLSL; gives a substantial performance boost on mobile platforms.
+No optimizations are performed on the generated GLSL, so it is expected that your platform will have a decent GLSL compiler.
+Or, use [GLSL Optimizer](https://github.com/aras-p/glsl-optimizer), at Unity we use it to optimize shaders produced by HLSL2GLSL;
+gives a substantial performance boost on mobile platforms.
